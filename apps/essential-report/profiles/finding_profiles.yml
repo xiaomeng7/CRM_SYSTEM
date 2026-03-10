@@ -1,0 +1,3769 @@
+version: '2.0'
+meta:
+  description: Finding profiles for Better Home electrical asset risk & capital planning reports.
+  updated: '2026-01-30'
+  structure:
+    risk: 'Three dimensions: safety (HIGH|MODERATE|LOW), compliance (HIGH|MEDIUM|LOW), escalation (HIGH|MODERATE|LOW)'
+    budget: 'Three levels: low, high, horizon'
+    messaging: All text content for report generation
+finding_profiles:
+  ALARM_SOUNDED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Alarm Sounded
+      why_it_matters: >-
+        Smoke alarms are critical life-safety devices; faults or non-compliance may reduce early warning in a fire
+        event.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Schedule periodic testing and replacement in line with manufacturer guidance.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 100
+      high: 300
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  ALL_CHECKLIST_ITEMS_COMPLETED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: All Checklist Items Completed
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  ALL_REQUIRED_PHOTOS_UPLOADED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: All Required Photos Uploaded
+      why_it_matters: >-
+        Thermal anomalies can indicate loose terminations or abnormal loading and may progress to failure if left
+        unaddressed.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: Do not defer if temperature rise is significant or critical circuits are affected.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  ASBESTOS_SUSPECTED_BACKBOARD:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Asbestos Suspected Backboard
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed, it may pose immediate safety risks or escalate into significant liability
+        exposure within the next 6-12 months.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 2
+    budgetary_range:
+      low: 2000
+      high: 8000
+    system_group: Hazards
+    space_group: General
+    tags:
+      - safety
+  BAKELITE_OR_CERAMIC_ACCESSORY_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Bakelite Or Ceramic Accessory Visible
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Hazards
+    space_group: General
+    tags: []
+  BARE_METAL_WIRE_CORE_IS_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Bare Metal Wire Core Is Visible
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags:
+      - cabling
+  BURN_MARKS_VISIBLE:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Burn Marks Visible
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed, it may pose immediate safety risks or escalate into significant liability
+        exposure within the next 6-12 months.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags:
+      - safety
+  CABLE_DAMAGE_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Cable Damage Visible
+      why_it_matters: Cable damage or deteriorated insulation can increase the risk of electric shock and short-circuit faults.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Where safe, minor cable rectification can be grouped with other planned works.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  CABLE_SUPPORT_METHOD_OBSERVED_CLIPS_RESTING_BURIED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Cable Support Method Observed Clips Resting Buried
+      why_it_matters: Cable damage or deteriorated insulation can increase the risk of electric shock and short-circuit faults.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Where safe, minor cable rectification can be grouped with other planned works.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  CABLE_WITH_NON_MODERN_INSULATION_OBSERVED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Cable With Non Modern Insulation Observed
+      why_it_matters: Cable damage or deteriorated insulation can increase the risk of electric shock and short-circuit faults.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Where safe, minor cable rectification can be grouped with other planned works.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  CERAMIC_FUSE_HOLDER_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Ceramic Fuse Holder Visible
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Hazards
+    space_group: General
+    tags:
+      - switchboard
+  COOKTOP_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Cooktop Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: Internal
+    tags: []
+  COVER_BROKEN_OR_MISSING:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Cover Broken Or Missing
+      why_it_matters: Physical damage can expose conductive parts or reduce integrity of the installation over time.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: If minor and not safety-critical, can be addressed during routine maintenance.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Hazards
+    space_group: General
+    tags: []
+  CRACKS_VISIBLE_ON_FACEPLATE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Cracks Visible On Faceplate
+      why_it_matters: Physical damage can expose conductive parts or reduce integrity of the installation over time.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: If minor and not safety-critical, can be addressed during routine maintenance.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  DAMAGE_CORROSION_OVERHEATING:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Damage Corrosion Overheating
+      why_it_matters: >-
+        Thermal anomalies can indicate loose terminations or abnormal loading and may progress to failure if left
+        unaddressed.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: Do not defer if temperature rise is significant or critical circuits are affected.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  DEDICATED_OUTLET_OR_ISOLATOR_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Dedicated Outlet Or Isolator Visible
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  DISHWASHER_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Dishwasher Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: General
+    tags: []
+  DRYER_OUTLET_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Dryer Outlet Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  EARTH_PIN_MISSING_OR_DAMAGED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Earth Pin Missing Or Damaged
+      why_it_matters: Physical damage can expose conductive parts or reduce integrity of the installation over time.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: If minor and not safety-critical, can be addressed during routine maintenance.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags:
+      - safety
+  EXHAUST_FAN_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Exhaust Fan Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: General
+    tags: []
+  EXTENSION_LEAD_CONNECTED_AT_TIME_OF_INSPECTION:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Extension Lead Connected At Time Of Inspection
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Portable
+    space_group: General
+    tags: []
+  EXTERIOR_LIGHT_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Exterior Light Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Lighting
+    space_group: External
+    tags: []
+  FLEXIBLE_LEAD_FIXED_IN_PLACE_WITH_CLIPS_SCREWS:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Flexible Lead Fixed In Place With Clips Screws
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Cabling
+    space_group: General
+    tags: []
+  GARAGE_DOOR_OPENER_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Garage Door Opener Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: Ancillary
+    tags: []
+  GREASE_RESIDUE_OBSERVED_ON_RANGEHOOD_FILTER_COVER:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Grease Residue Observed On Rangehood Filter Cover
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: Internal
+    tags: []
+  HEATED_TOWEL_RAIL_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Heated Towel Rail Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: General
+    tags: []
+  HEAT_DAMAGE_VISIBLE_ON_FITTING_OR_CEILING:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Heat Damage Visible On Fitting Or Ceiling
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Lighting
+    space_group: General
+    tags:
+      - safety
+      - thermal
+      - cabling
+  HORIZONTAL_DISTANCE_FROM_POWER_POINT_EDGE_TO_SINK_TAP_EDGE_MEASURED_MM:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Horizontal Distance From Power Point Edge To Sink Tap Edge Measured Mm
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: Internal
+    tags:
+      - moisture
+  HORIZONTAL_DISTANCE_FROM_POWER_POINT_TO_SINK_EDGE_MM:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Horizontal Distance From Power Point To Sink Edge Mm
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: Internal
+    tags:
+      - moisture
+  INSULATION_CONTACT_OBSERVED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Insulation Contact Observed
+      why_it_matters: Cable damage or deteriorated insulation can increase the risk of electric shock and short-circuit faults.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Where safe, minor cable rectification can be grouped with other planned works.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  LAMP_TYPE_OBSERVED_LED_HALOGEN_INCANDESCENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Lamp Type Observed Led Halogen Incandescent
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Lighting
+    space_group: General
+    tags: []
+  LIGHT_FITTING_MOVES_WHEN_LIGHTLY_TOUCHED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Light Fitting Moves When Lightly Touched
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Lighting
+    space_group: General
+    tags: []
+  LIGHT_FITTING_PRESENT_ABOVE_BATH_SHOWER:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Light Fitting Present Above Bath Shower
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Lighting
+    space_group: Internal
+    tags: []
+  LOCATION_PHOTOGRAPHED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Location Photographed
+      why_it_matters: >-
+        Thermal anomalies can indicate loose terminations or abnormal loading and may progress to failure if left
+        unaddressed.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: Do not defer if temperature rise is significant or critical circuits are affected.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  MAIN_SWITCH_SERVICE_FUSE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Main Switch Service Fuse
+      why_it_matters: >-
+        Switchboard condition and protective device suitability are central to electrical safety and future upgrade
+        capacity.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Often best completed during other major electrical works (e.g., adding circuits, solar, EV charging).
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  MANUFACTURE_DATE_RECORDED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Manufacture Date Recorded
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  MEN_LINK:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Men Link
+      why_it_matters: >-
+        Earthing and bonding are fundamental for correct operation of protective devices and reducing touch voltage
+        risk.
+      if_not_addressed: >-
+        If this condition is not addressed, it may pose immediate safety risks or escalate into significant liability
+        exposure within the next 6-12 months.
+      planning_guidance: Prioritise where test results are marginal or site conditions increase corrosion risk.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 500
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - compliance
+  MOISTURE_STAINING_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Moisture Staining Visible
+      why_it_matters: Proximity to water and moisture increases the likelihood of insulation degradation and electrical faults.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: Coordinate with plumbing/building maintenance where relevant.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags:
+      - moisture
+  NON_STANDARD_WIRING_OR_ADDED_COMPONENT_OBSERVED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Non Standard Wiring Or Added Component Observed
+      why_it_matters: Non-standard electrical work may not provide adequate protection and can increase fault risk.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Rectification can be staged if no immediate hazards are present.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  NO_ADVICE_OR_QUOTATIONS_PROVIDED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: No Advice Or Quotations Provided
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  NUMBER_OF_POWER_BOARDS_OBSERVED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Number Of Power Boards Observed
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 2000
+      high: 8000
+    system_group: Portable
+    space_group: General
+    tags: []
+  NUMBER_OF_POWER_POINTS_ABOVE_BENCH:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Number Of Power Points Above Bench
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  OUTDOOR_POWER_POINT_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Outdoor Power Point Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: External
+    tags: []
+  OUTLET_HEIGHT_ABOVE_FINISHED_FLOOR_MM:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Outlet Height Above Finished Floor Mm
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  OVEN_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Oven Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: Internal
+    tags: []
+  OVERALL_SWITCHBOARD:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Overall Switchboard
+      why_it_matters: >-
+        Switchboard condition and protective device suitability are central to electrical safety and future upgrade
+        capacity.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Often best completed during other major electrical works (e.g., adding circuits, solar, EV charging).
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 2000
+      high: 8000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  PLUG_DISENGAGES_UNDER_ITS_OWN_WEIGHT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Plug Disengages Under Its Own Weight
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: GPO
+    space_group: General
+    tags: []
+  POWER_POINT_MOVES_WHEN_LIGHTLY_TOUCHED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Power Point Moves When Lightly Touched
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  POWER_POINT_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Power Point Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  POWER_POINT_PRESENT_IN_BATHROOM:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Power Point Present In Bathroom
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: Internal
+    tags:
+      - moisture
+  POWER_SOURCE_OBSERVED_MAINS_BATTERY_BOTH:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Power Source Observed Mains Battery Both
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  RANGE_HOOD_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Range Hood Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Appliances
+    space_group: General
+    tags: []
+  ROOF_SPACE_ACCESSED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Roof Space Accessed
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Roof space
+    space_group: External
+    tags: []
+  SMOKE_ALARM_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Smoke Alarm Present
+      why_it_matters: >-
+        Smoke alarms are critical life-safety devices; faults or non-compliance may reduce early warning in a fire
+        event.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Schedule periodic testing and replacement in line with manufacturer guidance.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 100
+      high: 300
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  SUPPLY_CABLE_LOCATED_WITHIN_MM_OF_COOKTOP_SURFACE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Supply Cable Located Within Mm Of Cooktop Surface
+      why_it_matters: Cable damage or deteriorated insulation can increase the risk of electric shock and short-circuit faults.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Where safe, minor cable rectification can be grouped with other planned works.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Cabling
+    space_group: Internal
+    tags:
+      - cabling
+  SURFACE_FEELS_ABNORMALLY_WARM_TO_TOUCH:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Surface Feels Abnormally Warm To Touch
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  SWITCH_BODY_MOVES_WHEN_TOUCHED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Switch Body Moves When Touched
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  SWITCH_MOVEMENT_UNEVEN_OR_OBSTRUCTED:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Switch Movement Uneven Or Obstructed
+      why_it_matters: >-
+        Earthing and bonding are fundamental for correct operation of protective devices and reducing touch voltage
+        risk.
+      if_not_addressed: >-
+        If this condition is not addressed, it may pose immediate safety risks or escalate into significant liability
+        exposure within the next 6-12 months.
+      planning_guidance: Prioritise where test results are marginal or site conditions increase corrosion risk.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 500
+    system_group: Other
+    space_group: General
+    tags: []
+  SWITCH_PLATE_CRACKED_OR_DAMAGED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Switch Plate Cracked Or Damaged
+      why_it_matters: Physical damage can expose conductive parts or reduce integrity of the installation over time.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: If minor and not safety-critical, can be addressed during routine maintenance.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  TAPED_CONNECTION_VISIBLE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Taped Connection Visible
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Cabling
+    space_group: General
+    tags: []
+  TEST_BUTTON_PRESSED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Test Button Pressed
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: RCD
+    space_group: General
+    tags: []
+  TRANSFORMER_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Transformer Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Roof space
+    space_group: General
+    tags: []
+  TRANSFORMER_RESTING_ON_INSULATION:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: Transformer Resting On Insulation
+      why_it_matters: Cable damage or deteriorated insulation can increase the risk of electric shock and short-circuit faults.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: Where safe, minor cable rectification can be grouped with other planned works.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  TYPE_OBSERVED_PHOTOELECTRIC_IONISATION_UNKNOWN:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: Type Observed Photoelectric Ionisation Unknown
+      why_it_matters: >-
+        Thermal anomalies can indicate loose terminations or abnormal loading and may progress to failure if left
+        unaddressed.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: Do not defer if temperature rise is significant or critical circuits are affected.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Safety
+    space_group: General
+    tags: []
+  UNIT_TESTED_AS_INTERCONNECTED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Unit Tested As Interconnected
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Safety
+    space_group: General
+    tags: []
+  UNUSUAL_AUDIBLE_SOUND_HEARD_DURING_OPERATION:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Unusual Audible Sound Heard During Operation
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  WASHING_MACHINE_OUTLET_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Washing Machine Outlet Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags: []
+  WATER_TAP_PRESENT_WITHIN_MM_OF_OUTLET:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Water Tap Present Within Mm Of Outlet
+      why_it_matters: Proximity to water and moisture increases the likelihood of insulation degradation and electrical faults.
+      if_not_addressed: >-
+        If this condition is not addressed over time, it may affect electrical safety, reliability, or compliance
+        gradually.
+      planning_guidance: Coordinate with plumbing/building maintenance where relevant.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 150
+      high: 400
+    system_group: GPO
+    space_group: General
+    tags:
+      - moisture
+  WEATHERPROOF_COVER_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: Weatherproof Cover Present
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+      if_not_addressed: >-
+        If this condition is not addressed over the next 3-5 years, it may gradually impact long-term reliability or
+        compliance confidence.
+      planning_guidance: If no immediate hazard is present, this can be planned with other electrical works to minimise disruption.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Wet areas
+    space_group: External
+    tags:
+      - moisture
+  SWITCHBOARD_CERAMIC_FUSES_PRESENT:
+    category: LEGACY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: LOW
+    budget: high
+    messaging:
+      title: SWITCHBOARD CERAMIC FUSES PRESENT
+      why_it_matters: Ceramic fuses are legacy protection and typically provide reduced modern fault mitigation.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  SWITCHBOARD_REWIREABLE_FUSES_PRESENT:
+    category: LEGACY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: LOW
+    budget: high
+    messaging:
+      title: SWITCHBOARD REWIREABLE FUSES PRESENT
+      why_it_matters: Rewireable fuses are outdated and often indicate an ageing board requiring planned upgrade.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  SWITCHBOARD_NO_RCD_OR_RCBO:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: high
+    messaging:
+      title: SWITCHBOARD NO RCD OR RCBO
+      why_it_matters: Absence of modern residual current protection increases shock liability and fault escalation exposure.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - safety
+      - switchboard
+  SWITCHBOARD_NO_RCBO:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: high
+    messaging:
+      title: SWITCHBOARD NO RCBO
+      why_it_matters: No RCBOs reduces circuit-level protection and makes fault isolation less controlled.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  SWITCHBOARD_AGED_ORIGINAL:
+    category: LEGACY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: high
+    messaging:
+      title: SWITCHBOARD AGED ORIGINAL
+      why_it_matters: Age-related degradation increases likelihood of faults and nuisance failures over time.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  SWITCHBOARD_LABELING_INCOMPLETE:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: SWITCHBOARD LABELING INCOMPLETE
+      why_it_matters: Poor labeling impacts maintainability and decision confidence; low cost to address.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - compliance
+      - switchboard
+  SWITCHBOARD_CLEARANCES_OR_ACCESS_ISSUE:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: SWITCHBOARD CLEARANCES OR ACCESS ISSUE
+      why_it_matters: Access/clearance issues can hinder emergency isolation and safe servicing.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - compliance
+      - switchboard
+  SWITCHBOARD_ENCLOSURE_DAMAGED:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: SWITCHBOARD ENCLOSURE DAMAGED
+      why_it_matters: Damaged enclosure can expose live parts and increase touch risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  SWITCHBOARD_SIGNS_OF_HEAT_DAMAGE:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: high
+    messaging:
+      title: SWITCHBOARD SIGNS OF HEAT DAMAGE
+      why_it_matters: Heat damage indicates elevated fire risk. If not addressed, could escalate to failure or ignition.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - safety
+      - thermal
+      - switchboard
+  SWITCHBOARD_LOOSE_CONNECTIONS_SUSPECTED:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: SWITCHBOARD LOOSE CONNECTIONS SUSPECTED
+      why_it_matters: Loose connections can cause resistance heating and arcing.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  SWITCHBOARD_INADEQUATE_SPARE_WAYS:
+    category: RELIABILITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: SWITCHBOARD INADEQUATE SPARE WAYS
+      why_it_matters: Limited spare ways may constrain future upgrades and increase retrofit complexity.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: Switchboard
+    tags:
+      - switchboard
+  LIGHTING_CIRCUITS_NO_RCD:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: LIGHTING CIRCUITS NO RCD
+      why_it_matters: No RCD protection on lighting circuits increases shock exposure during faults.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: RCD
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  POWER_CIRCUITS_NO_RCD:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: POWER CIRCUITS NO RCD
+      why_it_matters: No RCD on power circuits increases liability exposure for occupants/tenants.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: RCD
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  RCD_TEST_FAIL_OR_UNSTABLE:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: RCD TEST FAIL OR UNSTABLE
+      why_it_matters: Failed/unstable RCD operation can invalidate assumptions of protection.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  RCD_TRIP_TIME_SLOW:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: RCD TRIP TIME SLOW
+      why_it_matters: Slow trip times reduce protection effectiveness; if not addressed risk may become less manageable.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  RCD_NOT_TESTED_OR_UNKNOWN:
+    category: DATA_QUALITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: RCD NOT TESTED OR UNKNOWN
+      why_it_matters: Protection status unknown reduces decision confidence; retest recommended.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  RCBO_RECOMMENDED_UPGRADE:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: RCBO RECOMMENDED UPGRADE
+      why_it_matters: Upgrade improves circuit-level protection and reduces future exposure.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - switchboard
+  OVERCURRENT_PROTECTION_NONCOMPLIANT:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: OVERCURRENT PROTECTION NONCOMPLIANT
+      why_it_matters: Noncompliant overcurrent protection can increase fire risk under overload/fault conditions.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Other
+    space_group: General
+    tags: []
+  MEN_NOT_VERIFIED:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: MEN NOT VERIFIED
+      why_it_matters: Unable to verify MEN reduces assurance of fault protection integrity.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Other
+    space_group: General
+    tags:
+      - compliance
+  MEN_CONNECTION_DEFECTIVE:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: MEN CONNECTION DEFECTIVE
+      why_it_matters: Defective MEN can elevate touch voltage risk. If not addressed, liability escalates.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags:
+      - compliance
+  EARTHING_RESISTANCE_HIGH:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: EARTHING RESISTANCE HIGH
+      why_it_matters: High earthing resistance can reduce protective device performance.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags: []
+  EARTHING_CONTINUITY_NOT_VERIFIED:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: EARTHING CONTINUITY NOT VERIFIED
+      why_it_matters: Missing verification reduces confidence; retesting can clarify risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags: []
+  MAIN_EARTH_CONDUCTOR_UNDERSIZED_SUSPECTED:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: MAIN EARTH CONDUCTOR UNDERSIZED SUSPECTED
+      why_it_matters: Potential MEC sizing issue may compromise fault path integrity.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags: []
+  BONDING_TO_WATER_GAS_NOT_VERIFIED:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: BONDING TO WATER GAS NOT VERIFIED
+      why_it_matters: Unverified bonding reduces confidence in equipotential safety assumptions.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags:
+      - moisture
+  GPO_MECHANICAL_LOOSE:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: GPO MECHANICAL LOOSE
+      why_it_matters: Loose outlets can lead to arcing/overheating; typically manageable if planned promptly.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: GPO
+    space_group: General
+    tags: []
+  DAMAGED_OUTLET_OR_SWITCH:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: DAMAGED OUTLET OR SWITCH
+      why_it_matters: Damage can expose live parts and increase shock risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: GPO
+    space_group: General
+    tags: []
+  FITTING_OVERHEAT:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: FITTING OVERHEAT
+      why_it_matters: Overheating indicates thermal stress; if not addressed could escalate.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Lighting
+    space_group: General
+    tags:
+      - thermal
+  LIGHT_FITTING_NONCOMPLIANT_OR_UNSAFE:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: LIGHT FITTING NONCOMPLIANT OR UNSAFE
+      why_it_matters: Unsafe fitting conditions increase fire risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Lighting
+    space_group: General
+    tags: []
+  EXTENSION_LEADS_PERMANENT_USE_OBSERVED:
+    category: RELIABILITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: EXTENSION LEADS PERMANENT USE OBSERVED
+      why_it_matters: Indicates capacity/usage mismatch; may warrant additional outlets.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Portable
+    space_group: General
+    tags: []
+  SMOKE_ALARMS_MISSING:
+    category: LIFE_SAFETY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: SMOKE ALARMS MISSING
+      why_it_matters: Missing alarms increase life-safety exposure and compliance risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  SMOKE_ALARMS_EXPIRED:
+    category: LIFE_SAFETY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: SMOKE ALARMS EXPIRED
+      why_it_matters: Expired alarms reduce reliability of early detection.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  SMOKE_ALARMS_NOT_INTERCONNECTED:
+    category: LIFE_SAFETY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: SMOKE ALARMS NOT INTERCONNECTED
+      why_it_matters: Non-interconnected alarms provide reduced warning effectiveness.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  SMOKE_ALARMS_LOCATION_NONCOMPLIANT_SUSPECTED:
+    category: LIFE_SAFETY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: SMOKE ALARMS LOCATION NONCOMPLIANT SUSPECTED
+      why_it_matters: Location may reduce effectiveness; review against current requirements.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  THERMAL_NOT_PERFORMED:
+    category: DATA_QUALITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: THERMAL NOT PERFORMED
+      why_it_matters: Thermal imaging not performed; no inference should be made.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  THERMAL_NORMAL_NO_HOTSPOTS:
+    category: DATA_QUALITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: THERMAL NORMAL NO HOTSPOTS
+      why_it_matters: No abnormal hotspots detected under observed operating conditions.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  THERMAL_HOTSPOT_DETECTED_MINOR:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: THERMAL HOTSPOT DETECTED MINOR
+      why_it_matters: Minor hotspot may indicate early-stage resistance heating.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  THERMAL_HOTSPOT_DETECTED_MAJOR:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: THERMAL HOTSPOT DETECTED MAJOR
+      why_it_matters: Major hotspot indicates elevated fire risk; do not defer.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  WIRING_INSULATION_DEGRADED:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: WIRING INSULATION DEGRADED
+      why_it_matters: Degraded insulation increases fault likelihood and escalation risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 100
+      high: 500
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  WIRING_UNSUPPORTED_OR_POOR_FIXING:
+    category: COMPLIANCE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: WIRING UNSUPPORTED OR POOR FIXING
+      why_it_matters: Poor fixing impacts mechanical protection and longevity.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  OLD_RUBBER_VIR_WIRING_SUSPECTED:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: LOW
+    budget: high
+    messaging:
+      title: OLD RUBBER VIR WIRING SUSPECTED
+      why_it_matters: Legacy rubber/VIR wiring may become brittle and hazardous with age.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  EXTERNAL_CABLE_MECHANICAL_RISK:
+    category: RELIABILITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: MODERATE
+    budget: low
+    messaging:
+      title: EXTERNAL CABLE MECHANICAL RISK
+      why_it_matters: Cable subject to damage may lead to outages or unsafe exposure.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 100
+      high: 500
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  TEST_DATA_INCOMPLETE:
+    category: DATA_QUALITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: TEST DATA INCOMPLETE
+      why_it_matters: Missing test data reduces decision confidence but is not itself a defect.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  INSULATION_RESISTANCE_LOW_BORDERLINE:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: LOW
+    budget: low
+    messaging:
+      title: INSULATION RESISTANCE LOW BORDERLINE
+      why_it_matters: Borderline insulation results may indicate deterioration trend.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  INSULATION_RESISTANCE_FAIL:
+    category: FIRE
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: high
+    messaging:
+      title: INSULATION RESISTANCE FAIL
+      why_it_matters: Insulation resistance failure indicates elevated fault and fire risk.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Cabling
+    space_group: General
+    tags:
+      - cabling
+  EARTH_FAULT_LOOP_IMPEDANCE_BORDERLINE:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: MEDIUM
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: EARTH FAULT LOOP IMPEDANCE BORDERLINE
+      why_it_matters: Borderline loop impedance reduces assurance of protective device operation.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  EARTH_FAULT_LOOP_IMPEDANCE_FAIL:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: HIGH
+    budget: low
+    messaging:
+      title: EARTH FAULT LOOP IMPEDANCE FAIL
+      why_it_matters: Loop impedance failure can prevent timely disconnection during faults.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  POLARITY_ISSUE_DETECTED:
+    category: SHOCK
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: HIGH
+      escalation: LOW
+    budget: low
+    messaging:
+      title: POLARITY ISSUE DETECTED
+      why_it_matters: Polarity issues can cause dangerous outcomes and should be treated urgently.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  ACCESS_LIMITATION_ROOF_VOID_NOT_ACCESSED:
+    category: DATA_QUALITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: ACCESS LIMITATION ROOF VOID NOT ACCESSED
+      why_it_matters: Roof void not accessed; findings limited to accessible areas.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 2
+    likelihood: 2
+    budgetary_range:
+      low: 200
+      high: 1000
+    system_group: Other
+    space_group: External
+    tags: []
+  ACCESS_LIMITATION_SUBFLOOR_NOT_ACCESSED:
+    category: DATA_QUALITY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: ACCESS LIMITATION SUBFLOOR NOT ACCESSED
+      why_it_matters: Subfloor not accessed; latent issues may remain unidentified.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  GENERAL_OBSERVATION_AGEING_INSTALLATION:
+    category: LEGACY
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: low
+    messaging:
+      title: GENERAL OBSERVATION AGEING INSTALLATION
+      why_it_matters: General ageing noted; supports planned upgrades rather than immediate action.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  UNKNOWN_FINDING_FALLBACK:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: General Observation
+      why_it_matters: This condition may affect electrical safety, reliability, or compliance depending on severity and location.
+      if_not_addressed: If this condition is not addressed, it may impact long-term reliability or compliance confidence.
+      planning_guidance: This can be factored into future capital planning cycles without immediate urgency.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  ALARM_AGEING:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: ALARM AGEING
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: MEDIUM
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Other
+    space_group: General
+    tags:
+      - safety
+  ARCING_EVIDENCE_PRESENT:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: ARCING EVIDENCE PRESENT
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 1
+    likelihood: 4
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  ASBESTOS_RISK:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: ASBESTOS RISK
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Hazards
+    space_group: General
+    tags:
+      - safety
+  BATTERY_INSTALL_UNVERIFIED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: BATTERY INSTALL UNVERIFIED
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  BATTERY_THERMAL:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: BATTERY THERMAL
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal
+  BOARD_AT_CAPACITY:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: BOARD AT CAPACITY
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Other
+    space_group: General
+    tags: []
+  EARTH_DEGRADED:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: EARTH DEGRADED
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags: []
+  EV_LOAD_AGGREGATION:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: EV LOAD AGGREGATION
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  EV_UNSEGREGATED_LOAD:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: EV UNSEGREGATED LOAD
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 1
+    likelihood: 4
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  EXPOSED_CONDUCTOR:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: EXPOSED CONDUCTOR
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  GPO_EARTH_FAULT:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: GPO EARTH FAULT
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: GPO
+    space_group: General
+    tags: []
+  HYBRID_UPGRADE_STAGE:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: HYBRID UPGRADE STAGE
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  IP_UNVERIFIED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: IP UNVERIFIED
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  LABELING_POOR:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: LABELING POOR
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags:
+      - compliance
+  LEGACY_DEVICES:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: LEGACY DEVICES
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  LEGACY_EARTHING:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: LEGACY EARTHING
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 3
+    likelihood: 2
+    budgetary_range:
+      low: 400
+      high: 1500
+    system_group: Other
+    space_group: General
+    tags: []
+  LEGACY_SUPPLY_FUSE:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: LEGACY SUPPLY FUSE
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Other
+    space_group: General
+    tags:
+      - switchboard
+  MATERIAL_DEGRADATION:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: MATERIAL DEGRADATION
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  MECHANICAL_EXPOSURE:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: MECHANICAL EXPOSURE
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 2
+    likelihood: 3
+    budgetary_range:
+      low: 100
+      high: 500
+    system_group: Other
+    space_group: General
+    tags: []
+  NON_STANDARD_WORK:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: NON STANDARD WORK
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 300
+      high: 1200
+    system_group: Other
+    space_group: General
+    tags: []
+  NO_EXPANSION_MARGIN:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: NO EXPANSION MARGIN
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: MEDIUM
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  NO_RCD_PROTECTION:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: NO RCD PROTECTION
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  PARTIAL_RCD_COVERAGE:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: PARTIAL RCD COVERAGE
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Switchboard
+    space_group: General
+    tags:
+      - safety
+      - switchboard
+  PV_ISOLATION_UNVERIFIED:
+    category: OTHER
+    default_priority: PLAN_MONITOR
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: LOW
+    budget: horizon
+    messaging:
+      title: PV ISOLATION UNVERIFIED
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: MEDIUM
+    risk_severity: 1
+    likelihood: 1
+    budgetary_range:
+      low: 0
+      high: 0
+    system_group: Other
+    space_group: General
+    tags: []
+  SMOKE_ALARM_FAILURE:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: SMOKE ALARM FAILURE
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Safety
+    space_group: General
+    tags:
+      - safety
+  SUPPLY_NO_MAIN_ISOLATION:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: SUPPLY NO MAIN ISOLATION
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 3
+    likelihood: 4
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Other
+    space_group: General
+    tags: []
+  SURGE_PROTECTION_ABSENT:
+    category: OTHER
+    default_priority: RECOMMENDED_0_3_MONTHS
+    risk:
+      safety: LOW
+      compliance: LOW
+      escalation: MODERATE
+    budget: horizon
+    messaging:
+      title: SURGE PROTECTION ABSENT
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: LONG_TERM
+    liability: LOW
+    risk_severity: 3
+    likelihood: 3
+    budgetary_range:
+      low: 500
+      high: 2000
+    system_group: Other
+    space_group: General
+    tags: []
+  SWITCH_ARCING:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: MODERATE
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: SWITCH ARCING
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: SHORT_TERM
+    liability: HIGH
+    risk_severity: 5
+    likelihood: 4
+    budgetary_range:
+      low: 300
+      high: 1000
+    system_group: Other
+    space_group: General
+    tags: []
+  THERMAL_STRESS_ACTIVE:
+    category: OTHER
+    default_priority: IMMEDIATE
+    risk:
+      safety: HIGH
+      compliance: LOW
+      escalation: HIGH
+    budget: horizon
+    messaging:
+      title: THERMAL STRESS ACTIVE
+      why_it_matters: This condition may affect electrical safety, reliability, or maintainability depending on severity and location.
+    disclaimer_line: ''
+    urgency: IMMEDIATE
+    liability: HIGH
+    risk_severity: 4
+    likelihood: 4
+    budgetary_range:
+      low: 200
+      high: 800
+    system_group: Thermal
+    space_group: General
+    tags:
+      - thermal

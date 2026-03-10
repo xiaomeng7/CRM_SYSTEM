@@ -1,0 +1,1622 @@
+<!--
+CHANGELOG (2026-02-03)
+- Upgraded to single-page dual-path flow (Investor / Owner-Energy / Not sure).
+- Added path routing step, owner energy pain questions, and investor trigger questions.
+- Removed hard gate on property-count > 1 (no forced disqualification).
+- Added profile/primaryGoal/assets/signals to submission payloads (lead + quickcall).
+- Kept existing funnel/modal/referral/PDF/booking endpoints, with GA4 events enriched by profile/primaryGoal/status.
+- Added per-question tracking events: question_view/question_answer/snapshot_abandon.
+- Added session_id + last_state persistence (7-day TTL, no PII fields).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Eligibility Check & Electrical Risk Snapshot</title>
+  
+  <!-- Google Analytics 4 (GA4) -->
+  <!-- 
+    IMPORTANT: Replace GA_MEASUREMENT_ID with your actual GA4 Measurement ID (e.g., G-XXXXXXX)
+    You need to replace it in TWO places:
+    1. In the script src URL below: id=G-QBYBDVL5FT
+    2. In the gtag('config', 'G-QBYBDVL5FT') call below
+    3. In the JavaScript constant GA_MEASUREMENT_ID in the script section
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QBYBDVL5FT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QBYBDVL5FT');
+  </script>
+  
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --card:#11131a;
+      --text:#e9ecf1;
+      --muted:#a9b0bd;
+      --border:#232735;
+      --accent:#6ea8fe;
+      --danger:#ff6b6b;
+      --ok:#51cf66;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1000px 700px at 20% 0%, #14182a 0%, var(--bg) 55%);
+      color:var(--text);
+      line-height:1.55;
+      font-size: 17px;
+    }
+    .wrap{
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .brand{display:flex; flex-direction:column; gap:4px;}
+    .brand h1{font-size:22px; margin:0; letter-spacing:.2px;}
+    .brand p{margin:0; color:var(--muted); font-size:15px;}
+    .pill{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:14px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .card{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .steps{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+    .stepTag{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:14px;
+    }
+    .stepTag.active{
+      border-color: rgba(110,168,254,.55);
+      color: var(--text);
+      background: rgba(110,168,254,.10);
+    }
+    .hr{height:1px; background:var(--border); margin:18px 0;}
+    h2{margin:0 0 10px; font-size:26px;}
+    h3{margin:0 0 8px; font-size:19px;}
+    .sub{margin:0 0 16px; color:var(--muted); font-size:16px;}
+    .qTitle{font-size:19px; margin:0 0 14px;}
+    .choices{display:grid; gap:12px; margin: 14px 0 20px;}
+    label.choice{
+      display:flex; gap:12px; align-items:flex-start;
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      cursor:pointer;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+      font-size: 16px;
+    }
+    label.choice:hover{
+      transform: translateY(-1px);
+      border-color: rgba(110,168,254,.45);
+      background: rgba(110,168,254,.06);
+    }
+    input[type="radio"]{margin-top:4px; accent-color: var(--accent); min-width:20px; min-height:20px;}
+    .hint{font-size:15px; color:var(--muted); margin-top:6px;}
+    .nav{
+      display:flex; justify-content:space-between; align-items:center; gap:14px;
+      margin-top: 10px;
+    }
+    button{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor:pointer;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
+    }
+    button:hover{
+      transform: translateY(-1px);
+      border-color: rgba(110,168,254,.55);
+      background: rgba(110,168,254,.10);
+    }
+    button:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+    .primary{
+      border-color: rgba(110,168,254,.55);
+      background: rgba(110,168,254,.15);
+    }
+    .primary:hover{background: rgba(110,168,254,.22);}
+    .ghost{background: transparent;}
+    .resultBox{
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      background: rgba(255,255,255,.02);
+      margin-top: 14px;
+      font-size: 16px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:14px;
+      color: var(--muted);
+      margin-bottom:10px;
+    }
+    .badge.ok{border-color: rgba(81,207,102,.45); background: rgba(81,207,102,.10); color: var(--text);}
+    .badge.no{border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.10); color: var(--text);}
+    .small{font-size:15px; color:var(--muted);}
+    .ctaRow{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;}
+    a.cta, button.cta{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      min-height: 48px;
+    }
+    a.cta:hover, button.cta:hover{
+      border-color: rgba(110,168,254,.55);
+      background: rgba(110,168,254,.12);
+      transform: translateY(-1px);
+    }
+    .footerNote{margin-top:18px; font-size:15px; color:var(--muted);}
+    .insight{font-size:15px;color:var(--muted);font-style:italic;margin-top:14px;min-height:1.2em;}
+    .accordion{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;background:rgba(255,255,255,.02);}
+    .accordion-toggle{padding:14px 16px;cursor:pointer;font-weight:600;font-size:16px;display:flex;justify-content:space-between;align-items:center;}
+    .accordion-toggle:hover{background:rgba(110,168,254,.06);}
+    .accordion-content{padding:0 16px 14px;font-size:15px;color:var(--muted);display:none;}
+    .accordion-content.open{display:block;}
+    .progress{
+      height: 8px;
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid var(--border);
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(110,168,254,.85), rgba(110,168,254,.35));
+      transition: width .18s ease;
+    }
+    .topRow{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    input[type="text"], input[type="tel"], input[type="email"], textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+      font-size: 16px;
+    }
+    textarea{resize: vertical;}
+    .err{display:none; color: var(--danger); font-size:15px; margin-top:8px;}
+    @media (max-width: 520px){
+      body{ font-size: 16px; }
+      .card{padding:18px; border-radius:16px;}
+      h2{font-size:22px;}
+      .qTitle{font-size:18px;}
+    }
+  
+    /* Modal */
+    .modalOverlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      z-index:9999;
+    }
+    .modalOverlay.open{display:flex;}
+    .modal{
+      width:min(820px, 100%);
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: rgba(17,19,26,.98);
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      padding:18px 18px 14px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .modalTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .modalTop h3{margin:0; font-size:20px;}
+    .modalClose{
+      border:1px solid var(--border);
+      background: transparent;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+      color: var(--muted);
+    }
+    .modalClose:hover{border-color: rgba(110,168,254,.55); color: var(--text);}
+    .scriptGrid{
+      display:grid;
+      gap:12px;
+      margin-top:10px;
+    }
+    .scriptCard{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      border-radius:16px;
+      padding:12px;
+    }
+    .scriptCard .k{font-size:14px; color:var(--muted); margin-bottom:6px;}
+    .scriptCard .v{font-size:16px; color:var(--text);}
+    .miniPill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:14px;
+      color: var(--muted);
+      background: rgba(255,255,255,.03);
+    }
+
+  
+    /* Auto theme: follow browser setting */
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --card:#ffffff;
+        --text:#111827;
+        --muted:#4b5563;
+        --border:#e5e7eb;
+        --accent:#2563eb;
+        --danger:#b91c1c;
+        --ok:#15803d;
+      }
+      body{
+        background: radial-gradient(1000px 700px at 20% 0%, #ffffff 0%, var(--bg) 60%);
+      }
+      .card{
+        box-shadow: 0 18px 45px rgba(17,24,39,.10);
+        background: rgba(0,0,0,.0);
+      }
+      label.choice{ background: rgba(0,0,0,.02); }
+      .modal{
+        background: rgba(255,255,255,.98);
+        box-shadow: 0 30px 80px rgba(17,24,39,.18);
+      }
+      .modalOverlay{ background: rgba(17,24,39,.35); }
+    }
+
+    .share-btn {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .share-btn:hover {
+      background: #5a67d8;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toastSlideOut {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(100px); }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>Eligibility Check & Electrical Risk Snapshot</h1>
+        <p>One question per page • Fast, no technical knowledge required</p>
+      </div>
+      <div class="pill" id="statusPill">Step 0 of 5</div>
+    </header>
+
+    <div class="card">
+      <div class="steps">
+        <div class="stepTag active" id="tag0">Step 0 — Value</div>
+        <div class="stepTag" id="tag1">Step 1 — Path</div>
+        <div class="stepTag" id="tag2">Step 2 — Snapshot</div>
+        <div class="stepTag" id="tag3">Step 3 — Result & next step</div>
+        <div class="stepTag" id="tag4">Step 4 — Contact details</div>
+      </div>
+
+      <div class="progress" aria-label="progress">
+        <div class="bar" id="bar"></div>
+      </div>
+      <div class="topRow">
+        <div id="progressText">0% complete</div>
+        <div id="timeText">~5 minutes total</div>
+      </div>
+      <div class="small" id="pathLabel" style="margin-top:8px;">Path: Not selected</div>
+
+      <div class="hr"></div>
+
+      <main id="app"></main>
+
+      <div class="footerNote">
+        <div><strong>Note:</strong> This is not an inspection and does not result in a quote.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const CONTACT_EMAIL = "info@bhtechnology.com.au";
+  const LEARN_MORE_URL = "#";
+
+  const PATH_QUESTION = {
+    id: "path_profile",
+    title: "Which best describes you today?",
+    options: [
+      { label: "Investment property (landlord)", value: "investor" },
+      { label: "Owner occupied (homeowner)", value: "owner" },
+      { label: "Not sure / both", value: "balanced" },
+    ],
+  };
+
+  const INVESTOR_QUESTIONS = [
+    {
+      id: "inv_uncertainDecision",
+      title: "When electrical work is recommended, what usually happens?",
+      options: [
+        "I approve quickly but later wonder if it was necessary",
+        "I delay because I am unsure",
+        "I am generally confident",
+      ],
+    },
+    {
+      id: "inv_conflictingAdvice",
+      title: "Have you ever received different opinions/quotes for the same issue?",
+      options: ["Yes, and it made decisions harder", "Yes, but I knew what to choose", "No"],
+    },
+    {
+      id: "inv_unclearOverall",
+      title: "Do you have a clear picture of overall electrical condition?",
+      options: ["Yes", "Somewhat", "Not really"],
+    },
+    {
+      id: "inv_avoidDispute",
+      title: "What is your biggest concern in electrical decisions?",
+      options: ["Avoid disputes and unclear responsibility", "Avoid overpaying", "I am mostly fine"],
+    },
+    {
+      id: "inv_tenantChangeSoon",
+      title: "Are you changing tenants in the next 60 days?",
+      options: ["Yes", "No", "Not sure"],
+    },
+    {
+      id: "inv_managerMode",
+      title: "Do you manage the property yourself or via a property manager?",
+      options: ["Self", "Property manager", "Both"],
+    },
+    {
+      id: "inv_portfolioSizeBand",
+      title: "How many investment properties do you manage? (not a requirement)",
+      options: ["1", "2-3", "4+"],
+    },
+  ];
+
+  const OWNER_QUESTIONS = [
+    {
+      id: "own_billBand",
+      title: "Annual electricity bill band",
+      options: ["< $2,000", "$2,000–$4,000", "$4,000–$6,000", "> $6,000"],
+    },
+    {
+      id: "own_allElectricNoGas",
+      title: "Is your home all-electric (no gas)?",
+      options: ["Yes", "No", "Not sure"],
+    },
+    {
+      id: "own_devices",
+      title: "Devices checklist (multi-select)",
+      type: "multi",
+      options: ["Solar", "Battery", "EV / planning EV", "Heat pump / ducted AC", "Electric cooking (induction/oven)"],
+    },
+    {
+      id: "own_symptoms",
+      title: "Symptoms checklist (multi-select)",
+      type: "multi",
+      options: ["Frequent tripping", "Main switch feels hot / buzzing", "Bill increased sharply", "Not sure where power is used", "None of these"],
+    },
+    {
+      id: "own_billUploadWilling",
+      title: "After assessment, are you willing to provide your latest 2 electricity bills for calibration?",
+      options: ["Yes", "No"],
+    },
+  ];
+
+  const state = {
+    stage: 0,
+    index: 0,
+    profile: null,
+    primaryGoal: null,
+    billUploadWilling: undefined,
+    answers: {},
+    lead: null,
+    _tracked: {},
+    _leadSubmitted: false,
+    _lastState: null,
+  };
+
+  const STEP_IDS = {
+    VALUE: "step_0_value",
+    PATH: "step_1_path",
+    SNAPSHOT_INTRO: "step_2_snapshot_intro",
+    SNAPSHOT_QUESTION: "step_2_snapshot_question",
+    RESULT: "step_3_result",
+    CONTACT: "step_4_contact",
+    SUCCESS: "step_5_success",
+  };
+  const SESSION_KEY = "snapshot_session_id";
+  const SESSION_EXPIRES_KEY = "snapshot_session_expires_at";
+  const LAST_STATE_KEY = "snapshot_last_state";
+  const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+  const PAGE_OPEN_TS = Date.now();
+  let abandonSent = false;
+
+  function createSessionId(){
+    if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+    return "sid_" + Math.random().toString(36).slice(2) + "_" + Date.now().toString(36);
+  }
+  function getOrCreateSessionId(){
+    try {
+      const now = Date.now();
+      const existing = localStorage.getItem(SESSION_KEY);
+      const expiresAt = Number(localStorage.getItem(SESSION_EXPIRES_KEY) || "0");
+      if (existing && Number.isFinite(expiresAt) && expiresAt > now) return existing;
+      const next = createSessionId();
+      localStorage.setItem(SESSION_KEY, next);
+      localStorage.setItem(SESSION_EXPIRES_KEY, String(now + SESSION_TTL_MS));
+      return next;
+    } catch (_e) {
+      return createSessionId();
+    }
+  }
+  const SESSION_ID = getOrCreateSessionId();
+
+  function $(id){ return document.getElementById(id); }
+  function escapeHtml(str){
+    return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+  function getQuestionSet(){
+    return state.profile === "investor" ? INVESTOR_QUESTIONS : OWNER_QUESTIONS;
+  }
+  function getPrimaryGoal(profile){
+    if (profile === "investor") return "risk";
+    if (profile === "owner") return "energy";
+    return "balanced";
+  }
+  function getPayloadProfile(){
+    return state.profile === "investor" ? "investor" : "owner";
+  }
+  function getProfileDeclared(){
+    if (state.profile === "investor") return "investor";
+    if (state.profile === "owner") return "owner";
+    return "unsure";
+  }
+  function getTenantChangeSoonBool(){
+    if (state.answers.inv_tenantChangeSoon === "Yes") return true;
+    if (state.answers.inv_tenantChangeSoon === "No") return false;
+    return undefined;
+  }
+  function getBillUploadWillingBool(){
+    if (state.answers.own_billUploadWilling === "Yes") return true;
+    if (state.answers.own_billUploadWilling === "No") return false;
+    return state.billUploadWilling;
+  }
+  function getElapsedMs(){ return Date.now() - PAGE_OPEN_TS; }
+  function getCurrentStepId(){
+    if (state.stage === 0) return STEP_IDS.VALUE;
+    if (state.stage === 1) return STEP_IDS.PATH;
+    if (state.stage === 2 && state.index === -1) return STEP_IDS.SNAPSHOT_INTRO;
+    if (state.stage === 2 && state.index >= 0) return STEP_IDS.SNAPSHOT_QUESTION;
+    if (state.stage === 3) return STEP_IDS.RESULT;
+    if (state.stage === 4) return STEP_IDS.CONTACT;
+    if (state.stage === 5) return STEP_IDS.SUCCESS;
+    return "unknown";
+  }
+  function getCurrentQuestionId(){
+    if (state.stage === 1) return PATH_QUESTION.id;
+    if (state.stage === 2 && state.index >= 0) {
+      const q = getQuestionSet()[state.index];
+      return q ? q.id : undefined;
+    }
+    return undefined;
+  }
+  function updateLastState(action, overrides = {}){
+    const payload = {
+      step_id: overrides.step_id || getCurrentStepId(),
+      question_id: Object.prototype.hasOwnProperty.call(overrides, "question_id") ? overrides.question_id : getCurrentQuestionId(),
+      action,
+      ts: Date.now(),
+      profileDeclared: getProfileDeclared(),
+      primaryGoal: state.primaryGoal || "balanced",
+    };
+    state._lastState = payload;
+    try { localStorage.setItem(LAST_STATE_KEY, JSON.stringify(payload)); } catch (_e) {}
+    return payload;
+  }
+  function readLastState(){
+    if (state._lastState) return state._lastState;
+    try {
+      const raw = localStorage.getItem(LAST_STATE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  function trackQuestionView(stepId, questionId){
+    updateLastState("view", { step_id: stepId, question_id: questionId });
+    track("question_view", { step_id: stepId, question_id: questionId, elapsed_ms: getElapsedMs() });
+  }
+  function trackQuestionAnswer(stepId, questionId, payload){
+    updateLastState("answer", { step_id: stepId, question_id: questionId });
+    track("question_answer", { step_id: stepId, question_id: questionId, elapsed_ms: getElapsedMs(), ...payload });
+  }
+  function trackBeacon(eventName, params){
+    try {
+      if (!navigator.sendBeacon) return;
+      const endpoint = (window.SNAPSHOT_BEACON_URL || "").trim();
+      if (!endpoint) return;
+      const body = JSON.stringify({ event: eventName, ...params });
+      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+    } catch (_e) {}
+  }
+  function sendSnapshotAbandon(reason){
+    if (abandonSent || state._leadSubmitted) return;
+    abandonSent = true;
+    const last = readLastState() || {};
+    const payload = {
+      session_id: SESSION_ID,
+      last_step_id: last.step_id || getCurrentStepId(),
+      last_question_id: last.question_id || getCurrentQuestionId() || "",
+      last_action: last.action || "unknown",
+      time_on_page_ms: getElapsedMs(),
+      profileDeclared: getProfileDeclared(),
+      primaryGoal: state.primaryGoal || "balanced",
+      reason,
+    };
+    track("snapshot_abandon", payload);
+    trackBeacon("snapshot_abandon", payload);
+  }
+  function pathLabelText(){
+    if (state.profile === "investor") return "Path: Investor";
+    if (state.profile === "owner") return "Path: Owner";
+    if (state.profile === "balanced") return "Path: Not sure / both";
+    return "Path: Not selected";
+  }
+
+  function track(eventName, params = {}){
+    try {
+      if (typeof gtag !== "undefined" && gtag) {
+        gtag("event", eventName, {
+          profile: getPayloadProfile(),
+          profileDeclared: getProfileDeclared(),
+          primaryGoal: state.primaryGoal || "balanced",
+          billUploadWilling: getBillUploadWillingBool(),
+          tenantChangeSoon: getTenantChangeSoonBool(),
+          session_id: SESSION_ID,
+          ...params,
+        });
+      }
+    } catch (e) {}
+  }
+
+  function setActiveStepTag(step){
+    $("tag0").classList.toggle("active", step === 0);
+    $("tag1").classList.toggle("active", step === 1);
+    $("tag2").classList.toggle("active", step === 2);
+    $("tag3").classList.toggle("active", step === 3);
+    $("tag4").classList.toggle("active", step === 4 || step === 5);
+    $("statusPill").textContent = `Step ${step} of 5`;
+    const p = $("pathLabel");
+    if (p) p.textContent = pathLabelText();
+  }
+
+  function computeProgress(){
+    const qset = getQuestionSet();
+    const total = 1 + (qset ? qset.length : 0);
+    let done = state.profile ? 1 : 0;
+    for (const q of qset) {
+      const v = state.answers[q.id];
+      if (q.type === "multi") {
+        if (Array.isArray(v)) done += 1;
+      } else if (v !== undefined) {
+        done += 1;
+      }
+    }
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    $("bar").style.width = `${pct}%`;
+    $("progressText").textContent = `${pct}% complete`;
+  }
+
+  function resolveResult(){
+    const triggers = [];
+    let score = 0;
+    if (state.profile === "investor") {
+      const a1 = state.answers.inv_uncertainDecision || "";
+      const a2 = state.answers.inv_conflictingAdvice || "";
+      const a3 = state.answers.inv_unclearOverall || "";
+      const a4 = state.answers.inv_avoidDispute || "";
+      const tenant = state.answers.inv_tenantChangeSoon;
+      const manager = state.answers.inv_managerMode;
+      if (tenant === "Yes") { score += 2; triggers.push("Tenant change in next 60 days"); }
+      if (a1 !== "I am generally confident") { score += 1; triggers.push("Decision confidence not stable"); }
+      if (a2 !== "No") { score += 1; triggers.push("Conflicting trade advice happened"); }
+      if (a3 !== "Yes") { score += 1; triggers.push("Whole-property picture not fully clear"); }
+      if (a4 === "Avoid disputes and unclear responsibility") { score += 1; triggers.push("Dispute/liability concern"); }
+      if (manager === "Property manager" || manager === "Both") { score += 1; triggers.push("Longer communication chain"); }
+    } else {
+      const bill = state.answers.own_billBand;
+      const allElec = state.answers.own_allElectricNoGas;
+      const devices = Array.isArray(state.answers.own_devices) ? state.answers.own_devices : [];
+      const symptoms = Array.isArray(state.answers.own_symptoms) ? state.answers.own_symptoms : [];
+      if (bill === "$4,000–$6,000") { score += 2; triggers.push("Higher annual bill band"); }
+      if (bill === "> $6,000") { score += 3; triggers.push("Very high annual bill band"); }
+      if (allElec === "Yes") { score += 1; triggers.push("All-electric home profile"); }
+      if (devices.includes("EV / planning EV")) { score += 2; triggers.push("EV load consideration"); }
+      if (devices.includes("Heat pump / ducted AC")) { score += 1; triggers.push("Large HVAC electrical load"); }
+      if (symptoms.includes("Frequent tripping") || symptoms.includes("Main switch feels hot / buzzing")) {
+        score += 2; triggers.push("Potential load/stress symptom");
+      }
+      if (symptoms.includes("Bill increased sharply") || symptoms.includes("Not sure where power is used")) {
+        score += 1; triggers.push("Energy visibility concern");
+      }
+    }
+    let status = "green";
+    if (score >= 6) status = "red";
+    else if (score >= 3) status = "yellow";
+    const recommendedNextStep = state.profile === "investor"
+      ? "Independent risk evidence + dispute-proof planning"
+      : "Energy assessment for load/cost visibility";
+    return {
+      status,
+      score,
+      profile: getPayloadProfile(),
+      primaryGoal: state.primaryGoal || "balanced",
+      keyTriggers: triggers.slice(0, 6),
+      recommendedNextStep,
+    };
+  }
+
+  function normalizeOwnerSignals(){
+    const devices = Array.isArray(state.answers.own_devices) ? state.answers.own_devices : [];
+    const symptomsRaw = Array.isArray(state.answers.own_symptoms) ? state.answers.own_symptoms : [];
+    const symptoms = symptomsRaw.includes("None of these") ? [] : symptomsRaw;
+    const hasSolar = devices.includes("Solar");
+    const hasBattery = devices.includes("Battery");
+    const hasEv = devices.includes("EV / planning EV");
+    const hasHeatPumpOrDucted = devices.includes("Heat pump / ducted AC");
+    const electricCooking = devices.includes("Electric cooking (induction/oven)");
+    const outages = symptoms.includes("Frequent tripping");
+    const wantsReduceBill = symptoms.includes("Bill increased sharply") || symptoms.includes("Not sure where power is used") || ["$2,000–$4,000", "$4,000–$6,000", "> $6,000"].includes(state.answers.own_billBand);
+    const symptomCodes = [];
+    if (symptoms.includes("Frequent tripping")) symptomCodes.push("tripping");
+    if (symptoms.includes("Main switch feels hot / buzzing")) symptomCodes.push("hot_switch");
+    if (symptoms.includes("Bill increased sharply")) symptomCodes.push("bill_spike");
+    if (symptoms.includes("Not sure where power is used")) symptomCodes.push("unknown_usage");
+    const deviceCodes = [];
+    if (hasSolar) deviceCodes.push("solar");
+    if (hasBattery) deviceCodes.push("battery");
+    if (hasEv) deviceCodes.push("ev");
+    if (hasHeatPumpOrDucted) deviceCodes.push("heat_pump");
+    if (electricCooking) deviceCodes.push("electric_cooking");
+    return {
+      billBand: state.answers.own_billBand,
+      allElectricNoGas: state.answers.own_allElectricNoGas === "Yes" ? true : state.answers.own_allElectricNoGas === "No" ? false : undefined,
+      hasSolar,
+      hasBattery,
+      hasEv,
+      hasHeatPumpOrDucted,
+      electricCooking,
+      outages,
+      wantsReduceBill,
+      symptoms: symptomCodes,
+      devices: deviceCodes,
+    };
+  }
+
+  function buildSubmissionPayload(base){
+    const result = resolveResult();
+    const ownerSignals = normalizeOwnerSignals();
+    return {
+      ...base,
+      session_id: SESSION_ID,
+      profile: result.profile,
+      profileDeclared: getProfileDeclared(),
+      primaryGoal: result.primaryGoal,
+      hasSolar: ownerSignals.hasSolar,
+      hasBattery: ownerSignals.hasBattery,
+      hasEv: ownerSignals.hasEv,
+      billBand: ownerSignals.billBand,
+      allElectricNoGas: ownerSignals.allElectricNoGas,
+      tenantChangeSoon: getTenantChangeSoonBool(),
+      managerMode: state.answers.inv_managerMode,
+      portfolioSizeBand: state.answers.inv_portfolioSizeBand,
+      billUploadWilling: getBillUploadWillingBool(),
+      investorManagerMode: state.answers.inv_managerMode,
+      symptoms: ownerSignals.symptoms,
+      devices: ownerSignals.devices,
+      energySignals: {
+        billBand: ownerSignals.billBand,
+        allElectricNoGas: ownerSignals.allElectricNoGas,
+        outages: ownerSignals.outages,
+        cookingElectric: ownerSignals.electricCooking,
+        wantsReduceBill: ownerSignals.wantsReduceBill,
+      },
+      score: result.score,
+      status: result.status,
+      keyTriggers: result.keyTriggers,
+      answerMap: state.answers,
+    };
+  }
+
+  function getOwnerPainHooksEn(){
+    const hooks = [];
+    const billBand = state.answers.own_billBand;
+    const allElectricNoGas = state.answers.own_allElectricNoGas === "Yes";
+    const billUploadWilling = getBillUploadWillingBool() === true;
+    if (billBand === "$4,000–$6,000" || billBand === "> $6,000") {
+      hooks.push("Your current bill band suggests there may be high-impact savings opportunities worth validating.");
+    }
+    if (allElectricNoGas) {
+      hooks.push("All-electric homes can face higher peak-load pressure, so capacity headroom should be reviewed carefully.");
+    }
+    if (billUploadWilling) {
+      hooks.push("If you share recent bills, we can calibrate the estimate and make the next-step guidance more accurate.");
+    }
+    return hooks;
+  }
+
+  function buildAnswerSummary(){
+    const lines = [];
+    lines.push(`Path profile: ${state.profile || "unknown"}`);
+    lines.push(`Primary goal: ${state.primaryGoal || "balanced"}`);
+    lines.push(`-- Answers --`);
+    for (const q of getQuestionSet()) {
+      const a = state.answers[q.id];
+      lines.push(`${q.title} -> ${Array.isArray(a) ? a.join(", ") : (a || "n/a")}`);
+    }
+    return lines.join("\n");
+  }
+
+  function renderStep0(){
+    setActiveStepTag(0);
+    $("timeText").textContent = "~5 minutes total";
+    updateLastState("view", { step_id: STEP_IDS.VALUE, question_id: "intro_start" });
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>Before electrical spend, check your decision clarity in 3–4 minutes</h2>
+      <p class="sub">Single-page snapshot with two paths: Investor risk planning or Owner energy planning.</p>
+      <div class="resultBox">
+        <div class="small">
+          <strong>Not an inspection. Not a quote.</strong><br/>
+          You will receive a short result with key triggers and practical next step.
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="nav">
+        <span></span>
+        <button class="primary" id="startBtn0">Start</button>
+      </div>
+    `;
+    el.querySelector("#startBtn0").addEventListener("click", () => {
+      track("snapshot_start");
+      state.stage = 1;
+      render();
+    });
+    return el;
+  }
+
+  function renderPathStep(){
+    setActiveStepTag(1);
+    $("timeText").textContent = "~30 seconds";
+    trackQuestionView(STEP_IDS.PATH, PATH_QUESTION.id);
+    const el = document.createElement("div");
+    const selected = state.answers[PATH_QUESTION.id];
+    el.innerHTML = `
+      <h2>Step 1 — Select your path</h2>
+      <p class="sub">Which best describes you today?</p>
+      <p class="qTitle">${escapeHtml(PATH_QUESTION.title)}</p>
+      <div class="choices" id="pathChoices"></div>
+      <div class="hint">This only routes questions and wording. It does not block you.</div>
+      <div class="nav">
+        <button class="ghost" id="backBtn">← Back</button>
+        <button class="primary" id="nextBtn" ${selected ? "" : "disabled"}>Continue →</button>
+      </div>
+    `;
+    const choices = el.querySelector("#pathChoices");
+    for (const opt of PATH_QUESTION.options) {
+      const id = `${PATH_QUESTION.id}_${opt.value}`;
+      const label = document.createElement("label");
+      label.className = "choice";
+      label.innerHTML = `<input type="radio" id="${id}" name="${PATH_QUESTION.id}" value="${opt.value}" ${selected === opt.value ? "checked" : ""}/><div>${escapeHtml(opt.label)}</div>`;
+      label.querySelector("input").addEventListener("change", (e) => {
+        const value = e.target.value;
+        state.answers[PATH_QUESTION.id] = value;
+        state.profile = value;
+        state.primaryGoal = getPrimaryGoal(value);
+        state.index = 0;
+        el.querySelector("#nextBtn").disabled = false;
+        trackQuestionAnswer(STEP_IDS.PATH, PATH_QUESTION.id, { answer_value: value });
+        computeProgress();
+        setActiveStepTag(1);
+      });
+      choices.appendChild(label);
+    }
+    el.querySelector("#backBtn").addEventListener("click", () => { state.stage = 0; render(); });
+    el.querySelector("#nextBtn").addEventListener("click", () => {
+      state.stage = 2;
+      state.index = -1;
+      track("eligibility_complete", { selected_path: state.profile || "balanced", eligible: "yes" });
+      render();
+    });
+    return el;
+  }
+
+  function renderSnapshotIntro(){
+    setActiveStepTag(2);
+    $("timeText").textContent = state.profile === "investor" ? "~3 minutes" : "~3–4 minutes";
+    updateLastState("view", { step_id: STEP_IDS.SNAPSHOT_INTRO, question_id: getQuestionSet()[0] ? getQuestionSet()[0].id : "" });
+    const isInvestor = state.profile === "investor";
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>Step 2 — ${isInvestor ? "Investor Risk Snapshot" : "Owner Energy Snapshot"}</h2>
+      <p class="sub">${isInvestor ? "Decision confidence, trigger events, and planning clarity." : "Energy cost/load pain signals and upgrade readiness."}</p>
+      <div class="resultBox">
+        <div class="small">
+          <strong>Path selected:</strong> ${isInvestor ? "Investor" : (state.profile === "balanced" ? "Not sure / both" : "Owner")}<br/>
+          <strong>Primary goal:</strong> ${state.primaryGoal || "balanced"}<br/><br/>
+          Keep answers practical based on your real situation.
+        </div>
+      </div>
+      <div class="nav">
+        <button class="ghost" id="backBtn">← Back</button>
+        <button class="primary" id="startSnapBtn">Start snapshot →</button>
+      </div>
+    `;
+    el.querySelector("#backBtn").addEventListener("click", () => { state.stage = 1; render(); });
+    el.querySelector("#startSnapBtn").addEventListener("click", () => { state.index = 0; render(); });
+    return el;
+  }
+
+  function renderQuestion(q){
+    trackQuestionView(STEP_IDS.SNAPSHOT_QUESTION, q.id);
+    const selected = state.answers[q.id];
+    const isMulti = q.type === "multi";
+    const container = document.createElement("div");
+    container.innerHTML = `
+      <h2>${state.profile === "investor" ? "Investor path" : "Owner path"} — Question ${state.index + 1} / ${getQuestionSet().length}</h2>
+      <p class="sub">${state.profile === "investor" ? "Landlord risk-planning context" : "Homeowner energy context"}</p>
+      <p class="qTitle">${escapeHtml(q.title)}</p>
+      <div class="choices" id="choiceWrap"></div>
+      <div class="hint">${isMulti ? "You can select multiple options." : "Select one option."}</div>
+      <div class="nav">
+        <button class="ghost" id="backBtn">← Back</button>
+        <button class="primary" id="nextBtn" ${selected !== undefined ? "" : "disabled"}>${state.index === getQuestionSet().length - 1 ? "Finish →" : "Next →"}</button>
+      </div>
+    `;
+    const wrap = container.querySelector("#choiceWrap");
+    const nextBtn = container.querySelector("#nextBtn");
+    const selectedSet = Array.isArray(selected) ? new Set(selected) : new Set();
+    q.options.forEach((opt, idx) => {
+      const id = `${q.id}_${idx}`;
+      const label = document.createElement("label");
+      label.className = "choice";
+      const checked = isMulti ? selectedSet.has(opt) : selected === opt;
+      label.innerHTML = `
+        <input type="${isMulti ? "checkbox" : "radio"}" name="${q.id}" id="${id}" value="${escapeHtml(opt)}" ${checked ? "checked" : ""}/>
+        <div>${escapeHtml(opt)}</div>
+      `;
+      label.querySelector("input").addEventListener("change", (e) => {
+        if (isMulti) {
+          const curr = new Set(Array.isArray(state.answers[q.id]) ? state.answers[q.id] : []);
+          if (e.target.checked) curr.add(opt);
+          else curr.delete(opt);
+          if (q.id === "own_symptoms" && opt === "None of these" && e.target.checked) {
+            state.answers[q.id] = ["None of these"];
+            wrap.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+              if (cb.value !== "None of these") cb.checked = false;
+            });
+          } else {
+            curr.delete("None of these");
+            state.answers[q.id] = [...curr];
+          }
+          trackQuestionAnswer(STEP_IDS.SNAPSHOT_QUESTION, q.id, {
+            answer_values: state.answers[q.id],
+            answer_count: Array.isArray(state.answers[q.id]) ? state.answers[q.id].length : 0,
+          });
+          nextBtn.disabled = false;
+        } else {
+          state.answers[q.id] = opt;
+          if (q.id === "own_billUploadWilling") {
+            state.billUploadWilling = opt === "Yes";
+          }
+          trackQuestionAnswer(STEP_IDS.SNAPSHOT_QUESTION, q.id, { answer_value: opt });
+          nextBtn.disabled = false;
+        }
+        computeProgress();
+      });
+      wrap.appendChild(label);
+    });
+    container.querySelector("#backBtn").addEventListener("click", () => goBack());
+    container.querySelector("#nextBtn").addEventListener("click", () => goNext());
+    return container;
+  }
+
+  function renderShareSection(result){
+    const link = getReferralLink();
+    const isOwner = result.profile === "owner";
+    const tenantSoon = getTenantChangeSoonBool() === true;
+    const shareDesc = isOwner
+      ? "Share with homeowners who want better visibility into power usage and bill pressure."
+      : (tenantSoon
+          ? "Share with landlords who want to confirm risk and scope before tenant change."
+          : "Share with landlords who want less dispute risk and clearer planning.");
+    const title = isOwner ? "Share this energy snapshot" : "Share this risk snapshot";
+    const shareLinkHtml = '<div style="background:#f5f5f5;border-radius:12px;padding:15px;margin-bottom:20px;"><p style="color:#333;font-size:14px;margin:0 0 8px 0;">Your Referral Link:</p><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><input type="text" id="referralLinkInput" value="' + link + '" readonly style="flex:1;min-width:180px;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:14px;background:white;color:#222;" /><button onclick="copyReferralLink()" style="padding:10px 20px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Copy</button></div></div>';
+    const shareBtns = '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button onclick="shareViaEmail()" class="share-btn">Share via Email</button><button onclick="shareViaWhatsApp()" class="share-btn">Share on WhatsApp</button><button onclick="shareViaFacebook()" class="share-btn">Share on Facebook</button></div>';
+    return '<div class="share-section" style="margin-top:26px;padding:20px;background:#fff;border:1px solid #eee;border-radius:16px;text-align:center;"><h3 style="color:#333;margin:0 0 10px 0;">' + title + '</h3><p style="color:#666;margin:0 0 20px 0;">' + shareDesc + '</p>' + shareLinkHtml + shareBtns + '<p style="color:#888;font-size:13px;margin:15px 0 0 0;">When friends complete the snapshot, we will send a thank-you discount code by email.</p></div>';
+  }
+
+  function renderFinal(){
+    setActiveStepTag(3);
+    $("timeText").textContent = "";
+    updateLastState("view", { step_id: STEP_IDS.RESULT, question_id: "result" });
+    const result = resolveResult();
+    const isOwner = result.profile === "owner";
+    const profileDeclared = getProfileDeclared();
+    const tenantSoon = getTenantChangeSoonBool() === true;
+    const billUploadWilling = getBillUploadWillingBool() === true;
+    const ownerPainHooks = isOwner ? getOwnerPainHooksEn() : [];
+    const badgeText = result.status === "green" ? "Low uncertainty" : result.status === "yellow" ? "Some uncertainty identified" : "Higher uncertainty — recommended follow-up";
+    const gradient = result.status === "green"
+      ? "linear-gradient(135deg,#2f9e44 0%,#69db7c 100%)"
+      : result.status === "yellow"
+      ? "linear-gradient(135deg,#ffd43b 0%,#fab005 100%)"
+      : "linear-gradient(135deg,#fa5252 0%,#e03131 100%)";
+    const textColor = result.status === "yellow" ? "#2b2b2b" : "#fff";
+    const main = isOwner
+      ? "This owner-energy snapshot suggests where money and load pressure may be hiding."
+      : "This investor-risk snapshot suggests where decision friction or liability uncertainty may exist.";
+    const hint = isOwner
+      ? "Use the next step to clarify load stress, where energy is spent, and whether capacity/monitoring upgrades are worth it."
+      : "Use the next step to reduce tenant disputes, improve insurer-ready evidence, and set clearer CapEx priorities.";
+    const ctaMain = isOwner
+      ? "Book a 15-min call (Energy Assessment)"
+      : (tenantSoon ? "Book a 15-min Tenant-Change Check Call" : "Book a 15-min call / Request Assessment");
+    const ctaSecondary = isOwner ? "Request assessment / Get a plan" : "Download sample report";
+
+    track("snapshot_complete", {
+      risk_level: result.status,
+      status: result.status,
+      score: result.score,
+      billBand: state.answers.own_billBand || "",
+      allElectricNoGas: state.answers.own_allElectricNoGas === "Yes",
+      referred_by: localStorage.getItem("referredBy") || "direct",
+    });
+
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>Your snapshot result is ready</h2>
+      <div class="resultBox" style="margin-bottom:20px;padding:24px;background:${gradient};border-radius:16px;color:${textColor};">
+        <span class="badge" style="background:rgba(255,255,255,.25);color:${textColor};border-color:transparent;">${badgeText}</span>
+        <div class="small" style="color:${textColor};margin-top:12px;">${main}<br/><br/>${hint}</div>
+        <div class="small" style="color:${textColor};margin-top:10px;"><strong>Key triggers:</strong> ${result.keyTriggers.length ? result.keyTriggers.join(" • ") : "No major trigger captured."}</div>
+      </div>
+
+      <div class="resultBox">
+        <div class="small">
+          <strong>What the next step can provide:</strong>
+          <ul style="margin:10px 0 0 18px;">
+            ${isOwner ? "<li>Load stress and major usage contributors</li><li>Bill-band context and upgrade options</li><li>Monitoring recommendation if relevant</li>" : "<li>Tenant-change readiness and responsibility clarity</li><li>Independent evidence for PM/tenant/insurer communication</li><li>CapEx planning priorities over 1-3 years</li>"}
+          </ul>
+          ${isOwner && ownerPainHooks.length ? `<div style='margin-top:10px;'><strong>Pain-point hooks:</strong><ul style='margin:8px 0 0 18px;'>${ownerPainHooks.map((line) => `<li>${line}</li>`).join("")}</ul></div>` : ""}
+          ${profileDeclared === "unsure" ? "<div style='margin-top:10px;'><em>In the confirmation call, we will help you choose the most suitable assessment type.</em></div>" : ""}
+          ${isOwner && billUploadWilling ? "<div style='margin-top:10px;'><em>After assessment, we will send a secure upload guide for your recent bills (you may mask sensitive data).</em></div>" : ""}
+        </div>
+      </div>
+
+      <div class="ctaRow">
+        <button class="cta primary" id="bookBtn" type="button">${ctaMain}</button>
+        <button class="cta ghost" id="learnMoreBtn" type="button">Learn more</button>
+        <button class="cta ghost" id="leadFormBtn" type="button">Request full assessment (no call)</button>
+        <button class="cta ghost" id="secondaryBtn" type="button">${ctaSecondary}</button>
+        <a class="cta ghost" id="pdfDownloadLinkEn" href="investment%20property%20check%20guide.pdf" download target="_blank" rel="noopener" style="display:none">Download PDF</a>
+        <button class="cta ghost" id="pdfBtn" type="button">Send guide to my email</button>
+        <button class="ghost" id="restartBtn">Restart</button>
+      </div>
+
+      ${renderShareSection(result)}
+    `;
+    el.querySelector("#bookBtn").addEventListener("click", () => {
+      track("conversion_action", {
+        action_type: "book_now",
+        risk_level: result.status,
+        status: result.status,
+        billBand: state.answers.own_billBand || "",
+        allElectricNoGas: state.answers.own_allElectricNoGas === "Yes",
+      });
+      openCallModal();
+    });
+    el.querySelector("#secondaryBtn").addEventListener("click", () => {
+      if (isOwner) {
+        state.stage = 4;
+        render();
+      } else {
+        openLearnMoreModal();
+      }
+    });
+    el.querySelector("#leadFormBtn").addEventListener("click", () => {
+      track("lead_form_view", { status: result.status });
+      state.stage = 4;
+      render();
+    });
+    el.querySelector("#pdfBtn").addEventListener("click", openPdfModal);
+    el.querySelector("#learnMoreBtn").addEventListener("click", openLearnMoreModal);
+    el.querySelector("#restartBtn").addEventListener("click", restart);
+    return el;
+  }
+
+  function renderLeadForm(){
+    setActiveStepTag(4);
+    $("timeText").textContent = "1 minute";
+    updateLastState("view", { step_id: STEP_IDS.CONTACT, question_id: "lead_form" });
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>Request independent assessment</h2>
+      <p class="sub">Leave your details and we will contact you shortly.</p>
+      <form id="leadForm" novalidate>
+        <div style="display:grid;gap:10px;max-width:520px;">
+          <div><label class="small" for="name">Full name *</label><br/><input id="name" name="name" type="text" required /></div>
+          <div><label class="small" for="phone">Phone *</label><br/><input id="phone" name="phone" type="tel" required placeholder="e.g. 04xx xxx xxx" /></div>
+          <div><label class="small" for="email">Email *</label><br/><input id="email" name="email" type="email" required placeholder="name@email.com" /></div>
+          <div><label class="small" for="notes">Notes (optional)</label><br/><textarea id="notes" name="notes" rows="3"></textarea></div>
+          <div class="err" id="err">Please complete required fields with a valid email.</div>
+          <div class="nav">
+            <button type="button" class="ghost" id="backBtn">← Back</button>
+            <button type="submit" class="primary" id="submitBtn">Submit →</button>
+          </div>
+        </div>
+      </form>
+    `;
+    el.querySelector("#backBtn").addEventListener("click", () => { state.stage = 3; render(); });
+    el.querySelector("#leadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = el.querySelector("#name").value.trim();
+      const phone = el.querySelector("#phone").value.trim();
+      const email = el.querySelector("#email").value.trim();
+      const notes = el.querySelector("#notes").value.trim();
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!name || !phone || !emailOk) { el.querySelector("#err").style.display = "block"; return; }
+      el.querySelector("#err").style.display = "none";
+      state.lead = { name, phone, email };
+      const submitBtn = el.querySelector("#submitBtn");
+      const origText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+      try {
+        const payload = buildSubmissionPayload({
+          type: "lead",
+          lang: "en",
+          name, phone, email, notes,
+          summary: buildAnswerSummary(),
+          referredBy: localStorage.getItem("referredBy") || "direct",
+        });
+        const res = await fetch("/.netlify/functions/send-booking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        track("lead_submit", {
+          method: "api",
+          status: resolveResult().status,
+          billBand: state.answers.own_billBand || "",
+          allElectricNoGas: state.answers.own_allElectricNoGas === "Yes",
+        });
+        if (res.ok) {
+          state._leadSubmitted = true;
+          updateLastState("submit", { step_id: STEP_IDS.CONTACT, question_id: "lead_form" });
+        }
+        state.stage = 5;
+        render();
+        if (!res.ok) alert(data.error || "Request could not be sent. Please try again.");
+      } catch (err) {
+        alert("Network error. Please try again or email us at " + CONTACT_EMAIL);
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = origText;
+    });
+    return el;
+  }
+
+  function renderSuccess(){
+    setActiveStepTag(4);
+    $("timeText").textContent = "";
+    updateLastState("view", { step_id: STEP_IDS.SUCCESS, question_id: "success" });
+    const name = state.lead && state.lead.name ? state.lead.name : "there";
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>Thank you, ${escapeHtml(name)}.</h2>
+      <p class="sub">Your request has been received.</p>
+      <div class="resultBox"><span class="badge ok">Request received</span><div class="small">Our advisor will contact you shortly.</div></div>
+      <div class="ctaRow"><button class="ghost" id="restartBtn">Start again</button><a class="cta" href="mailto:${CONTACT_EMAIL}">Contact us</a></div>
+    `;
+    el.querySelector("#restartBtn").addEventListener("click", restart);
+    return el;
+  }
+
+  function goBack(){
+    if (state.stage === 1) { state.stage = 0; render(); return; }
+    if (state.stage === 2) {
+      if (state.index === -1) { state.stage = 1; render(); return; }
+      state.index -= 1;
+      if (state.index < 0) state.index = -1;
+      render();
+      return;
+    }
+    if (state.stage === 3) { state.stage = 2; state.index = getQuestionSet().length - 1; render(); return; }
+    if (state.stage === 4) { state.stage = 3; render(); return; }
+  }
+
+  function goNext(){
+    const qset = getQuestionSet();
+    if (state.stage !== 2) return;
+    if (state.index < qset.length - 1) {
+      state.index += 1;
+      render();
+    } else {
+      state.stage = 3;
+      render();
+    }
+  }
+
+  function render(){
+    const app = $("app");
+    app.innerHTML = "";
+    computeProgress();
+    if (state.stage === 0) { app.appendChild(renderStep0()); return; }
+    if (state.stage === 1) { app.appendChild(renderPathStep()); return; }
+    if (state.stage === 2) {
+      if (state.index === -1) { app.appendChild(renderSnapshotIntro()); return; }
+      app.appendChild(renderQuestion(getQuestionSet()[state.index]));
+      return;
+    }
+    if (state.stage === 3) { app.appendChild(renderFinal()); return; }
+    if (state.stage === 4) { app.appendChild(renderLeadForm()); return; }
+    if (state.stage === 5) { app.appendChild(renderSuccess()); return; }
+  }
+
+  function restart(){
+    abandonSent = false;
+    state.stage = 0;
+    state.index = 0;
+    state.profile = null;
+    state.primaryGoal = null;
+    state.answers = {};
+    state.lead = null;
+    state._tracked = {};
+    state._leadSubmitted = false;
+    state._lastState = null;
+    render();
+  }
+
+  function formatDateISOToReadable(iso){
+    if(!iso) return "";
+    const parts = iso.split("-");
+    if(parts.length !== 3) return iso;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  function generateReferralID(){
+    const nameEl = document.getElementById("qc_name") || document.getElementById("name");
+    const phoneEl = document.getElementById("qc_phone") || document.getElementById("phone");
+    const name = (state.lead && state.lead.name) || (nameEl && nameEl.value) || "";
+    const phone = (state.lead && state.lead.phone) || (phoneEl && phoneEl.value) || "";
+    if (name && phone) {
+      return name.trim().charAt(0).toUpperCase() + (phone.replace(/\D/g, "").slice(-4) || "0000") + Math.random().toString(36).substring(2, 6).toUpperCase();
+    }
+    return "REF" + Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+  function getReferralLink(){ return window.location.origin + window.location.pathname + "?ref=" + generateReferralID(); }
+  function showToast(message){
+    const existing = document.querySelector(".referral-toast");
+    if (existing) existing.remove();
+    const toast = document.createElement("div");
+    toast.className = "referral-toast";
+    toast.textContent = message;
+    toast.style.cssText = "position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:15px 25px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:99999;animation:toastSlideIn .3s ease;";
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.animation = "toastSlideOut .3s ease forwards"; setTimeout(() => toast.remove(), 300); }, 2500);
+  }
+  function copyReferralLink(){
+    const input = document.getElementById("referralLinkInput");
+    if (!input) return;
+    input.select();
+    input.setSelectionRange(0, 99999);
+    try { navigator.clipboard.writeText(input.value); } catch (e) { document.execCommand("copy"); }
+    showToast("Link copied! Share it with your friends");
+    track("referral_link_copied", { user_id: (input.value.split("ref=")[1] || "").split("&")[0] || "", risk_level: resolveResult().status, status: resolveResult().status });
+  }
+  function shareViaEmail(){
+    const input = document.getElementById("referralLinkInput");
+    const link = input ? input.value : getReferralLink();
+    const isOwner = getPayloadProfile() === "owner";
+    const subject = encodeURIComponent(isOwner ? "Owner Energy Snapshot (3-4 mins)" : "Investor Electrical Risk Snapshot (3-4 mins)");
+    const body = encodeURIComponent(isOwner
+      ? `Hi,\n\nI completed a short owner-energy snapshot and got useful clarity on bill/load concerns.\n\nYou can try it here: ${link}`
+      : `Hi,\n\nI completed a short investor risk snapshot focused on disputes/planning clarity.\n\nYou can try it here: ${link}`);
+    window.open("mailto:?subject=" + subject + "&body=" + body);
+    track("share_button_clicked", { platform: "email", user_id: generateReferralID() });
+  }
+  function shareViaWhatsApp(){
+    const input = document.getElementById("referralLinkInput");
+    const link = input ? input.value : getReferralLink();
+    const text = encodeURIComponent(`Quick snapshot (3-4 mins): ${link}`);
+    window.open("https://wa.me/?text=" + text);
+    track("share_button_clicked", { platform: "whatsapp", user_id: generateReferralID() });
+  }
+  function shareViaFacebook(){
+    const input = document.getElementById("referralLinkInput");
+    const link = input ? input.value : getReferralLink();
+    window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(link));
+    track("share_button_clicked", { platform: "facebook", user_id: generateReferralID() });
+  }
+
+  function openCallModal(){
+    const m = $("callModal");
+    if (!m) return;
+    m.classList.add("open");
+    m.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    track("quick_call_open", { status: resolveResult().status });
+  }
+  function closeCallModal(){ const m = $("callModal"); if (!m) return; m.classList.remove("open"); m.style.display = "none"; document.body.style.overflow = ""; }
+  function openLearnMoreModal(){ const m = $("learnMoreModal"); if (!m) return; m.classList.add("open"); m.style.display = "flex"; document.body.style.overflow = "hidden"; }
+  function closeLearnMoreModal(){ const m = $("learnMoreModal"); if (!m) return; m.classList.remove("open"); m.style.display = "none"; document.body.style.overflow = ""; }
+  function openPdfModal(){
+    const m = $("pdfModal");
+    if (!m) return;
+    m.classList.add("open");
+    m.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    const inp = $("pdfEmail");
+    if (inp) { inp.value = (state.lead && state.lead.email) ? state.lead.email : ""; inp.focus(); }
+    $("pdfErr").style.display = "none";
+  }
+  function closePdfModal(){ const m = $("pdfModal"); if (!m) return; m.classList.remove("open"); m.style.display = "none"; document.body.style.overflow = ""; }
+
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "closeCallModal") closeCallModal();
+    if (e.target && e.target.id === "closeCallModal2") closeCallModal();
+    if (e.target && e.target.id === "callModal") closeCallModal();
+    if (e.target && e.target.id === "closeLearnMoreModal") closeLearnMoreModal();
+    if (e.target && e.target.id === "learnMoreModal") closeLearnMoreModal();
+    if (e.target && e.target.id === "closePdfModal") closePdfModal();
+    if (e.target && e.target.id === "pdfCancelBtn") closePdfModal();
+    if (e.target && e.target.id === "pdfModal") closePdfModal();
+  });
+
+  document.addEventListener("click", async (e) => {
+    if (e.target && e.target.id === "pdfSendBtn") {
+      const inp = $("pdfEmail");
+      const err = $("pdfErr");
+      const email = inp && inp.value ? inp.value.trim() : "";
+      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!ok) { if (err) err.style.display = "block"; return; }
+      if (err) err.style.display = "none";
+      const btn = e.target;
+      const origText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+      try {
+        const res = await fetch("/.netlify/functions/send-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, lang: "en" }),
+        });
+        const data = await res.json().catch(() => ({}));
+        closePdfModal();
+        if (res.ok && data.ok) alert("Check your inbox—we have sent the guide.");
+        else {
+          var link = document.getElementById("pdfDownloadLinkEn"); if (link) link.style.display = "inline-flex";
+          alert(data.error || "Something went wrong. Please use the direct download link.");
+        }
+      } catch (err2) {
+        var link = document.getElementById("pdfDownloadLinkEn"); if (link) link.style.display = "inline-flex";
+        alert("Network error. Please use the direct download link.");
+      }
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+  });
+
+  document.addEventListener("submit", async (e) => {
+    if (!e.target || e.target.id !== "quickCallForm") return;
+    e.preventDefault();
+    const name = $("qc_name").value.trim();
+    const phone = $("qc_phone").value.trim();
+    const email = $("qc_email").value.trim();
+    const suburb = $("qc_suburb").value.trim();
+    const date = $("qc_date").value;
+    const windowSel = $("qc_window").value;
+    const notes = $("qc_notes").value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if(!name || !phone || !emailOk || !date || !windowSel){
+      const err = $("qc_err");
+      if(err) err.style.display = "block";
+      return;
+    }
+    const err = $("qc_err");
+    if(err) err.style.display = "none";
+    const qcSubmit = $("qc_submit");
+    const origText = qcSubmit ? qcSubmit.textContent : "";
+    if (qcSubmit) { qcSubmit.disabled = true; qcSubmit.textContent = "Sending…"; }
+    try {
+      const payload = buildSubmissionPayload({
+        type: "quickcall",
+        lang: "en",
+        name, phone, email, suburb,
+        dateReadable: formatDateISOToReadable(date),
+        window: windowSel,
+        notes,
+        summary: buildAnswerSummary(),
+        referredBy: localStorage.getItem("referredBy") || "direct",
+      });
+      const res = await fetch("/.netlify/functions/send-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      closeCallModal();
+      if (res.ok && data.ok) alert("Request sent. We will contact you at your preferred time.");
+      else alert(data.error || "Could not send. Please try again or email us.");
+      if (res.ok) {
+        state._leadSubmitted = true;
+        updateLastState("submit", { step_id: STEP_IDS.CONTACT, question_id: "quickcall_form" });
+      }
+    } catch (err2) {
+      alert("Network error. Please try again or email us at " + CONTACT_EMAIL);
+    }
+    if (qcSubmit) { qcSubmit.disabled = false; qcSubmit.textContent = origText; }
+  });
+
+  function showReferralBanner(referrerID){
+    const banner = document.createElement("div");
+    banner.id = "referralBanner";
+    banner.innerHTML = '<div style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; text-align: center; font-size: 14px;">You were referred by a friend! Complete this check and you will both get <strong>$30 OFF</strong> discount codes.</div>';
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const m = document.getElementById("callModal");
+    if (m) m.style.display = "none";
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrerID = urlParams.get("ref");
+    if (referrerID) {
+      try { localStorage.setItem("referredBy", referrerID); } catch (e) {}
+      track("referral_visit", { referrer_id: referrerID });
+      showReferralBanner(referrerID);
+    }
+    track("page_open", { page: "risk_snapshot", referred_by: localStorage.getItem("referredBy") || "direct" });
+  });
+
+  window.addEventListener("pagehide", () => sendSnapshotAbandon("pagehide"));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") sendSnapshotAbandon("visibility_hidden");
+  });
+  window.addEventListener("beforeunload", () => sendSnapshotAbandon("beforeunload"));
+
+  restart();
+</script>
+
+  <!-- Quick Call Modal -->
+  <div class="modalOverlay" id="callModal" role="dialog" aria-modal="true" aria-labelledby="callModalTitle" style="display:none">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3 id="callModalTitle">Book a free 15-min call to review your snapshot</h3>
+          <div class="small" style="margin-top:4px;">
+            We'll do a short <strong>8–10 minute</strong> call to discuss your results and whether an independent assessment makes sense for you.
+          </div>
+        </div>
+        <button class="modalClose" id="closeCallModal" type="button">Close ✕</button>
+      </div>
+
+      <div class="resultBox">
+        <div class="small">
+          <span class="miniPill">What we’ll cover</span>
+          <ul style="margin:10px 0 0 18px; color: var(--muted);">
+            <li>Your investment timeframe and plans (next 12–24 months)</li>
+            <li>What you most want to avoid: unexpected costs, safety risk, or decision uncertainty</li>
+            <li>Whether an independent assessment is actually worth it for your property</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="scriptGrid">
+        <div class="scriptCard">
+          <div class="k">A simple way to describe the service</div>
+          <div class="v">
+            “This isn’t a repair quote. It’s independent, documented advice that gives you clarity and a forward budget view — so future decisions are easier.”
+          </div>
+        </div>
+        <div class="scriptCard">
+          <div class="k">3 quick questions we may ask</div>
+          <div class="v">
+            1) “Is this a long-term hold, or are you planning changes soon?”<br/>
+            2) “When electrical work is suggested, do you feel confident approving it?”<br/>
+            3) “What would you like to avoid most — cost surprises, safety risk, or uncertainty?”
+          </div>
+        </div>
+        <div class="scriptCard">
+          <div class="k">What happens after the call</div>
+          <div class="v">
+            If it’s a fit, we’ll suggest the next step: an independent on-site assessment (fixed-fee).<br/>
+            If it’s not a fit, we’ll tell you — no pressure and no obligation.
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="hr"></div>
+
+      <form id="quickCallForm" novalidate>
+        <div style="display:grid; gap:10px; max-width:560px;">
+          <div>
+            <label class="small" for="qc_name">Full name *</label><br/>
+            <input id="qc_name" type="text" required />
+          </div>
+          <div>
+            <label class="small" for="qc_phone">Phone *</label><br/>
+            <input id="qc_phone" type="tel" required placeholder="e.g. 04xx xxx xxx" />
+          </div>
+          <div>
+            <label class="small" for="qc_email">Email *</label><br/>
+            <input id="qc_email" type="email" required placeholder="name@email.com" />
+          </div>
+
+          <div>
+            <label class="small" for="qc_suburb">Property suburb or postcode (optional)</label><br/>
+            <input id="qc_suburb" type="text" placeholder="e.g. Norwood 5067" />
+            <div class="hint">No street address needed at this stage.</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+              <label class="small" for="qc_date">Preferred date *</label><br/>
+              <input id="qc_date" type="date" required />
+            </div>
+            <div>
+              <label class="small" for="qc_window">Preferred time window (Adelaide) *</label><br/>
+              <select id="qc_window" required style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:var(--text); outline:none;">
+                <option value="" selected>Select a time window</option>
+                <option>9:00–11:00</option>
+                <option>11:00–13:00</option>
+                <option>13:00–15:00</option>
+                <option>15:00–17:00</option>
+                <option>17:00–19:00</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="small" for="qc_notes">Anything else? (optional)</label><br/>
+            <textarea id="qc_notes" rows="3" placeholder="e.g. best contact time, tenant availability, upcoming renovations"></textarea>
+          </div>
+
+          <div class="err" id="qc_err">Please complete all required fields with a valid email.</div>
+
+          <div class="ctaRow" style="margin-top:6px;">
+            <button class="cta" id="qc_submit" type="submit">Request call →</button>
+            <button class="ghost" id="closeCallModal2" type="button">Not now</button>
+          </div>
+
+          <div class="small" style="margin-top:-4px;">
+            We'll send your details and preferred time to our team. We'll call you in your chosen window.
+          </div>
+        </div>
+      </form>
+
+      <div class="footerNote">
+
+        Tip: To request a full assessment without a call, use <strong>Request full assessment (no call)</strong> on the previous page.
+      </div>
+    </div>
+  </div>
+
+  <div class="modalOverlay" id="learnMoreModal" role="dialog" aria-modal="true" aria-labelledby="learnMoreModalTitle" style="display:none">
+    <div class="modal">
+      <div class="modalTop">
+        <h3 id="learnMoreModalTitle">What the independent assessment includes</h3>
+        <button class="modalClose" id="closeLearnMoreModal" type="button">Close ✕</button>
+      </div>
+      <div class="resultBox" style="margin-top:0">
+        <p class="small" style="margin:0 0 10px">You can think of the independent assessment as:</p>
+        <ol style="margin:0 0 0 20px; padding:0; color:var(--text); font-size:17px; line-height:1.6;">
+          <li style="margin-bottom:8px"><strong>On-site data collection</strong> (non-destructive)</li>
+          <li style="margin-bottom:8px"><strong>Risk priorities:</strong> what to act on now, what to plan for, what to ignore</li>
+          <li style="margin-bottom:8px"><strong>A 1–5 year budget outlook</strong> (CapEx planning)</li>
+          <li style="margin-bottom:8px"><strong>Independent documentation</strong> you can use with tenants, property managers, or insurers</li>
+        </ol>
+        <p class="small" style="margin-top:14px">If you’d like to know more, we suggest booking a quick call to review your snapshot.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalOverlay" id="pdfModal" role="dialog" aria-modal="true" aria-labelledby="pdfModalTitle" style="display:none">
+    <div class="modal">
+      <div class="modalTop">
+        <h3 id="pdfModalTitle">Send to your email</h3>
+        <button class="modalClose" id="closePdfModal" type="button">Close ✕</button>
+      </div>
+      <div style="padding:0 0 14px">
+        <p class="small" style="margin:0 0 10px">We’ll email you the check guide and a short thank-you note. Great for saving or sharing.</p>
+        <label class="small" for="pdfEmail">Email</label>
+        <input id="pdfEmail" type="email" placeholder="name@email.com" style="margin-top:6px" />
+        <div class="err" id="pdfErr">Please enter a valid email.</div>
+        <div class="ctaRow" style="margin-top:12px">
+          <button class="primary" id="pdfSendBtn" type="button">Send</button>
+          <button class="ghost" id="pdfCancelBtn" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

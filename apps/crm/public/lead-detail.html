@@ -20,13 +20,14 @@
     </aside>
     <main class="main">
       <header class="header">Internal CRM</header>
-      <div class="content">
+      <div class="content" data-page="lead-detail">
         <h1 class="page-title">Lead details</h1>
+        <p id="lead-detail-state" class="muted" style="margin:0 0 0.5rem 0;"></p>
         <div class="card" style="margin-bottom:1rem;">
-          <p><strong>Name</strong> —</p>
-          <p><strong>Phone</strong> —</p>
-          <p><strong>Suburb</strong> —</p>
-          <p><strong>Source / Service type / Status</strong> —</p>
+          <p><strong>Name</strong> <span id="lead-name">—</span></p>
+          <p><strong>Phone</strong> <span id="lead-phone">—</span></p>
+          <p><strong>Suburb</strong> <span id="lead-suburb">—</span></p>
+          <p><strong>Source / Service type / Status</strong> <span id="lead-meta">—</span></p>
         </div>
         <div class="timeline">
           <h4>Timeline</h4>

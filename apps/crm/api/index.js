@@ -7,10 +7,13 @@
 require('../lib/load-env');
 const path = require('path');
 const express = require('express');
-const customers = require('./customers');
-const jobs = require('./jobs');
+const { sendSMS } = require('@bht/integrations');
+const { pool } = require('../lib/db');
 const leadsRouter = require('./routes/leads');
 const opportunitiesRouter = require('./routes/opportunities');
+const publicLeadsRouter = require('./routes/public-leads');
+const customers = require('./customers');
+const jobs = require('./jobs');
 
 const app = express();
 app.use(express.json());
@@ -20,6 +23,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/api/leads', leadsRouter);
 app.use('/api/opportunities', opportunitiesRouter);
+app.use('/api/public/leads', publicLeadsRouter);
 
 app.get('/api/customers', async (req, res) => {
   try {
@@ -42,6 +46,42 @@ app.get('/api/customers/:id', async (req, res) => {
     res.json(row);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/customers/:id/reactivate', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ ok: false, error: 'Invalid customer id' });
+    }
+
+    const customer = await customers.getCustomerById(id);
+    if (!customer) return res.status(404).json({ ok: false, error: 'Not found' });
+    if (!customer.phone) {
+      return res.status(400).json({ ok: false, error: 'Customer has no phone number' });
+    }
+
+    const name = (customer.name || '').trim() || 'there';
+    const message =
+      'Hi ' + name + ',\n\n' +
+      'Just checking in — we’re reviewing some previous electrical work in the area.\n\n' +
+      'If you ever need help with lighting, power points, EV chargers or anything electrical, feel free to message me.\n\n' +
+      '– Meng\n' +
+      'Better Home Technology';
+
+    await sendSMS(customer.phone, message);
+
+    await pool.query(
+      `INSERT INTO activities (contact_id, lead_id, opportunity_id, activity_type, summary, created_by)
+       VALUES (NULL, NULL, NULL, 'sms', 'reactivation message sent for customer ' || $1, $2)`,
+      [customer.id, 'reactivation']
+    );
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error('reactivate error:', err);
+    res.status(500).json({ ok: false, error: err.message });
   }
 });
 

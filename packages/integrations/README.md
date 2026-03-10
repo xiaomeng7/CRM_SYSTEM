@@ -4,8 +4,8 @@ External service adapters for BHT Revenue OS. **Transport and API wrappers only*
 
 ## Contents
 
-- **servicem8-client.js** — ServiceM8 REST API client (companies, jobs).
-- **sms-client.js** — Twilio SMS send and phone normalization.
+- **servicem8/** — ServiceM8 REST API client (companies, jobs).
+- **sms/** — Twilio SMS send and phone normalization.
 
 ## Usage
 

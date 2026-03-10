@@ -42,7 +42,7 @@ async function list(filters = {}) {
   const conditions = [];
 
   if (status && isValidStatus(status)) {
-    conditions.push(`status = $${paramIndex}`);
+    conditions.push(`l.status = $${paramIndex}`);
     params.push(status);
     paramIndex++;
   }
@@ -51,8 +51,20 @@ async function list(filters = {}) {
   params.push(limit, offset);
 
   const result = await pool.query(
-    `SELECT * FROM leads ${where}
-     ORDER BY created_at DESC
+    `SELECT
+       l.id,
+       l.status,
+       l.source,
+       l.created_at,
+       c.name AS contact_name,
+       c.email AS contact_email,
+       c.phone AS contact_phone,
+       a.suburb AS account_suburb
+     FROM leads l
+     LEFT JOIN contacts c ON l.contact_id = c.id
+     LEFT JOIN accounts a ON l.account_id = a.id
+     ${where}
+     ORDER BY l.created_at DESC
      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
     params
   );

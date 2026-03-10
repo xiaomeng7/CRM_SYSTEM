@@ -1,0 +1,13 @@
+{
+  "name": "@bht/risk-snapshot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Risk Snapshot — Netlify static site + functions",
+  "scripts": {
+    "dev": "npx serve . -l 3004",
+    "preview": "npx serve . -l 3004"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

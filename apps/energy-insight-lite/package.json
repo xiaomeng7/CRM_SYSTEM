@@ -1,0 +1,17 @@
+{
+  "name": "@bht/energy-insight-lite",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -l 3003",
+    "build": "echo 'Static + Netlify functions; no build step.'"
+  },
+  "dependencies": {
+    "@netlify/functions": "^2.8.2",
+    "@neondatabase/serverless": "^0.10.4",
+    "stripe": "^17.4.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

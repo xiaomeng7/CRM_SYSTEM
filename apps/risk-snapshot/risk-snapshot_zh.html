@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>资格确认与电气风险快照</title>
+  
+  <!-- Google Analytics 4 (GA4) -->
+  <!-- 
+    IMPORTANT: Replace GA_MEASUREMENT_ID with your actual GA4 Measurement ID (e.g., G-XXXXXXX)
+    You need to replace it in TWO places:
+    1. In the script src URL below: id=G-QBYBDVL5FT
+    2. In the gtag('config', 'G-QBYBDVL5FT') call below
+    3. In the JavaScript constant GA_MEASUREMENT_ID in the script section
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QBYBDVL5FT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QBYBDVL5FT');
+  </script>
+  
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --card:#11131a;
+      --text:#e9ecf1;
+      --muted:#a9b0bd;
+      --border:#232735;
+      --accent:#6ea8fe;
+      --danger:#ff6b6b;
+      --ok:#51cf66;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1000px 700px at 20% 0%, #14182a 0%, var(--bg) 55%);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .wrap{
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .brand{display:flex; flex-direction:column; gap:4px;}
+    .brand h1{font-size:18px; margin:0; letter-spacing:.2px;}
+    .brand p{margin:0; color:var(--muted); font-size:13px;}
+    .pill{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .card{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .steps{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+    .stepTag{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .stepTag.active{
+      border-color: rgba(110,168,254,.55);
+      color: var(--text);
+      background: rgba(110,168,254,.10);
+    }
+    .hr{height:1px; background:var(--border); margin:18px 0;}
+    h2{margin:0 0 8px; font-size:22px;}
+    h3{margin:0 0 8px; font-size:16px;}
+    .sub{margin:0 0 16px; color:var(--muted); font-size:14px;}
+    .qTitle{font-size:18px; margin:0 0 12px;}
+    .choices{display:grid; gap:10px; margin: 12px 0 18px;}
+    label.choice{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      cursor:pointer;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+    }
+    label.choice:hover{
+      transform: translateY(-1px);
+      border-color: rgba(110,168,254,.45);
+      background: rgba(110,168,254,.06);
+    }
+    input[type="radio"]{margin-top:3px; accent-color: var(--accent);}
+    .hint{font-size:12px; color:var(--muted); margin-top:4px;}
+    .nav{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      margin-top: 6px;
+    }
+    button{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor:pointer;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
+    }
+    button:hover{
+      transform: translateY(-1px);
+      border-color: rgba(110,168,254,.55);
+      background: rgba(110,168,254,.10);
+    }
+    button:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+    .primary{
+      border-color: rgba(110,168,254,.55);
+      background: rgba(110,168,254,.15);
+    }
+    .primary:hover{background: rgba(110,168,254,.22);}
+    .ghost{background: transparent;}
+    .resultBox{
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      background: rgba(255,255,255,.02);
+      margin-top: 12px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:12px;
+      color: var(--muted);
+      margin-bottom:10px;
+    }
+    .badge.ok{border-color: rgba(81,207,102,.45); background: rgba(81,207,102,.10); color: var(--text);}
+    .badge.no{border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.10); color: var(--text);}
+    .small{font-size:13px; color:var(--muted);}
+    .ctaRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+    a.cta, button.cta{
+      display:inline-block;
+      text-decoration:none;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    a.cta:hover, button.cta:hover{
+      border-color: rgba(110,168,254,.55);
+      background: rgba(110,168,254,.12);
+      transform: translateY(-1px);
+    }
+    .footerNote{margin-top:18px; font-size:12px; color:var(--muted);}
+    .progress{
+      height: 8px;
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid var(--border);
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(110,168,254,.85), rgba(110,168,254,.35));
+      transition: width .18s ease;
+    }
+    .topRow{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    input[type="text"], input[type="tel"], input[type="email"], textarea{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{resize: vertical;}
+    .err{display:none; color: var(--danger); font-size:12px; margin-top:6px;}
+    @media (max-width: 520px){
+      .card{padding:16px; border-radius:16px;}
+      h2{font-size:20px;}
+      .qTitle{font-size:16px;}
+    }
+  
+    /* Modal */
+    .modalOverlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      z-index:9999;
+    }
+    .modalOverlay.open{display:flex;}
+    .modal{
+      width:min(820px, 100%);
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: rgba(17,19,26,.98);
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      padding:18px 18px 14px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .modalTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .modalTop h3{margin:0; font-size:18px;}
+    .modal关闭{
+      border:1px solid var(--border);
+      background: transparent;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+      color: var(--muted);
+    }
+    .modal关闭:hover{border-color: rgba(110,168,254,.55); color: var(--text);}
+    .scriptGrid{
+      display:grid;
+      gap:12px;
+      margin-top:10px;
+    }
+    .scriptCard{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      border-radius:16px;
+      padding:12px;
+    }
+    .scriptCard .k{font-size:12px; color:var(--muted); margin-bottom:6px;}
+    .scriptCard .v{font-size:14px; color:var(--text);}
+    .miniPill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:12px;
+      color: var(--muted);
+      background: rgba(255,255,255,.03);
+    }
+
+  
+    /* Auto theme: follow browser setting */
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --card:#ffffff;
+        --text:#111827;
+        --muted:#4b5563;
+        --border:#e5e7eb;
+        --accent:#2563eb;
+        --danger:#b91c1c;
+        --ok:#15803d;
+      }
+      body{
+        background: radial-gradient(1000px 700px at 20% 0%, #ffffff 0%, var(--bg) 60%);
+      }
+      .card{
+        box-shadow: 0 18px 45px rgba(17,24,39,.10);
+        background: rgba(0,0,0,.0);
+      }
+      label.choice{ background: rgba(0,0,0,.02); }
+      .modal{
+        background: rgba(255,255,255,.98);
+        box-shadow: 0 30px 80px rgba(17,24,39,.18);
+      }
+      .modalOverlay{ background: rgba(17,24,39,.35); }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>Eligibility Check & 电气风险快照</h1>
+        <p>One question per page • Fast, 无需任何电气/建筑知识</p>
+      </div>
+      <div class="pill" id="statusPill">步骤 1 / 4</div>
+    </header>
+
+    <div class="card">
+      <div class="steps">
+        <div class="stepTag active" id="tag1">步骤 1 — Is this right for you?</div>
+        <div class="stepTag" id="tag2">步骤 2 — 电气风险快照</div>
+        <div class="stepTag" id="tag3">步骤 3 — What this means & next step</div>
+        <div class="stepTag" id="tag4">步骤 4 — Contact details</div>
+      </div>
+
+      <div class="progress" aria-label="progress">
+        <div class="bar" id="bar"></div>
+      </div>
+      <div class="topRow">
+        <div id="progressText">0% complete</div>
+        <div id="timeText">约5分钟（全程）</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <main id="app"></main>
+
+      <div class="footerNote">
+        <div><strong>Note:</strong> 它不是上门检查，也不会生成报价。</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // -----------------------------
+  // Configuration / Content
+  // -----------------------------
+
+  // TODO: Replace GA_MEASUREMENT_ID with your actual GA4 Measurement ID (e.g., G-XXXXXXX)
+  // This ID should match the one in the <head> gtag script above
+  const GA_MEASUREMENT_ID = "G-QBYBDVL5FT";
+
+  // Replace this with your real "了解更多" page URL on your website later.
+  // Example: "/independent-assessment"
+  const LEARN_MORE_URL = "#";
+
+  const CONTACT_EMAIL = "info@bhtechnology.com.au";
+
+  const ELIGIBILITY = [
+    {
+      id: "elig_q1",
+      title: "您目前拥有多少套住宅类房产？",
+      options: ["0", "1", "2", "3套及以上"]
+    },
+    {
+      id: "elig_q2",
+      title: "当需要做技术维护/维修决策时，您通常会：",
+      options: ["自己处理", "更倾向委托或依赖独立专业建议"]
+    },
+    {
+      id: "elig_q3",
+      title: "以下哪项更符合您的时间情况？",
+      options: ["我有时间处理细节", "我希望尽量不需要我参与也能顺利运转"]
+    },
+    {
+      id: "elig_q4",
+      title: "在做较大电气决策前，您是否愿意先付费获得独立专业意见？",
+      options: ["愿意", "不愿意"]
+    }
+  ];
+
+
+  const SNAPSHOT = [
+    {
+      id: "snap_1",
+      title: "当有人建议做电气相关工作时，通常会发生什么？",
+      options: [
+        "我会很快同意，但事后会怀疑是否真的有必要",
+        "我会拖延，因为我不确定",
+        "我通常能比较有把握地做决定"
+      ]
+    },
+    {
+      id: "snap_2",
+      title: "您是否遇到过同一问题，不同人给出不同说法或报价？",
+      options: [
+        "有，这让我更难做决定",
+        "有，但我知道该选哪个",
+        "没有"
+      ]
+    },
+    {
+      id: "snap_3",
+      title: "电气工作做完后，您是否担心过安全或质量？",
+      options: ["是", "否"]
+    },
+    {
+      id: "snap_4",
+      title: "您是否对这套房子的整体电气状况有清晰认知？",
+      options: ["是", "部分了解", "不太清楚"]
+    },
+    {
+      id: "snap_5",
+      title: "您希望花多少时间处理电气相关事务？",
+      options: ["越少越好", "需要时我可以参与"]
+    },
+    {
+      id: "snap_6",
+      title: "以下哪句话更贴近您？",
+      options: ["有问题再处理（被动应对）", "更希望提前规划（即使不紧急）"]
+    }
+  ];
+
+
+  // -----------------------------
+  // State
+  // -----------------------------
+  const state = {
+    stage: 1,     // 1 eligibility, 2 snapshot, 3 result, 4 contact form, 5 success
+    index: 0,     // question index within stage; intro uses -1
+    answers: {},
+    lead: null,
+    _tracked: {}  // Track events that have been sent to avoid duplicates
+  };
+
+  // -----------------------------
+  // Analytics / Tracking
+  // -----------------------------
+  
+  /**
+   * Safe tracking function for GA4 events
+   * Silently fails if gtag is not available (e.g., ad blockers, dev environment)
+   * @param {string} eventName - Event name to track
+   * @param {object} params - Optional event parameters
+   */
+  function track(eventName, params = {}){
+    try {
+      if (typeof gtag !== 'undefined' && gtag) {
+        gtag('event', eventName, params);
+      }
+    } catch (e) {
+      // Silently ignore tracking errors (e.g., ad blockers, network issues)
+    }
+  }
+
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  function $(id){ return document.getElementById(id); }
+
+  function setActiveStepTag(step){
+    $("tag1").classList.toggle("active", step === 1);
+    $("tag2").classList.toggle("active", step === 2);
+    $("tag3").classList.toggle("active", step === 3);
+    $("tag4").classList.toggle("active", step === 4 || step === 5);
+    $("statusPill").textContent = `步骤 ${Math.min(step,4)} / 4`;
+  }
+
+  function computeProgress(){
+    const total = ELIGIBILITY.length + SNAPSHOT.length;
+    let done = 0;
+    for (const q of ELIGIBILITY) if (state.answers[q.id] !== undefined) done++;
+    for (const q of SNAPSHOT) if (state.answers[q.id] !== undefined) done++;
+    const pct = Math.round((done / total) * 100);
+    $("bar").style.width = `${pct}%`;
+    $("progressText").textContent = `${pct}% complete`;
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+
+  // Modal helpers
+  function openCallModal(){
+    const m = $("callModal");
+    if (!m) return;
+    m.classList.add("open");
+    // Force inline display so it stays hidden even if a builder strips/overrides CSS
+    m.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    prefillQuickCallFromLead();
+    // Track quick call modal open
+    track('quick_call_open');
+  }
+  function closeCallModal(){
+    const m = $("callModal");
+    if (!m) return;
+    m.classList.remove("open");
+    // Force hide
+    m.style.display = "none";
+    document.body.style.overflow = "";
+  }
+
+
+  function formatDateISOToReadable(iso){
+    if(!iso) return "";
+    const parts = iso.split("-");
+    if(parts.length !== 3) return iso;
+    const [y,m,d] = parts;
+    return `${d}/${m}/${y}`;
+  }
+
+  function buildQuickCallMailto(payload){
+    const summary = buildAnswerSummary();
+    const subject = encodeURIComponent("申请快速电话沟通（电气风险快照）");
+    const body = encodeURIComponent(
+      `您好，
+
+` +
+      `I’ve just completed the 电气风险快照 and would like to request a quick suitability call.
+
+` +
+      `My details are below:
+
+` +
+      `Name: ${payload.name}
+` +
+      `Phone: ${payload.phone}
+` +
+      `Email: ${payload.email}
+` +
+      (payload.suburb ? `Property area: ${payload.suburb}
+` : "") +
+      `
+Preferred call time (Adelaide):
+` +
+      `Date: ${payload.dateReadable}
+` +
+      `Window: ${payload.window}
+
+` +
+      (payload.notes ? `Notes:
+${payload.notes}
+
+` : "") +
+      `Snapshot summary (for reference):
+` +
+      `${summary}
+
+` +
+      `Kind regards,
+` +
+      `${payload.name}
+`
+    );
+    return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+  }
+
+  function prefillQuickCallFromLead(){
+    try{
+      if(!state || !state.lead) return;
+      const n = $("qc_name"), p=$("qc_phone"), e=$("qc_email");
+      if(n && !n.value) n.value = state.lead.name || "";
+      if(p && !p.value) p.value = state.lead.phone || "";
+      if(e && !e.value) e.value = state.lead.email || "";
+    }catch(err){}
+  }
+
+
+
+  function isEligible(){
+    // Updated rule:
+    // - If user has 0 properties => not suitable.
+    // - Allow 1/2/3+ to continue if open to pay AND prefers help (delegate or low involvement).
+    const q1 = state.answers["elig_q1"];
+    const q2 = state.answers["elig_q2"];
+    const q3 = state.answers["elig_q3"];
+    const q4 = state.answers["elig_q4"];
+
+    const hasProperty = (q1 !== "0");
+    const openToPay = (q4 === "愿意");
+    const prefersHelp = (q2 === "更倾向委托或依赖独立专业建议" || q3 === "我希望尽量不需要我参与也能顺利运转");
+
+    return Boolean(hasProperty && openToPay && prefersHelp);
+  }
+
+  function snapshotUncertaintyFlag(){
+    const a1 = state.answers["snap_1"];
+    const a2 = state.answers["snap_2"];
+    const a4 = state.answers["snap_4"];
+    const a5 = state.answers["snap_5"];
+    const a6 = state.answers["snap_6"];
+
+    let score = 0;
+    if (a1 && a1 !== "我通常能比较有把握地做决定") score += 1;
+    if (a2 && a2 !== "没有") score += 1;
+    if (a4 && a4 !== "是") score += 1;
+    if (a5 && a5 === "越少越好") score += 1;
+    if (a6 && a6 === "更希望提前规划（即使不紧急）") score += 1;
+
+    return score >= 2;
+  }
+
+  function buildAnswerSummary(){
+    const lines = [];
+    for (const q of ELIGIBILITY){
+      const a = state.answers[q.id];
+      if (a !== undefined) lines.push(`[Eligibility] ${q.title} -> ${a}`);
+    }
+    for (const q of SNAPSHOT){
+      const a = state.answers[q.id];
+      if (a !== undefined) lines.push(`[Snapshot] ${q.title} -> ${a}`);
+    }
+    return lines.join("\n");
+  }
+
+  // -----------------------------
+  // UI blocks
+  // -----------------------------
+  function renderIntroEligibility(){
+    setActiveStepTag(1);
+    $("timeText").textContent = "约5分钟（全程）";
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>这项服务适合您吗？</h2>
+      <p class="sub"><strong>60秒资格确认</strong> — 无需任何电气/建筑知识</p>
+      <p class="small">
+        本服务面向<strong>特定类型的房产持有人</strong>。<br/>
+        继续之前，这个小测试用来确认它是否适合您的情况。<br/>
+        <em>没有对错答案。</em>
+      </p>
+      <div class="hr"></div>
+    `;
+    return el;
+  }
+
+  function renderSnapshotIntro(){
+    setActiveStepTag(2);
+    $("timeText").textContent = "约3–4分钟";
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>电气风险快照</h2>
+      <p class="sub">一个简短的引导式自测</p>
+      <div class="resultBox">
+        <div class="small">
+          <div><strong>这不是上门检查。</strong></div>
+          <div><strong>这不会生成维修报价。</strong></div>
+          <div style="margin-top:10px">
+            该自测用于识别：您在电气安全/规划/决策方面是否存在不确定性
+            （电气安全、维护规划或决策）
+          </div>
+          <div style="margin-top:10px">
+            大多数人可在<strong>3–4分钟</strong>完成。
+          </div>
+        </div>
+      </div>
+      <div class="hr"></div>
+    `;
+    return el;
+  }
+
+  function renderQuestion(q){
+    const selected = state.answers[q.id];
+
+    const container = document.createElement("div");
+    container.innerHTML = `
+      <h2>${state.stage === 1 ? "资格确认" : "电气风险快照"}</h2>
+      <p class="sub">${state.stage === 1 ? "大约1分钟，无需技术知识。" : "一页一题，快速简单。"}</p>
+      <p class="qTitle">${escapeHtml(q.title)}</p>
+      <div class="choices" role="radiogroup" aria-label="${escapeHtml(q.title)}"></div>
+      <div class="hint">没有对错答案。</div>
+      <div class="nav">
+        <button class="ghost" id="backBtn">← 返回</button>
+        <button class="primary" id="nextBtn" disabled>下一步 →</button>
+      </div>
+    `;
+
+    const choices = container.querySelector(".choices");
+    q.options.forEach((opt, i) => {
+      const id = `${q.id}_${i}`;
+      const label = document.createElement("label");
+      label.className = "choice";
+      label.innerHTML = `
+        <input type="radio" name="${q.id}" id="${id}" value="${escapeHtml(opt)}" ${selected === opt ? "checked" : ""}/>
+        <div>${escapeHtml(opt)}</div>
+      `;
+      label.querySelector("input").addEventListener("change", (e) => {
+        state.answers[q.id] = e.target.value;
+        container.querySelector("#nextBtn").disabled = false;
+        computeProgress();
+      });
+      choices.appendChild(label);
+    });
+
+    if (selected !== undefined) container.querySelector("#nextBtn").disabled = false;
+
+    container.querySelector("#backBtn").addEventListener("click", () => goBack());
+    container.querySelector("#nextBtn").addEventListener("click", () => goNext());
+
+    return container;
+  }
+
+  function renderEligibilityEnd(){
+    setActiveStepTag(1);
+    $("timeText").textContent = "约5分钟（全程）";
+    const eligible = isEligible();
+    
+    // Track eligibility completion (only once, avoid duplicate events on re-render)
+    const trackKey = 'eligibility_complete';
+    if (!state._tracked[trackKey]) {
+      track('eligibility_complete', { eligible: eligible ? 'yes' : 'no' });
+      state._tracked[trackKey] = true;
+    }
+    
+    const el = document.createElement("div");
+
+    if (!eligible){
+      el.innerHTML = `
+        <h2>目前这项服务可能不太适合您</h2>
+        <p class="sub">无需继续操作。</p>
+        <div class="resultBox">
+          <span class="badge no">Not suitable (for now)</span>
+          <div class="small">
+            根据您的回答，这项服务对您当前可能“超出需求”。<br/><br/>
+            如果您主要需求是电工施工或快速维修，
+            普通电工服务可能更合适。
+          </div>
+        </div>
+        <div class="ctaRow">
+          <button class="primary" id="restartBtn">Restart</button>
+          <a class="cta" href="mailto:${CONTACT_EMAIL}">联系我们</a>
+        </div>
+      `;
+      el.querySelector("#restartBtn").addEventListener("click", () => restart());
+      return el;
+    }
+
+    el.innerHTML = `
+      <h2>下一步可能对您有帮助</h2>
+      <p class="sub">The next step is a short 电气风险快照.</p>
+      <div class="resultBox">
+        <span class="badge ok">Suitable</span>
+        <div class="small">
+          它不是上门检查，也不会生成报价。<br/><br/>
+          它用于帮助您判断： 是否存在一些电气决策，可能在信息不足的情况下做出，
+          从而带来潜在风险。
+        </div>
+      </div>
+      <div class="ctaRow">
+        <button class="primary" id="startSnapshotBtn">开始风险快照（3–4分钟） →</button>
+        <button class="ghost" id="restartBtn">Restart</button>
+      </div>
+    `;
+    el.querySelector("#startSnapshotBtn").addEventListener("click", () => {
+      state.stage = 2;
+      state.index = -1;
+      render();
+    });
+    el.querySelector("#restartBtn").addEventListener("click", () => restart());
+    return el;
+  }
+
+  function renderFinal(){
+    setActiveStepTag(3);
+    $("timeText").textContent = "";
+    const uncertain = snapshotUncertaintyFlag();
+    
+    // Track snapshot completion (only once, avoid duplicate events on re-render)
+    const trackKey = 'snapshot_complete';
+    if (!state._tracked[trackKey]) {
+      track('snapshot_complete', { uncertainty: uncertain ? 'yes' : 'no' });
+      state._tracked[trackKey] = true;
+    }
+
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>快照完成</h2>
+      <p class="sub">What this means & next step</p>
+
+      <div class="resultBox">
+        <span class="badge ${uncertain ? "ok" : ""}">${uncertain ? "Uncertainty identified" : "Low uncertainty indicated"}</span>
+        <div class="small">
+          根据您的回答，我们判断： 您在某些电气决策上可能存在
+          信息不完整或信心不足的情况。<br/><br/>
+          <strong>这不代表当前一定有紧急问题。</strong><br/>
+          它只是提示：未来某些决策 如果有更清晰的信息，会更容易做对。
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="small">
+        <h3>What this means</h3>
+        The snapshot is designed to highlight <em>where uncertainty exists</em> —
+        not to diagnose issues or recommend work.<br/><br/>
+        For some property owners, this level of insight is sufficient.<br/>
+        For others, the next step is to replace uncertainty with
+        <strong>documented, independent professional judgement</strong>.
+      </div>
+
+      <div class="resultBox" style="margin-top:14px">
+        <h3>Independent Electrical Risk Assessment</h3>
+        <div class="small">
+          A comprehensive, on-site assessment providing:
+          <ul style="margin:10px 0 0 18px; color: var(--muted);">
+            <li>A clear risk classification</li>
+            <li>Priority-based guidance</li>
+            <li>A 3–5 year electrical budget outlook</li>
+            <li>Independent documentation for future decisions</li>
+          </ul>
+          <div style="margin-top:10px">
+            This assessment is conducted without providing repair services
+            to ensure complete independence and no conflict of interest.
+          
+          <div style=\"margin-top:10px;\" class=\"small\"><strong>Most clients use this as clarity first — not to approve work immediately.</strong></div>
+</div>
+        </div>
+      </div>
+
+      <div class="ctaRow">
+        <a class="cta" href="${LEARN_MORE_URL}">了解更多</a>
+        <button class="cta" id="bookBtn" type="button">预约独立评估</button>
+        <button class="cta" id="callBtn" type="button">Prefer a quick call first?</button>
+        <button class="ghost" id="restartBtn">Restart</button>
+      </div>
+
+      <div class="small" style="margin-top:10px;">
+        Fixed-fee • No repair quotes • No obligation to proceed
+      </div>
+
+      <div class="footerNote">
+        If you would like to speak with someone before booking, please
+        <a href="mailto:${CONTACT_EMAIL}" style="color:var(--accent);">contact us</a>.
+      </div>
+    `;
+
+    el.querySelector("#restartBtn").addEventListener("click", () => restart());
+    el.querySelector("#bookBtn").addEventListener("click", () => {
+      // Track lead form view (only once, avoid duplicate events on re-render)
+      const trackKey = 'lead_form_view';
+      if (!state._tracked[trackKey]) {
+        track('lead_form_view');
+        state._tracked[trackKey] = true;
+      }
+      state.stage = 4;
+      state.index = 0;
+      render();
+    });
+
+    
+
+    const callBtn = el.querySelector("#callBtn");
+    if (callBtn){
+      callBtn.addEventListener("click", () => openCallModal());
+    }
+return el;
+  }
+
+  function renderLeadForm(){
+    setActiveStepTag(4);
+    $("timeText").textContent = "1 minute";
+
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <h2>预约独立评估</h2>
+      <p class="sub">Leave your details and our advisor will contact you shortly.</p>
+
+      <div class="small" style="margin-top:-6px; margin-bottom:10px;">
+        Prefer not to book yet? You can choose <strong>“Prefer a quick call first?”</strong> on the previous page.
+      </div>
+
+      <div class="resultBox">
+        <div class="small">
+          <strong>What happens next?</strong>
+          <ul style="margin:10px 0 0 18px; color: var(--muted);">
+            <li>We review your snapshot</li>
+            <li>We contact you to confirm suitability</li>
+            <li>We schedule a convenient on-site assessment time</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <form id="leadForm" novalidate>
+        <p class="qTitle">Your contact details</p>
+
+        <div style="display:grid; gap:10px; max-width:520px;">
+          <div>
+            <label class="small" for="name">Full name *</label><br/>
+            <input id="name" name="name" type="text" required />
+          </div>
+
+          <div>
+            <label class="small" for="phone">Phone *</label><br/>
+            <input id="phone" name="phone" type="tel" required placeholder="e.g. 04xx xxx xxx" />
+          </div>
+
+          <div>
+            <label class="small" for="email">Email *</label><br/>
+            <input id="email" name="email" type="email" required placeholder="name@email.com" />
+          </div>
+
+          <div>
+            <label class="small" for="notes">Anything you’d like us to know? (optional)</label><br/>
+            <textarea id="notes" name="notes" rows="3"></textarea>
+          </div>
+
+          <div class="err" id="err">Please complete all required fields with a valid email.</div>
+
+          <div class="nav" style="max-width:520px;">
+            <button type="button" class="ghost" id="backBtn">← 返回</button>
+            <button type="submit" class="primary" id="submitBtn">Submit →</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="footerNote">
+        By submitting, you agree we may contact you about this assessment request.
+      </div>
+    `;
+
+    el.querySelector("#backBtn").addEventListener("click", () => {
+      state.stage = 3;
+      state.index = 0;
+      render();
+    });
+
+    el.querySelector("#leadForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = el.querySelector("#name").value.trim();
+      const phone = el.querySelector("#phone").value.trim();
+      const email = el.querySelector("#email").value.trim();
+      const notes = el.querySelector("#notes").value.trim();
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!name || !phone || !emailOk){
+        el.querySelector("#err").style.display = "block";
+        return;
+      }
+      el.querySelector("#err").style.display = "none";
+
+      // Prepare summary for your inbox (offline-friendly: opens user's mail app)
+      const summary = buildAnswerSummary();
+      const subject = encodeURIComponent("Request for Independent Electrical Risk Assessment");
+      const body = encodeURIComponent(
+        `您好，
+
+` +
+        `I’ve just completed the 电气风险快照 on your website and would like to request an independent electrical assessment.
+
+` +
+        `My details are below:
+
+` +
+        `Name: ${name}
+` +
+        `Phone: ${phone}
+` +
+        `Email: ${email}
+
+` +
+        `Property type:
+` +
+        `• Investment property
+
+` +
+        `Reason for enquiry:
+` +
+        `• I would like clearer visibility and independent advice before making future electrical decisions.
+
+` +
+        (notes ? `Additional notes:
+• ${notes}
+
+` : "") +
+        `Snapshot summary (for reference):
+` +
+        `${summary}
+
+` +
+        `Please let me know the next steps.
+
+` +
+        `Kind regards,
+` +
+        `${name}
+`
+      );
+// Store lead locally for the success screen
+      state.lead = { name, phone, email };
+
+      // Build a pre-filled email draft (customer clicks Send to confirm)
+      state.draftMailto = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+
+      // Track lead submission
+      track('lead_submit', { method: 'email_confirm' });
+
+      // Show success screen
+      state.stage = 5;
+      state.index = 0;
+      render();
+});
+
+    return el;
+  }
+
+  function renderSuccess(){
+    setActiveStepTag(4);
+    $("timeText").textContent = "";
+
+    const name = (state.lead && state.lead.name) ? state.lead.name : "there";
+    const el = document.createElement("div");
+
+    el.innerHTML = `
+      <h2>谢谢， ${escapeHtml(name)}.</h2>
+      <p class="sub">Your request has been received.</p>
+
+      <div class="resultBox">
+        <span class="badge ok">Almost done</span>
+        <div class="small">
+          <strong>Final step:</strong> Click <em>Send email to confirm</em> below.<br/>
+          Your email app will open with a pre-written message — simply press <strong>Send</strong> to complete your request.<br/><br/>
+          This helps us ensure we only respond to genuine enquiries.<br/>
+          This confirmation step helps us focus on property owners who are genuinely considering independent advice.
+        </div>
+      </div>
+
+      <div class="ctaRow">
+        <a class="cta" id="sendEmailBtn" href="#">Send email to confirm →</a>
+        <button class="ghost" id="restartBtn">Start again</button>
+      </div>
+
+      <div class="small" style="margin-top:10px;">
+        Fixed-fee • No repair quotes • No obligation to proceed
+      </div>
+
+      <div class="footerNote">
+        After you send the email, our advisor will contact you shortly to confirm suitability and arrange a convenient time.<br/>
+        If you prefer, you can also email us directly at
+        <a href="mailto:${CONTACT_EMAIL}" style="color:var(--accent);">${CONTACT_EMAIL}</a>.
+      </div>
+    `;
+
+    const sendBtn = el.querySelector("#sendEmailBtn");
+    if (sendBtn){
+      sendBtn.setAttribute("href", state.draftMailto || `mailto:${CONTACT_EMAIL}`);
+    }
+
+    el.querySelector("#restartBtn").addEventListener("click", () => restart());
+    return el;
+  }
+
+
+  // -----------------------------
+  // Navigation Logic
+  // -----------------------------
+  function goBack(){
+    if (state.stage === 1){
+      if (state.index === -1) return;
+      state.index -= 1;
+      render();
+      return;
+    }
+    if (state.stage === 2){
+      if (state.index === -1){
+        state.stage = 1;
+        state.index = ELIGIBILITY.length;
+        render();
+        return;
+      }
+      state.index -= 1;
+      render();
+      return;
+    }
+    if (state.stage === 3){
+      state.stage = 2;
+      state.index = SNAPSHOT.length - 1;
+      render();
+      return;
+    }
+    if (state.stage === 4){
+      state.stage = 3;
+      state.index = 0;
+      render();
+      return;
+    }
+  }
+
+  function goNext(){
+    if (state.stage === 1){
+      if (state.index < ELIGIBILITY.length - 1){
+        state.index += 1;
+      } else {
+        state.index = ELIGIBILITY.length;
+      }
+      render();
+      return;
+    }
+    if (state.stage === 2){
+      if (state.index < SNAPSHOT.length - 1){
+        state.index += 1;
+        render();
+      } else {
+        state.stage = 3;
+        state.index = 0;
+        render();
+      }
+      return;
+    }
+  }
+
+  function restart(){
+    state.stage = 1;
+    state.index = -1;
+    state.answers = {};
+    state.lead = null;
+    state.draftMailto = null;
+    state._tracked = {}; // Reset tracking flags on restart
+    computeProgress();
+    render();
+  }
+
+  // -----------------------------
+  // Render
+  // -----------------------------
+  function render(){
+    const app = $("app");
+    app.innerHTML = "";
+    computeProgress();
+
+    if (state.stage === 1){
+      setActiveStepTag(1);
+      if (state.index === -1){
+        app.appendChild(renderIntroEligibility());
+        const start = document.createElement("div");
+        start.innerHTML = `
+          <div class="nav">
+            <span></span>
+            <button class="primary" id="startBtn">Start (60 seconds) →</button>
+          </div>
+        `;
+        start.querySelector("#startBtn").addEventListener("click", () => {
+          track('snapshot_start');
+          state.index = 0;
+          render();
+        });
+        app.appendChild(start);
+        return;
+      }
+
+      if (state.index === ELIGIBILITY.length){
+        app.appendChild(renderEligibilityEnd());
+        return;
+      }
+
+      app.appendChild(renderQuestion(ELIGIBILITY[state.index]));
+      return;
+    }
+
+    if (state.stage === 2){
+      setActiveStepTag(2);
+
+      if (state.index === -1){
+        app.appendChild(renderSnapshotIntro());
+        const nav = document.createElement("div");
+        nav.innerHTML = `
+          <div class="nav">
+            <button class="ghost" id="backBtn">← 返回</button>
+            <button class="primary" id="startSnapBtn">Start Snapshot →</button>
+          </div>
+        `;
+        nav.querySelector("#backBtn").addEventListener("click", () => goBack());
+        nav.querySelector("#startSnapBtn").addEventListener("click", () => {
+          state.index = 0;
+          render();
+        });
+        app.appendChild(nav);
+        return;
+      }
+
+      app.appendChild(renderQuestion(SNAPSHOT[state.index]));
+      return;
+    }
+
+    if (state.stage === 3){
+      app.appendChild(renderFinal());
+      return;
+    }
+
+    if (state.stage === 4){
+      app.appendChild(renderLeadForm());
+      return;
+    }
+
+    if (state.stage === 5){
+      app.appendChild(renderSuccess());
+      return;
+    }
+  }
+
+  
+  // Global modal listeners
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "closeCallModal") closeCallModal();
+    if (e.target && e.target.id === "closeCallModal2") closeCallModal();
+    if (e.target && e.target.id === "callModal") closeCallModal();
+  });
+
+  // 快速电话沟通 form handler (offline-friendly via mailto)
+  document.addEventListener("submit", (e) => {
+    if (!e.target || e.target.id !== "quickCallForm") return;
+    e.preventDefault();
+
+    const name = $("qc_name").value.trim();
+    const phone = $("qc_phone").value.trim();
+    const email = $("qc_email").value.trim();
+    const suburb = $("qc_suburb").value.trim();
+    const date = $("qc_date").value;
+    const windowSel = $("qc_window").value;
+    const notes = $("qc_notes").value.trim();
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if(!name || !phone || !emailOk || !date || !windowSel){
+      const err = $("qc_err");
+      if(err) err.style.display = "block";
+      return;
+    }
+    const err = $("qc_err");
+    if(err) err.style.display = "none";
+
+    const mailto = buildQuickCallMailto({
+      name, phone, email, suburb,
+      dateReadable: formatDateISOToReadable(date),
+      window: windowSel,
+      notes
+    });
+
+    window.location.href = mailto;
+  });
+
+
+
+
+  // Ensure modal hidden on load
+  document.addEventListener("DOMContentLoaded", () => {
+    const m = document.getElementById("callModal");
+    if (m) m.style.display = "none";
+    
+    // Track page open
+    track('page_open', { page: 'risk_snapshot' });
+  });
+
+  // Start
+  restart();</script>
+
+  <!-- Quick Call Modal -->
+  <div class="modalOverlay" id="callModal" role="dialog" aria-modal="true" aria-labelledby="callModalTitle" style="display:none">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3 id="callModalTitle">Prefer a quick call first?</h3>
+          <div class="small" style="margin-top:4px;">
+            If you’d like, we can do a short <strong>8–10 minute</strong> suitability call before any booking.
+          </div>
+        </div>
+        <button class="modal关闭" id="closeCallModal" type="button">关闭 ✕</button>
+      </div>
+
+      <div class="resultBox">
+        <div class="small">
+          <span class="miniPill">What we’ll cover</span>
+          <ul style="margin:10px 0 0 18px; color: var(--muted);">
+            <li>Your investment timeframe and plans (next 12–24 months)</li>
+            <li>What you most want to avoid: unexpected costs, safety risk, or decision uncertainty</li>
+            <li>Whether an independent assessment is actually worth it for your property</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="scriptGrid">
+        <div class="scriptCard">
+          <div class="k">A simple way to describe the service</div>
+          <div class="v">
+            “This isn’t a repair quote. It’s independent, documented advice that gives you clarity and a forward budget view — so future decisions are easier.”
+          </div>
+        </div>
+        <div class="scriptCard">
+          <div class="k">3 quick questions we may ask</div>
+          <div class="v">
+            1) “Is this a long-term hold, or are you planning changes soon?”<br/>
+            2) “When electrical work is suggested, do you feel confident approving it?”<br/>
+            3) “What would you like to avoid most — cost surprises, safety risk, or uncertainty?”
+          </div>
+        </div>
+        <div class="scriptCard">
+          <div class="k">What happens after the call</div>
+          <div class="v">
+            If it’s a fit, we’ll suggest the next step: an independent on-site assessment (fixed-fee).<br/>
+            If it’s not a fit, we’ll tell you — no pressure and no obligation.
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="hr"></div>
+
+      <form id="quickCallForm" novalidate>
+        <div style="display:grid; gap:10px; max-width:560px;">
+          <div>
+            <label class="small" for="qc_name">Full name *</label><br/>
+            <input id="qc_name" type="text" required />
+          </div>
+          <div>
+            <label class="small" for="qc_phone">Phone *</label><br/>
+            <input id="qc_phone" type="tel" required placeholder="e.g. 04xx xxx xxx" />
+          </div>
+          <div>
+            <label class="small" for="qc_email">Email *</label><br/>
+            <input id="qc_email" type="email" required placeholder="name@email.com" />
+          </div>
+
+          <div>
+            <label class="small" for="qc_suburb">Property suburb or postcode (optional)</label><br/>
+            <input id="qc_suburb" type="text" placeholder="e.g. Norwood 5067" />
+            <div class="hint">No street address needed at this stage.</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+              <label class="small" for="qc_date">Preferred date *</label><br/>
+              <input id="qc_date" type="date" required />
+            </div>
+            <div>
+              <label class="small" for="qc_window">Preferred time window (Adelaide) *</label><br/>
+              <select id="qc_window" required style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:var(--text); outline:none;">
+                <option value="" selected>Select a time window</option>
+                <option>9:00–11:00</option>
+                <option>11:00–13:00</option>
+                <option>13:00–15:00</option>
+                <option>15:00–17:00</option>
+                <option>17:00–19:00</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="small" for="qc_notes">Anything else? (optional)</label><br/>
+            <textarea id="qc_notes" rows="3" placeholder="e.g. best contact time, tenant availability, upcoming renovations"></textarea>
+          </div>
+
+          <div class="err" id="qc_err">Please complete all required fields with a valid email.</div>
+
+          <div class="ctaRow" style="margin-top:6px;">
+            <button class="cta" id="qc_submit" type="submit">Open email request →</button>
+            <button class="ghost" id="closeCallModal2" type="button">Not now</button>
+          </div>
+
+          <div class="small" style="margin-top:-4px;">
+            We’ll draft an email to <strong>info@bhtechnology.com.au</strong> with your details and preferred time.
+            Please click <strong>Send</strong> in your email app to confirm.
+          </div>
+        </div>
+      </form>
+
+      <div class="footerNote">
+
+        Tip: If you’d rather proceed directly, use <strong>预约独立评估</strong> on the previous page.
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

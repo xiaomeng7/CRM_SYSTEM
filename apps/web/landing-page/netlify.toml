@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/apply-advisory"
+  to = "/.netlify/functions/apply-advisory"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/admin/advisory-applications"
+  to = "/.netlify/functions/admin-advisory"
+  status = 200
+  force = true

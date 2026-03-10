@@ -20,9 +20,10 @@
     </aside>
     <main class="main">
       <header class="header">Internal CRM</header>
-      <div class="content">
+      <div class="content" data-page="leads">
         <h1 class="page-title">Leads</h1>
         <div class="search"><input type="search" placeholder="Search leads…" /></div>
+        <p id="leads-state" class="muted" style="margin:0 0 0.5rem 0;"></p>
         <div class="table-wrap">
           <table>
             <thead>
@@ -38,27 +39,14 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="leads-tbody">
               <tr>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td><span class="badge">new</span></td>
-                <td class="muted">—</td>
-                <td class="muted">—</td>
-                <td class="actions">
-                  <button type="button" class="btn btn-sm">Status</button>
-                  <a href="/lead-detail.html" class="btn btn-sm">Details</a>
-                  <button type="button" class="btn btn-sm btn-primary">Convert</button>
-                  <button type="button" class="btn btn-sm">Task</button>
-                </td>
+                <td colspan="9" class="muted">Loading leads…</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="muted" style="margin-top:1rem;">Data from API — placeholder row. Actions: update status, view details, convert to opportunity, create task.</p>
+        <p class="muted" style="margin-top:1rem;">Data from API. Actions: update status, view details, convert to opportunity, create task.</p>
       </div>
     </main>
   </div>

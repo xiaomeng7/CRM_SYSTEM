@@ -1,0 +1,427 @@
+/**
+ * CHANGELOG: Inspection Summary block updated with 4-item list and helper text. UI-only.
+ * CHANGELOG: Review-level heuristic alerts (stress test, circuit breakdown, photos/notes, bill). Non-blocking.
+ */
+import { useState, useEffect, useRef, useCallback } from "react";
+import { PhotoEvidenceSection } from "./PhotoEvidenceSection";
+import { CustomFindingsModal, type CustomFindingInput } from "./CustomFindingsModal";
+import { computeHeuristicAlerts } from "../lib/reviewHeuristics";
+
+type Props = {
+  inspectionId: string;
+  onBack: () => void;
+};
+
+type CustomFindingPending = {
+  id: string;
+  title: string;
+  source: "gpo" | "lighting";
+  roomLabel?: string;
+};
+
+type ReviewData = {
+  inspection_id: string;
+  report_html: string;
+  findings: Array<{ id: string; priority: string; title?: string; location?: string; photo_ids?: string[] }>;
+  limitations?: string[];
+  raw_data?: Record<string, unknown>;
+  custom_findings_pending?: CustomFindingPending[];
+};
+
+export function ReviewPage({ inspectionId, onBack }: Props) {
+  const [data, setData] = useState<ReviewData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [enhancedHtml, setEnhancedHtml] = useState<string | null>(null);
+  const [templateHtml, setTemplateHtml] = useState<string | null>(null); // Template HTML with placeholders filled
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [enhanceError, setEnhanceError] = useState<string | null>(null);
+  const [wordExistsInBlob, setWordExistsInBlob] = useState<boolean | null>(null);
+  const [customFindingsToFill, setCustomFindingsToFill] = useState<CustomFindingInput[] | null>(null);
+  const [isSavingCustomFindings, setIsSavingCustomFindings] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const loadData = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/review/${inspectionId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = (await res.json()) as ReviewData;
+      setData(json);
+      if (json.report_html) setTemplateHtml(json.report_html);
+      setEnhancedHtml(null);
+      setIsEnhancing(false);
+      setEnhanceError(null);
+      const pending = json.custom_findings_pending ?? [];
+      if (pending.length > 0) {
+        setCustomFindingsToFill(
+          pending.map((p) => ({
+            id: p.id,
+            title: p.title,
+            source: p.source,
+            roomLabel: p.roomLabel,
+            safety: "",
+            urgency: "",
+            liability: "",
+            budget_low: "",
+            budget_high: "",
+            priority: "",
+            severity: "",
+            likelihood: "",
+            escalation: "",
+          }))
+        );
+      } else {
+        setCustomFindingsToFill(null);
+      }
+      const statusRes = await fetch(`/api/wordStatus?inspection_id=${encodeURIComponent(inspectionId)}`);
+      if (statusRes.ok) {
+        const statusJson = (await statusRes.json()) as { exists?: boolean };
+        setWordExistsInBlob(!!statusJson.exists);
+      } else {
+        setWordExistsInBlob(false);
+      }
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [inspectionId]);
+
+  const handleSaveCustomFindings = async () => {
+    if (!customFindingsToFill?.length || !inspectionId) return;
+    setIsSavingCustomFindings(true);
+    try {
+      const res = await fetch(`/api/saveCustomFindings/${inspectionId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ custom_findings: customFindingsToFill }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await loadData();
+      setCustomFindingsToFill(null);
+    } catch (e) {
+      console.error("Failed to save custom findings:", e);
+      alert("Save failed: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setIsSavingCustomFindings(false);
+    }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadData().then(() => { if (cancelled) return; });
+    return () => { cancelled = true; };
+  }, [loadData]);
+
+  if (loading) return <div className="review-page"><p>Loading…</p></div>;
+  if (error) {
+    return (
+      <div className="review-page" style={{ padding: "20px" }}>
+        <h2>Error Loading Report</h2>
+        <p style={{ color: "#d32f2f", marginBottom: "16px" }}>
+          {error.includes("404") 
+            ? "Report not found. The inspection data may have expired or was not saved correctly." 
+            : `Error: ${error}`}
+        </p>
+        <p style={{ color: "#666", fontSize: "14px", marginBottom: "16px" }}>
+          Inspection ID: <code>{inspectionId}</code>
+        </p>
+        <button onClick={onBack} className="btn-secondary">Back to Home</button>
+      </div>
+    );
+  }
+  if (!data) return null;
+
+  const alerts = computeHeuristicAlerts({
+    raw_data: data.raw_data,
+    findings: data.findings,
+  });
+
+  // Derive 3-line summary from raw_data for quick review (display only, no data change)
+  const raw = (data.raw_data ?? {}) as Record<string, unknown>;
+  const energy = raw.energy_v2 as Record<string, unknown> | undefined;
+  const supply = energy?.supply as Record<string, unknown> | undefined;
+  const stress = energy?.stressTest as Record<string, unknown> | undefined;
+  const enhancedSkip = energy?.enhancedSkipReason as Record<string, unknown> | undefined;
+  const circuits = Array.isArray(energy?.circuits) ? (energy.circuits as unknown[]) : [];
+  // Display priority: enhanced HTML > template HTML > original report HTML
+  const displayHtml = enhancedHtml || templateHtml || data.report_html;
+  const isEnhanced = enhancedHtml !== null;
+  // Log state changes for debugging
+  if (typeof window !== "undefined" && window.location.search.includes("debug")) {
+    console.log("ReviewPage render:", {
+      has_enhancedHtml: !!enhancedHtml,
+      enhancedHtml_length: enhancedHtml?.length || 0,
+      displayHtml_length: displayHtml?.length || 0,
+      isEnhanced,
+      isEnhancing
+    });
+  }
+
+  const alertBannerStyle = {
+    padding: "12px 16px",
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 14,
+    border: "1px solid #dee2e6",
+  };
+
+  return (
+    <div className="review-page">
+      {/* Heuristic alerts - advisory only, do not block submission */}
+      {alerts.stressTestRequired && (
+        <div style={{ ...alertBannerStyle, backgroundColor: "#fff3cd", borderColor: "#ffc107", color: "#856404" }}>
+          <strong>Stress Test not performed.</strong> This measurement is important for load assessment. Confirm to submit without it.
+        </div>
+      )}
+      {alerts.circuitBreakdownRecommended && (
+        <div style={{ ...alertBannerStyle, backgroundColor: "#e7f3ff", borderColor: "#2196f3", color: "#0d47a1" }}>
+          <strong>Optional circuit breakdown recommended</strong> given installed assets.
+        </div>
+      )}
+      {alerts.photosNotesSuggested && (
+        <div style={{ ...alertBannerStyle, backgroundColor: "#f5f5f5", borderColor: "#bdbdbd", color: "#424242" }}>
+          No photos or notes provided. It is recommended to attach evidence for issues found.
+        </div>
+      )}
+      {alerts.billCalibrationSuggested && (
+        <div style={{ ...alertBannerStyle, backgroundColor: "#e8f5e9", borderColor: "#81c784", color: "#2e7d32" }}>
+          Utility billing data was not provided — estimates may vary. Consider asking customer for bills.
+        </div>
+      )}
+
+      {/* Inspection Summary - display only, review key items before submission */}
+      <div style={{
+        backgroundColor: "#f8f9fa",
+        border: "1px solid #dee2e6",
+        borderRadius: 8,
+        padding: "12px 16px",
+        marginBottom: 20,
+        fontSize: 14
+      }}>
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>Inspection Summary</div>
+        <p style={{ fontSize: 12, color: "#666", marginTop: 0, marginBottom: 8 }}>Review key items before submission.</p>
+        <ul style={{ margin: 0, paddingLeft: 20 }}>
+          <li>Main Load &amp; Voltage {supply ? "measured." : "—"}</li>
+          <li>Load Stress measurement {stress ? (Boolean(stress.performed) ? "completed." : "skipped.") : "—"}</li>
+          <li>Optional circuit breakdown {circuits.length > 0 ? "provided." : (enhancedSkip?.code ? "skipped." : "—")}</li>
+          <li>Customer intake responses {raw.snapshot_intake ? "recorded." : "—"}</li>
+        </ul>
+      </div>
+
+      {/* Success banner after submission */}
+      <div style={{
+        backgroundColor: "#d4edda",
+        border: "1px solid #c3e6cb",
+        color: "#155724",
+        padding: "16px",
+        borderRadius: "8px",
+        marginBottom: "20px",
+        textAlign: "center"
+      }}>
+        <div style={{ fontSize: "32px", marginBottom: "8px" }}>✅</div>
+        <strong>Inspection Submitted Successfully!</strong>
+        <p style={{ margin: "8px 0 0", fontSize: "14px" }}>
+          Word report was generated at submit. Download it below or use the link from your email.
+        </p>
+      </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px" }}>
+          <h1 style={{ margin: 0, flex: 1 }}>
+            Report — {data.inspection_id}
+          </h1>
+          {/* Word generated on Submit only; Review page provides download, not generation */}
+          {wordExistsInBlob === true && (
+            <div style={{ marginTop: "10px" }}>
+              <a
+                href={`/api/downloadWord?inspection_id=${encodeURIComponent(data.inspection_id)}`}
+                className="btn-primary"
+                style={{ backgroundColor: "#2196f3", minWidth: "180px", textDecoration: "none", display: "inline-block", textAlign: "center", lineHeight: "2" }}
+                download={`${data.inspection_id}-report.docx`}
+              >
+                Download Word Report
+              </a>
+            </div>
+          )}
+          {wordExistsInBlob === false && (
+            <p style={{ marginTop: "10px", fontSize: "14px", color: "#666" }}>
+              Word report was not generated for this inspection. It is only generated once at Submit.
+            </p>
+          )}
+        </div>
+        {/* Model info temporarily disabled with AI */}
+        {/* {modelInfo && (
+          <div style={{ 
+            fontSize: "12px", 
+            color: "#666", 
+            padding: "8px 12px", 
+            backgroundColor: "#f5f5f5", 
+            borderRadius: "4px",
+            display: "inline-block"
+          }}>
+            <strong>AI Model:</strong> {modelInfo.model}
+            {modelInfo.usage && (
+              <span style={{ marginLeft: "12px" }}>
+                • Tokens: {modelInfo.usage.total_tokens} (input: {modelInfo.usage.prompt_tokens}, output: {modelInfo.usage.completion_tokens})
+              </span>
+            )}
+          </div>
+        )} */}
+      </div>
+
+      {enhanceError && (
+        <div style={{ 
+          padding: "12px", 
+          marginBottom: "16px", 
+          backgroundColor: "#ffebee", 
+          color: "#c62828",
+          borderRadius: "4px"
+        }}>
+          Error: {enhanceError}
+        </div>
+      )}
+
+      {(() => {
+        const thermal = data.raw_data?.thermal as { enabled?: boolean; captures?: Array<{ area?: string; risk_indicator?: string; max_temp_c?: number; delta_c?: number; thermal_photo_id?: string; visible_photo_id?: string }> } | undefined;
+        if (!thermal?.enabled || !thermal?.captures?.length) return null;
+        return (
+        <div className="report-html" style={{ marginBottom: 16 }}>
+          <h2>Thermal Imaging (Premium)</h2>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+              <thead>
+                <tr style={{ borderBottom: "2px solid #ddd" }}>
+                  <th style={{ textAlign: "left", padding: 8 }}>Area</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Risk</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Max</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Delta</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Thermal photo</th>
+                  <th style={{ textAlign: "left", padding: 8 }}>Visible photo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {thermal.captures.map((c, i) => (
+                  <tr key={i} style={{ borderBottom: "1px solid #eee" }}>
+                    <td style={{ padding: 8 }}>{c.area ?? "-"}</td>
+                    <td style={{ padding: 8 }}>{c.risk_indicator ?? "-"}</td>
+                    <td style={{ padding: 8 }}>{c.max_temp_c != null ? c.max_temp_c : "-"}</td>
+                    <td style={{ padding: 8 }}>{c.delta_c != null ? c.delta_c : "-"}</td>
+                    <td style={{ padding: 8 }}>
+                      {c.thermal_photo_id ? (
+                        <a href={`/api/inspectionPhoto?inspection_id=${encodeURIComponent(data.inspection_id)}&photo_id=${encodeURIComponent(c.thermal_photo_id)}`} target="_blank" rel="noopener noreferrer">
+                          {c.thermal_photo_id}
+                        </a>
+                      ) : "-"}
+                    </td>
+                    <td style={{ padding: 8 }}>
+                      {c.visible_photo_id ? (
+                        <a href={`/api/inspectionPhoto?inspection_id=${encodeURIComponent(data.inspection_id)}&photo_id=${encodeURIComponent(c.visible_photo_id)}`} target="_blank" rel="noopener noreferrer">
+                          {c.visible_photo_id}
+                        </a>
+                      ) : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        );
+      })()}
+      {data.findings?.length > 0 && (
+        <div className="report-html" style={{ marginBottom: 16 }}>
+          <h2>Findings &amp; Photo Evidence</h2>
+          <p style={{ fontSize: 14, color: "#666", marginBottom: 16 }}>
+            Photos added during inspection are shown next to each finding below. You can add more here (max 2 per finding). All photos will appear next to the corresponding issue in the generated report.
+          </p>
+          {data.findings.map((f, idx) => (
+            <div
+              key={`${f.id}-${f.location ?? ""}-${idx}`}
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: 8,
+                padding: 16,
+                marginBottom: 16,
+                backgroundColor: "#fff",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <span
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    backgroundColor:
+                      f.priority === "IMMEDIATE"
+                        ? "#dc3545"
+                        : f.priority === "RECOMMENDED_0_3_MONTHS"
+                        ? "#ffc107"
+                        : "#28a745",
+                    color: f.priority === "RECOMMENDED_0_3_MONTHS" ? "#000" : "#fff",
+                  }}
+                >
+                  {f.priority === "IMMEDIATE"
+                    ? "IMMEDIATE"
+                    : f.priority === "RECOMMENDED_0_3_MONTHS"
+                    ? "RECOMMENDED"
+                    : "PLAN/MONITOR"}
+                </span>
+                <span style={{ fontWeight: 500 }}>
+                  {f.title ?? f.id}
+                  {f.location && <span style={{ color: "#666", fontWeight: 400 }}> — {f.location}</span>}
+                </span>
+              </div>
+              <PhotoEvidenceSection
+                inspectionId={data.inspection_id}
+                findingId={f.id}
+                findingTitle={f.title}
+                existingPhotoIds={f.photo_ids}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+      {data.limitations && data.limitations.length > 0 && (
+        <div className="report-html" style={{ marginBottom: 16 }}>
+          <h2>Limitations</h2>
+          <ul>
+            {data.limitations.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div 
+        ref={reportRef}
+        className="report-html" 
+        key={enhancedHtml ? "enhanced" : templateHtml ? "template" : "original"} // Force re-render when HTML changes
+        dangerouslySetInnerHTML={{ __html: displayHtml || "<p>No report content.</p>" }} 
+        style={{ 
+          opacity: (isEnhancing && !templateHtml) ? 0.5 : 1, // Don't fade if showing template
+          transition: "opacity 0.3s"
+        }}
+      />
+
+      {customFindingsToFill && customFindingsToFill.length > 0 && (
+        <CustomFindingsModal
+          findings={customFindingsToFill}
+          onChange={(index, field, value) => {
+            setCustomFindingsToFill((prev) => {
+              if (!prev) return prev;
+              const next = [...prev];
+              next[index] = { ...next[index], [field]: value };
+              return next;
+            });
+          }}
+          onConfirm={() => handleSaveCustomFindings()}
+          onCancel={() => setCustomFindingsToFill(null)}
+          saving={isSavingCustomFindings}
+        />
+      )}
+    </div>
+  );
+}

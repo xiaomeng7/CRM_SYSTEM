@@ -1,0 +1,46 @@
+# Netlify 配置文件
+
+[build]
+  # 这是一个静态网站，不需要构建步骤
+  publish = "."
+
+# 安装 netlify/functions 下的依赖（如 resend），否则 Function 打包会报错
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
+
+# 首页为语言选择页（index.html）；中英文用下面短链接也可访问
+[[redirects]]
+  from = "/en"
+  to = "/risk-snapshot.html"
+  status = 302
+[[redirects]]
+  from = "/zh"
+  to = "/risk-snapshot_zh_v2.html"
+  status = 302
+
+# 自定义 404 页面（可选）
+# [[redirects]]
+#   from = "/*"
+#   to = "/risk-snapshot.html"
+#   status = 404
+
+# 安全头设置
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# HTML 文件缓存设置
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# 静态资源缓存设置
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

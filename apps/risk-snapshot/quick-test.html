@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速测试清单</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        .test-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #6ea8fe;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-item h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-item ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .test-item li {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6ea8fe;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px 5px 10px 0;
+        }
+        .button:hover {
+            background: #5a9dee;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status.pending {
+            background: #ffd700;
+            color: #333;
+        }
+        .status.done {
+            background: #51cf66;
+            color: white;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 网站测试清单</h1>
+    <p>使用此清单测试你的 Netlify 部署网站</p>
+    
+    <div class="test-item">
+        <h3>1. 找到你的网站链接</h3>
+        <p>在 Netlify 控制台找到你的网站 URL（通常是 <code>xxx.netlify.app</code>）</p>
+        <a href="https://app.netlify.com" target="_blank" class="button">打开 Netlify 控制台</a>
+    </div>
+
+    <div class="test-item">
+        <h3>2. 基础访问测试</h3>
+        <ul>
+            <li>✅ 网站可以正常打开</li>
+            <li>✅ 页面加载速度正常（< 3秒）</li>
+            <li>✅ 没有控制台错误（按 F12 查看）</li>
+            <li>✅ HTTPS 正常工作（地址栏显示锁图标）</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>3. 视觉测试</h3>
+        <ul>
+            <li>✅ 页面布局正确</li>
+            <li>✅ 字体和颜色显示正常</li>
+            <li>✅ 深色/浅色主题自动切换</li>
+            <li>✅ 响应式设计（调整浏览器窗口大小测试）</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>4. 功能流程测试 - 资格检查</h3>
+        <ul>
+            <li>✅ 点击 "Start (60 seconds) →" 按钮</li>
+            <li>✅ 回答 4 个资格检查问题</li>
+            <li>✅ 每个问题都能选择答案</li>
+            <li>✅ "Next" 按钮在未选择时禁用</li>
+            <li>✅ "Back" 按钮可以返回</li>
+            <li>✅ 进度条实时更新</li>
+            <li>✅ 查看结果页面（适合/不适合）</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>5. 功能流程测试 - 风险快照</h3>
+        <ul>
+            <li>✅ 如果符合条件，点击 "Start Risk Snapshot"</li>
+            <li>✅ 完成 6 个快照问题</li>
+            <li>✅ 查看最终结果页面</li>
+            <li>✅ 所有按钮和链接可用</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>6. 表单测试</h3>
+        <ul>
+            <li>✅ 点击 "Book an independent assessment"</li>
+            <li>✅ 填写联系表单（姓名、电话、邮箱）</li>
+            <li>✅ 测试表单验证（空字段、无效邮箱）</li>
+            <li>✅ 提交后显示成功页面</li>
+            <li>✅ 邮件链接可以打开邮件客户端</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>7. 模态框测试</h3>
+        <ul>
+            <li>✅ 点击 "Prefer a quick call first?"</li>
+            <li>✅ 模态框正确显示</li>
+            <li>✅ 表单字段完整</li>
+            <li>✅ 可以关闭模态框</li>
+            <li>✅ 表单验证正常工作</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>8. 移动端测试</h3>
+        <ul>
+            <li>✅ 在手机上打开网站</li>
+            <li>✅ 触摸操作正常</li>
+            <li>✅ 表单输入正常</li>
+            <li>✅ 模态框在移动端显示正确</li>
+        </ul>
+        <p><strong>提示：</strong>在桌面浏览器按 F12，点击设备图标可以模拟移动设备</p>
+    </div>
+
+    <div class="test-item">
+        <h3>9. 浏览器兼容性</h3>
+        <p>在不同浏览器中测试：</p>
+        <ul>
+            <li>✅ Chrome/Edge</li>
+            <li>✅ Safari</li>
+            <li>✅ Firefox</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>🔍 调试工具</h3>
+        <p><strong>按 F12 打开开发者工具：</strong></p>
+        <ul>
+            <li><strong>Console：</strong>查看 JavaScript 错误</li>
+            <li><strong>Network：</strong>检查资源加载</li>
+            <li><strong>Elements：</strong>检查 HTML 结构</li>
+            <li><strong>Responsive Design Mode：</strong>测试响应式布局（点击设备图标）</li>
+        </ul>
+    </div>
+
+    <div class="test-item">
+        <h3>📝 常见问题</h3>
+        <p><strong>如果页面显示空白：</strong></p>
+        <ul>
+            <li>检查浏览器控制台（F12）是否有错误</li>
+            <li>检查网络请求是否成功</li>
+            <li>清除浏览器缓存后重试</li>
+        </ul>
+        <p><strong>如果样式显示异常：</strong></p>
+        <ul>
+            <li>清除浏览器缓存</li>
+            <li>检查 CSS 文件是否加载</li>
+        </ul>
+    </div>
+
+    <script>
+        // 简单的测试记录功能
+        document.querySelectorAll('.test-item li').forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.style.textDecoration === 'line-through') {
+                    this.style.textDecoration = 'none';
+                    this.style.opacity = '1';
+                } else {
+                    this.style.textDecoration = 'line-through';
+                    this.style.opacity = '0.5';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

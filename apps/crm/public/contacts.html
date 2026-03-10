@@ -20,9 +20,16 @@
     </aside>
     <main class="main">
       <header class="header">Internal CRM</header>
-      <div class="content">
+      <div class="content" data-page="contacts">
         <h1 class="page-title">Contacts</h1>
-        <div class="search"><input type="search" placeholder="Search contacts…" /></div>
+        <div class="search">
+          <input type="search" id="contacts-search" placeholder="Search contacts…" />
+        </div>
+        <p id="contacts-state" class="muted" style="margin:0 0 0.5rem 0;"></p>
+        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">
+          <input type="checkbox" id="contacts-filter-dormant" />
+          Show only customers with last job &gt; 6 months ago
+        </label>
         <div class="table-wrap">
           <table>
             <thead>
@@ -31,28 +38,19 @@
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Suburb</th>
-                <th>Tags</th>
-                <th>Account</th>
+                <th>Job count</th>
+                <th>Last job</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="contacts-tbody">
               <tr>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td class="muted">—</td>
-                <td class="actions">
-                  <a href="#" class="btn btn-sm">Details</a>
-                  <button type="button" class="btn btn-sm">Reactivation</button>
-                </td>
+                <td colspan="7" class="muted">Loading contacts…</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="muted" style="margin-top:1rem;">Searchable list of imported customers. Actions: view details, mark reactivation status.</p>
+        <p class="muted" style="margin-top:1rem;">Searchable list of imported ServiceM8 customers. Actions: view details, send reactivation SMS.</p>
       </div>
     </main>
   </div>

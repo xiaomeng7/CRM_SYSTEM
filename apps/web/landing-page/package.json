@@ -1,0 +1,15 @@
+{
+  "name": "@bht/landing-page",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -l 3002",
+    "build": "echo 'Static site; no build step.'"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

@@ -1,82 +1,87 @@
 # Repository Structure
 
 ```
-/
+bht-revenue-os/
 ├── apps/
-│   ├── web/                    # Netlify app
-│   │   ├── public/             # Static assets, index.html
-│   │   ├── package.json
-│   │   ├── netlify.toml
-│   │   └── README.md
-│   └── crm/                    # Railway app
-│       ├── api/                # Express server, routes, sync script
-│       │   ├── index.js        # API entry
-│       │   ├── customers.js
-│       │   ├── jobs.js
-│       │   └── sync-servicem8.js
-│       ├── automation/         # Triggers and engine
-│       │   ├── automation-engine.js
-│       │   └── triggers.js
-│       ├── scripts/
-│       │   └── run-automations.js
-│       ├── lib/
-│       │   ├── load-env.js     # Load .env from monorepo root or cwd
-│       │   └── db.js
-│       ├── database/
-│       │   └── schema.sql
-│       ├── package.json
-│       └── README.md
+│   ├── crm/                      # Railway — CRM API, sync, automation, internal UI
+│   │   ├── api/
+│   │   ├── services/
+│   │   ├── automation/
+│   │   ├── database/
+│   │   └── public/               # Internal CRM UI (Dashboard, Leads, etc.)
+│   │
+│   ├── web/                      # Netlify — public-facing
+│   │   ├── landing-page/          # Advisory / marketing landing (index, admin, Netlify functions)
+│   │   └── public/               # Static assets, placeholder index
+│   │
+│   ├── essential-report/         # Essential Report — engine, templates, report UI
+│   │   ├── netlify/              # Functions (report generation)
+│   │   ├── src/                  # Report UI (Vite + React)
+│   │   ├── scripts/
+│   │   ├── migrations/
+│   │   └── *.docx, *.html, *.yml # Templates and config
+│   │
+│   ├── energy-insight-lite/      # Energy Insight Lite — static + Netlify (Stripe, verify)
+│   │   ├── index.html
+│   │   └── netlify/functions/
+│   │
+│   └── risk-snapshot/           # Risk Snapshot (ZH) — static + Netlify functions
+│       ├── index.html, risk-snapshot*.html
+│       └── netlify/functions/
+│
 ├── packages/
-│   ├── shared/                 # Shared types, utils, constants
+│   ├── integrations/             # External service adapters
+│   │   ├── servicem8/            # ServiceM8 API client
+│   │   ├── sms/                  # Twilio SMS + phone normalization
 │   │   ├── index.js
-│   │   ├── package.json
-│   │   └── README.md
-│   └── integrations/           # External service adapters
-│       ├── servicem8-client.js
-│       ├── sms-client.js
+│   │   └── package.json
+│   │
+│   └── shared/                   # Shared types, utils, constants
+│       ├── types/                # DTOs, interfaces (future)
+│       ├── schemas/              # Validation (Zod, etc.) (future)
+│       ├── constants/            # Domain-agnostic constants (future)
 │       ├── index.js
-│       ├── package.json
-│       └── README.md
+│       └── package.json
+│
 ├── docs/
-│   ├── architecture-overview.md
-│   ├── repo-structure.md
-│   ├── deployment-boundaries.md
-│   └── RAILWAY_DEPLOY.md
-├── package.json                # Root workspace scripts
+├── package.json                  # Root workspace scripts
 ├── pnpm-workspace.yaml
-├── tsconfig.base.json
-├── .env.example
-├── .gitignore
-└── README.md
+└── .env.example
 ```
 
-## apps/web
+## Apps
 
-- **Purpose:** Public-facing UI only (landing, future client portal).
-- **Contents:** Static HTML/CSS/JS in `public/`; no backend, no CRM logic.
-- **Deploy:** Netlify. Publish `public`; optional build step later (e.g. static generator).
+| App | Purpose | Deploy |
+|-----|---------|--------|
+| **crm** | CRM API, internal UI, ServiceM8 sync, automations | Railway |
+| **web** | Public site root; `public/` + **landing-page/** | Netlify |
+| **essential-report** | Report engine (Netlify functions), templates, report UI (Vite/React) | Netlify |
+| **energy-insight-lite** | Energy Lite product page + Stripe + Netlify functions | Netlify |
+| **risk-snapshot** | Risk Snapshot (ZH) static site + booking/PDF functions | Netlify |
 
-## apps/crm
+## Root scripts
 
-- **Purpose:** CRM core — API, ServiceM8 sync, automation engine, internal operations.
-- **Contents:**
-  - `api/` — Express app, customer/job routes, sync script.
-  - `automation/` — Trigger definitions and engine (evaluates, sends SMS, logs).
-  - `scripts/` — Cron entrypoints (e.g. `run-automations.js`).
-  - `lib/` — DB pool (Postgres).
-  - `database/` — Schema and migrations (single `schema.sql` for now).
-- **Deploy:** Railway. Start command: `npm start`. Cron: `sync`, `automations`.
-
-## packages/shared
-
-- **Purpose:** Domain-agnostic shared code — constants, utils, (future) types/schemas.
-- **Contents:** Currently a thin `index.js` placeholder. Add validation schemas, shared constants, or small utilities here. No CRM or ServiceM8 business logic.
+| Script | Description |
+|--------|-------------|
+| `pnpm dev:web` | Serve `apps/web` (public) |
+| `pnpm dev:landing` | Serve `apps/web/landing-page` (port 3002) |
+| `pnpm dev:crm` | Start CRM API (Railway target) |
+| `pnpm dev:report` | Vite dev for Essential Report UI |
+| `pnpm dev:energy` | Serve Energy Insight Lite (port 3003) |
+| `pnpm dev:risk` | Serve Risk Snapshot (port 3004) |
+| `pnpm build:web` / `build:landing` / `build:report` | Build steps where defined |
+| `pnpm sync` | ServiceM8 → DB (from apps/crm) |
+| `pnpm automations` | Run automation engine |
+| `pnpm import:servicem8` | Import customers (apps/crm) |
 
 ## packages/integrations
 
-- **Purpose:** Adapters for external services (ServiceM8, Twilio/SMS, future email etc.).
-- **Contents:** API clients and transport only. No CRM business logic; consumed by `apps/crm`.
+- **servicem8/** — ServiceM8 REST client (companies, jobs).
+- **sms/** — Twilio sendSMS, normalizePhone (E.164).
+- Consumed by `apps/crm` via `require('@bht/integrations')`.
 
-## packages/ui (optional)
+## packages/shared
 
-- Not created yet. Add `packages/ui` when you have real shared components between web and a future CRM frontend; keep minimal until then.
+- **types/** — Shared TypeScript/JS types (future).
+- **schemas/** — Validation schemas (future).
+- **constants/** — Shared constants (future).

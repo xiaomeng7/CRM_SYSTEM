@@ -1,0 +1,977 @@
+<!--
+CHANGELOG (2026-02-03)
+- 升级为单页面双路径（投资房 / 自住房能源 / 不确定）分流。
+- 增加 Owner 能源痛点问题与 Investor 触发问题；取消“投资房>1”硬门槛。
+- 结果页按路径输出不同文案与 CTA；保留 share/referral/PDF/booking/submit API 链路。
+- 提交 payload 与 GA4 事件新增 profile/primaryGoal/status 等参数，保持旧事件名兼容。
+- 新增问卷漏斗埋点：question_view / question_answer / snapshot_abandon。
+- 新增 session_id 与 last_state 本地持久化（7天有效，不上报任何 PII）。
+-->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>电路风险快照 | Better Home Technology</title>
+  <meta name="description" content="3–4分钟电路风险自测（非检测、非报价）。帮助投资房主判断是否需要进一步做独立评估。" />
+
+  <!-- ✅ 颜色模式：跟随系统（白天浅色，夜间深色） -->
+  <style>
+    :root{
+      --bg: #ffffff;
+      --card: #f6f7f9;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-2:#1d4ed8;
+      --danger:#dc2626;
+      --warn:#f59e0b;
+      --ok:#16a34a;
+      --shadow: 0 10px 30px rgba(2,6,23,.08);
+      --radius: 16px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1220;
+        --card:#111a2e;
+        --text:#e5e7eb;
+        --muted:#9ca3af;
+        --line:#24314d;
+        --primary:#60a5fa;
+        --primary-2:#3b82f6;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+      }
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
+    .wrap{max-width:860px;margin:0 auto;padding:24px 16px 56px;}
+    header{display:flex;gap:14px;align-items:center;margin:10px 0 18px;}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#22c55e);box-shadow:var(--shadow);}
+    h1{font-size:22px;margin:0;}
+    .sub{color:var(--muted);font-size:14px;margin-top:2px;}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:13px;}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px;}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
+    .card h2{font-size:18px;margin:0 0 8px;}
+    .card p{margin:8px 0;color:var(--muted);}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+    button,.btn{
+      border:0;border-radius:12px;padding:12px 14px;font-weight:600;cursor:pointer;
+      background:var(--primary);color:white;box-shadow:0 8px 18px rgba(37,99,235,.22);
+      transition:transform .06s ease, background .12s ease;
+      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+    }
+    button:hover,.btn:hover{background:var(--primary-2);}
+    button:active,.btn:active{transform:translateY(1px);}
+    .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none;}
+    .btn-ghost:hover{background:rgba(148,163,184,.12);}
+    .btn-danger{background:var(--danger);}
+    .btn-danger:hover{filter:brightness(.95);}
+    .small{font-size:13px;color:var(--muted);margin-top:10px;}
+    .step{display:none;}
+    .step.active{display:block;}
+    .step1-page{display:none;}
+    .step1-page.active{display:block;}
+    .qtitle{font-size:18px;margin:0 0 10px;}
+    .opt{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+    .opt label{
+      display:flex;gap:10px;align-items:flex-start;background:rgba(148,163,184,.10);
+      border:1px solid var(--line);border-radius:14px;padding:12px 12px;cursor:pointer;
+    }
+    input[type=radio]{margin-top:3px;}
+    .nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;}
+    .note{font-size:12px;color:var(--muted);margin-top:10px;}
+    .divider{height:1px;background:var(--line);margin:16px 0;}
+    .badge{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);}
+    .dot.warn{background:var(--warn);}
+    .dot.danger{background:var(--danger);}
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:50;}
+    .overlay.show{display:flex;}
+    .modal{
+      width:min(760px,100%);
+      max-height:min(88vh,720px);
+      background:var(--bg);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .modal-header,.modal-footer{
+      padding:14px 16px;
+      background:var(--card);
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modal-footer{border-top:1px solid var(--line);border-bottom:0;}
+    .modal-title{margin:0;font-size:16px;}
+    .modal-body{padding:16px;overflow:auto;}
+    .x{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none;border-radius:10px;padding:8px 10px;}
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+    .form .full{grid-column:1/-1;}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    .field label{font-size:13px;color:var(--muted);}
+    .field input, .field select, .field textarea{
+      padding:12px;border-radius:12px;border:1px solid var(--line);
+      background:transparent;color:var(--text);
+    }
+    .field textarea{min-height:90px;resize:vertical;}
+    @media (max-width:720px){
+      .form{grid-template-columns:1fr;}
+    }
+    .success{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(34,197,94,.10);color:var(--text);}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12px;color:var(--muted);}
+    .insight{font-size:13px;color:var(--muted);font-style:italic;margin-top:12px;min-height:1.2em;}
+    .accordion{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:12px;background:rgba(148,163,184,.06);}
+    .accordion-toggle{padding:12px 14px;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;}
+    .accordion-toggle:hover{background:rgba(148,163,184,.10);}
+    .accordion-content{padding:0 14px 12px;font-size:14px;color:var(--muted);display:none;}
+    .accordion-content.open{display:block;}
+    .step-progress{margin-bottom:12px;font-size:13px;color:var(--muted);}
+    .share-btn{padding:10px 20px;background:#667eea;color:white;border:2px solid #667eea;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:all .3s ease;}
+    .share-btn:hover{background:#5a67d8;color:white;transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,.4);}
+    @keyframes toastSlideIn{from{opacity:0;transform:translateX(100px);}to{opacity:1;transform:translateX(0);}}
+    @keyframes toastSlideOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(100px);}}
+  </style>
+
+  <!-- ✅ GA4：你可以保留同一个 Measurement ID，不需要为中文单独换。
+       只要你在微信转发链接里加 UTM（utm_source=wechat...），GA4 就能识别来源。
+       如果你已有 GA4 代码，请把下面这段替换成你现有的（保持一致即可）。 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QBYBDVL5FT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QBYBDVL5FT');
+  </script>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>电路风险快照</h1>
+        <div class="sub">3–4分钟自测（非上门检测｜非报价） · 帮你判断是否需要进一步做独立评估</div>
+      </div>
+    </header>
+
+    <div class="pill" id="utmPill" style="display:none;"></div>
+    <div class="pill" id="stepProgress">Step 0 of 4</div>
+    <div class="small" id="pathLabelZh" style="margin-top:8px;">路径：未选择</div>
+
+    <!-- Step 0: 价值引导页 -->
+    <section class="card step active" id="step0">
+      <div class="step-progress" id="step0Progress">Step 0 of 4</div>
+      <h2>在投入任何维修预算前，先花 3 分钟看清“电气决策清晰度”</h2>
+      <p class="sub">这个快照不会告诉您“哪里坏了”，它会帮您诊断更关键的问题：当需要为电气安全做决定时，您是基于清晰的信息，还是模糊的猜测？</p>
+      <p class="small">这不是测试您的电气知识，没有对错。完成后，您将获得一份个性化的《电气决策信心评估简报》，并看到下一步建议。</p>
+      <div class="accordion" id="faqAccordionZh">
+        <div class="accordion-toggle" id="faqToggleZh">我想先了解更多 <span id="faqChevronZh">▼</span></div>
+        <div class="accordion-content" id="faqContentZh">
+          <p><strong>这会不会推销维修？</strong> 不会。快照只做决策判断，不提供维修报价。</p>
+          <p><strong>我需要准备什么？</strong> 不需要。只需按真实情况选择即可。</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="nav">
+        <span></span>
+        <button class="btn" id="startBtn0Zh">开始</button>
+      </div>
+    </section>
+
+    <!-- Step 1: 路径分流 -->
+    <section class="card step" id="step1">
+      <div class="step-progress" id="step1Progress">Step 1 of 4</div>
+      <h2>Step 1｜请选择你的路径</h2>
+      <p class="qtitle">您本次更接近哪种情况？</p>
+      <div class="opt">
+        <label><input type="radio" name="profilePath" value="investor">投资房（房东/出租）</label>
+        <label><input type="radio" name="profilePath" value="owner">自住房（homeowner）</label>
+        <label><input type="radio" name="profilePath" value="balanced">不确定 / 两种都有</label>
+      </div>
+      <div class="nav">
+        <button class="btn-ghost" id="step1BackBtn">← 返回</button>
+        <button id="step1NextBtn">继续 →</button>
+      </div>
+      <div class="note">仅用于分流问题与结果文案，不做硬性门槛拦截。</div>
+    </section>
+
+    <!-- Step 2: Snapshot -->
+    <section class="card step" id="step2">
+      <div class="step-progress" id="step2Progress">Step 2 of 4</div>
+      <h2 id="step2TitleZh">Step 2｜快照问题（3–4分钟）</h2>
+      <p id="step2DescZh"><strong>这不是上门检测</strong>，也<strong>不会产生报价</strong>。它用于识别决策不确定性或能源痛点。</p>
+      <div class="divider"></div>
+
+      <div class="qtitle" id="qText">问题加载中…</div>
+      <div class="opt" id="qOptions"></div>
+      <div class="insight" id="insightBoxZh" aria-live="polite"></div>
+
+      <div class="nav">
+        <button class="btn-ghost" id="prevBtn">← 上一题</button>
+        <button id="nextBtn">下一题 →</button>
+      </div>
+
+      <div class="note">没有对错。你的答案不代表房子一定有问题，只代表“决策是否足够有把握”。</div>
+    </section>
+
+    <!-- Step 3: Result -->
+    <section class="card step" id="step3">
+      <div class="step-progress" id="step3Progress">Step 3 of 4</div>
+      <h2>您的《电气决策信心评估简报》已生成</h2>
+
+      <div id="coloredResultBoxZh" style="margin-bottom:20px; padding:24px; border-radius: 16px; color: white; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="badge" style="background: rgba(255,255,255,0.3); color: white;"><span class="dot" id="dotZh"></span><span id="badgeTextZh">结果生成中…</span></div>
+        <p class="small" id="resultTextZh" style="color: rgba(255,255,255,0.95); margin-top:12px;"></p>
+        <p class="small" id="resultHintZh" style="color: rgba(255,255,255,0.95); margin-top:8px;"></p>
+      </div>
+
+      <div class="small" style="margin-top:14px;color:var(--muted);">
+        <strong>下一步服务能提供：</strong>
+        <ul style="margin:10px 0 0 18px;">
+          <li>资产电气状况的客观证据（照片与数据）</li>
+          <li>未来 1–3 年维修/升级的优先级与预算路线图</li>
+          <li>可用于与租客、物业经理或保险公司沟通的专业报告</li>
+        </ul>
+      </div>
+
+      <div class="btns">
+        <button class="btn" id="quickCallBtn">预约 15 分钟电话联系，免费解读快照结果</button>
+        <button class="btn btn-ghost" id="learnMoreBtn">了解服务内容</button>
+        <a class="btn btn-ghost" id="emailBtn" href="#">邮件联系（自动填好内容）</a>
+        <a class="btn btn-ghost" id="pdfDownloadLinkZh" href="investment%20property%20check%20guide%20CN.pdf" download target="_blank" rel="noopener" style="display:none">直接下载《投资房电气风险自查指南》(PDF)</a>
+        <button class="btn btn-ghost" id="pdfBtnZh">发送《投资房电气风险自查指南》到邮箱（附感谢说明）</button>
+      </div>
+
+      <div class="small">
+        <strong>联系邮箱：</strong>
+        <a href="mailto:info@bhtechnology.com.au">info@bhtechnology.com.au</a>
+      </div>
+
+      <div id="shareSectionZh" class="share-section-zh"></div>
+
+      <div class="divider"></div>
+
+      <div class="small mono" id="debugLine" style="display:none" aria-hidden="true"></div>
+    </section>
+  </div>
+
+  <!-- Quick Call Modal -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">快速预约电话沟通（我们会按你选择的时间致电）</h3>
+        <button class="x" id="closeModalBtn" type="button">关闭</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="small">填写后点击「提交预约」，我们会收到通知并在你选择的时间段内联系你。</p>
+
+        <div class="form">
+          <div class="field">
+            <label>姓名</label>
+            <input id="name" type="text" placeholder="例如：张先生 / Lisa" />
+          </div>
+          <div class="field">
+            <label>电话</label>
+            <input id="phone" type="tel" placeholder="例如：04xx xxx xxx" />
+          </div>
+          <div class="field">
+            <label>邮箱</label>
+            <input id="email" type="email" placeholder="例如：name@email.com" />
+          </div>
+          <div class="field">
+            <label>房屋地址（建议填写）</label>
+            <input id="address" type="text" placeholder="例如：12 Smith St, Mawson Lakes SA" />
+          </div>
+          <div class="field">
+            <label>你希望我们什么时候联系你？</label>
+            <select id="slot">
+              <option value="">请选择</option>
+              <option>今天 / 1小时内（如可）</option>
+              <option>今天 下午（12pm–5pm）</option>
+              <option>今天 晚上（5pm–8pm）</option>
+              <option>明天 上午（9am–12pm）</option>
+              <option>明天 下午（12pm–5pm）</option>
+              <option>周末（请在备注说明时间）</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>备注（可选）</label>
+            <textarea id="note" placeholder="例如：我主要担心租客反映跳闸；希望先了解是否需要上门评估。"></textarea>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="success" id="successBox" style="display:none;">
+          已收到！我们的顾问会尽快按你选择的时间联系你。
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" id="emailRequestBtn" type="button">提交预约</button>
+        <button class="btn-ghost" id="closeModalBtn2" type="button">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="pdfModalZh" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">发送到邮箱</h3>
+        <button class="x" id="closePdfModalZh" type="button">关闭</button>
+      </div>
+      <div class="modal-body">
+        <p class="small" style="margin:0 0 10px">我们会把《投资房电气风险自查指南》和简短感谢说明发到您的邮箱，方便保存或转发。</p>
+        <div class="field">
+          <label for="pdfEmailZh">邮箱</label>
+          <input id="pdfEmailZh" type="email" placeholder="name@email.com" />
+        </div>
+        <div class="small" id="pdfErrZh" style="color:var(--danger);display:none">请输入有效邮箱</div>
+        <div class="btns" style="margin-top:14px">
+          <button class="btn" id="pdfSendBtnZh" type="button">发送</button>
+          <button class="btn btn-ghost" id="pdfCancelBtnZh" type="button">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function escapeHtml(str){
+    return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+  function getParam(name){ return new URL(window.location.href).searchParams.get(name) || ""; }
+  const utm_source = getParam("utm_source");
+  const utm_medium = getParam("utm_medium");
+  const utm_campaign = getParam("utm_campaign");
+  const utm = [utm_source, utm_medium, utm_campaign].filter(Boolean).join(" / ");
+  document.getElementById("utmPill").textContent = utm ? ("来源标记：" + utm) : "来源：未标记";
+
+  const INVESTOR_QUESTIONS = [
+    { id: "inv_uncertainDecision", text: "当建议做电气工作时，你通常会：", options: ["快速同意但事后不确定", "会拖延，因为拿不准", "通常比较有把握"] },
+    { id: "inv_conflictingAdvice", text: "同一问题是否遇到过不同意见/不同报价？", options: ["有，而且更难决策", "有，但我知道怎么选", "没有"] },
+    { id: "inv_unclearOverall", text: "你对房屋整体电路状态是否清楚？", options: ["清楚", "一般", "不太清楚"] },
+    { id: "inv_avoidDispute", text: "你最担心什么？", options: ["扯皮与责任不清", "花冤枉钱", "总体还好"] },
+    { id: "inv_tenantChangeSoon", text: "未来 60 天内会换租客吗？", options: ["会", "不会", "不确定"] },
+    { id: "inv_managerMode", text: "你是自己管理还是通过中介管理？", options: ["自己", "中介", "两者都有"] },
+    { id: "inv_portfolioSizeBand", text: "你管理的投资房数量（仅用于个性化）", options: ["1", "2-3", "4+"] },
+  ];
+  const OWNER_QUESTIONS = [
+    { id: "own_billBand", text: "年电费区间", options: ["< $2,000", "$2,000–$4,000", "$4,000–$6,000", "> $6,000"] },
+    { id: "own_allElectricNoGas", text: "是否全电（无燃气）？", options: ["是", "否", "不确定"] },
+    { id: "own_devices", text: "设备情况（可多选）", type: "multi", options: ["太阳能", "电池", "EV / 计划 EV", "热泵 / 管道空调", "电烹饪（电磁炉/烤箱）"] },
+    { id: "own_symptoms", text: "现象（可多选）", type: "multi", options: ["经常跳闸", "总开关发热/异响", "电费明显上升", "不清楚电花在哪里", "以上都没有"] },
+    { id: "own_billUploadWilling", text: "评估后是否愿意提供最近两期电费账单用于校准？", options: ["愿意", "暂不愿意"] },
+  ];
+
+  const state = { stage: 0, idx: 0, profile: null, primaryGoal: null, billUploadWilling: undefined, answers: {}, lead: null, _leadSubmitted: false, _lastState: null };
+  const STEP_IDS = {
+    VALUE: "step_0_value",
+    PATH: "step_1_path",
+    SNAPSHOT_QUESTION: "step_2_snapshot_question",
+    RESULT: "step_3_result",
+    CONTACT: "step_4_contact",
+  };
+  const SESSION_KEY = "snapshot_session_id";
+  const SESSION_EXPIRES_KEY = "snapshot_session_expires_at";
+  const LAST_STATE_KEY = "snapshot_last_state";
+  const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+  const PAGE_OPEN_TS = Date.now();
+  let abandonSent = false;
+
+  function createSessionId(){
+    if(typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+    return "sid_" + Math.random().toString(36).slice(2) + "_" + Date.now().toString(36);
+  }
+  function getOrCreateSessionId(){
+    try{
+      const now = Date.now();
+      const existing = localStorage.getItem(SESSION_KEY);
+      const expiresAt = Number(localStorage.getItem(SESSION_EXPIRES_KEY) || "0");
+      if(existing && Number.isFinite(expiresAt) && expiresAt > now) return existing;
+      const next = createSessionId();
+      localStorage.setItem(SESSION_KEY, next);
+      localStorage.setItem(SESSION_EXPIRES_KEY, String(now + SESSION_TTL_MS));
+      return next;
+    }catch(_e){
+      return createSessionId();
+    }
+  }
+  const SESSION_ID = getOrCreateSessionId();
+  const step0 = document.getElementById("step0");
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+  const qText = document.getElementById("qText");
+  const qOptions = document.getElementById("qOptions");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  function payloadProfile(){ return state.profile === "investor" ? "investor" : "owner"; }
+  function profileDeclared(){ if(state.profile === "investor") return "investor"; if(state.profile === "owner") return "owner"; return "unsure"; }
+  function tenantChangeSoonBool(){ if(state.answers.inv_tenantChangeSoon === "会") return true; if(state.answers.inv_tenantChangeSoon === "不会") return false; return undefined; }
+  function billUploadWillingBool(){ if(state.answers.own_billUploadWilling === "愿意") return true; if(state.answers.own_billUploadWilling === "暂不愿意") return false; return state.billUploadWilling; }
+  function primaryGoal(profile){ if(profile === "investor") return "risk"; if(profile === "owner") return "energy"; return "balanced"; }
+  function questionSet(){ return state.profile === "investor" ? INVESTOR_QUESTIONS : OWNER_QUESTIONS; }
+  function elapsedMs(){ return Date.now() - PAGE_OPEN_TS; }
+  function currentStepId(){
+    if(state.stage === 0) return STEP_IDS.VALUE;
+    if(state.stage === 1) return STEP_IDS.PATH;
+    if(state.stage === 2) return STEP_IDS.SNAPSHOT_QUESTION;
+    if(state.stage === 3) return STEP_IDS.RESULT;
+    return STEP_IDS.CONTACT;
+  }
+  function currentQuestionId(){
+    if(state.stage === 1) return "path_profile";
+    if(state.stage === 2){
+      const q = questionSet()[state.idx];
+      return q ? q.id : undefined;
+    }
+    return undefined;
+  }
+  function updateLastState(action, overrides = {}){
+    const payload = {
+      step_id: overrides.step_id || currentStepId(),
+      question_id: Object.prototype.hasOwnProperty.call(overrides, "question_id") ? overrides.question_id : currentQuestionId(),
+      action,
+      ts: Date.now(),
+      profileDeclared: profileDeclared(),
+      primaryGoal: state.primaryGoal || "balanced",
+    };
+    state._lastState = payload;
+    try{ localStorage.setItem(LAST_STATE_KEY, JSON.stringify(payload)); }catch(_e){}
+    return payload;
+  }
+  function readLastState(){
+    if(state._lastState) return state._lastState;
+    try{
+      const raw = localStorage.getItem(LAST_STATE_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    }catch(_e){ return null; }
+  }
+  function trackQuestionView(stepId, questionId){
+    updateLastState("view", { step_id: stepId, question_id: questionId });
+    track("question_view", { step_id: stepId, question_id: questionId, elapsed_ms: elapsedMs() });
+  }
+  function trackQuestionAnswer(stepId, questionId, payload){
+    updateLastState("answer", { step_id: stepId, question_id: questionId });
+    track("question_answer", { step_id: stepId, question_id: questionId, elapsed_ms: elapsedMs(), ...payload });
+  }
+  function trackBeacon(eventName, params){
+    try{
+      if(!navigator.sendBeacon) return;
+      const endpoint = (window.SNAPSHOT_BEACON_URL || "").trim();
+      if(!endpoint) return;
+      const body = JSON.stringify({ event: eventName, ...params });
+      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+    }catch(_e){}
+  }
+  function sendSnapshotAbandon(reason){
+    if(abandonSent || state._leadSubmitted) return;
+    abandonSent = true;
+    const last = readLastState() || {};
+    const payload = {
+      session_id: SESSION_ID,
+      last_step_id: last.step_id || currentStepId(),
+      last_question_id: last.question_id || currentQuestionId() || "",
+      last_action: last.action || "unknown",
+      time_on_page_ms: elapsedMs(),
+      profileDeclared: profileDeclared(),
+      primaryGoal: state.primaryGoal || "balanced",
+      reason,
+    };
+    track("snapshot_abandon", payload);
+    trackBeacon("snapshot_abandon", payload);
+  }
+  function track(name, params = {}) {
+    try {
+      if(typeof gtag !== "undefined") gtag("event", name, {
+        profile: payloadProfile(),
+        profileDeclared: profileDeclared(),
+        primaryGoal: state.primaryGoal || "balanced",
+        billUploadWilling: billUploadWillingBool(),
+        tenantChangeSoon: tenantChangeSoonBool(),
+        session_id: SESSION_ID,
+        ...params
+      });
+    } catch(e) {}
+  }
+
+  function setPathLabel(){
+    const el = document.getElementById("pathLabelZh");
+    if(!el) return;
+    if(state.profile === "investor") el.textContent = "路径：投资房";
+    else if(state.profile === "owner") el.textContent = "路径：自住房";
+    else if(state.profile === "balanced") el.textContent = "路径：不确定/两种都有";
+    else el.textContent = "路径：未选择";
+  }
+
+  function showStep(n){
+    [step0,step1,step2,step3].forEach(el=>{ if(el) el.classList.remove("active"); });
+    if(n===0 && step0) step0.classList.add("active");
+    if(n===1 && step1) step1.classList.add("active");
+    if(n===2 && step2) step2.classList.add("active");
+    if(n===3 && step3) step3.classList.add("active");
+    const pill = document.getElementById("stepProgress");
+    if(pill) pill.textContent = "Step " + n + " of 4";
+    setPathLabel();
+    if(n === 0) updateLastState("view", { step_id: STEP_IDS.VALUE, question_id: "intro_start" });
+    if(n === 1) trackQuestionView(STEP_IDS.PATH, "path_profile");
+    if(n === 3) updateLastState("view", { step_id: STEP_IDS.RESULT, question_id: "result" });
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function scoreAndResult(){
+    const triggers = [];
+    let score = 0;
+    if(state.profile === "investor"){
+      const a1 = state.answers.inv_uncertainDecision || "";
+      const a2 = state.answers.inv_conflictingAdvice || "";
+      const a3 = state.answers.inv_unclearOverall || "";
+      const a4 = state.answers.inv_avoidDispute || "";
+      const tenant = state.answers.inv_tenantChangeSoon || "";
+      const manager = state.answers.inv_managerMode || "";
+      if(tenant === "会"){ score += 2; triggers.push("60天内换租客"); }
+      if(a1 !== "通常比较有把握"){ score += 1; triggers.push("决策把握不足"); }
+      if(a2 !== "没有"){ score += 1; triggers.push("存在意见冲突"); }
+      if(a3 !== "清楚"){ score += 1; triggers.push("全局认知不足"); }
+      if(a4 === "扯皮与责任不清"){ score += 1; triggers.push("责任风险关注"); }
+      if(manager === "中介" || manager === "两者都有"){ score += 1; triggers.push("沟通链条较长"); }
+    } else {
+      const bill = state.answers.own_billBand;
+      const allElec = state.answers.own_allElectricNoGas;
+      const devices = Array.isArray(state.answers.own_devices) ? state.answers.own_devices : [];
+      const symptomsRaw = Array.isArray(state.answers.own_symptoms) ? state.answers.own_symptoms : [];
+      const symptoms = symptomsRaw.includes("以上都没有") ? [] : symptomsRaw;
+      if(bill === "$4,000–$6,000"){ score += 2; triggers.push("电费较高"); }
+      if(bill === "> $6,000"){ score += 3; triggers.push("电费很高"); }
+      if(allElec === "是"){ score += 1; triggers.push("全电家庭"); }
+      if(devices.includes("EV / 计划 EV")){ score += 2; triggers.push("EV 负载因素"); }
+      if(devices.includes("热泵 / 管道空调")){ score += 1; triggers.push("大功率空调负载"); }
+      if(symptoms.includes("经常跳闸") || symptoms.includes("总开关发热/异响")){ score += 2; triggers.push("负载/安全征兆"); }
+      if(symptoms.includes("电费明显上升") || symptoms.includes("不清楚电花在哪里")){ score += 1; triggers.push("用电可见性不足"); }
+    }
+    let status = "green";
+    if(score >= 6) status = "red";
+    else if(score >= 3) status = "yellow";
+    return { status, score, keyTriggers: triggers, profile: payloadProfile(), primaryGoal: state.primaryGoal || "balanced" };
+  }
+
+  function normalizeOwnerSignals(){
+    const devicesRaw = Array.isArray(state.answers.own_devices) ? state.answers.own_devices : [];
+    const symptomsRaw = Array.isArray(state.answers.own_symptoms) ? state.answers.own_symptoms : [];
+    const symptoms = symptomsRaw.includes("以上都没有") ? [] : symptomsRaw;
+    const hasSolar = devicesRaw.includes("太阳能");
+    const hasBattery = devicesRaw.includes("电池");
+    const hasEv = devicesRaw.includes("EV / 计划 EV");
+    const hasHeatPump = devicesRaw.includes("热泵 / 管道空调");
+    const electricCooking = devicesRaw.includes("电烹饪（电磁炉/烤箱）");
+    const symptomCodes = [];
+    if(symptoms.includes("经常跳闸")) symptomCodes.push("tripping");
+    if(symptoms.includes("总开关发热/异响")) symptomCodes.push("hot_switch");
+    if(symptoms.includes("电费明显上升")) symptomCodes.push("bill_spike");
+    if(symptoms.includes("不清楚电花在哪里")) symptomCodes.push("unknown_usage");
+    const deviceCodes = [];
+    if(hasSolar) deviceCodes.push("solar");
+    if(hasBattery) deviceCodes.push("battery");
+    if(hasEv) deviceCodes.push("ev");
+    if(hasHeatPump) deviceCodes.push("heat_pump");
+    if(electricCooking) deviceCodes.push("electric_cooking");
+    return {
+      billBand: state.answers.own_billBand,
+      allElectricNoGas: state.answers.own_allElectricNoGas === "是" ? true : state.answers.own_allElectricNoGas === "否" ? false : undefined,
+      hasSolar, hasBattery, hasEv, symptoms: symptomCodes, devices: deviceCodes,
+      outages: symptoms.includes("经常跳闸"),
+      cookingElectric: electricCooking,
+      wantsReduceBill: symptoms.includes("电费明显上升") || symptoms.includes("不清楚电花在哪里") || ["$2,000–$4,000","$4,000–$6,000","> $6,000"].includes(state.answers.own_billBand),
+    };
+  }
+
+  function buildSubmissionPayload(base){
+    const r = scoreAndResult();
+    const owner = normalizeOwnerSignals();
+    return {
+      ...base,
+      session_id: SESSION_ID,
+      profile: r.profile,
+      profileDeclared: profileDeclared(),
+      primaryGoal: r.primaryGoal,
+      hasSolar: owner.hasSolar,
+      hasBattery: owner.hasBattery,
+      hasEv: owner.hasEv,
+      billBand: owner.billBand,
+      allElectricNoGas: owner.allElectricNoGas,
+      tenantChangeSoon: tenantChangeSoonBool(),
+      managerMode: state.answers.inv_managerMode,
+      portfolioSizeBand: state.answers.inv_portfolioSizeBand,
+      billUploadWilling: billUploadWillingBool(),
+      investorManagerMode: state.answers.inv_managerMode,
+      symptoms: owner.symptoms,
+      devices: owner.devices,
+      energySignals: {
+        billBand: owner.billBand,
+        allElectricNoGas: owner.allElectricNoGas,
+        outages: owner.outages,
+        cookingElectric: owner.cookingElectric,
+        wantsReduceBill: owner.wantsReduceBill,
+      },
+      score: r.score,
+      status: r.status,
+      keyTriggers: r.keyTriggers,
+      answerMap: state.answers,
+    };
+  }
+
+  function ownerPainHooksZh(){
+    const hooks = [];
+    const billBand = state.answers.own_billBand;
+    const allElectric = state.answers.own_allElectricNoGas === "是";
+    const willing = billUploadWillingBool() === true;
+    if(billBand === "$4,000–$6,000" || billBand === "> $6,000"){
+      hooks.push("你当前电费区间偏高，通常存在可验证的降费空间，建议在评估中重点核对。");
+    }
+    if(allElectric){
+      hooks.push("全电家庭更容易出现峰值负载压力，建议重点检查容量余量与关键回路负载。");
+    }
+    if(willing){
+      hooks.push("若愿意提供近期账单，我们可在评估后做校准，让建议与费用估算更贴近实际。");
+    }
+    return hooks;
+  }
+
+  function renderQuestion(){
+    const qset = questionSet();
+    const q = qset[state.idx];
+    if(!q) return;
+    trackQuestionView(STEP_IDS.SNAPSHOT_QUESTION, q.id);
+    qText.textContent = q.text;
+    qOptions.innerHTML = "";
+    const selected = state.answers[q.id];
+    const isMulti = q.type === "multi";
+    q.options.forEach((opt, i)=>{
+      const id = `${q.id}_${i}`;
+      const label = document.createElement("label");
+      const checked = isMulti ? (Array.isArray(selected) && selected.includes(opt)) : selected === opt;
+      label.innerHTML = `<input type="${isMulti ? "checkbox":"radio"}" name="${q.id}" value="${escapeHtml(opt)}" id="${id}" ${checked ? "checked" : ""}> ${opt}`;
+      label.querySelector("input").addEventListener("change", (e)=>{
+        if(isMulti){
+          const curr = new Set(Array.isArray(state.answers[q.id]) ? state.answers[q.id] : []);
+          if(e.target.checked) curr.add(opt); else curr.delete(opt);
+          if(q.id === "own_symptoms" && opt === "以上都没有" && e.target.checked){
+            state.answers[q.id] = ["以上都没有"];
+            qOptions.querySelectorAll("input[type=checkbox]").forEach((cb)=>{ if(cb.value !== "以上都没有") cb.checked = false; });
+          }else{
+            curr.delete("以上都没有");
+            state.answers[q.id] = [...curr];
+          }
+          trackQuestionAnswer(STEP_IDS.SNAPSHOT_QUESTION, q.id, {
+            answer_values: state.answers[q.id],
+            answer_count: Array.isArray(state.answers[q.id]) ? state.answers[q.id].length : 0
+          });
+        }else{
+          state.answers[q.id] = opt;
+          if(q.id === "own_billUploadWilling"){
+            state.billUploadWilling = (opt === "愿意");
+          }
+          trackQuestionAnswer(STEP_IDS.SNAPSHOT_QUESTION, q.id, { answer_value: opt });
+        }
+      });
+      qOptions.appendChild(label);
+    });
+    prevBtn.disabled = (state.idx===0);
+    nextBtn.textContent = (state.idx===qset.length-1) ? "完成 →" : "下一题 →";
+  }
+
+  function updateResultView(){
+    const r = scoreAndResult();
+    const box = document.getElementById("coloredResultBoxZh");
+    const dot = document.getElementById("dotZh");
+    const badgeText = document.getElementById("badgeTextZh");
+    const resultText = document.getElementById("resultTextZh");
+    const hint = document.getElementById("resultHintZh");
+    const isOwner = r.profile === "owner";
+    const declared = profileDeclared();
+    const tenantSoon = tenantChangeSoonBool() === true;
+    const billUploadWilling = billUploadWillingBool() === true;
+    const ownerHooks = isOwner ? ownerPainHooksZh() : [];
+    if(r.status === "green"){
+      box.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+      dot.className = "dot";
+      badgeText.textContent = "不确定性较低";
+    }else if(r.status === "yellow"){
+      box.style.background = "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+      dot.className = "dot warn";
+      badgeText.textContent = "存在一定不确定性";
+    }else{
+      box.style.background = "linear-gradient(135deg, #ff0844 0%, #ffb199 100%)";
+      dot.className = "dot danger";
+      badgeText.textContent = "不确定性较高";
+    }
+    if(isOwner){
+      resultText.textContent = "从你的回答看，自住房路径下存在一定用电成本/负载压力信号。";
+      hint.textContent = "下一步可帮助你看清：电费花在哪里、是否接近容量边界、是否值得持续监测。";
+      document.getElementById("quickCallBtn").textContent = "预约 15 分钟电话（能源评估）";
+    }else{
+      resultText.textContent = "从你的回答看，投资房路径下存在一定决策不确定性/沟通链路风险信号。";
+      hint.textContent = "下一步可帮助你减少扯皮，提升与租客/中介/保险沟通时的证据清晰度。";
+      document.getElementById("quickCallBtn").textContent = tenantSoon ? "预约 15 分钟电话（换租客前检查）" : "预约 15 分钟电话（风险评估）";
+    }
+    const extraLines = [];
+    if(declared === "unsure") extraLines.push("确认电话中我们会帮助您选择最合适的评估类型。");
+    if(isOwner && billUploadWilling) extraLines.push("评估后我们会发送安全上传指引（账单可打码）用于校准。");
+    if(ownerHooks.length){
+      extraLines.push("痛点提示：" + ownerHooks.join("；"));
+    }
+    if(extraLines.length){
+      hint.textContent = hint.textContent + " " + extraLines.join(" ");
+    }
+    const shareEl = document.getElementById("shareSectionZh");
+    if(shareEl){
+      shareEl.innerHTML = renderShareSectionZh(r);
+    }
+    track("snapshot_completed", {
+      status: r.status,
+      risk_level: r.status,
+      score: r.score,
+      billBand: state.answers.own_billBand || "",
+      allElectricNoGas: state.answers.own_allElectricNoGas === "是",
+      referred_by: localStorage.getItem("referredBy") || "direct"
+    });
+  }
+
+  function generateReferralIDZh(){
+    const name = document.getElementById("name")?.value?.trim() || "";
+    const phone = document.getElementById("phone")?.value?.trim() || "";
+    if(name && phone) return name.charAt(0).toUpperCase() + (phone.replace(/\D/g,"").slice(-4) || "0000") + Math.random().toString(36).substring(2,6).toUpperCase();
+    return "REF" + Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+  function getReferralLinkZh(){ return window.location.origin + window.location.pathname + "?ref=" + generateReferralIDZh(); }
+  function showToastZh(msg){
+    const existing = document.querySelector(".referral-toast-zh");
+    if(existing) existing.remove();
+    const toast = document.createElement("div");
+    toast.className = "referral-toast-zh";
+    toast.textContent = msg;
+    toast.style.cssText = "position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:15px 25px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:99999;animation:toastSlideIn .3s ease;";
+    document.body.appendChild(toast);
+    setTimeout(()=>{ toast.style.animation = "toastSlideOut .3s ease forwards"; setTimeout(()=>toast.remove(),300); }, 2500);
+  }
+  function copyReferralLinkZh(){
+    const input = document.getElementById("referralLinkInputZh");
+    if(!input) return;
+    input.select();
+    input.setSelectionRange(0, 99999);
+    try{ navigator.clipboard.writeText(input.value); } catch(e){ document.execCommand("copy"); }
+    showToastZh("链接已复制");
+    track("referral_link_copied", { user_id: (input.value.split("ref=")[1] || "").split("&")[0] || "", risk_level: scoreAndResult().status, status: scoreAndResult().status });
+  }
+  function shareViaEmailZh(){
+    const link = document.getElementById("referralLinkInputZh")?.value || getReferralLinkZh();
+    const isOwner = payloadProfile() === "owner";
+    const subject = encodeURIComponent(isOwner ? "自住房用电快照（3-4分钟）" : "投资房电气风险快照（3-4分钟）");
+    const body = encodeURIComponent("你好，\n\n我刚做了一个简短快照，3-4分钟可得到下一步建议：\n" + link);
+    window.open("mailto:?subject=" + subject + "&body=" + body);
+    track("share_button_clicked", { platform: "email", user_id: generateReferralIDZh() });
+  }
+  function shareViaWhatsAppZh(){
+    const link = document.getElementById("referralLinkInputZh")?.value || getReferralLinkZh();
+    window.open("https://wa.me/?text=" + encodeURIComponent("3-4分钟快照：" + link));
+    track("share_button_clicked", { platform: "whatsapp", user_id: generateReferralIDZh() });
+  }
+  function shareViaFacebookZh(){
+    const link = document.getElementById("referralLinkInputZh")?.value || getReferralLinkZh();
+    window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(link));
+    track("share_button_clicked", { platform: "facebook", user_id: generateReferralIDZh() });
+  }
+  function shareViaWeChatZh(){
+    const link = document.getElementById("referralLinkInputZh")?.value || getReferralLinkZh();
+    const text = "3-4分钟快照（可分投资房/自住房路径）：" + link;
+    try{ navigator.clipboard.writeText(text); } catch(e){ document.execCommand("copy"); }
+    showToastZh("已复制微信分享文案");
+    track("share_button_clicked", { platform: "wechat", user_id: generateReferralIDZh() });
+  }
+  function renderShareSectionZh(result){
+    const link = getReferralLinkZh();
+    const tenantSoon = tenantChangeSoonBool() === true;
+    const title = result.profile === "owner" ? "分享这个用电快照" : "分享这个风险快照";
+    const desc = result.profile === "owner"
+      ? "适合希望看清电费去向与负载压力的业主。"
+      : (tenantSoon ? "适合希望在换租客前先确认风险与范围的房东。" : "适合希望减少扯皮与误判的投资房房东。");
+    const linkHtml = '<div style="background:#f5f5f5;border-radius:12px;padding:15px;margin-bottom:20px;"><p style="color:#333;font-size:14px;margin:0 0 8px 0;">您的推荐链接：</p><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><input type="text" id="referralLinkInputZh" value="' + link + '" readonly style="flex:1;min-width:180px;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:14px;background:white;" /><button onclick="copyReferralLinkZh()" style="padding:10px 20px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">复制</button></div></div>';
+    const btns = '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button onclick="shareViaEmailZh()" class="share-btn">邮件分享</button><button onclick="shareViaWhatsAppZh()" class="share-btn">WhatsApp</button><button onclick="shareViaFacebookZh()" class="share-btn">Facebook</button><button onclick="shareViaWeChatZh()" class="share-btn">微信</button></div>';
+    return '<div style="margin-top:30px;padding:20px;background:#fff;border:1px solid #eee;border-radius:16px;text-align:center;"><h3 style="color:#333;margin:0 0 10px 0;">' + title + '</h3><p style="color:#666;margin:0 0 20px 0;">' + desc + '</p>' + linkHtml + btns + '</div>';
+  }
+
+  document.getElementById("startBtn0Zh").addEventListener("click", ()=>{ showStep(1); track("snapshot_start"); });
+  document.getElementById("faqToggleZh").addEventListener("click", ()=>{ const c = document.getElementById("faqContentZh"); if(c) c.classList.toggle("open"); });
+  document.getElementById("step1BackBtn").addEventListener("click", ()=>showStep(0));
+  document.getElementById("step1NextBtn").addEventListener("click", ()=>{
+    const chosen = document.querySelector("input[name=profilePath]:checked");
+    if(!chosen){ alert("请先选择一个路径。"); return; }
+    state.profile = chosen.value;
+    state.primaryGoal = primaryGoal(chosen.value);
+    state.answers.path_profile = chosen.value;
+    state.idx = 0;
+    document.getElementById("step2TitleZh").textContent = state.profile === "investor" ? "Step 2｜投资房风险快照（3–4分钟）" : "Step 2｜自住房能源快照（3–4分钟）";
+    document.getElementById("step2DescZh").innerHTML = state.profile === "investor"
+      ? "<strong>投资房路径：</strong>聚焦换租客、扯皮责任、规划优先级。"
+      : "<strong>自住房路径：</strong>聚焦电费、负载压力、是否需要升级容量/持续监测。";
+    track("eligibility_complete", { eligible: "yes" });
+    showStep(2);
+    renderQuestion();
+  });
+  prevBtn.addEventListener("click", ()=>{ if(state.idx>0){ state.idx--; renderQuestion(); } else { showStep(1); } });
+  nextBtn.addEventListener("click", ()=>{
+    const q = questionSet()[state.idx];
+    if(!q) return;
+    if(q.type === "multi"){
+      if(!Array.isArray(state.answers[q.id])) state.answers[q.id] = [];
+    } else {
+      const picked = document.querySelector(`input[name=${q.id}]:checked`);
+      if(!picked){ alert("请选择一个选项。"); return; }
+      state.answers[q.id] = picked.value;
+    }
+    if(state.idx < questionSet().length - 1){ state.idx++; renderQuestion(); }
+    else { updateResultView(); showStep(3); }
+  });
+
+  document.getElementById("learnMoreBtn").addEventListener("click", ()=>{
+    alert("下一步服务可提供：\n1) 现场证据与结构化判断\n2) 优先级与预算规划\n3) 沟通与决策依据沉淀");
+  });
+
+  const overlay = document.getElementById("overlay");
+  function openModal(){
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden","false");
+    updateLastState("view", { step_id: STEP_IDS.CONTACT, question_id: "quickcall_form" });
+    track("conversion_action", {
+      action_type: "book_now",
+      status: scoreAndResult().status,
+      risk_level: scoreAndResult().status,
+      billBand: state.answers.own_billBand || "",
+      allElectricNoGas: state.answers.own_allElectricNoGas === "是"
+    });
+  }
+  function closeModal(){ overlay.classList.remove("show"); overlay.setAttribute("aria-hidden","true"); }
+  document.getElementById("quickCallBtn").addEventListener("click", openModal);
+  document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+  document.getElementById("closeModalBtn2").addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeModal(); });
+
+  function openPdfModalZh(){ const m = document.getElementById("pdfModalZh"); if(!m) return; m.classList.add("show"); m.style.display = "flex"; document.body.style.overflow = "hidden"; const err = document.getElementById("pdfErrZh"); if(err) err.style.display = "none"; }
+  function closePdfModalZh(){ const m = document.getElementById("pdfModalZh"); if(!m) return; m.classList.remove("show"); m.style.display = "none"; document.body.style.overflow = ""; }
+  document.getElementById("pdfBtnZh").addEventListener("click", openPdfModalZh);
+  document.getElementById("closePdfModalZh").addEventListener("click", closePdfModalZh);
+  document.getElementById("pdfCancelBtnZh").addEventListener("click", closePdfModalZh);
+  document.getElementById("pdfModalZh").addEventListener("click", (e)=>{ if(e.target.id === "pdfModalZh") closePdfModalZh(); });
+  document.getElementById("pdfSendBtnZh").addEventListener("click", async ()=>{
+    const email = document.getElementById("pdfEmailZh")?.value?.trim() || "";
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const err = document.getElementById("pdfErrZh");
+    if(!ok){ if(err){ err.style.display = "block"; err.textContent = "请输入有效邮箱"; } return; }
+    if(err) err.style.display = "none";
+    const btn = document.getElementById("pdfSendBtnZh");
+    const origText = btn.textContent;
+    btn.disabled = true; btn.textContent = "发送中…";
+    try {
+      const res = await fetch("/.netlify/functions/send-pdf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, lang: "zh" }) });
+      const data = await res.json().catch(()=>({}));
+      closePdfModalZh();
+      if(res.ok && data.ok) alert("已发送到您的邮箱，请查收。");
+      else { const link = document.getElementById("pdfDownloadLinkZh"); if(link) link.style.display = "inline-flex"; alert(data.error || "发送失败，请用直接下载。"); }
+    } catch(e){ const link = document.getElementById("pdfDownloadLinkZh"); if(link) link.style.display = "inline-flex"; alert("网络异常，请使用直接下载。"); }
+    btn.disabled = false; btn.textContent = origText;
+  });
+
+  function buildAnswerSummaryZh(){
+    const lines = [];
+    lines.push("路径：" + (state.profile || "未选"));
+    lines.push("目标：" + (state.primaryGoal || "balanced"));
+    questionSet().forEach((q)=>{ const a = state.answers[q.id]; lines.push(q.text + " -> " + (Array.isArray(a) ? a.join("，") : (a || "n/a"))); });
+    return lines.join("\n");
+  }
+
+  document.getElementById("emailRequestBtn").addEventListener("click", async ()=>{
+    const name = document.getElementById("name")?.value?.trim() || "";
+    const phone = document.getElementById("phone")?.value?.trim() || "";
+    const email = document.getElementById("email")?.value?.trim() || "";
+    const address = document.getElementById("address")?.value || "";
+    const slot = document.getElementById("slot")?.value || "";
+    const note = document.getElementById("note")?.value || "";
+    if(!name || !phone || !email){ alert("请先填写姓名、电话和邮箱。"); return; }
+    const btn = document.getElementById("emailRequestBtn");
+    const origText = btn.textContent;
+    btn.disabled = true; btn.textContent = "提交中…";
+    try {
+      const payload = buildSubmissionPayload({
+        type: "quickcall",
+        lang: "zh",
+        name, phone, email, address, slot, note,
+        summary: buildAnswerSummaryZh(),
+        utm: utm || "",
+        page: window.location.href,
+        referredBy: localStorage.getItem("referredBy") || "direct",
+      });
+      const res = await fetch("/.netlify/functions/send-booking", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const data = await res.json().catch(()=>({}));
+      if(res.ok && data.ok){
+        state._leadSubmitted = true;
+        updateLastState("submit", { step_id: STEP_IDS.CONTACT, question_id: "quickcall_form" });
+        document.getElementById("successBox").style.display = "block";
+        btn.style.display = "none";
+        track("lead_submit", {
+          method: "api",
+          status: scoreAndResult().status,
+          billBand: state.answers.own_billBand || "",
+          allElectricNoGas: state.answers.own_allElectricNoGas === "是"
+        });
+      }
+      else alert(data.error || "提交失败，请稍后重试。");
+    } catch(e){ alert("网络异常，请稍后重试。"); }
+    btn.disabled = false; btn.textContent = origText;
+  });
+
+  document.getElementById("emailBtn").addEventListener("click", (e)=>{
+    e.preventDefault();
+    const summary = buildAnswerSummaryZh();
+    const subject = encodeURIComponent("Request: Electrical Snapshot Follow-up");
+    const body = encodeURIComponent("您好，\n\n我已完成快照，想进一步咨询。\n\n" + summary + "\n\n谢谢");
+    window.location.href = `mailto:info@bhtechnology.com.au?subject=${subject}&body=${body}`;
+  });
+
+  (function init(){
+    document.querySelectorAll("input[name=profilePath]").forEach((el)=>{
+      el.addEventListener("change", (e)=>{
+        trackQuestionAnswer(STEP_IDS.PATH, "path_profile", { answer_value: e.target.value });
+      });
+    });
+    const referrerID = getParam("ref");
+    if(referrerID){
+      try{ localStorage.setItem("referredBy", referrerID); } catch(e){}
+      track("referral_visit", { referrer_id: referrerID });
+      const banner = document.createElement("div");
+      banner.id = "referralBannerZh";
+      banner.innerHTML = '<div style="background:linear-gradient(90deg,#667eea 0%,#764ba2 100%);color:white;padding:12px 20px;text-align:center;font-size:14px;">您是通过朋友推荐来的！完成此检查，您和推荐人各得<strong>$30优惠码</strong>。</div>';
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+    track("page_open", { page: "risk_snapshot_zh", referred_by: localStorage.getItem("referredBy") || "direct" });
+    showStep(0);
+  })();
+
+  window.addEventListener("pagehide", ()=>sendSnapshotAbandon("pagehide"));
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.visibilityState === "hidden") sendSnapshotAbandon("visibility_hidden");
+  });
+  window.addEventListener("beforeunload", ()=>sendSnapshotAbandon("beforeunload"));
+</script>
+</body>
+</html>

@@ -4,8 +4,8 @@
  * Do not put CRM business logic here — only API wrappers and transport.
  */
 
-const { ServiceM8Client } = require('./servicem8-client');
-const { sendSMS, normalizePhone } = require('./sms-client');
+const { ServiceM8Client } = require('./servicem8');
+const { sendSMS, normalizePhone } = require('./sms');
 
 module.exports = {
   ServiceM8Client,

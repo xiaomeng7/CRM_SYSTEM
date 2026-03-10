@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin – Advisory Applications | Better Home Technology</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+    .admin-table { width: auto; min-width: 100%; table-layout: auto; border-collapse: collapse; font-size: 0.9rem; }
+    .admin-table th, .admin-table td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .admin-table td.notes-cell { white-space: normal; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+    .admin-table th { background: var(--card); font-weight: 600; }
+    .admin-table tr:hover { background: #fafafa; }
+    .admin-table .muted { color: var(--muted); font-size: 0.85rem; }
+    .admin-table .status { font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: #e7e5e4; }
+    .admin-table .source-lite { background: #dcfce7; color: #166534; font-weight: 600; }
+    .admin-table .source-lite-paid { background: #dbeafe; color: #1e40af; font-weight: 600; }
+    .admin-table .payment-paid { background: #dcfce7; color: #166534; }
+    .admin-table .payment-pending { background: #fef3c7; color: #92400e; }
+    .admin-table .payment-unpaid { background: #e7e5e4; color: #57534e; }
+    .admin-table tr.row-lite { background: #f0fdf4; }
+    .admin-table tr.row-lite-paid { background: #eff6ff; }
+    .admin-table tr.row-lite:hover { background: #dcfce7; }
+    .admin-table .lite-snap-cell { font-size: 0.8rem; line-height: 1.4; white-space: normal; max-width: 220px; }
+    .admin-table .btn-delete { padding: 0.35rem 0.6rem; font-size: 0.8rem; cursor: pointer; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 4px; }
+    .admin-table .btn-delete:hover { background: #fee2e2; }
+    .admin-key-form { max-width: 400px; margin: 2rem 0; }
+    .admin-key-form input { margin-bottom: 0.5rem; }
+    .admin-empty { color: var(--muted); padding: 2rem; text-align: center; }
+    .admin-error { color: var(--error); margin: 1rem 0; }
+    @media (max-width: 800px) { .admin-table { font-size: 0.8rem; } .admin-table th, .admin-table td { padding: 0.4rem 0.5rem; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <div class="container" style="max-width: 1100px;">
+        <h1>Advisory Applications</h1>
+        <div id="key-form" class="admin-key-form">
+          <label for="admin-key">Admin key</label>
+          <input type="password" id="admin-key" placeholder="Enter admin key" autocomplete="off">
+          <button type="button" id="key-btn" style="margin-top: 0.5rem;">View applications</button>
+        </div>
+        <div id="content" style="display:none;">
+          <div class="admin-header">
+            <p class="brand" style="margin:0;"><strong>Better Home Technology</strong> · Advisory Admin</p>
+            <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+              <label style="font-size:0.9rem;">Source: <select id="source-filter" style="padding:0.35rem 0.5rem;">
+                <option value="">All</option>
+                <option value="lite_paid">Lite Paid</option>
+                <option value="lite_upgrade">Lite Upgrade</option>
+                <option value="pro_direct">Pro Direct</option>
+              </select></label>
+              <label style="font-size:0.9rem;">Payment: <select id="payment-filter" style="padding:0.35rem 0.5rem;">
+                <option value="">All</option>
+                <option value="paid">Paid only</option>
+                <option value="unpaid">Unpaid</option>
+              </select></label>
+              <button type="button" id="logout-btn" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">Log out</button>
+            </div>
+          </div>
+          <p id="admin-error" class="admin-error" style="display:none;"></p>
+          <div id="table-wrap" style="overflow-x: auto;">
+            <table class="admin-table" id="apps-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Source</th>
+                  <th>Payment</th>
+                  <th>Name</th>
+                  <th>Mobile</th>
+                  <th>Email</th>
+                  <th>Suburb</th>
+                  <th>Property</th>
+                  <th>Solar/Battery</th>
+                  <th>Bill range</th>
+                  <th>Contact time</th>
+                  <th>Status</th>
+                  <th>Credit</th>
+                  <th>Notes</th>
+                  <th>Lite snapshot</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="apps-body"></tbody>
+            </table>
+          </div>
+          <p id="admin-empty" class="admin-empty" style="display:none;">No applications yet.</p>
+          <p style="margin-top: 2rem;"><a href="/">← Back to Energy Decision Advisory</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function() {
+      var STORAGE_KEY = 'bht_admin_key';
+      var keyForm = document.getElementById('key-form');
+      var content = document.getElementById('content');
+      var keyInput = document.getElementById('admin-key');
+      var keyBtn = document.getElementById('key-btn');
+      var logoutBtn = document.getElementById('logout-btn');
+      var appsBody = document.getElementById('apps-body');
+      var adminError = document.getElementById('admin-error');
+      var adminEmpty = document.getElementById('admin-empty');
+      var tableWrap = document.getElementById('table-wrap');
+      var sourceFilter = document.getElementById('source-filter');
+      var paymentFilter = document.getElementById('payment-filter');
+      var allApps = [];
+
+      function getApiBase() {
+        return window.location.origin.indexOf('localhost') !== -1 ? 'http://localhost:8888' : '';
+      }
+
+      function load() {
+        var key = sessionStorage.getItem(STORAGE_KEY);
+        if (key) {
+          keyForm.style.display = 'none';
+          content.style.display = 'block';
+          fetchApps(key);
+        }
+      }
+
+      function fetchApps(key) {
+        adminError.style.display = 'none';
+        var url = getApiBase() + '/api/admin/advisory-applications';
+        fetch(url, { headers: { 'X-Admin-Key': key } })
+          .then(function(r) {
+            if (r.status === 401) {
+              sessionStorage.removeItem(STORAGE_KEY);
+              keyForm.style.display = 'block';
+              content.style.display = 'none';
+              keyInput.value = '';
+              adminError.textContent = 'Invalid admin key.';
+              adminError.style.display = 'block';
+              return null;
+            }
+            return r.json();
+          })
+          .then(function(data) {
+            if (!data) return;
+            if (data.error) {
+              adminError.textContent = data.error;
+              adminError.style.display = 'block';
+              return;
+            }
+            allApps = data.applications || [];
+            applyFilter();
+          })
+          .catch(function() {
+            adminError.textContent = 'Network error.';
+            adminError.style.display = 'block';
+          });
+      }
+
+      function applyFilter() {
+        var sourceVal = sourceFilter ? sourceFilter.value : '';
+        var payVal = paymentFilter ? paymentFilter.value : '';
+        var apps = allApps;
+        if (sourceVal) apps = apps.filter(function(a) { return (a.source || 'pro_direct') === sourceVal; });
+        if (payVal === 'paid') apps = apps.filter(function(a) { return (a.payment_status || 'unpaid') === 'paid'; });
+        if (payVal === 'unpaid') apps = apps.filter(function(a) { return (a.payment_status || 'unpaid') !== 'paid'; });
+        render(apps);
+      }
+
+      function render(apps) {
+        appsBody.innerHTML = '';
+        if (apps.length === 0) {
+          tableWrap.style.display = 'none';
+          adminEmpty.style.display = 'block';
+          return;
+        }
+        tableWrap.style.display = 'block';
+        adminEmpty.style.display = 'none';
+        var key = sessionStorage.getItem(STORAGE_KEY);
+        apps.forEach(function(a) {
+          var tr = document.createElement('tr');
+          tr.setAttribute('data-id', a.id || '');
+          var src = a.source || 'pro_direct';
+          var isLiteUpgrade = src === 'lite_upgrade';
+          var isLitePaid = src === 'lite_paid';
+          if (isLiteUpgrade) tr.classList.add('row-lite');
+          if (isLitePaid) tr.classList.add('row-lite-paid');
+          var created = a.created_at ? new Date(a.created_at).toLocaleString('en-AU', { dateStyle: 'short', timeStyle: 'short' }) : '-';
+          var sourceLabel = isLitePaid ? 'LITE PAID' : isLiteUpgrade ? 'LITE → PRO' : 'PRO DIRECT';
+          var sourceClass = isLitePaid ? 'source-lite-paid' : isLiteUpgrade ? 'source-lite' : '';
+          var payStatus = a.payment_status || 'unpaid';
+          var paymentLabel = payStatus === 'paid' ? 'PAID' : payStatus === 'pending' ? 'PENDING' : 'UNPAID';
+          var paymentClass = 'payment-' + payStatus;
+          var creditDisplay = (a.credit_amount != null && a.credit_amount > 0) ? ('$' + (a.credit_amount / 100).toFixed(0)) : '-';
+          var notesText = (a.notes || '-').slice(0, 40) + (a.notes && a.notes.length > 40 ? '…' : '');
+          var liteSnap = a.lite_snapshot;
+          var liteDisplay = '-';
+          var liteTitle = '';
+          if (liteSnap && typeof liteSnap === 'string') {
+            try {
+              var obj = JSON.parse(liteSnap);
+              liteTitle = liteSnap;
+              liteDisplay = formatLiteSnapshot(obj);
+            } catch (e) { liteDisplay = '—'; }
+          } else if (liteSnap && typeof liteSnap === 'object') {
+            liteTitle = JSON.stringify(liteSnap);
+            liteDisplay = formatLiteSnapshot(liteSnap);
+          }
+          tr.innerHTML = '<td class="muted">' + escapeHtml(created) + '</td>' +
+            '<td><span class="status ' + sourceClass + '">' + escapeHtml(sourceLabel) + '</span></td>' +
+            '<td><span class="status ' + paymentClass + '">' + escapeHtml(paymentLabel) + '</span></td>' +
+            '<td><strong>' + escapeHtml(a.name || '-') + '</strong></td>' +
+            '<td><a href="tel:' + escapeHtml(a.mobile || '') + '">' + escapeHtml(a.mobile || '-') + '</a></td>' +
+            '<td><a href="mailto:' + escapeHtml(a.email || '') + '">' + escapeHtml(a.email || '-') + '</a></td>' +
+            '<td>' + escapeHtml(a.suburb || '-') + '</td>' +
+            '<td>' + escapeHtml(a.property_type || '-') + '</td>' +
+            '<td>' + escapeHtml(a.solar_battery_status || '-') + '</td>' +
+            '<td>' + escapeHtml(a.bill_range || '-') + '</td>' +
+            '<td>' + escapeHtml(a.contact_time || '-') + '</td>' +
+            '<td><span class="status">' + escapeHtml(a.status || 'new') + '</span></td>' +
+            '<td class="muted">' + escapeHtml(creditDisplay) + '</td>' +
+            '<td class="muted notes-cell" title="' + escapeHtml(a.notes || '') + '">' + escapeHtml(notesText) + '</td>' +
+            '<td class="muted lite-snap-cell" title="' + escapeHtml(liteTitle) + '">' + escapeHtml(liteDisplay) + '</td>' +
+            '<td><button type="button" class="btn-delete" data-id="' + escapeHtml(a.id || '') + '">Delete</button></td>';
+          appsBody.appendChild(tr);
+        });
+        appsBody.querySelectorAll('.btn-delete').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var id = btn.getAttribute('data-id');
+            if (!id) return;
+            if (!confirm('Delete this application?')) return;
+            var url = getApiBase() + '/api/admin/advisory-applications';
+            fetch(url, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json', 'X-Admin-Key': key || '' },
+              body: JSON.stringify({ id: id })
+            }).then(function(r) {
+              return r.json().then(function(data) {
+                if (r.ok && data.ok) {
+                  allApps = allApps.filter(function(a) { return a.id !== id; });
+                  applyFilter();
+                } else {
+                  adminError.textContent = data.error || 'Delete failed.';
+                  adminError.style.display = 'block';
+                }
+              });
+            }).catch(function() {
+              adminError.textContent = 'Network error.';
+              adminError.style.display = 'block';
+            });
+          });
+        });
+      }
+
+      function formatLiteSnapshot(obj) {
+        if (!obj || typeof obj !== 'object') return '-';
+        var parts = [];
+        if (obj.decisionLabel) parts.push(obj.decisionLabel);
+        if (obj.savingsLow != null && obj.savingsHigh != null) parts.push('$' + obj.savingsLow + '–' + obj.savingsHigh + '/yr');
+        if (obj.paybackLow != null && obj.paybackHigh != null) parts.push(obj.paybackLow + '–' + obj.paybackHigh + 'yr');
+        if (obj.annualBillBand) parts.push('Bill: ' + obj.annualBillBand);
+        if (obj.allElectric === true) parts.push('All-electric');
+        if (obj.hasEv === true) parts.push('EV');
+        return parts.length ? parts.join(' · ') : '-';
+      }
+
+      function escapeHtml(s) {
+        if (s == null || s === undefined) return '';
+        var div = document.createElement('div');
+        div.textContent = String(s);
+        return div.innerHTML;
+      }
+
+      if (sourceFilter) sourceFilter.addEventListener('change', applyFilter);
+      if (paymentFilter) paymentFilter.addEventListener('change', applyFilter);
+
+      keyBtn.addEventListener('click', function() {
+        var key = keyInput.value.trim();
+        if (!key) { adminError.textContent = 'Please enter the admin key.'; adminError.style.display = 'block'; return; }
+        sessionStorage.setItem(STORAGE_KEY, key);
+        keyForm.style.display = 'none';
+        content.style.display = 'block';
+        fetchApps(key);
+      });
+
+      keyInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') keyBtn.click();
+      });
+
+      if (logoutBtn) logoutBtn.addEventListener('click', function() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        keyForm.style.display = 'block';
+        content.style.display = 'none';
+        keyInput.value = '';
+      });
+
+      load();
+    })();
+  </script>
+</body>
+</html>

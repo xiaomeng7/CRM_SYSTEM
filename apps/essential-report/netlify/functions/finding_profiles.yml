@@ -1,0 +1,1099 @@
+version: 2.0
+meta:
+  description: >
+    Finding profiles for Better Home electrical asset risk & capital planning reports.
+    Each key maps to a stable finding.id used by the system.
+  scales:
+    risk: "0-10 (10 = highest risk exposure)"
+    budget: "0-5 (0 = none, 5 = high budget provision likely)"
+    compliance: "LOW | MEDIUM | HIGH"
+  categories:
+    - SHOCK
+    - FIRE
+    - LIFE_SAFETY
+    - COMPLIANCE
+    - LEGACY
+    - RELIABILITY
+    - DATA_QUALITY
+    - OTHER
+
+# Category-level defaults (used when a finding doesn't specify a field)
+category_defaults:
+  SHOCK:
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Electrical testing if applicable"
+  FIRE:
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Thermal imaging if available"
+  LIFE_SAFETY:
+    risk_severity: 5
+    likelihood: 2
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Functional testing"
+  COMPLIANCE:
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    timeline: "6–18 months"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Standards verification"
+  LEGACY:
+    risk_severity: 3
+    likelihood: 2
+    priority: PLAN
+    budget_band: MED
+    timeline: "Next renovation"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Age assessment"
+  RELIABILITY:
+    risk_severity: 2
+    likelihood: 2
+    priority: PLAN
+    budget_band: LOW
+    timeline: "6–18 months"
+    evidence_requirements:
+      - "Visual inspection"
+  DATA_QUALITY:
+    risk_severity: 1
+    likelihood: 1
+    priority: PLAN
+    budget_band: LOW
+    timeline: "Next inspection"
+    evidence_requirements:
+      - "Visual inspection"
+  OTHER:
+    risk_severity: 2
+    likelihood: 2
+    priority: PLAN
+    budget_band: LOW
+    timeline: "6–18 months"
+    evidence_requirements:
+      - "Visual inspection"
+
+finding_profiles:
+
+  # ======================================
+  # SWITCHBOARD / MAIN BOARD
+  # ======================================
+
+  SWITCHBOARD_CERAMIC_FUSES_PRESENT:
+    default_risk: 5
+    default_budget: 4
+    compliance: MEDIUM
+    category: LEGACY
+    notes: "Ceramic fuses are legacy protection and typically provide reduced modern fault mitigation."
+    # New fields (v2.0+)
+    asset_component: "Main Switchboard - Ceramic Fuses"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Age assessment"
+      - "Protection type verification"
+    risk_severity: 3
+    likelihood: 2
+    priority: PLAN
+    budget_band: MED
+    budget_range: "AUD $2,000–$5,000"
+    timeline: "Next renovation"
+    disclaimer_line: "Replacement should be planned during next major electrical upgrade."
+
+  SWITCHBOARD_REWIREABLE_FUSES_PRESENT:
+    default_risk: 6
+    default_budget: 4
+    compliance: MEDIUM
+    category: LEGACY
+    notes: "Rewireable fuses are outdated and often indicate an ageing board requiring planned upgrade."
+    asset_component: "Main Switchboard - Rewireable Fuses"
+    risk_severity: 3
+    likelihood: 2
+    priority: PLAN
+    budget_band: MED
+    timeline: "Next renovation"
+
+  SWITCHBOARD_NO_RCD_OR_RCBO:
+    default_risk: 7
+    default_budget: 4
+    compliance: HIGH
+    category: SHOCK
+    notes: "Absence of modern residual current protection increases shock liability and fault escalation exposure."
+    # New fields (v2.0+)
+    asset_component: "Main Switchboard - RCD/RCBO Protection"
+    evidence_requirements:
+      - "Visual inspection"
+      - "Electrical testing"
+      - "Protection device verification"
+    risk_severity: 5
+    likelihood: 4
+    priority: IMMEDIATE
+    budget_band: MED
+    budget_range: "AUD $1,500–$4,000"
+    timeline: "0–3 months"
+    disclaimer_line: "Upgrade recommended to meet current safety standards."
+
+  SWITCHBOARD_NO_RCBO:
+    default_risk: 6
+    default_budget: 4
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "No RCBOs reduces circuit-level protection and makes fault isolation less controlled."
+    asset_component: "Main Switchboard - RCBO Protection"
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  SWITCHBOARD_AGED_ORIGINAL:
+    default_risk: 6
+    default_budget: 4
+    compliance: MEDIUM
+    category: LEGACY
+    notes: "Age-related degradation increases likelihood of faults and nuisance failures over time."
+    asset_component: "Main Switchboard - Ageing Components"
+    risk_severity: 3
+    likelihood: 2
+    priority: PLAN
+    budget_band: MED
+    timeline: "Next renovation"
+
+  SWITCHBOARD_LABELING_INCOMPLETE:
+    default_risk: 3
+    default_budget: 1
+    compliance: LOW
+    category: COMPLIANCE
+    notes: "Poor labeling impacts maintainability and decision confidence; low cost to address."
+    asset_component: "Main Switchboard - Labeling"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    timeline: "6–18 months"
+
+  SWITCHBOARD_CLEARANCES_OR_ACCESS_ISSUE:
+    default_risk: 4
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Access/clearance issues can hinder emergency isolation and safe servicing."
+    asset_component: "Main Switchboard - Access & Clearances"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    timeline: "6–18 months"
+
+  SWITCHBOARD_ENCLOSURE_DAMAGED:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "Damaged enclosure can expose live parts and increase touch risk."
+    asset_component: "Main Switchboard - Enclosure"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  SWITCHBOARD_SIGNS_OF_HEAT_DAMAGE:
+    default_risk: 8
+    default_budget: 4
+    compliance: HIGH
+    category: FIRE
+    notes: "Heat damage indicates elevated fire risk. If not addressed, could escalate to failure or ignition."
+    asset_component: "Main Switchboard - Heat Damage"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: HIGH
+    timeline: "0–3 months"
+
+  SWITCHBOARD_LOOSE_CONNECTIONS_SUSPECTED:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: FIRE
+    notes: "Loose connections can cause resistance heating and arcing."
+    asset_component: "Main Switchboard - Connections"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  SWITCHBOARD_INADEQUATE_SPARE_WAYS:
+    default_risk: 3
+    default_budget: 2
+    compliance: LOW
+    category: RELIABILITY
+    notes: "Limited spare ways may constrain future upgrades and increase retrofit complexity."
+    asset_component: "Main Switchboard - Capacity"
+    risk_severity: 2
+    likelihood: 2
+    priority: PLAN
+    budget_band: LOW
+    timeline: "6–18 months"
+
+  # ======================================
+  # RCD / RCBO / PROTECTION
+  # ======================================
+
+  LIGHTING_CIRCUITS_NO_RCD:
+    default_risk: 6
+    default_budget: 3
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "No RCD protection on lighting circuits increases shock exposure during faults."
+    asset_component: "Lighting Circuits - RCD Protection"
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  POWER_CIRCUITS_NO_RCD:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "No RCD on power circuits increases liability exposure for occupants/tenants."
+    asset_component: "Power Circuits - RCD Protection"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  RCD_TEST_FAIL_OR_UNSTABLE:
+    default_risk: 8
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "Failed/unstable RCD operation can invalidate assumptions of protection."
+    asset_component: "RCD Protection Device"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  RCD_TRIP_TIME_SLOW:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: SHOCK
+    notes: "Slow trip times reduce protection effectiveness; if not addressed risk may become less manageable."
+    asset_component: "RCD Protection Device"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+
+  RCD_NOT_TESTED_OR_UNKNOWN:
+    default_risk: 4
+    default_budget: 1
+    compliance: MEDIUM
+    category: DATA_QUALITY
+    notes: "Protection status unknown reduces decision confidence; retest recommended."
+
+  RCBO_RECOMMENDED_UPGRADE:
+    default_risk: 5
+    default_budget: 3
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "Upgrade improves circuit-level protection and reduces future exposure."
+    asset_component: "Circuit Protection - RCBO Upgrade"
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "12–24 months"
+
+  OVERCURRENT_PROTECTION_NONCOMPLIANT:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: COMPLIANCE
+    notes: "Noncompliant overcurrent protection can increase fire risk under overload/fault conditions."
+    asset_component: "Circuit Protection - Overcurrent Devices"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  # ======================================
+  # MEN / EARTHING
+  # ======================================
+
+  MEN_NOT_VERIFIED:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Unable to verify MEN reduces assurance of fault protection integrity."
+
+  MEN_CONNECTION_DEFECTIVE:
+    default_risk: 8
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "Defective MEN can elevate touch voltage risk. If not addressed, liability escalates."
+    asset_component: "MEN Connection"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  EARTHING_RESISTANCE_HIGH:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "High earthing resistance can reduce protective device performance."
+    asset_component: "Earthing System"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    timeline: "0–3 months"
+
+  EARTHING_CONTINUITY_NOT_VERIFIED:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Missing verification reduces confidence; retesting can clarify risk."
+
+  MAIN_EARTH_CONDUCTOR_UNDERSIZED_SUSPECTED:
+    default_risk: 6
+    default_budget: 2
+    compliance: HIGH
+    category: COMPLIANCE
+    notes: "Potential MEC sizing issue may compromise fault path integrity."
+
+  BONDING_TO_WATER_GAS_NOT_VERIFIED:
+    default_risk: 4
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Unverified bonding reduces confidence in equipotential safety assumptions."
+
+  # ======================================
+  # SOCKETS / GPO / SWITCHES / FITTINGS
+  # ======================================
+
+  GPO_MECHANICAL_LOOSE:
+    default_risk: 5
+    default_budget: 1
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Loose outlets can lead to arcing/overheating; typically manageable if planned promptly."
+    asset_component: "GPO Outlets"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    timeline: "12–24 months"
+
+  DAMAGED_OUTLET_OR_SWITCH:
+    default_risk: 6
+    default_budget: 2
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "Damage can expose live parts and increase shock risk."
+    asset_component: "GPO Outlets / Switches"
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+
+  FITTING_OVERHEAT:
+    default_risk: 6
+    default_budget: 2
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Overheating indicates thermal stress; if not addressed could escalate."
+    asset_component: "Light Fittings"
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+
+  LIGHT_FITTING_NONCOMPLIANT_OR_UNSAFE:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Unsafe fitting conditions increase fire risk."
+    asset_component: "Light Fittings"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+
+  EXTENSION_LEADS_PERMANENT_USE_OBSERVED:
+    default_risk: 4
+    default_budget: 1
+    compliance: LOW
+    category: RELIABILITY
+    notes: "Indicates capacity/usage mismatch; may warrant additional outlets."
+
+  # ======================================
+  # SMOKE ALARMS / LIFE SAFETY
+  # ======================================
+
+  SMOKE_ALARMS_MISSING:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: LIFE_SAFETY
+    notes: "Missing alarms increase life-safety exposure and compliance risk."
+    asset_component: "Smoke Alarms"
+    risk_severity: 5
+    likelihood: 2
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+
+  SMOKE_ALARMS_EXPIRED:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: LIFE_SAFETY
+    notes: "Expired alarms reduce reliability of early detection."
+    asset_component: "Smoke Alarms"
+    risk_severity: 5
+    likelihood: 2
+    priority: IMMEDIATE
+    budget_band: LOW
+    timeline: "0–3 months"
+
+  SMOKE_ALARMS_NOT_INTERCONNECTED:
+    default_risk: 4
+    default_budget: 2
+    compliance: MEDIUM
+    category: LIFE_SAFETY
+    notes: "Non-interconnected alarms provide reduced warning effectiveness."
+
+  SMOKE_ALARMS_LOCATION_NONCOMPLIANT_SUSPECTED:
+    default_risk: 4
+    default_budget: 2
+    compliance: MEDIUM
+    category: LIFE_SAFETY
+    notes: "Location may reduce effectiveness; review against current requirements."
+
+  # ======================================
+  # THERMAL IMAGING / HOTSPOTS
+  # ======================================
+
+  THERMAL_NOT_PERFORMED:
+    default_risk: 0
+    default_budget: 0
+    compliance: LOW
+    category: DATA_QUALITY
+    notes: "Thermal imaging not performed; no inference should be made."
+
+  THERMAL_NORMAL_NO_HOTSPOTS:
+    default_risk: 0
+    default_budget: 0
+    compliance: LOW
+    category: DATA_QUALITY
+    notes: "No abnormal hotspots detected under observed operating conditions."
+
+  THERMAL_HOTSPOT_DETECTED_MINOR:
+    default_risk: 6
+    default_budget: 2
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Minor hotspot may indicate early-stage resistance heating."
+
+  THERMAL_HOTSPOT_DETECTED_MAJOR:
+    default_risk: 9
+    default_budget: 3
+    compliance: HIGH
+    category: FIRE
+    notes: "Major hotspot indicates elevated fire risk; do not defer."
+
+  # ======================================
+  # WIRING / INSULATION / AGEING
+  # ======================================
+
+  WIRING_INSULATION_DEGRADED:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: FIRE
+    notes: "Degraded insulation increases fault likelihood and escalation risk."
+
+  WIRING_UNSUPPORTED_OR_POOR_FIXING:
+    default_risk: 4
+    default_budget: 2
+    compliance: LOW
+    category: COMPLIANCE
+    notes: "Poor fixing impacts mechanical protection and longevity."
+
+  OLD_RUBBER_VIR_WIRING_SUSPECTED:
+    default_risk: 8
+    default_budget: 4
+    compliance: HIGH
+    category: FIRE
+    notes: "Legacy rubber/VIR wiring may become brittle and hazardous with age."
+
+  EXTERNAL_CABLE_MECHANICAL_RISK:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: RELIABILITY
+    notes: "Cable subject to damage may lead to outages or unsafe exposure."
+
+  # ======================================
+  # TEST DATA / TECHNICAL MEASUREMENTS
+  # ======================================
+
+  TEST_DATA_INCOMPLETE:
+    default_risk: 3
+    default_budget: 0
+    compliance: LOW
+    category: DATA_QUALITY
+    notes: "Missing test data reduces decision confidence but is not itself a defect."
+
+  INSULATION_RESISTANCE_LOW_BORDERLINE:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: FIRE
+    notes: "Borderline insulation results may indicate deterioration trend."
+
+  INSULATION_RESISTANCE_FAIL:
+    default_risk: 9
+    default_budget: 4
+    compliance: HIGH
+    category: FIRE
+    notes: "Insulation resistance failure indicates elevated fault and fire risk."
+
+  EARTH_FAULT_LOOP_IMPEDANCE_BORDERLINE:
+    default_risk: 6
+    default_budget: 2
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "Borderline loop impedance reduces assurance of protective device operation."
+
+  EARTH_FAULT_LOOP_IMPEDANCE_FAIL:
+    default_risk: 9
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "Loop impedance failure can prevent timely disconnection during faults."
+
+  POLARITY_ISSUE_DETECTED:
+    default_risk: 8
+    default_budget: 2
+    compliance: HIGH
+    category: SHOCK
+    notes: "Polarity issues can cause dangerous outcomes and should be treated urgently."
+
+  # ======================================
+  # GENERAL / REPORT QUALITY FLAGS
+  # ======================================
+
+  ACCESS_LIMITATION_ROOF_VOID_NOT_ACCESSED:
+    default_risk: 2
+    default_budget: 0
+    compliance: LOW
+    category: DATA_QUALITY
+    notes: "Roof void not accessed; findings limited to accessible areas."
+
+  ACCESS_LIMITATION_SUBFLOOR_NOT_ACCESSED:
+    default_risk: 2
+    default_budget: 0
+    compliance: LOW
+    category: DATA_QUALITY
+    notes: "Subfloor not accessed; latent issues may remain unidentified."
+
+  GENERAL_OBSERVATION_AGEING_INSTALLATION:
+    default_risk: 3
+    default_budget: 2
+    compliance: LOW
+    category: LEGACY
+    notes: "General ageing noted; supports planned upgrades rather than immediate action."
+
+  UNKNOWN_FINDING_FALLBACK:
+    default_risk: 3
+    default_budget: 1
+    compliance: LOW
+    category: OTHER
+    notes: "Fallback profile for unmapped IDs. Ensure new IDs are added to profiles."
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - SWITCHBOARD CONTAMINATION
+  # ======================================
+
+  SWITCHBOARD_CONTAMINATION:
+    default_risk: 4
+    default_budget: 2
+    compliance: MEDIUM
+    category: RELIABILITY
+    notes: "Dust, insect, or spider contamination in switchboard can affect device operation and increase fire risk."
+    asset_component: "Main Switchboard - Enclosure Cleanliness"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $150–$400"
+    timeline: "6–12 months"
+
+  SWITCHBOARD_GREASE_OIL:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Grease or oil contamination increases fire risk and can affect device operation."
+    asset_component: "Main Switchboard - Contamination"
+    risk_severity: 4
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $200–$500"
+    timeline: "3–6 months"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - CABLES & CONDUCTORS
+  # ======================================
+
+  CABLE_ENTRY_UNPROTECTED:
+    default_risk: 4
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Unprotected cable entries (no grommet) can damage cable insulation over time."
+    asset_component: "Switchboard - Cable Entries"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $100–$300"
+    timeline: "6–12 months"
+
+  EXPOSED_CONDUCTORS:
+    default_risk: 7
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "Exposed single insulated conductors increase shock and fire risk."
+    asset_component: "Wiring - Conductor Protection"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    budget_range: "AUD $300–$800"
+    timeline: "0–3 months"
+
+  COLOUR_IDENTIFICATION_INCORRECT:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Incorrect conductor colour identification can lead to wiring errors during maintenance."
+    asset_component: "Wiring - Conductor Identification"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $200–$600"
+    timeline: "6–12 months"
+
+  MIXED_OLD_NEW_DEVICES:
+    default_risk: 4
+    default_budget: 2
+    compliance: LOW
+    category: LEGACY
+    notes: "Mix of old and new devices may indicate piecemeal upgrades; consider unified upgrade."
+    asset_component: "Switchboard - Protection Devices"
+    risk_severity: 3
+    likelihood: 2
+    priority: PLAN
+    budget_band: MED
+    budget_range: "AUD $1,500–$4,000"
+    timeline: "Next renovation"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - EARTHING
+  # ======================================
+
+  BARE_EARTH_CONDUCTOR:
+    default_risk: 5
+    default_budget: 2
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Bare earth conductor in use may not meet current standards."
+    asset_component: "Earthing System - Conductor"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $200–$500"
+    timeline: "6–12 months"
+
+  EARTH_NEUTRAL_MIXED:
+    default_risk: 8
+    default_budget: 3
+    compliance: HIGH
+    category: SHOCK
+    notes: "Earth and neutral mixed downstream creates serious shock hazard and must be corrected."
+    asset_component: "Wiring - E/N Separation"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: MED
+    budget_range: "AUD $500–$1,500"
+    timeline: "0–3 months"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - GPO / OUTLETS
+  # ======================================
+
+  GPO_LOOSE_MOUNTING:
+    default_risk: 5
+    default_budget: 1
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Loose power point mounting can cause arcing and overheating."
+    asset_component: "GPO Outlets - Mounting"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $80–$200 per outlet"
+    timeline: "6–12 months"
+
+  GPO_BURN_MARKS:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Burn marks on outlets indicate previous overheating or arcing events."
+    asset_component: "GPO Outlets"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $100–$300 per outlet"
+    timeline: "0–3 months"
+
+  GPO_SOCKET_WORN:
+    default_risk: 5
+    default_budget: 1
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Worn socket contacts can cause poor connections and overheating."
+    asset_component: "GPO Outlets - Socket Contacts"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $80–$200 per outlet"
+    timeline: "6–12 months"
+
+  GPO_OVERHEATING:
+    default_risk: 8
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Outlet surface abnormally warm to touch indicates active thermal stress."
+    asset_component: "GPO Outlets"
+    risk_severity: 5
+    likelihood: 4
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $150–$400"
+    timeline: "0–1 month"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - SWITCHES & FITTINGS
+  # ======================================
+
+  SWITCH_PLATE_DAMAGED:
+    default_risk: 4
+    default_budget: 1
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "Cracked or damaged switch plate can expose live parts."
+    asset_component: "Light Switches"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $50–$150 per switch"
+    timeline: "6–12 months"
+
+  SWITCH_LOOSE_MOUNTING:
+    default_risk: 4
+    default_budget: 1
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Loose switch body can cause connection issues and arcing."
+    asset_component: "Light Switches"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $80–$200 per switch"
+    timeline: "6–12 months"
+
+  AUDIBLE_ARCING:
+    default_risk: 8
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Audible buzzing or crackling indicates active arcing and requires immediate attention."
+    asset_component: "Electrical Accessories"
+    risk_severity: 5
+    likelihood: 4
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $150–$400"
+    timeline: "0–1 month"
+
+  LIGHT_FITTING_LOOSE:
+    default_risk: 5
+    default_budget: 1
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Loose light fitting can cause connection issues and may fall."
+    asset_component: "Light Fittings"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $100–$300"
+    timeline: "3–6 months"
+
+  BARE_WIRE_EXPOSED:
+    default_risk: 9
+    default_budget: 2
+    compliance: HIGH
+    category: SHOCK
+    notes: "Bare metal wire core visible creates immediate shock hazard."
+    asset_component: "Wiring"
+    risk_severity: 5
+    likelihood: 4
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $200–$500"
+    timeline: "0–1 month"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - KITCHEN / BATHROOM
+  # ======================================
+
+  GREASE_FIRE_RISK:
+    default_risk: 5
+    default_budget: 1
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Grease residue on rangehood filter increases fire risk."
+    asset_component: "Kitchen - Rangehood"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $50–$200 (cleaning)"
+    timeline: "3–6 months"
+
+  MOISTURE_DAMAGE:
+    default_risk: 6
+    default_budget: 2
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "Moisture staining near electrical fittings indicates water ingress risk."
+    asset_component: "Bathroom - Electrical Fittings"
+    risk_severity: 4
+    likelihood: 3
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $200–$600"
+    timeline: "3–6 months"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - ROOF SPACE
+  # ======================================
+
+  INSULATION_CONTACT:
+    default_risk: 6
+    default_budget: 2
+    compliance: MEDIUM
+    category: FIRE
+    notes: "Cables in contact with insulation can cause heat buildup."
+    asset_component: "Roof Space - Wiring"
+    risk_severity: 4
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $300–$800"
+    timeline: "6–12 months"
+
+  TAPED_CONNECTION_VISIBLE:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Taped connections (not in junction box) are non-compliant and fire risk."
+    asset_component: "Wiring - Connections"
+    risk_severity: 4
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $150–$400 per connection"
+    timeline: "0–3 months"
+
+  TRANSFORMER_ON_INSULATION:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Transformer resting on insulation can cause overheating and fire."
+    asset_component: "Roof Space - Transformer"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $200–$500"
+    timeline: "0–3 months"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - EXTERIOR
+  # ======================================
+
+  OUTDOOR_COVER_MISSING:
+    default_risk: 6
+    default_budget: 1
+    compliance: MEDIUM
+    category: SHOCK
+    notes: "Missing or broken weatherproof cover exposes outlet to moisture."
+    asset_component: "Outdoor - GPO Outlets"
+    risk_severity: 4
+    likelihood: 3
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $100–$300"
+    timeline: "3–6 months"
+
+  FLEXIBLE_LEAD_FIXED:
+    default_risk: 5
+    default_budget: 1
+    compliance: MEDIUM
+    category: COMPLIANCE
+    notes: "Flexible lead fixed with clips/screws is non-compliant installation."
+    asset_component: "Wiring - Installation Method"
+    risk_severity: 3
+    likelihood: 2
+    priority: RECOMMENDED
+    budget_band: LOW
+    budget_range: "AUD $150–$400"
+    timeline: "6–12 months"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - LEGACY / AGEING
+  # ======================================
+
+  BAKELITE_CERAMIC_ACCESSORY:
+    default_risk: 4
+    default_budget: 2
+    compliance: LOW
+    category: LEGACY
+    notes: "Bakelite or ceramic accessories indicate aged installation requiring planned upgrade."
+    asset_component: "Electrical Accessories"
+    risk_severity: 3
+    likelihood: 2
+    priority: PLAN
+    budget_band: MED
+    budget_range: "AUD $500–$2,000"
+    timeline: "Next renovation"
+
+  NON_STANDARD_WIRING:
+    default_risk: 6
+    default_budget: 3
+    compliance: HIGH
+    category: COMPLIANCE
+    notes: "Non-standard wiring or added components may indicate DIY or unlicensed work."
+    asset_component: "Wiring - Installation Quality"
+    risk_severity: 4
+    likelihood: 3
+    priority: RECOMMENDED
+    budget_band: MED
+    budget_range: "AUD $500–$2,000"
+    timeline: "3–6 months"
+
+  CABLE_DAMAGE_VISIBLE:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: FIRE
+    notes: "Visible cable damage creates shock and fire risk."
+    asset_component: "Wiring"
+    risk_severity: 5
+    likelihood: 3
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $200–$600"
+    timeline: "0–3 months"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - SMOKE ALARMS
+  # ======================================
+
+  SMOKE_ALARM_TEST_FAIL:
+    default_risk: 7
+    default_budget: 2
+    compliance: HIGH
+    category: LIFE_SAFETY
+    notes: "Smoke alarm failed to sound during test; may be defective."
+    asset_component: "Smoke Alarms"
+    risk_severity: 5
+    likelihood: 2
+    priority: IMMEDIATE
+    budget_band: LOW
+    budget_range: "AUD $150–$400"
+    timeline: "0–1 month"
+
+  # ======================================
+  # NEW FINDINGS (v2.0) - SOLAR / BATTERY
+  # ======================================
+
+  PV_INVERTER_ALARM:
+    default_risk: 6
+    default_budget: 3
+    compliance: MEDIUM
+    category: RELIABILITY
+    notes: "Inverter displaying alarm may indicate system fault requiring investigation."
+    asset_component: "Solar PV - Inverter"
+    risk_severity: 4
+    likelihood: 3
+    priority: RECOMMENDED
+    budget_band: MED
+    budget_range: "AUD $300–$1,500"
+    timeline: "0–3 months"

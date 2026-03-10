@@ -1,0 +1,75 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Netlify Dev: port=浏览器访问端口；若 8888 被占用可改为 8889 等，或先结束占用进程：lsof -i :8888
+[dev]
+  port = 8888
+  targetPort = 5173
+
+[functions]
+  included_files = [
+    "./Gold_Report_Template.docx",
+    "./profiles/finding_profiles.yml",
+    "./mappings/issue_to_finding.json",
+    "./mappings/raw_to_canonical.yml",
+    "./netlify/functions/report-template.docx",
+    "./netlify/functions/report-template-md.docx",
+    "./netlify/functions/report-template.html",
+    "./netlify/functions/rules.yml",
+    "./netlify/functions/responses.yml",
+    "./netlify/functions/CHECKLIST_TO_FINDINGS_MAP.json",
+    "./netlify/functions/DEFAULT_REPORT_TEXT.md",
+    "./netlify/functions/DEFAULT_TEXT_LIBRARY.md",
+    "./netlify/functions/DEFAULT_TERMS.md",
+    "./netlify/functions/finding_profiles.yml",
+    "./netlify/functions/EXECUTIVE_SUMMARY_TEMPLATES.md",
+    "./netlify/functions/reportStyles.css"
+  ]
+
+# Internal API for Snapshot repo to push job mappings (must be before /api/* rule)
+[[redirects]]
+  from = "/api/internal/service-job-link"
+  to = "/.netlify/functions/internalServiceJobLink"
+  status = 200
+  force = true
+
+# ServiceM8 job prefill API (must be before /api/* rule)
+[[redirects]]
+  from = "/api/servicem8/job-prefill"
+  to = "/.netlify/functions/servicem8JobPrefill"
+  status = 200
+  force = true
+
+# Admin API: single function handles /api/admin/* (event.path preserved)
+[[redirects]]
+  from = "/api/admin/*"
+  to = "/.netlify/functions/admin"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/review/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/success/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
