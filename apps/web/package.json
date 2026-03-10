@@ -1,0 +1,14 @@
+{
+  "name": "@bht/web",
+  "version": "1.0.0",
+  "description": "BHT Revenue OS — Public-facing UI, landing pages, client portal. Deploy to Netlify.",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve public -l 3001",
+    "build": "echo 'Static site; no build step required for placeholder.'",
+    "preview": "npx serve public -l 3001"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

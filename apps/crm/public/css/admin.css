@@ -1,0 +1,71 @@
+/**
+ * BHT Revenue OS — Internal CRM admin layout
+ * Minimal, readable, fast. No framework.
+ */
+:root {
+  --sidebar-w: 12rem;
+  --header-h: 3rem;
+  --bg: #f5f5f5;
+  --card: #fff;
+  --border: #e0e0e0;
+  --text: #1a1a1a;
+  --muted: #666;
+  --accent: #0d6efd;
+  --danger: #dc3545;
+  --success: #198754;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, sans-serif; font-size: 14px; color: var(--text); background: var(--bg); line-height: 1.5; }
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+.sidebar { width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); flex-shrink: 0; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.header { height: var(--header-h); padding: 0 1.5rem; border-bottom: 1px solid var(--border); background: var(--card); display: flex; align-items: center; }
+.content { padding: 1.5rem; flex: 1; }
+
+/* Sidebar nav */
+.sidebar nav { padding: 1rem 0; }
+.sidebar a { display: block; padding: 0.5rem 1rem; color: var(--text); text-decoration: none; }
+.sidebar a:hover { background: var(--bg); }
+.sidebar a.active { font-weight: 600; background: var(--bg); border-left: 3px solid var(--accent); margin-left: 0; padding-left: calc(1rem - 3px); }
+.sidebar .logo { padding: 1rem; font-weight: 700; font-size: 0.95rem; border-bottom: 1px solid var(--border); }
+
+/* Cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; }
+.card h3 { margin: 0 0 0.25rem 0; font-size: 1.5rem; font-weight: 600; }
+.card p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+/* Tables */
+.table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--bg); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.02em; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+tr:hover td { background: #fafafa; }
+
+/* Buttons */
+.btn { display: inline-block; padding: 0.35rem 0.75rem; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; text-decoration: none; }
+.btn:hover { background: var(--bg); }
+.btn-sm { padding: 0.2rem 0.5rem; font-size: 0.8rem; }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { filter: brightness(1.05); }
+.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Page title */
+.page-title { margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; }
+
+/* Timeline (placeholder for detail pages) */
+.timeline { margin-top: 1.5rem; }
+.timeline h4 { margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--muted); }
+.timeline-list { list-style: none; padding: 0; margin: 0; border-left: 2px solid var(--border); margin-left: 0.5rem; padding-left: 1rem; }
+.timeline-list li { padding: 0.35rem 0; font-size: 0.9rem; color: var(--muted); }
+.timeline-list .time { font-size: 0.8rem; }
+
+/* Utilities */
+.muted { color: var(--muted); }
+.badge { display: inline-block; padding: 0.15rem 0.5rem; font-size: 0.75rem; border-radius: 4px; background: var(--bg); }
+.search { margin-bottom: 1rem; }
+.search input { padding: 0.5rem 0.75rem; width: 100%; max-width: 20rem; border: 1px solid var(--border); border-radius: 4px; }

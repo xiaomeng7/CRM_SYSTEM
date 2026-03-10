@@ -1,22 +1,21 @@
 {
-  "name": "crm-system",
+  "name": "bht-revenue-os",
   "version": "1.0.0",
-  "description": "Lightweight CRM for electrical contracting company - control layer on top of ServiceM8",
-  "main": "api/sync-servicem8.js",
+  "description": "BHT Revenue OS — CRM, lead management, automation, ServiceM8 integration",
+  "private": true,
   "scripts": {
-    "sync": "node api/sync-servicem8.js",
-    "automations": "node scripts/run-automations.js",
-    "db:setup": "psql -f database/schema.sql",
-    "start": "node api/index.js"
+    "dev:web": "pnpm --filter @bht/web dev",
+    "dev:crm": "pnpm --filter @bht/crm start",
+    "build:web": "pnpm --filter @bht/web build",
+    "build:crm": "echo 'CRM is Node runtime; no bundle step.'",
+    "lint": "echo 'Add ESLint when ready.'",
+    "typecheck": "echo 'Add tsc when TypeScript is introduced.'",
+    "sync": "pnpm --filter @bht/crm sync",
+    "automations": "pnpm --filter @bht/crm automations",
+    "import:servicem8": "pnpm --filter @bht/crm import:servicem8"
   },
-  "keywords": ["crm", "servicem8", "twilio", "automation"],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "dotenv": "^16.3.1",
-    "pg": "^8.11.3",
-    "twilio": "^4.20.0",
-    "node-fetch": "^2.7.0",
-    "express": "^4.18.2"
-  }
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@9.0.0"
 }

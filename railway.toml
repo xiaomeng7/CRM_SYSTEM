@@ -1,0 +1,9 @@
+# Railway config for BHT Revenue OS — CRM (apps/crm)
+# Deploy from REPO ROOT. In Railway dashboard set Root Directory to empty or ".".
+
+[build]
+# Install all workspace deps (required for @bht/integrations)
+buildCommand = "pnpm install"
+
+[deploy]
+startCommand = "pnpm --filter @bht/crm start"

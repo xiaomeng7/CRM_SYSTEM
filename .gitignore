@@ -1,4 +1,18 @@
+# Dependencies
 node_modules/
+
+# Env (never commit secrets)
 .env
+.env.*
+!.env.example
+
+# Lockfile: monorepo uses pnpm; ignore npm lock to avoid confusion
+package-lock.json
+
+# Build / runtime
 *.log
 .DS_Store
+dist/
+build/
+.vercel
+.netlify

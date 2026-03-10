@@ -1,8 +1,5 @@
--- CRM System Database Schema
--- PostgreSQL
-
--- Enable UUID extension (optional, for uuid-ossp if needed)
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- BHT Revenue OS — CRM Schema
+-- PostgreSQL (Neon / Railway). Source of truth for CRM; ServiceM8 is synced into here.
 
 -- Customers table (synced from ServiceM8, with computed aggregates)
 CREATE TABLE IF NOT EXISTS customers (
@@ -80,7 +77,6 @@ CREATE TABLE IF NOT EXISTS automations (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Insert default automations
 INSERT INTO automations (name, trigger_type, trigger_condition, action_type, template, active, cooldown_days) VALUES
 (
   'JOB_COMPLETED_THANKYOU',
@@ -102,7 +98,7 @@ INSERT INTO automations (name, trigger_type, trigger_condition, action_type, tem
 )
 ON CONFLICT (name) DO NOTHING;
 
--- Trigger to update updated_at on customers
+-- Trigger to update updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN

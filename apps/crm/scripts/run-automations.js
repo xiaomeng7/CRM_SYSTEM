@@ -1,9 +1,9 @@
 /**
  * Run automations script
- * Invokes the automation engine (typically via cron, daily)
+ * Invokes the automation engine. Typically run via cron on Railway (daily).
  */
 
-require('dotenv').config();
+require('../lib/load-env');
 const { runAutomations } = require('../automation/automation-engine');
 const { pool } = require('../lib/db');
 

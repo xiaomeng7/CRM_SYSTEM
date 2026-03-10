@@ -1,11 +1,12 @@
 /**
  * ServiceM8 Sync Script
- * Fetches customers and jobs from ServiceM8 API and upserts into CRM database
- * Updates total_jobs and total_revenue per customer
+ * Fetches customers and jobs from ServiceM8 API and upserts into CRM database.
+ * Updates total_jobs and total_revenue per customer.
+ * Run via cron on Railway (or manually). Do not put CRM business logic in ServiceM8 — this is sync only.
  */
 
-require('dotenv').config();
-const { ServiceM8Client } = require('../integrations/servicem8-client');
+require('../lib/load-env');
+const { ServiceM8Client } = require('@bht/integrations');
 const { pool } = require('../lib/db');
 
 async function sync() {
@@ -28,8 +29,7 @@ async function sync() {
   const db = await pool.connect();
 
   try {
-    // Upsert customers
-    const customerMap = {}; // servicem8_uuid -> id
+    const customerMap = {};
 
     for (const c of companyList) {
       const uuid = c.uuid || c.UUID;
@@ -60,7 +60,6 @@ async function sync() {
 
     console.log(`Upserted ${Object.keys(customerMap).length} customers`);
 
-    // Upsert jobs and link to customers
     for (const j of jobList) {
       const uuid = j.uuid || j.UUID;
       if (!uuid) continue;
@@ -99,7 +98,6 @@ async function sync() {
 
     console.log(`Upserted ${jobList.length} jobs`);
 
-    // Update total_jobs, total_revenue, first_job_date, last_job_date per customer
     await db.query(`
       UPDATE customers c SET
         total_jobs = agg.cnt,
@@ -119,7 +117,7 @@ async function sync() {
       WHERE c.id = agg.customer_id
     `);
 
-    console.log('Updated customer aggregates (total_jobs, total_revenue, first_job_date, last_job_date)');
+    console.log('Updated customer aggregates.');
     console.log('Sync complete.');
   } finally {
     db.release();

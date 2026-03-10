@@ -1,15 +1,25 @@
 /**
- * Express API Server
- * Simple REST API for customers and jobs
+ * CRM API Server
+ * REST API for customers, jobs, and internal operations.
+ * Deploy target: Railway.
  */
 
-require('dotenv').config();
+require('../lib/load-env');
+const path = require('path');
 const express = require('express');
 const customers = require('./customers');
 const jobs = require('./jobs');
+const leadsRouter = require('./routes/leads');
+const opportunitiesRouter = require('./routes/opportunities');
 
 const app = express();
 app.use(express.json());
+
+// Internal CRM UI (static; dashboard at /)
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.use('/api/leads', leadsRouter);
+app.use('/api/opportunities', opportunitiesRouter);
 
 app.get('/api/customers', async (req, res) => {
   try {

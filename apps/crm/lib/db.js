@@ -1,5 +1,6 @@
 /**
  * PostgreSQL database connection pool
+ * CRM app — connects to Neon or Railway Postgres
  */
 
 const { Pool } = require('pg');

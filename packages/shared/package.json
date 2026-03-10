@@ -1,0 +1,7 @@
+{
+  "name": "@bht/shared",
+  "version": "1.0.0",
+  "description": "Shared types, utils, constants, schemas for BHT Revenue OS",
+  "main": "index.js",
+  "private": true
+}

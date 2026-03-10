@@ -1,11 +1,12 @@
 /**
  * Automation Engine
- * Runs daily: loads customers, evaluates triggers, sends SMS, logs communications
+ * Runs daily: loads customers, evaluates triggers, sends SMS, logs communications.
+ * Entrypoint for cron on Railway.
  */
 
-require('dotenv').config();
-const { getAllTriggers, getTrigger, renderTemplate } = require('./triggers');
-const { sendSMS } = require('../integrations/sms-client');
+require('../lib/load-env');
+const { getAllTriggers, renderTemplate } = require('./triggers');
+const { sendSMS } = require('@bht/integrations');
 const { pool } = require('../lib/db');
 
 async function runAutomations() {
@@ -18,9 +19,12 @@ async function runAutomations() {
       const customers = await trigger.evaluate();
       for (const customer of customers) {
         try {
+          const companyPhone = process.env.COMPANY_PHONE || '';
           const message = renderTemplate(trigger.template, {
             name: customer.name || 'there',
             phone: customer.phone,
+            company_phone: companyPhone,
+            company_phone_line: companyPhone ? `\nCall or text us: ${companyPhone}` : '',
           });
 
           const { sid, status } = await sendSMS(customer.phone, message);

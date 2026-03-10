@@ -1,0 +1,20 @@
+{
+  "name": "@bht/crm",
+  "version": "1.0.0",
+  "description": "BHT Revenue OS — CRM core, API, automation. Deploy to Railway.",
+  "private": true,
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "sync": "node api/sync-servicem8.js",
+    "automations": "node scripts/run-automations.js",
+    "import:servicem8": "node scripts/import-servicem8-customers.js",
+    "db:setup": "node -e \"require('dotenv').config();const{Pool}=require('pg');const fs=require('fs');const p=new Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.DATABASE_SSL==='true'?{rejectUnauthorized:false}:false});p.query(fs.readFileSync('database/schema.sql','utf8')).then(()=>{console.log('Schema OK');p.end();}).catch(e=>{console.error(e.message);p.end();});\""
+  },
+  "dependencies": {
+    "@bht/integrations": "workspace:*",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "pg": "^8.11.3"
+  }
+}

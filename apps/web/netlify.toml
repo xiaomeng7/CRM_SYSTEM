@@ -1,0 +1,6 @@
+# Netlify deployment for @bht/web (BHT Revenue OS public UI)
+# In Netlify: set Base directory to apps/web, Publish directory to public (or leave default if repo root is apps/web)
+
+[build]
+  publish = "public"
+  command = "npm run build"

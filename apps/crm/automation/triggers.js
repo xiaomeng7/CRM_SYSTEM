@@ -1,6 +1,6 @@
 /**
  * Automation Triggers
- * Defines when each automation should fire
+ * Defines when each automation should fire. Domain logic lives here; adapters in @bht/integrations.
  */
 
 const { pool } = require('../lib/db');
@@ -11,9 +11,9 @@ const TRIGGERS = {
     template: `Hi {{name}},
 Thanks for choosing Better Home Technology.
 If you ever need electrical upgrades, lighting, or EV charger installation, feel free to reach out.
+{{company_phone_line}}
 
 Meng`,
-    /** Job completed in last 2 days */
     async evaluate() {
       const result = await pool.query(
         `SELECT c.id, c.name, c.phone
@@ -37,9 +37,9 @@ Meng`,
     template: `Hi {{name}},
 It's been a while since we last helped with electrical work.
 If you need help with lighting upgrades, EV chargers or power improvements, feel free to contact us.
+{{company_phone_line}}
 
 Meng`,
-    /** last_job_date > 365 days ago */
     async evaluate() {
       const result = await pool.query(
         `SELECT id, name, phone

@@ -1,0 +1,11 @@
+{
+  "name": "@bht/integrations",
+  "version": "1.0.0",
+  "description": "External service adapters for BHT Revenue OS (ServiceM8, SMS, etc.)",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "twilio": "^4.20.0"
+  }
+}
