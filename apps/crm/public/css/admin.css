@@ -67,5 +67,6 @@ tr:hover td { background: #fafafa; }
 /* Utilities */
 .muted { color: var(--muted); }
 .badge { display: inline-block; padding: 0.15rem 0.5rem; font-size: 0.75rem; border-radius: 4px; background: var(--bg); }
+table select { padding: 0.2rem 0.5rem; font-size: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--card); min-width: 6rem; }
 .search { margin-bottom: 1rem; }
 .search input { padding: 0.5rem 0.75rem; width: 100%; max-width: 20rem; border: 1px solid var(--border); border-radius: 4px; }

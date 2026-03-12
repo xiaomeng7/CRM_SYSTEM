@@ -18,7 +18,9 @@
     "typecheck": "echo 'Add tsc when TypeScript is introduced.'",
     "sync": "pnpm --filter @bht/crm sync",
     "automations": "pnpm --filter @bht/crm automations",
-    "import:servicem8": "pnpm --filter @bht/crm import:servicem8"
+    "import:servicem8": "pnpm --filter @bht/crm import:servicem8",
+    "sync:servicem8:contacts": "pnpm --filter @bht/crm run sync:servicem8:contacts",
+    "sync:servicem8:contacts:node": "node --no-deprecation apps/crm/scripts/sync-servicem8-contacts.js"
   },
   "engines": {
     "node": ">=18"

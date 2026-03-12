@@ -5,7 +5,8 @@
 const { pool } = require('../lib/db');
 const { emit } = require('../lib/domain-events');
 
-const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'disqualified', 'converted'];
+const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'booked', 'completed', 'converted'];
+const PIPELINE_STATUSES = ['new', 'contacted', 'qualified', 'booked', 'completed'];
 
 function isValidStatus(s) {
   return s && LEAD_STATUSES.includes(s);
@@ -79,8 +80,8 @@ async function getById(id) {
 
 async function updateStatus(id, newStatus, createdBy = null) {
   if (!isValidUuid(id)) return null;
-  if (!isValidStatus(newStatus)) {
-    throw new Error(`Invalid status: ${newStatus}. Allowed: ${LEAD_STATUSES.join(', ')}`);
+  if (!PIPELINE_STATUSES.includes(newStatus)) {
+    throw new Error(`Invalid status: ${newStatus}. Allowed: ${PIPELINE_STATUSES.join(', ')}`);
   }
 
   const existing = await getById(id);
@@ -144,4 +145,5 @@ module.exports = {
   updateStatus,
   convertToOpportunity,
   LEAD_STATUSES,
+  PIPELINE_STATUSES,
 };

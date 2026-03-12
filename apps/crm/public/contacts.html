@@ -23,13 +23,11 @@
       <div class="content" data-page="contacts">
         <h1 class="page-title">Contacts</h1>
         <div class="search">
-          <input type="search" id="contacts-search" placeholder="Search contacts…" />
+          <input type="search" id="contacts-search" placeholder="Search name, phone, email, suburb…" />
+          <button type="button" id="contacts-search-btn" class="btn btn-sm">Search</button>
         </div>
         <p id="contacts-state" class="muted" style="margin:0 0 0.5rem 0;"></p>
-        <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">
-          <input type="checkbox" id="contacts-filter-dormant" />
-          Show only customers with last job &gt; 6 months ago
-        </label>
+        <pre id="contacts-error-details" style="display:none; margin:0 0 1rem 0; padding:0.75rem; background:#fff3cd; border:1px solid #ffc107; border-radius:4px; font-size:0.8rem; white-space:pre-wrap; word-break:break-all;"></pre>
         <div class="table-wrap">
           <table>
             <thead>
@@ -38,19 +36,18 @@
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Suburb</th>
-                <th>Job count</th>
-                <th>Last job</th>
+                <th>Linked Account</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="contacts-tbody">
               <tr>
-                <td colspan="7" class="muted">Loading contacts…</td>
+                <td colspan="6" class="muted">Loading contacts…</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="muted" style="margin-top:1rem;">Searchable list of imported ServiceM8 customers. Actions: view details, send reactivation SMS.</p>
+        <p class="muted" style="margin-top:1rem;">Contacts from domain model (contacts + accounts). Search: name, phone, email, suburb. Actions: details, send reactivation SMS.</p>
       </div>
     </main>
   </div>

@@ -6,7 +6,7 @@
 const path = require('path');
 const dotenv = require('dotenv');
 
-const rootEnv = path.resolve(__dirname, '../../.env');
+const rootEnv = path.resolve(__dirname, '../../../.env');
 dotenv.config({ path: rootEnv });
 if (!process.env.DATABASE_URL && !process.env.SERVICEM8_API_KEY) {
   dotenv.config();

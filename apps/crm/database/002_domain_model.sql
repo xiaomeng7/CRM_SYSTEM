@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS accounts (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_accounts_created_at ON accounts(created_at);
+CREATE INDEX IF NOT EXISTS idx_accounts_created_at ON accounts(created_at);
 
 -- =============================================================================
 -- CONTACTS
@@ -38,10 +38,10 @@ CREATE TABLE IF NOT EXISTS contacts (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_contacts_account_id ON contacts(account_id);
-CREATE INDEX idx_contacts_email ON contacts(email);
-CREATE INDEX idx_contacts_phone ON contacts(phone);
-CREATE INDEX idx_contacts_created_at ON contacts(created_at);
+CREATE INDEX IF NOT EXISTS idx_contacts_account_id ON contacts(account_id);
+CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
+CREATE INDEX IF NOT EXISTS idx_contacts_phone ON contacts(phone);
+CREATE INDEX IF NOT EXISTS idx_contacts_created_at ON contacts(created_at);
 
 -- =============================================================================
 -- ASSETS
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS assets (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_assets_account_id ON assets(account_id);
+CREATE INDEX IF NOT EXISTS idx_assets_account_id ON assets(account_id);
 
 -- =============================================================================
 -- LEADS
@@ -76,10 +76,10 @@ CREATE TABLE IF NOT EXISTS leads (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_leads_contact_id ON leads(contact_id);
-CREATE INDEX idx_leads_account_id ON leads(account_id);
-CREATE INDEX idx_leads_status ON leads(status);
-CREATE INDEX idx_leads_created_at ON leads(created_at);
+CREATE INDEX IF NOT EXISTS idx_leads_contact_id ON leads(contact_id);
+CREATE INDEX IF NOT EXISTS idx_leads_account_id ON leads(account_id);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
 
 -- =============================================================================
 -- OPPORTUNITIES
@@ -98,13 +98,14 @@ CREATE TABLE IF NOT EXISTS opportunities (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_opportunities_account_id ON opportunities(account_id);
-CREATE INDEX idx_opportunities_contact_id ON opportunities(contact_id);
-CREATE INDEX idx_opportunities_lead_id ON opportunities(lead_id);
-CREATE INDEX idx_opportunities_stage ON opportunities(stage);
-CREATE INDEX idx_opportunities_created_at ON opportunities(created_at);
+CREATE INDEX IF NOT EXISTS idx_opportunities_account_id ON opportunities(account_id);
+CREATE INDEX IF NOT EXISTS idx_opportunities_contact_id ON opportunities(contact_id);
+CREATE INDEX IF NOT EXISTS idx_opportunities_lead_id ON opportunities(lead_id);
+CREATE INDEX IF NOT EXISTS idx_opportunities_stage ON opportunities(stage);
+CREATE INDEX IF NOT EXISTS idx_opportunities_created_at ON opportunities(created_at);
 
 -- FK: leads.converted_opportunity_id -> opportunities.id (add after opportunities exists)
+ALTER TABLE leads DROP CONSTRAINT IF EXISTS fk_leads_converted_opportunity;
 ALTER TABLE leads
   ADD CONSTRAINT fk_leads_converted_opportunity
   FOREIGN KEY (converted_opportunity_id) REFERENCES opportunities(id) ON DELETE SET NULL;
@@ -125,10 +126,10 @@ CREATE TABLE IF NOT EXISTS activities (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_activities_contact_id ON activities(contact_id);
-CREATE INDEX idx_activities_lead_id ON activities(lead_id);
-CREATE INDEX idx_activities_opportunity_id ON activities(opportunity_id);
-CREATE INDEX idx_activities_occurred_at ON activities(occurred_at);
+CREATE INDEX IF NOT EXISTS idx_activities_contact_id ON activities(contact_id);
+CREATE INDEX IF NOT EXISTS idx_activities_lead_id ON activities(lead_id);
+CREATE INDEX IF NOT EXISTS idx_activities_opportunity_id ON activities(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_activities_occurred_at ON activities(occurred_at);
 
 -- =============================================================================
 -- COMMUNICATION_THREADS
@@ -144,8 +145,8 @@ CREATE TABLE IF NOT EXISTS communication_threads (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_communication_threads_contact_id ON communication_threads(contact_id);
-CREATE INDEX idx_communication_threads_account_id ON communication_threads(account_id);
+CREATE INDEX IF NOT EXISTS idx_communication_threads_contact_id ON communication_threads(contact_id);
+CREATE INDEX IF NOT EXISTS idx_communication_threads_account_id ON communication_threads(account_id);
 
 -- =============================================================================
 -- CRM_COMMUNICATIONS (domain model messages; existing "communications" unchanged)
@@ -168,11 +169,11 @@ CREATE TABLE IF NOT EXISTS crm_communications (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_crm_communications_contact_id ON crm_communications(contact_id);
-CREATE INDEX idx_crm_communications_thread_id ON crm_communications(thread_id);
-CREATE INDEX idx_crm_communications_lead_id ON crm_communications(lead_id);
-CREATE INDEX idx_crm_communications_opportunity_id ON crm_communications(opportunity_id);
-CREATE INDEX idx_crm_communications_sent_at ON crm_communications(sent_at);
+CREATE INDEX IF NOT EXISTS idx_crm_communications_contact_id ON crm_communications(contact_id);
+CREATE INDEX IF NOT EXISTS idx_crm_communications_thread_id ON crm_communications(thread_id);
+CREATE INDEX IF NOT EXISTS idx_crm_communications_lead_id ON crm_communications(lead_id);
+CREATE INDEX IF NOT EXISTS idx_crm_communications_opportunity_id ON crm_communications(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_crm_communications_sent_at ON crm_communications(sent_at);
 
 -- =============================================================================
 -- TASKS
@@ -193,11 +194,11 @@ CREATE TABLE IF NOT EXISTS tasks (
 );
 
 -- inspection_id FK added after inspections table
-CREATE INDEX idx_tasks_contact_id ON tasks(contact_id);
-CREATE INDEX idx_tasks_lead_id ON tasks(lead_id);
-CREATE INDEX idx_tasks_opportunity_id ON tasks(opportunity_id);
-CREATE INDEX idx_tasks_status ON tasks(status);
-CREATE INDEX idx_tasks_due_at ON tasks(due_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_contact_id ON tasks(contact_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_lead_id ON tasks(lead_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_opportunity_id ON tasks(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_due_at ON tasks(due_at);
 
 -- =============================================================================
 -- INSPECTIONS
@@ -219,12 +220,13 @@ CREATE TABLE IF NOT EXISTS inspections (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_inspections_opportunity_id ON inspections(opportunity_id);
-CREATE INDEX idx_inspections_account_id ON inspections(account_id);
-CREATE INDEX idx_inspections_asset_id ON inspections(asset_id);
-CREATE INDEX idx_inspections_status ON inspections(status);
-CREATE INDEX idx_inspections_scheduled_at ON inspections(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_inspections_opportunity_id ON inspections(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_inspections_account_id ON inspections(account_id);
+CREATE INDEX IF NOT EXISTS idx_inspections_asset_id ON inspections(asset_id);
+CREATE INDEX IF NOT EXISTS idx_inspections_status ON inspections(status);
+CREATE INDEX IF NOT EXISTS idx_inspections_scheduled_at ON inspections(scheduled_at);
 
+ALTER TABLE tasks DROP CONSTRAINT IF EXISTS fk_tasks_inspection_id;
 ALTER TABLE tasks
   ADD CONSTRAINT fk_tasks_inspection_id
   FOREIGN KEY (inspection_id) REFERENCES inspections(id) ON DELETE SET NULL;
@@ -246,9 +248,9 @@ CREATE TABLE IF NOT EXISTS reports (
   created_by VARCHAR(100)
 );
 
-CREATE INDEX idx_reports_inspection_id ON reports(inspection_id);
-CREATE INDEX idx_reports_opportunity_id ON reports(opportunity_id);
-CREATE INDEX idx_reports_status ON reports(status);
+CREATE INDEX IF NOT EXISTS idx_reports_inspection_id ON reports(inspection_id);
+CREATE INDEX IF NOT EXISTS idx_reports_opportunity_id ON reports(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
 
 -- =============================================================================
 -- EXTERNAL_LINKS
@@ -265,8 +267,8 @@ CREATE TABLE IF NOT EXISTS external_links (
   UNIQUE (system, external_entity_type, external_id)
 );
 
-CREATE INDEX idx_external_links_system_external ON external_links(system, external_entity_type, external_id);
-CREATE INDEX idx_external_links_entity ON external_links(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_external_links_system_external ON external_links(system, external_entity_type, external_id);
+CREATE INDEX IF NOT EXISTS idx_external_links_entity ON external_links(entity_type, entity_id);
 
 -- =============================================================================
 -- DOMAIN_EVENTS
@@ -283,10 +285,10 @@ CREATE TABLE IF NOT EXISTS domain_events (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_domain_events_aggregate ON domain_events(aggregate_type, aggregate_id);
-CREATE INDEX idx_domain_events_occurred_at ON domain_events(occurred_at);
-CREATE INDEX idx_domain_events_processed_at ON domain_events(processed_at) WHERE processed_at IS NULL;
-CREATE INDEX idx_domain_events_event_type ON domain_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_domain_events_aggregate ON domain_events(aggregate_type, aggregate_id);
+CREATE INDEX IF NOT EXISTS idx_domain_events_occurred_at ON domain_events(occurred_at);
+CREATE INDEX IF NOT EXISTS idx_domain_events_processed_at ON domain_events(processed_at) WHERE processed_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_domain_events_event_type ON domain_events(event_type);
 
 -- =============================================================================
 -- UPDATED_AT TRIGGERS

@@ -12,6 +12,7 @@ const { pool } = require('../lib/db');
 const leadsRouter = require('./routes/leads');
 const opportunitiesRouter = require('./routes/opportunities');
 const publicLeadsRouter = require('./routes/public-leads');
+const contactsRouter = require('./routes/contacts');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -24,6 +25,11 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api/leads', leadsRouter);
 app.use('/api/opportunities', opportunitiesRouter);
 app.use('/api/public/leads', publicLeadsRouter);
+app.use('/api/contacts', contactsRouter);
+
+function isCustomersTableMissing(err) {
+  return err && /relation "customers" does not exist/i.test(err.message);
+}
 
 app.get('/api/customers', async (req, res) => {
   try {
@@ -35,6 +41,10 @@ app.get('/api/customers', async (req, res) => {
     });
     res.json(rows);
   } catch (err) {
+    if (isCustomersTableMissing(err)) {
+      console.warn('GET /api/customers: customers table not found, returning []. Run database/schema.sql if you need legacy customers.');
+      return res.json([]);
+    }
     res.status(500).json({ error: err.message });
   }
 });
@@ -45,6 +55,7 @@ app.get('/api/customers/:id', async (req, res) => {
     if (!row) return res.status(404).json({ error: 'Not found' });
     res.json(row);
   } catch (err) {
+    if (isCustomersTableMissing(err)) return res.status(404).json({ error: 'Not found' });
     res.status(500).json({ error: err.message });
   }
 });
@@ -80,6 +91,7 @@ app.post('/api/customers/:id/reactivate', async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
+    if (isCustomersTableMissing(err)) return res.status(404).json({ ok: false, error: 'Not found' });
     console.error('reactivate error:', err);
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -92,6 +104,7 @@ app.patch('/api/customers/:id/tags', async (req, res) => {
     if (!row) return res.status(404).json({ error: 'Not found' });
     res.json(row);
   } catch (err) {
+    if (isCustomersTableMissing(err)) return res.status(404).json({ error: 'Not found' });
     res.status(500).json({ error: err.message });
   }
 });
