@@ -79,6 +79,59 @@ router.get('/', async (req, res) => {
 
     const contactIds = candidates.map((c) => c.contact_id).filter(Boolean);
 
+    // 1b. do_not_contact per contact
+    const dncRes = contactIds.length
+      ? await pool.query(
+          `SELECT id FROM contacts WHERE id = ANY($1) AND (do_not_contact = true OR do_not_contact IS TRUE)`,
+          [contactIds]
+        )
+      : { rows: [] };
+    const dncIds = new Set((dncRes.rows || []).map((r) => r.id));
+
+    // 1c. in_queue_status (preview/queued) per contact
+    const queueRes = contactIds.length
+      ? await pool.query(
+          `SELECT contact_id, status FROM reactivation_sms_queue
+           WHERE contact_id = ANY($1) AND status IN ('preview', 'queued')`,
+          [contactIds]
+        )
+      : { rows: [] };
+    const inQueueByContact = {};
+    (queueRes.rows || []).forEach((r) => {
+      inQueueByContact[r.contact_id] = r.status; // preview or queued
+    });
+
+    // 1d. last_sms_at per contact (activities outbound or queue sent_at)
+    const lastSmsRes = contactIds.length
+      ? await pool.query(
+          `SELECT contact_id, MAX(occurred_at) AS last_at FROM activities
+           WHERE contact_id = ANY($1) AND activity_type = ANY($2)
+           GROUP BY contact_id`,
+          [contactIds, SMS_OUTBOUND_TYPES]
+        )
+      : { rows: [] };
+    const queueSentRes = contactIds.length
+      ? await pool.query(
+          `SELECT contact_id, MAX(sent_at) AS last_at FROM reactivation_sms_queue
+           WHERE contact_id = ANY($1) AND sent_at IS NOT NULL
+           GROUP BY contact_id`,
+          [contactIds]
+        )
+      : { rows: [] };
+    const lastSmsByContact = {};
+    (lastSmsRes.rows || []).forEach((r) => {
+      const prev = lastSmsByContact[r.contact_id];
+      if (!prev || (r.last_at && (!prev || new Date(r.last_at) > new Date(prev)))) {
+        lastSmsByContact[r.contact_id] = r.last_at;
+      }
+    });
+    (queueSentRes.rows || []).forEach((r) => {
+      const prev = lastSmsByContact[r.contact_id];
+      if (r.last_at && (!prev || new Date(r.last_at) > new Date(prev))) {
+        lastSmsByContact[r.contact_id] = r.last_at;
+      }
+    });
+
     // 2. Activity stats for status derivation and counts
     const smsTodayRes = await pool.query(
       `SELECT COUNT(*) AS cnt FROM activities
@@ -184,34 +237,56 @@ router.get('/', async (req, res) => {
 
     candidates = candidates.map((c) => {
       const cid = c.contact_id;
+      const doNotContact = cid && dncIds.has(cid);
+      const hasInboundSms = cid && hasInbound.has(cid);
+      const hasOpenTask_ = cid && hasOpenTask.has(cid);
+      const inQueueStatus = cid && inQueueByContact[cid] ? inQueueByContact[cid] : null;
+      const lastSmsAt = cid ? lastSmsByContact[cid] : null;
+
       let status = '待发送';
-      if (cid && hasInbound.has(cid)) status = '已回复';
-      else if (cid && hasOpenTask.has(cid)) status = '待跟进';
+      if (doNotContact) status = '勿再联系';
+      else if (hasInboundSms) status = '已回复';
+      else if (hasOpenTask_) status = '待跟进';
+      else if (inQueueStatus) status = '已加入队列';
       else if (cid && hasOutbound.has(cid)) status = '已发送';
-      return { ...c, status };
+
+      return {
+        ...c,
+        status,
+        do_not_contact: !!doNotContact,
+        has_inbound_sms: !!hasInboundSms,
+        has_open_task: !!hasOpenTask_,
+        in_queue_status: inQueueStatus,
+        last_sms_at: lastSmsAt,
+      };
     });
 
     const smsQueued = candidates.filter((c) => c.status === '待发送').length;
+    const inQueueCand = candidates.filter((c) => c.status === '已加入队列').length;
     const sent = candidates.filter((c) => c.status === '已发送').length;
     const repliedCand = candidates.filter((c) => c.status === '已回复').length;
     const followCand = candidates.filter((c) => c.status === '待跟进').length;
+    const dncCand = candidates.filter((c) => c.status === '勿再联系').length;
 
     const summary = {
       candidates: candidates.length,
       smsQueued,
+      inQueue: inQueueCand,
       queuePreview,
       smsSentToday,
       replied: replied,
       followUpToday,
-      doNotContact: 0,
+      doNotContact: dncCand,
     };
 
     const pipeline = [
       { label: '待筛选', value: candidates.length },
       { label: '待发送', value: smsQueued },
+      { label: '已加入队列', value: inQueueCand },
       { label: '已发送', value: sent },
       { label: '已回复', value: repliedCand },
       { label: '待跟进', value: followCand },
+      { label: '勿再联系', value: dncCand },
     ];
 
     res.json({

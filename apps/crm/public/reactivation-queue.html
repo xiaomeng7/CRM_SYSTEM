@@ -43,6 +43,40 @@
       cancelled: 'bg-amber-100 text-amber-700',
     };
 
+    const MESSAGE_TEMPLATES = [
+      { key: 'default_reactivation', label: 'Default Reactivation' },
+      { key: 'friendly_checkin', label: 'Friendly Check-in' },
+      { key: 'short_followup', label: 'Short Follow-up' },
+      { key: 'builder_business', label: 'Builder / Business' },
+      { key: 'investor_rental', label: 'Investor / Rental' },
+    ];
+
+    const TEMPLATE_BODIES = {
+      default_reactivation: 'Hi {first_name}, this is Meng from Better Home Technology.\n\nWe worked together before on electrical work for your property.\n\nJust checking if you need any electrical work, upgrades, or maintenance.\n\nReply here if you\'d like me to call you.',
+      friendly_checkin: 'Hi {first_name}, Meng here from Better Home Technology.\n\nJust checking in to see if you need any electrical help at the moment.\n\nHappy to help if needed.',
+      short_followup: 'Hi {first_name}, this is Meng from Better Home Technology.\n\nJust checking whether you need any electrical work or upgrades at the moment.\n\nReply here if you\'d like a call.',
+      builder_business: 'Hi {first_name}, this is Meng from Better Home Technology.\n\nJust checking whether you need any support with upcoming electrical works, upgrades, or maintenance.\n\nHappy to help if needed.',
+      investor_rental: 'Hi {first_name}, this is Meng from Better Home Technology.\n\nJust checking whether you need any electrical maintenance or upgrades for your property.\n\nReply here if you\'d like me to call you.',
+    };
+
+    function getFirstName(contactName) {
+      const name = (contactName || '').trim();
+      if (!name) return 'there';
+      const first = name.split(/\s+/)[0];
+      return first || 'there';
+    }
+
+    function applyTemplate(templateKey, contactName) {
+      const tpl = TEMPLATE_BODIES[templateKey] || TEMPLATE_BODIES.default_reactivation;
+      return tpl.replace(/\{first_name\}/g, getFirstName(contactName));
+    }
+
+    function truncateMessage(msg, len = 70) {
+      if (!msg) return '—';
+      if (msg.length <= len) return msg;
+      return msg.slice(0, len) + '...';
+    }
+
     function formatTime(ts) {
       if (!ts) return '—';
       const d = new Date(ts);
@@ -64,6 +98,14 @@
       const [sendResult, setSendResult] = useState(null);
       const [showConfirmModal, setShowConfirmModal] = useState(false);
       const [confirmInput, setConfirmInput] = useState('');
+      const [selectedItem, setSelectedItem] = useState(null);
+      const [editMessage, setEditMessage] = useState('');
+      const [selectedTemplate, setSelectedTemplate] = useState('default_reactivation');
+      const [saveMessageLoading, setSaveMessageLoading] = useState(false);
+      const [saveMessageSuccess, setSaveMessageSuccess] = useState(null);
+      const [saveMessageError, setSaveMessageError] = useState(null);
+      const [applyTemplateLoading, setApplyTemplateLoading] = useState(false);
+      const [showApplyTemplateModal, setShowApplyTemplateModal] = useState(false);
 
       const fetchBatches = useCallback(async () => {
         setBatchesLoading(true);
@@ -122,6 +164,20 @@
 
       useEffect(() => { fetchBatches(); }, [fetchBatches]);
       useEffect(() => { fetchBatchItems(selectedBatchId); }, [selectedBatchId, fetchBatchItems]);
+      useEffect(() => {
+        if (batchItems.length === 0) {
+          setSelectedItem(null);
+          setEditMessage('');
+          return;
+        }
+        setSelectedItem((prev) => {
+          const found = prev?.id ? batchItems.find((b) => b.id === prev.id) : null;
+          return found || batchItems[0];
+        });
+      }, [batchItems]);
+      useEffect(() => {
+        if (selectedItem) setEditMessage(selectedItem.message || '');
+      }, [selectedItem?.id, selectedItem?.message]);
 
       const handleGenerate = async () => {
         setGenerateError(null);
@@ -175,9 +231,67 @@
         }
       };
 
+      const handleSelectItem = (r) => {
+        setSelectedItem(r);
+        setEditMessage(r.message || '');
+        setSaveMessageSuccess(null);
+        setSaveMessageError(null);
+      };
+
+      const handleResetToTemplate = () => {
+        const text = applyTemplate(selectedTemplate, selectedItem?.contact_name);
+        setEditMessage(text);
+      };
+
+      const handleSaveMessage = async () => {
+        if (!selectedItem?.id) return;
+        setSaveMessageSuccess(null);
+        setSaveMessageError(null);
+        setSaveMessageLoading(true);
+        try {
+          const res = await fetch('/api/reactivation/queue/' + selectedItem.id + '/message', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: editMessage }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Save failed');
+          setSaveMessageSuccess('Message saved');
+          setSelectedItem({ ...selectedItem, message: editMessage });
+          setBatchItems((prev) => prev.map((p) => (p.id === selectedItem.id ? { ...p, message: editMessage } : p)));
+        } catch (e) {
+          setSaveMessageError(e.message);
+        } finally {
+          setSaveMessageLoading(false);
+        }
+      };
+
+      const handleApplyTemplateToBatch = async () => {
+        if (!selectedBatchId) return;
+        setApplyTemplateLoading(true);
+        setSaveMessageSuccess(null);
+        setSaveMessageError(null);
+        try {
+          const res = await fetch('/api/reactivation/queue/apply-template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ batch_id: selectedBatchId, template_key: selectedTemplate }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Apply failed');
+          setShowApplyTemplateModal(false);
+          await fetchBatchItems(selectedBatchId);
+        } catch (e) {
+          setSaveMessageError(e.message);
+        } finally {
+          setApplyTemplateLoading(false);
+        }
+      };
+
       const sel = batches.find((b) => b.batch_id === selectedBatchId);
       const previewCount = sel ? sel.preview : 0;
       const canSend = previewCount > 0;
+      const isSent = selectedItem?.status === 'sent';
 
       return (
         <div className="min-h-full bg-slate-50 text-slate-900">
@@ -281,6 +395,13 @@
                         Refresh
                       </button>
                       <button
+                        onClick={() => setShowApplyTemplateModal(true)}
+                        disabled={previewCount === 0 || applyTemplateLoading}
+                        className="rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
+                      >
+                        Apply Template to Entire Batch
+                      </button>
+                      <button
                         onClick={handleOpenConfirm}
                         disabled={!canSend || sendLoading}
                         className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -293,41 +414,117 @@
                         {sendResult.error ? sendResult.error : `Sent: ${sendResult.sent}, Failed: ${sendResult.failed}, Attempted: ${sendResult.attempted}`}
                       </div>
                     )}
-                    <div className="mt-4 max-h-[340px] overflow-auto">
-                      {batchItemsLoading ? (
-                        <div className="py-8 text-center text-slate-500">Loading...</div>
-                      ) : batchItems.length === 0 ? (
-                        <div className="py-8 text-center text-slate-500">No items</div>
-                      ) : (
-                        <table className="min-w-full text-left text-sm">
-                          <thead className="sticky top-0 bg-white text-slate-500">
-                            <tr className="border-b border-slate-100">
-                              <th className="p-2 font-medium">Contact</th>
-                              <th className="p-2 font-medium">Account</th>
-                              <th className="p-2 font-medium">Phone</th>
-                              <th className="p-2 font-medium">Score</th>
-                              <th className="p-2 font-medium">Status</th>
-                              <th className="p-2 font-medium">Message</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {batchItems.map((r) => (
-                              <tr key={r.id} className="border-b border-slate-50">
-                                <td className="p-2">{r.contact_name || '—'}</td>
-                                <td className="p-2">{r.account_name || '—'}</td>
-                                <td className="p-2 font-mono text-xs">{r.phone || '—'}</td>
-                                <td className="p-2">{r.priority_score ?? '—'}</td>
-                                <td className="p-2">
-                                  <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[r.status] || 'bg-slate-100 text-slate-600'}`}>
-                                    {r.status}
-                                  </span>
-                                </td>
-                                <td className="p-2 max-w-[200px] truncate text-slate-600">{r.message || '—'}</td>
+                    <div className="mt-4 flex gap-4">
+                      <div className="flex-1 min-w-0 max-h-[360px] overflow-auto">
+                        {batchItemsLoading ? (
+                          <div className="py-8 text-center text-slate-500">Loading...</div>
+                        ) : batchItems.length === 0 ? (
+                          <div className="py-8 text-center text-slate-500">No items</div>
+                        ) : (
+                          <table className="min-w-full text-left text-sm">
+                            <thead className="sticky top-0 bg-white text-slate-500">
+                              <tr className="border-b border-slate-100">
+                                <th className="p-2 font-medium">Contact</th>
+                                <th className="p-2 font-medium">Account</th>
+                                <th className="p-2 font-medium">Phone</th>
+                                <th className="p-2 font-medium">Score</th>
+                                <th className="p-2 font-medium">Status</th>
+                                <th className="p-2 font-medium">Message</th>
+                                <th className="p-2 font-medium w-24"></th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
+                            </thead>
+                            <tbody>
+                              {batchItems.map((r) => (
+                                <tr
+                                  key={r.id}
+                                  onClick={() => handleSelectItem(r)}
+                                  className={`border-b border-slate-50 cursor-pointer hover:bg-slate-50 ${selectedItem?.id === r.id ? 'bg-slate-100' : ''}`}
+                                >
+                                  <td className="p-2">{r.contact_name || '—'}</td>
+                                  <td className="p-2">{r.account_name || '—'}</td>
+                                  <td className="p-2 font-mono text-xs">{r.phone || '—'}</td>
+                                  <td className="p-2">{r.priority_score ?? '—'}</td>
+                                  <td className="p-2">
+                                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[r.status] || 'bg-slate-100 text-slate-600'}`}>
+                                      {r.status}
+                                    </span>
+                                  </td>
+                                  <td className="p-2 max-w-[180px]" title={r.message || ''}>
+                                    <span className="text-slate-600">{truncateMessage(r.message, 70)}</span>
+                                  </td>
+                                  <td className="p-2">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleSelectItem(r); }}
+                                      className="text-xs font-medium text-slate-600 hover:text-slate-900"
+                                    >
+                                      View / Edit
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                      <div className="w-80 flex-shrink-0 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-4">
+                        <h3 className="text-sm font-semibold text-slate-800">Message Detail</h3>
+                        {!selectedItem ? (
+                          <div className="mt-4 py-6 text-center text-sm text-slate-500">Select a row to view or edit</div>
+                        ) : (
+                          <>
+                            <div className="mt-3 space-y-1 text-sm">
+                              <div><span className="text-slate-500">Contact:</span> {selectedItem.contact_name || '—'}</div>
+                              <div><span className="text-slate-500">Account:</span> {selectedItem.account_name || '—'}</div>
+                              <div><span className="text-slate-500">Phone:</span> <span className="font-mono">{selectedItem.phone || '—'}</span></div>
+                              <div><span className="text-slate-500">Score:</span> {selectedItem.priority_score ?? '—'}</div>
+                              <div><span className="text-slate-500">Status:</span> {selectedItem.status}</div>
+                            </div>
+                            <div className="mt-4">
+                              <label className="block text-xs font-medium text-slate-600">Message Template</label>
+                              <select
+                                value={selectedTemplate}
+                                onChange={(e) => setSelectedTemplate(e.target.value)}
+                                disabled={isSent}
+                                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm disabled:opacity-60"
+                              >
+                                {MESSAGE_TEMPLATES.map((t) => (
+                                  <option key={t.key} value={t.key}>{t.label}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="mt-3">
+                              <label className="block text-xs font-medium text-slate-600">Message</label>
+                              <textarea
+                                value={editMessage}
+                                onChange={(e) => !isSent && setEditMessage(e.target.value)}
+                                readOnly={isSent}
+                                rows={8}
+                                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm resize-y focus:ring-2 focus:ring-slate-300 focus:border-slate-400 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                                placeholder="Message content"
+                              />
+                            </div>
+                            {!isSent && (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                <button
+                                  onClick={handleResetToTemplate}
+                                  className="rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200"
+                                >
+                                  Reset to Template
+                                </button>
+                                <button
+                                  onClick={handleSaveMessage}
+                                  disabled={saveMessageLoading}
+                                  className="rounded-xl bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+                                >
+                                  {saveMessageLoading ? 'Saving...' : 'Save This Message'}
+                                </button>
+                              </div>
+                            )}
+                            {saveMessageSuccess && <div className="mt-2 text-sm text-emerald-600">{saveMessageSuccess}</div>}
+                            {saveMessageError && <div className="mt-2 text-sm text-rose-600">{saveMessageError}</div>}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
@@ -362,6 +559,44 @@
                     className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                   >
                     {sendLoading ? 'Sending...' : 'Confirm Send'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showApplyTemplateModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <h3 className="text-lg font-semibold">Apply Template to Entire Batch</h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  This will update the message for all preview/queued items in this batch using the selected template. Continue?
+                </p>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-slate-700">Template</label>
+                  <select
+                    value={selectedTemplate}
+                    onChange={(e) => setSelectedTemplate(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                  >
+                    {MESSAGE_TEMPLATES.map((t) => (
+                      <option key={t.key} value={t.key}>{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowApplyTemplateModal(false)}
+                    className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleApplyTemplateToBatch}
+                    disabled={applyTemplateLoading}
+                    className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                  >
+                    {applyTemplateLoading ? 'Applying...' : 'Apply'}
                   </button>
                 </div>
               </div>

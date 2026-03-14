@@ -46,9 +46,10 @@
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
       const [data, setData] = useState(null);
-      const [smsModal, setSmsModal] = useState(null);
-      const [smsLoading, setSmsLoading] = useState(false);
-      const [smsError, setSmsError] = useState(null);
+      const [addModal, setAddModal] = useState(null);
+      const [addLoading, setAddLoading] = useState(false);
+      const [addError, setAddError] = useState(null);
+      const [addSuccess, setAddSuccess] = useState(null);
       const [generateLoading, setGenerateLoading] = useState(false);
       const [generateMsg, setGenerateMsg] = useState(null);
 
@@ -94,27 +95,34 @@
         }
       };
 
-      const handleSendSmsClick = (item) => {
-        if (!item.contact_id) { alert('该候选无 contact_id，无法发送'); return; }
+      const handleAddToCampaignClick = (item) => {
+        if (!item.contact_id) { alert('该候选无 contact_id'); return; }
         if (!item.phone) { alert('该候选无电话号码'); return; }
-        setSmsModal(item);
-        setSmsError(null);
+        setAddModal(item);
+        setAddError(null);
+        setAddSuccess(null);
       };
 
-      const handleConfirmSendSms = async () => {
-        if (!smsModal?.contact_id) return;
-        setSmsLoading(true);
-        setSmsError(null);
+      const handleConfirmAddToCampaign = async () => {
+        if (!addModal?.contact_id) return;
+        setAddLoading(true);
+        setAddError(null);
+        setAddSuccess(null);
         try {
-          const res = await fetch('/api/contacts/' + smsModal.contact_id + '/reactivate', { method: 'POST' });
+          const res = await fetch('/api/reactivation/queue/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contact_id: addModal.contact_id, source: 'dashboard' }),
+          });
           const json = await res.json();
-          if (!res.ok || !json.ok) throw new Error(json.error || '发送失败');
-          setSmsModal(null);
+          if (!res.ok) throw new Error(json.error || '添加失败');
+          setAddSuccess('Customer added to SMS Campaign. Please review message before sending.');
           await fetchData();
+          setTimeout(() => { setAddModal(null); setAddSuccess(null); }, 2500);
         } catch (e) {
-          setSmsError(e.message || '发送失败');
+          setAddError(e.message || '添加失败');
         } finally {
-          setSmsLoading(false);
+          setAddLoading(false);
         }
       };
 
@@ -128,9 +136,11 @@
       const badge = (status) => {
         const map = {
           "待发送": "bg-slate-100 text-slate-700",
-          "已发送": "bg-blue-100 text-blue-700",
+          "已加入队列": "bg-blue-100 text-blue-700",
+          "已发送": "bg-slate-200 text-slate-700",
           "已回复": "bg-emerald-100 text-emerald-700",
           "待跟进": "bg-amber-100 text-amber-700",
+          "勿再联系": "bg-rose-100 text-rose-700",
           "正向": "bg-emerald-100 text-emerald-700",
           "中性": "bg-slate-100 text-slate-700",
           "待识别": "bg-rose-100 text-rose-700",
@@ -138,6 +148,24 @@
           "Medium": "bg-amber-100 text-amber-700",
         };
         return map[status] || "bg-slate-100 text-slate-700";
+      };
+
+      const rowBg = (status) => {
+        const map = {
+          "待发送": "",
+          "已加入队列": "bg-blue-50/60",
+          "已发送": "bg-slate-50/80",
+          "已回复": "bg-emerald-50/60",
+          "待跟进": "bg-amber-50/60",
+          "勿再联系": "bg-rose-50/60",
+        };
+        return map[status] || "";
+      };
+
+      const formatLastSms = (ts) => {
+        if (!ts) return null;
+        const d = new Date(ts);
+        return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
       };
 
       if (loading) {
@@ -231,9 +259,11 @@
                     <select className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none">
                       <option>全部状态</option>
                       <option>待发送</option>
+                      <option>已加入队列</option>
                       <option>已发送</option>
                       <option>已回复</option>
                       <option>待跟进</option>
+                      <option>勿再联系</option>
                     </select>
                   </div>
                 </div>
@@ -255,10 +285,13 @@
                         <tr><td colSpan="7" className="py-8 text-center text-slate-500">暂无候选客户。当前 crm_account_reactivation_contacts 需满足：real_customer、有 phone、months_since_last_job ≥ 6。</td></tr>
                       ) : (
                         candidates.map((item) => (
-                          <tr key={item.contact_id || item.account_id} className="border-b border-slate-100 align-top">
+                          <tr key={item.contact_id || item.account_id} className={`border-b border-slate-100 align-top ${rowBg(item.status)}`}>
                             <td className="py-4 pr-4">
                               <div className="font-medium">{item.contact_name || item.account_name || '—'}</div>
                               <div className="mt-1 text-xs text-slate-500">{item.account_name}</div>
+                              {item.last_sms_at && (
+                                <div className="mt-1 text-xs text-slate-400">Last SMS: {formatLastSms(item.last_sms_at)}</div>
+                              )}
                             </td>
                             <td className="py-4 pr-4 text-slate-700">{item.phone || '—'}</td>
                             <td className="py-4 pr-4 text-slate-700">{item.suburb || '—'}</td>
@@ -275,11 +308,11 @@
                             <td className="py-4">
                               <div className="flex flex-wrap gap-2">
                                 <button
-                                  onClick={() => handleSendSmsClick(item)}
-                                  disabled={!item.contact_id || !item.phone || item.status === '已发送'}
+                                  onClick={() => handleAddToCampaignClick(item)}
+                                  disabled={!item.contact_id || !item.phone || ['已发送', '已回复', '勿再联系', '已加入队列'].includes(item.status)}
                                   className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                  发短信
+                                  Add to Campaign
                                 </button>
                                 <button onClick={handlePlaceholder} className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">创建 Lead</button>
                                 <a href={item.contact_id ? '/contact-detail.html?id=' + item.contact_id : item.account_id ? '/account-detail.html?id=' + item.account_id : '#'} className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">详情</a>
@@ -296,9 +329,12 @@
 
             <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
               <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-7">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold">客户回复</h2>
-                  <a href="/reply-inbox.html" className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">Reply Inbox</a>
+                <div className="mb-4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">客户回复</h2>
+                    <a href="/reply-inbox.html" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800">查看全部回复</a>
+                  </div>
+                  <p className="text-xs text-slate-500">客户回复的完整处理请前往 Reply Inbox。</p>
                 </div>
                 <div className="space-y-4">
                   {replies.length === 0 ? (
@@ -356,16 +392,19 @@
               </div>
             </div>
           </div>
-          {smsModal && (
+          {addModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                 <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                  <h3 className="text-lg font-semibold">确认发送短信</h3>
-                  <p className="mt-2 text-sm text-slate-600">联系人：{smsModal.contact_name || smsModal.account_name || '—'}</p>
-                  <p className="mt-1 text-sm text-slate-600">电话：{smsModal.phone}</p>
-                  {smsError && <p className="mt-2 text-sm text-rose-600">{smsError}</p>}
+                  <h3 className="text-lg font-semibold">加入短信队列</h3>
+                  <p className="mt-2 text-sm text-slate-600">联系人：{addModal.contact_name || addModal.account_name || '—'}</p>
+                  <p className="mt-1 text-sm text-slate-600">电话：{addModal.phone}</p>
+                  <p className="mt-2 text-xs text-slate-500">将添加至 SMS Campaign 预览队列，不会立即发送。请到 SMS Campaign 页面查看、编辑后再发送。</p>
+                  {addSuccess && <p className="mt-2 text-sm text-emerald-600">{addSuccess}</p>}
+                  {addError && <p className="mt-2 text-sm text-rose-600">{addError}</p>}
                   <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={() => { setSmsModal(null); setSmsError(null); }} className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">取消</button>
-                    <button onClick={handleConfirmSendSms} disabled={smsLoading} className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{smsLoading ? '发送中...' : '确认发送'}</button>
+                    <button onClick={() => { setAddModal(null); setAddError(null); setAddSuccess(null); }} className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">关闭</button>
+                    <button onClick={handleConfirmAddToCampaign} disabled={addLoading || !!addSuccess} className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{addLoading ? '添加中...' : addSuccess ? '已添加' : '确认加入'}</button>
+                    {addSuccess && <a href="/reactivation-queue.html" className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white">前往 SMS Campaign</a>}
                   </div>
                 </div>
               </div>

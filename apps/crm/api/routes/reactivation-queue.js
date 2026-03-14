@@ -1,12 +1,27 @@
 /**
  * Reactivation SMS Queue API
+ * POST /api/reactivation/queue/add - add single contact to preview queue (dashboard)
  * POST /api/reactivation/queue/generate - generate preview queue
  * GET /api/reactivation/queue - list queue items
  * POST /api/reactivation/queue/send - send batch
+ * PATCH /api/reactivation/queue/:id/message - update single message
+ * POST /api/reactivation/queue/apply-template - apply template to batch
  */
 
 const router = require('express').Router();
-const { generateQueue, listQueue, sendBatch } = require('../../services/reactivation-sms-engine');
+const { generateQueue, listQueue, sendBatch, addToQueue, updateMessage, applyTemplate } = require('../../services/reactivation-sms-engine');
+
+router.post('/add', async (req, res) => {
+  try {
+    const { contact_id, source = 'dashboard' } = req.body || {};
+    if (!contact_id) return res.status(400).json({ error: 'contact_id is required' });
+    const result = await addToQueue(contact_id, source);
+    res.json(result);
+  } catch (err) {
+    console.error('POST /api/reactivation/queue/add error:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
 
 router.post('/generate', async (req, res) => {
   try {
@@ -71,6 +86,35 @@ router.post('/send', async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error('POST /api/reactivation/queue/send error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.patch('/:id/message', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message } = req.body || {};
+    if (!id || typeof message !== 'string') {
+      return res.status(400).json({ error: 'id and message are required' });
+    }
+    const result = await updateMessage(id, message.trim());
+    res.json(result);
+  } catch (err) {
+    console.error('PATCH /api/reactivation/queue/:id/message error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/apply-template', async (req, res) => {
+  try {
+    const { batch_id, template_key } = req.body || {};
+    if (!batch_id || !template_key) {
+      return res.status(400).json({ error: 'batch_id and template_key are required' });
+    }
+    const result = await applyTemplate(batch_id, template_key);
+    res.json(result);
+  } catch (err) {
+    console.error('POST /api/reactivation/queue/apply-template error:', err);
     res.status(500).json({ error: err.message });
   }
 });
