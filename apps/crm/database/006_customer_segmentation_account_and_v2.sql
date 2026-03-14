@@ -22,7 +22,7 @@ account_jobs AS (
     j.account_id,
     COUNT(DISTINCT j.id) AS jobs_count,
     COALESCE(SUM(i.amount), 0) AS total_revenue,
-    MAX(COALESCE(j.completed_at, j.created_at)) AS last_job_date
+    MAX(COALESCE(j.job_date, j.completed_at, j.created_at)) AS last_job_date
   FROM jobs j
   LEFT JOIN invoices i ON i.job_id = j.id
   WHERE j.account_id IS NOT NULL
@@ -42,7 +42,10 @@ SELECT
   aj.last_job_date,
   CASE
     WHEN aj.last_job_date IS NULL THEN NULL
-    ELSE DATE_PART('month', AGE(NOW(), aj.last_job_date))
+    ELSE (
+      DATE_PART('year', AGE(NOW(), aj.last_job_date)) * 12
+      + DATE_PART('month', AGE(NOW(), aj.last_job_date))
+    )::double precision
   END AS months_since_last_job,
   CASE
     WHEN a.address_line IS NOT NULL AND a.suburb IS NOT NULL THEN 'full'
@@ -69,8 +72,12 @@ SELECT
         WHEN a.address_line IS NOT NULL AND a.suburb IS NOT NULL THEN 10
         ELSE 0
       END
-    + CASE WHEN aj.last_job_date IS NOT NULL AND DATE_PART('month', AGE(NOW(), aj.last_job_date)) >= 12 THEN 30 ELSE 0 END
-    + CASE WHEN aj.last_job_date IS NOT NULL AND DATE_PART('month', AGE(NOW(), aj.last_job_date)) >= 6 THEN 10 ELSE 0 END
+    + CASE WHEN aj.last_job_date IS NOT NULL AND (
+      DATE_PART('year', AGE(NOW(), aj.last_job_date))::int * 12 + DATE_PART('month', AGE(NOW(), aj.last_job_date))::int
+    ) >= 12 THEN 30 ELSE 0 END
+    + CASE WHEN aj.last_job_date IS NOT NULL AND (
+      DATE_PART('year', AGE(NOW(), aj.last_job_date))::int * 12 + DATE_PART('month', AGE(NOW(), aj.last_job_date))::int
+    ) >= 6 THEN 10 ELSE 0 END
     - CASE
         WHEN a.address_line IS NULL AND a.suburb IS NULL THEN 30
         ELSE 0

@@ -24,6 +24,7 @@
         <a href="/reply-inbox.html">Reply Inbox</a>
         <a href="/reactivation-queue.html">SMS Campaign</a>
         <a href="/data-maintenance.html" class="active">Data Maintenance</a>
+        <a href="/admin-console.html">Admin Console</a>
       </nav>
     </aside>
     <main class="main" style="background:#f8fafc;">
@@ -198,7 +199,9 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {sampleRows.map((row, i) => (
+                      {sampleRows.length === 0 ? (
+                        <tr><td colSpan={cols.length || 1} className="py-8 text-center text-slate-500">No data</td></tr>
+                      ) : sampleRows.map((row, i) => (
                         <tr key={i} className="border-b border-slate-100">
                           {cols.map((col) => (
                             <td key={col} className="py-2 pr-4 text-slate-700">{String(row[col] ?? '—')}</td>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Console — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/admin-console.html" class="active">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f8fafc;">
+      <header class="header">Internal CRM</header>
+      <div id="admin-console-root" class="content" style="padding:0; overflow:auto;"></div>
+    </main>
+  </div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect } = React;
+
+    function formatTime(ts) {
+      if (!ts) return '—';
+      return new Date(ts).toLocaleString();
+    }
+
+    function StatusBadge({ status }) {
+      const cls = status === 'ok' ? 'bg-emerald-100 text-emerald-700' : status === 'error' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700';
+      const label = status === 'ok' ? 'OK' : status === 'error' ? 'ERROR' : 'WARNING';
+      return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${cls}`}>{label}</span>;
+    }
+
+    function AdminConsole() {
+      const [systemStatus, setSystemStatus] = useState(null);
+      const [queueStats, setQueueStats] = useState(null);
+      const [activities, setActivities] = useState(null);
+      const [errors, setErrors] = useState(null);
+      const [workers, setWorkers] = useState(null);
+      const [health, setHealth] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [actionLoading, setActionLoading] = useState(null);
+      const [actionMsg, setActionMsg] = useState(null);
+      const [confirmAction, setConfirmAction] = useState(null);
+
+      const fetchAll = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const [statusRes, queueRes, actRes, errRes, wrkRes, healthRes] = await Promise.all([
+            fetch('/api/system/status'),
+            fetch('/api/reactivation/queue/stats'),
+            fetch('/api/admin/recent-activities'),
+            fetch('/api/admin/errors'),
+            fetch('/api/admin/workers'),
+            fetch('/api/admin/system-health'),
+          ]);
+          setSystemStatus(await statusRes.json().catch(() => null));
+          setQueueStats(await queueRes.json().catch(() => null));
+          setActivities(await actRes.json().catch(() => []));
+          setErrors(await errRes.json().catch(() => []));
+          setWorkers(await wrkRes.json().catch(() => null));
+          setHealth(await healthRes.json().catch(() => null));
+        } catch (e) {
+          setError('Unable to fetch status');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => { fetchAll(); }, []);
+
+      const runAction = async (action) => {
+        if (!confirmAction) return;
+        setActionLoading(action);
+        setActionMsg(null);
+        try {
+          const res = await fetch('/api/admin/actions/' + action, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Failed');
+          setActionMsg('Success: ' + (json.message || 'done'));
+          setConfirmAction(null);
+          fetchAll();
+        } catch (e) {
+          setActionMsg('Error: ' + (e.message || 'failed'));
+        } finally {
+          setActionLoading(null);
+        }
+      };
+
+      const runHealthCheck = async () => {
+        setActionLoading('health');
+        setActionMsg(null);
+        try {
+          const res = await fetch('/api/admin/system-health');
+          const json = await res.json();
+          setActionMsg(json.summary || JSON.stringify(json));
+          fetchAll();
+        } catch (e) {
+          setActionMsg('Error: ' + (e.message || 'failed'));
+        } finally {
+          setActionLoading(null);
+        }
+      };
+
+      if (loading && !systemStatus) {
+        return (
+          <div className="min-h-full flex items-center justify-center p-8">
+            <div className="text-slate-500">Loading...</div>
+          </div>
+        );
+      }
+
+      if (error && !systemStatus) {
+        return (
+          <div className="min-h-full flex items-center justify-center p-8">
+            <div className="rounded-2xl bg-rose-50 border border-rose-200 p-6 text-rose-800">
+              <div className="font-medium">System error</div>
+              <div className="mt-2 text-sm">{error}</div>
+              <button onClick={fetchAll} className="mt-4 rounded-xl bg-rose-600 px-4 py-2 text-sm text-white">Retry</button>
+            </div>
+          </div>
+        );
+      }
+
+      const statusItems = [
+        { key: 'api', label: 'CRM API' },
+        { key: 'database', label: 'Database' },
+        { key: 'sms_engine', label: 'SMS Engine' },
+        { key: 'reply_classifier', label: 'Reply Classifier Worker' },
+        { key: 'queue_worker', label: 'Reactivation Queue' },
+      ];
+
+      return (
+        <div className="min-h-full bg-slate-50 text-slate-900">
+          <div className="mx-auto max-w-6xl p-6 md:p-8">
+            <h1 className="text-3xl font-semibold tracking-tight">Admin Console</h1>
+            <p className="mt-2 text-sm text-slate-600">系统运行状态一览</p>
+
+            {actionMsg && (
+              <div className={`mt-4 rounded-xl p-4 text-sm ${actionMsg.startsWith('Error') ? 'bg-rose-50 text-rose-800' : 'bg-emerald-50 text-emerald-800'}`}>
+                {actionMsg}
+              </div>
+            )}
+
+            {/* System Status */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">System Status</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {statusItems.map(({ key, label }) => (
+                  <div key={key} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+                    <div className="text-sm text-slate-500">{label}</div>
+                    <div className="mt-2"><StatusBadge status={systemStatus?.[key] || 'error'} /></div>
+                    <div className="mt-1 text-xs text-slate-400">{systemStatus?.last_checked ? formatTime(systemStatus.last_checked) : '—'}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Queue Status */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">Queue Status</h2>
+              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div><span className="text-slate-500">Queued</span><div className="text-2xl font-semibold">{queueStats?.queued ?? '—'}</div></div>
+                  <div><span className="text-slate-500">Preview</span><div className="text-2xl font-semibold">{queueStats?.preview ?? '—'}</div></div>
+                  <div><span className="text-slate-500">Sent Today</span><div className="text-2xl font-semibold">{queueStats?.sent_today ?? '—'}</div></div>
+                  <div><span className="text-slate-500">Failed</span><div className="text-2xl font-semibold text-rose-600">{queueStats?.failed ?? '—'}</div></div>
+                </div>
+              </div>
+            </section>
+
+            {/* Recent Activities */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">Recent System Activity</h2>
+              <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-500">
+                    <tr><th className="px-4 py-3 text-left font-medium">Time</th><th className="px-4 py-3 text-left font-medium">Type</th><th className="px-4 py-3 text-left font-medium">Contact</th><th className="px-4 py-3 text-left font-medium">Summary</th></tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(activities) && activities.length > 0 ? activities.map((a) => (
+                      <tr key={a.id} className="border-t border-slate-100">
+                        <td className="px-4 py-2 text-slate-600">{formatTime(a.occurred_at)}</td>
+                        <td className="px-4 py-2">{a.type || '—'}</td>
+                        <td className="px-4 py-2">{a.contact_name || '—'}</td>
+                        <td className="px-4 py-2 truncate max-w-xs">{a.summary || '—'}</td>
+                      </tr>
+                    )) : (
+                      <tr><td colSpan="4" className="px-4 py-8 text-center text-slate-500">No activities</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Recent Errors */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">Recent Errors</h2>
+              <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+                {Array.isArray(errors) && errors.length > 0 ? (
+                  <table className="min-w-full text-sm">
+                    <thead className="bg-slate-50 text-slate-500">
+                      <tr><th className="px-4 py-3 text-left font-medium">Time</th><th className="px-4 py-3 text-left font-medium">Message</th></tr>
+                    </thead>
+                    <tbody>{errors.map((e, i) => (
+                      <tr key={i} className="border-t border-slate-100"><td className="px-4 py-2">{formatTime(e.time)}</td><td className="px-4 py-2 text-rose-600">{e.message}</td></tr>
+                    ))}</tbody>
+                  </table>
+                ) : (
+                  <div className="px-4 py-8 text-center text-slate-500">No errors logged</div>
+                )}
+              </div>
+            </section>
+
+            {/* Worker Status */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">Worker Status</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {workers && Object.entries(workers).map(([key, w]) => (
+                  <div key={key} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+                    <div className="text-sm font-medium">{key.replace(/_/g, ' ')}</div>
+                    <div className="mt-1"><StatusBadge status={w.status === 'running' || w.status === 'unknown' ? 'ok' : w.status} /></div>
+                    <div className="mt-1 text-xs text-slate-500">Last run: {formatTime(w.last_run)}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Admin Actions */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">Admin Actions</h2>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={() => setConfirmAction('rebuild-segmentation')} disabled={!!actionLoading} className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+                  {actionLoading === 'rebuild-segmentation' ? 'Running...' : 'Rebuild Segmentation'}
+                </button>
+                <button onClick={() => setConfirmAction('regenerate-candidates')} disabled={!!actionLoading} className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+                  {actionLoading === 'regenerate-candidates' ? 'Running...' : 'Regenerate Reactivation Candidates'}
+                </button>
+                <button onClick={runHealthCheck} disabled={!!actionLoading} className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200 disabled:opacity-50">
+                  {actionLoading === 'health' ? 'Running...' : 'Run Health Check'}
+                </button>
+                <a href="/data-maintenance.html" className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">Data Maintenance</a>
+              </div>
+
+              {confirmAction && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => !actionLoading && setConfirmAction(null)}>
+                  <div className="rounded-2xl bg-white p-6 shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="font-semibold">确认执行</h3>
+                    <p className="mt-2 text-sm text-slate-600">确定要执行 {confirmAction} 吗？</p>
+                    <div className="mt-6 flex gap-3">
+                      <button onClick={() => runAction(confirmAction)} disabled={actionLoading} className="rounded-xl bg-rose-600 px-4 py-2 text-sm text-white disabled:opacity-50">确认</button>
+                      <button onClick={() => setConfirmAction(null)} disabled={actionLoading} className="rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-700">取消</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('admin-console-root'));
+    root.render(<AdminConsole />);
+  </script>
+</body>
+</html>

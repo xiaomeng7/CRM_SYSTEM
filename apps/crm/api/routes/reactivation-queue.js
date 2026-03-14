@@ -19,6 +19,35 @@ router.post('/generate', async (req, res) => {
   }
 });
 
+router.get('/stats', async (req, res) => {
+  try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1);
+    const r = await require('../../lib/db').pool.query(
+      `SELECT
+         COUNT(*) FILTER (WHERE status IN ('queued','preview')) AS queued_preview,
+         COUNT(*) FILTER (WHERE status = 'queued') AS queued,
+         COUNT(*) FILTER (WHERE status = 'preview') AS preview,
+         COUNT(*) FILTER (WHERE status = 'sent' AND sent_at >= $1 AND sent_at < $2) AS sent_today,
+         COUNT(*) FILTER (WHERE status = 'failed') AS failed
+       FROM reactivation_sms_queue`,
+      [todayStart, todayEnd]
+    );
+    const row = r.rows[0] || {};
+    res.json({
+      queued: Number(row.queued ?? 0),
+      preview: Number(row.preview ?? 0),
+      queued_preview: Number(row.queued_preview ?? 0),
+      sent_today: Number(row.sent_today ?? 0),
+      failed: Number(row.failed ?? 0),
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const status = req.query.status;

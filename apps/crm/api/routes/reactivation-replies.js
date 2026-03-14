@@ -37,18 +37,47 @@ router.get('/', async (req, res) => {
     );
     const tasksCreatedToday = Number(tasksCreatedRes.rows[0]?.cnt || 0);
 
-    const repliesRes = await pool.query(
-      `SELECT a.id, a.contact_id, a.summary, a.occurred_at, a.handled,
-              a.intent, a.intent_confidence, a.intent_source,
-              c.name AS contact_name, c.phone, c.account_id, acc.name AS account_name, c.do_not_contact
-       FROM activities a
-       LEFT JOIN contacts c ON c.id = a.contact_id
-       LEFT JOIN accounts acc ON acc.id = c.account_id
-       WHERE a.activity_type = ANY($1)
-       ORDER BY a.occurred_at DESC
-       LIMIT 100`,
-      [SMS_INBOUND_TYPES]
-    );
+    let repliesRes;
+    try {
+      repliesRes = await pool.query(
+        `SELECT a.id, a.contact_id, a.summary, a.occurred_at,
+                COALESCE(a.handled, false) AS handled,
+                a.intent, a.intent_confidence, a.intent_source,
+                c.name AS contact_name, c.phone, c.account_id, acc.name AS account_name,
+                COALESCE(c.do_not_contact, false) AS do_not_contact
+         FROM activities a
+         LEFT JOIN contacts c ON c.id = a.contact_id
+         LEFT JOIN accounts acc ON acc.id = c.account_id
+         WHERE a.activity_type = ANY($1)
+         ORDER BY a.occurred_at DESC
+         LIMIT 100`,
+        [SMS_INBOUND_TYPES]
+      );
+    } catch (e) {
+      if (/handled|intent|do_not_contact|column.*does not exist/i.test(e.message)) {
+        repliesRes = await pool.query(
+          `SELECT a.id, a.contact_id, a.summary, a.occurred_at,
+                  c.name AS contact_name, c.phone, c.account_id, acc.name AS account_name
+           FROM activities a
+           LEFT JOIN contacts c ON c.id = a.contact_id
+           LEFT JOIN accounts acc ON acc.id = c.account_id
+           WHERE a.activity_type = ANY($1)
+           ORDER BY a.occurred_at DESC
+           LIMIT 100`,
+          [SMS_INBOUND_TYPES]
+        );
+        repliesRes.rows = repliesRes.rows.map((r) => ({
+          ...r,
+          handled: false,
+          intent: null,
+          intent_confidence: null,
+          intent_source: null,
+          do_not_contact: false,
+        }));
+      } else {
+        throw e;
+      }
+    }
 
     const contactIds = [...new Set(repliesRes.rows.map((r) => r.contact_id).filter(Boolean))];
     let hasOpenTask = new Map();

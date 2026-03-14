@@ -24,6 +24,7 @@
         <a href="/reply-inbox.html">Reply Inbox</a>
         <a href="/reactivation-queue.html">SMS Campaign</a>
         <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/admin-console.html">Admin Console</a>
       </nav>
     </aside>
     <main class="main" style="background:#f8fafc;">
@@ -48,6 +49,8 @@
       const [smsModal, setSmsModal] = useState(null);
       const [smsLoading, setSmsLoading] = useState(false);
       const [smsError, setSmsError] = useState(null);
+      const [generateLoading, setGenerateLoading] = useState(false);
+      const [generateMsg, setGenerateMsg] = useState(null);
 
       const fetchData = () => {
         return fetch('/api/reactivation/dashboard')
@@ -66,6 +69,29 @@
       const handlePlaceholder = (e) => {
         e.preventDefault();
         alert('Coming soon');
+      };
+
+      const handleGenerateList = async () => {
+        setGenerateLoading(true);
+        setGenerateMsg(null);
+        try {
+          const res = await fetch('/api/reactivation/queue/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ limit: 50, min_priority_score: 40 }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || '生成失败');
+          setGenerateMsg(`已生成 ${json.generated || 0} 条。Batch: ${json.batch_id || '—'}`);
+          await fetchData();
+          if ((json.generated || 0) > 0) {
+            setTimeout(() => { window.location.href = '/reactivation-queue.html'; }, 1500);
+          }
+        } catch (e) {
+          setGenerateMsg('生成失败: ' + (e.message || '未知错误'));
+        } finally {
+          setGenerateLoading(false);
+        }
       };
 
       const handleSendSmsClick = (item) => {
@@ -144,7 +170,10 @@
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <button onClick={handlePlaceholder} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm">生成今日名单</button>
+                <button onClick={handleGenerateList} disabled={generateLoading} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm disabled:opacity-70">
+                  {generateLoading ? '生成中...' : '生成今日名单'}
+                </button>
+                {generateMsg && <span className={`self-center text-sm ${generateMsg.startsWith('已生成') ? 'text-emerald-600' : 'text-rose-600'}`}>{generateMsg}</span>}
                 <a href="/reactivation-queue.html" className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">批量发送短信</a>
                 <button onClick={handlePlaceholder} className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">导出 CSV</button>
               </div>
@@ -344,6 +373,9 @@
         </div>
       );
     }
+
+    const root = ReactDOM.createRoot(document.getElementById('reactivation-dashboard-root'));
+    root.render(<CRMReactivationDashboard />);
   </script>
 </body>
 </html>

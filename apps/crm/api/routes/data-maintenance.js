@@ -49,11 +49,15 @@ const REPORTS = {
     return { title: 'Suspicious Contacts', rows: r.rows };
   },
   'do-not-contact': async () => {
-    const r = await pool.query(
-      `SELECT c.id, c.name, c.phone, c.do_not_contact_reason, c.do_not_contact_at
-       FROM contacts c WHERE c.do_not_contact = true ORDER BY c.do_not_contact_at DESC LIMIT 100`
-    );
-    return { title: 'Do Not Contact', rows: r.rows };
+    try {
+      const r = await pool.query(
+        `SELECT c.id, c.name, c.phone, c.do_not_contact_reason, c.do_not_contact_at
+         FROM contacts c WHERE COALESCE(c.do_not_contact, false) = true ORDER BY c.do_not_contact_at DESC NULLS LAST LIMIT 100`
+      );
+      return { title: 'Do Not Contact', rows: r.rows };
+    } catch (_) {
+      return { title: 'Do Not Contact', rows: [], note: 'do_not_contact columns may not exist (run migration 011)' };
+    }
   },
 };
 

@@ -18,6 +18,7 @@
     var content = document.querySelector('.content');
     if (!content) return;
     var page = content.getAttribute('data-page');
+    if (page === 'dashboard') initDashboardPage();
     if (page === 'leads') initLeadsPage();
     if (page === 'lead-detail') initLeadDetailPage();
     if (page === 'contacts') initContactsPage();
@@ -38,6 +39,18 @@
     if (!el) return;
     el.textContent = text || '';
     el.style.color = isError ? '#dc3545' : '';
+  }
+
+  function initDashboardPage() {
+    fetch('/api/dashboard/stats')
+      .then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (d) {
+        var el = document.getElementById('dash-leads'); if (el) el.textContent = d.leads7d != null ? d.leads7d : '—';
+        el = document.getElementById('dash-tasks'); if (el) el.textContent = d.tasksToday != null ? d.tasksToday : '—';
+        el = document.getElementById('dash-opps'); if (el) el.textContent = d.opps != null ? d.opps : '—';
+        el = document.getElementById('dash-contacts'); if (el) el.textContent = d.contactsRecent != null ? d.contactsRecent : '—';
+      })
+      .catch(function () {});
   }
 
   // Contacts list (domain model) + backend search + reactivation

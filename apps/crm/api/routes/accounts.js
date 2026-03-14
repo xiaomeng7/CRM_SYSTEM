@@ -36,16 +36,22 @@ router.get('/:id/detail', async (req, res) => {
         [req.params.id]
       ),
     ]);
-    const summary = await pool.query(
-      `SELECT jobs_count, total_revenue, last_job_date, months_since_last_job, priority_score
-       FROM crm_account_summary WHERE account_id = $1`,
-      [req.params.id]
-    ).then((r) => r.rows[0]).catch(() => null);
+    let summary = null;
+    try {
+      const s = await pool.query(
+        `SELECT jobs_count, total_revenue, last_job_date, months_since_last_job, priority_score
+         FROM crm_account_summary WHERE account_id = $1`,
+        [req.params.id]
+      );
+      summary = s.rows[0] || {};
+    } catch (_) {
+      summary = {};
+    }
     res.json({
       account,
       contacts: contactsRes.rows,
       jobs: jobsRes.rows,
-      summary: summary || {},
+      summary: summary,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

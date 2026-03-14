@@ -20,17 +20,18 @@
         <a href="/reply-inbox.html">Reply Inbox</a>
         <a href="/reactivation-queue.html">SMS Campaign</a>
         <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/admin-console.html">Admin Console</a>
       </nav>
     </aside>
     <main class="main">
       <header class="header">Internal CRM</header>
-      <div class="content">
+      <div class="content" data-page="dashboard">
         <h1 class="page-title">Dashboard</h1>
         <div class="cards">
-          <div class="card"><h3>—</h3><p>New leads (7d)</p></div>
-          <div class="card"><h3>—</h3><p>Due tasks today</p></div>
-          <div class="card"><h3>—</h3><p>Open opportunities</p></div>
-          <div class="card"><h3>—</h3><p>Recent contacts imported</p></div>
+          <div class="card"><h3 id="dash-leads">—</h3><p>New leads (7d)</p></div>
+          <div class="card"><h3 id="dash-tasks">—</h3><p>Due tasks today</p></div>
+          <div class="card"><h3 id="dash-opps">—</h3><p>Open opportunities</p></div>
+          <div class="card"><h3 id="dash-contacts">—</h3><p>Recent contacts (7d)</p></div>
         </div>
         <div class="table-wrap">
           <table>

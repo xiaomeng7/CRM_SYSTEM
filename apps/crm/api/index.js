@@ -19,6 +19,7 @@ const reactivationDashboardRouter = require('./routes/reactivation-dashboard');
 const reactivationRepliesRouter = require('./routes/reactivation-replies');
 const reactivationQueueRouter = require('./routes/reactivation-queue');
 const dataMaintenanceRouter = require('./routes/data-maintenance');
+const adminRouter = require('./routes/admin');
 const tasksRouter = require('./routes/tasks');
 const customers = require('./customers');
 const jobs = require('./jobs');
@@ -40,7 +41,22 @@ app.use('/api/reactivation/dashboard', reactivationDashboardRouter);
 app.use('/api/reactivation/replies', reactivationRepliesRouter);
 app.use('/api/reactivation/queue', reactivationQueueRouter);
 app.use('/api/data-maintenance', dataMaintenanceRouter);
+app.use('/api', adminRouter);
 app.use('/api/tasks', tasksRouter);
+
+app.get('/api/dashboard/stats', async (req, res) => {
+  try {
+    const [leads7d, tasksToday, opps, contactsRecent] = await Promise.all([
+      pool.query(`SELECT COUNT(*) AS n FROM leads WHERE created_at >= NOW() - INTERVAL '7 days'`).then((r) => Number(r.rows[0]?.n ?? 0)).catch(() => 0),
+      pool.query(`SELECT COUNT(*) AS n FROM tasks WHERE COALESCE(status,'open') IN ('open','pending') AND due_at::date <= CURRENT_DATE`).then((r) => Number(r.rows[0]?.n ?? 0)).catch(() => 0),
+      pool.query(`SELECT COUNT(*) AS n FROM opportunities WHERE stage NOT IN ('won','lost')`).then((r) => Number(r.rows[0]?.n ?? 0)).catch(() => 0),
+      pool.query(`SELECT COUNT(*) AS n FROM contacts WHERE created_at >= NOW() - INTERVAL '7 days'`).then((r) => Number(r.rows[0]?.n ?? 0)).catch(() => 0),
+    ]);
+    res.json({ leads7d, tasksToday, opps, contactsRecent });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 function isCustomersTableMissing(err) {
   return err && /relation "customers" does not exist/i.test(err.message);

@@ -46,7 +46,21 @@ router.get('/:id', async (req, res) => {
   try {
     const row = await leads.getById(req.params.id);
     if (!row) return res.status(404).json({ error: 'Not found' });
-    res.json(row);
+    const enriched = await pool.query(
+      `SELECT l.*, c.name AS contact_name, c.phone AS contact_phone, a.suburb AS account_suburb
+       FROM leads l
+       LEFT JOIN contacts c ON l.contact_id = c.id
+       LEFT JOIN accounts a ON l.account_id = a.id
+       WHERE l.id = $1`,
+      [row.id]
+    ).then((r) => r.rows[0]).catch(() => row);
+    const out = enriched || row;
+    res.json({
+      ...out,
+      name: out.contact_name || out.name || '—',
+      phone: out.contact_phone || out.phone || '—',
+      suburb: out.account_suburb || out.suburb || '—',
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

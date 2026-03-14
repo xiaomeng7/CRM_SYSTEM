@@ -51,8 +51,9 @@ router.get('/', async (req, res) => {
         priority_score: Number(r.priority_score || 0),
       }));
     } catch (e) {
-      if (!/crm_account_reactivation_contacts/i.test(e.message)) throw e;
-      const fallback = await pool.query(`
+      if (!/crm_account_reactivation_contacts|crm_account_reactivation_candidates|does not exist/i.test(e.message)) throw e;
+      try {
+        const fallback = await pool.query(`
         SELECT account_id, account_name, suburb, contact_with_phone_count, jobs_count, last_job_date, months_since_last_job, priority_score
         FROM crm_account_reactivation_candidates
         ORDER BY priority_score DESC
@@ -71,6 +72,9 @@ router.get('/', async (req, res) => {
         months_since_last_job: r.months_since_last_job,
         priority_score: Number(r.priority_score || 0),
       }));
+      } catch (_) {
+        candidates = [];
+      }
     }
 
     const contactIds = candidates.map((c) => c.contact_id).filter(Boolean);
