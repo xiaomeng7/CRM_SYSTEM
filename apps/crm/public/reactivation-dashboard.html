@@ -52,6 +52,7 @@
       const [addSuccess, setAddSuccess] = useState(null);
       const [generateLoading, setGenerateLoading] = useState(false);
       const [generateMsg, setGenerateMsg] = useState(null);
+      const [showFullCandidates, setShowFullCandidates] = useState(false);
 
       const fetchData = () => {
         return fetch('/api/reactivation/dashboard')
@@ -129,6 +130,8 @@
       const summary = data?.summary ?? { candidates: 0, smsQueued: 0, smsSentToday: 0, replied: 0, followUpToday: 0, doNotContact: 0 };
       const pipeline = data?.pipeline ?? [];
       const candidates = data?.candidates ?? [];
+      const todayPriority = candidates.filter((c) => c.status === '待发送').slice(0, 20);
+      const displayList = showFullCandidates ? candidates : todayPriority;
       const replies = data?.replies ?? [];
       const tasks = data?.tasks ?? [];
       const pipelineMax = Math.max(...pipeline.map((p) => p.value), 1);
@@ -209,16 +212,20 @@
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-7">
               {[
-                ["候选客户", summary.candidates],
-                ["待发送", summary.smsQueued],
-                ["队列待发", summary.queuePreview ?? 0],
-                ["今日已发", summary.smsSentToday],
-                ["已回复", summary.replied],
-                ["今日待跟进", summary.followUpToday],
-                ["勿再联系", summary.doNotContact],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-                  <div className="text-sm text-slate-500">{label}</div>
+                ["候选客户", summary.candidates, true],
+                ["待发送", summary.smsQueued, false],
+                ["队列待发", summary.queuePreview ?? 0, false],
+                ["今日已发", summary.smsSentToday, false],
+                ["已回复", summary.replied, false],
+                ["今日待跟进", summary.followUpToday, false],
+                ["勿再联系", summary.doNotContact, false],
+              ].map(([label, value, clickable]) => (
+                <div
+                  key={label}
+                  onClick={clickable ? () => setShowFullCandidates((v) => !v) : undefined}
+                  className={`rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 ${clickable ? 'cursor-pointer hover:ring-slate-300 transition-colors' : ''} ${clickable && showFullCandidates ? 'ring-2 ring-slate-900' : ''}`}
+                >
+                  <div className="text-sm text-slate-500">{label}{clickable ? ' · 点击查看完整列表' : ''}</div>
                   <div className="mt-3 text-3xl font-semibold">{value}</div>
                 </div>
               ))}
@@ -250,7 +257,12 @@
 
               <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-8">
                 <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <h2 className="text-lg font-semibold">今日优先客户</h2>
+                  <div>
+                    <h2 className="text-lg font-semibold">{showFullCandidates ? '完整候选列表' : '今日优先客户'}</h2>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {showFullCandidates ? `全部 ${candidates.length} 人，点击「候选客户」卡片返回今日优先` : `每天最多 20 人待联系，评分高优先；联系过的次日不再显示`}
+                    </p>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     <input
                       className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
@@ -281,10 +293,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {candidates.length === 0 ? (
-                        <tr><td colSpan="7" className="py-8 text-center text-slate-500">暂无候选客户。当前 crm_account_reactivation_contacts 需满足：real_customer、有 phone、months_since_last_job ≥ 6。</td></tr>
+                      {displayList.length === 0 ? (
+                        <tr><td colSpan="7" className="py-8 text-center text-slate-500">
+                          {showFullCandidates ? '暂无候选客户。' : '今日暂无待联系客户，可能已全部联系过。点击「候选客户」查看完整列表。'}
+                          当前 crm_account_reactivation_contacts 需满足：real_customer、有 phone、months_since_last_job ≥ 6。
+                        </td></tr>
                       ) : (
-                        candidates.map((item) => (
+                        displayList.map((item) => (
                           <tr key={item.contact_id || item.account_id} className={`border-b border-slate-100 align-top ${rowBg(item.status)}`}>
                             <td className="py-4 pr-4">
                               <div className="font-medium">{item.contact_name || item.account_name || '—'}</div>
