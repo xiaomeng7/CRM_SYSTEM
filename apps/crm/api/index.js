@@ -13,11 +13,19 @@ const leadsRouter = require('./routes/leads');
 const opportunitiesRouter = require('./routes/opportunities');
 const publicLeadsRouter = require('./routes/public-leads');
 const contactsRouter = require('./routes/contacts');
+const accountsRouter = require('./routes/accounts');
+const webhooksRouter = require('./routes/webhooks');
+const reactivationDashboardRouter = require('./routes/reactivation-dashboard');
+const reactivationRepliesRouter = require('./routes/reactivation-replies');
+const reactivationQueueRouter = require('./routes/reactivation-queue');
+const dataMaintenanceRouter = require('./routes/data-maintenance');
+const tasksRouter = require('./routes/tasks');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Internal CRM UI (static; dashboard at /)
 app.use(express.static(path.join(__dirname, '../public')));
@@ -26,6 +34,13 @@ app.use('/api/leads', leadsRouter);
 app.use('/api/opportunities', opportunitiesRouter);
 app.use('/api/public/leads', publicLeadsRouter);
 app.use('/api/contacts', contactsRouter);
+app.use('/api/accounts', accountsRouter);
+app.use('/api/webhooks', webhooksRouter);
+app.use('/api/reactivation/dashboard', reactivationDashboardRouter);
+app.use('/api/reactivation/replies', reactivationRepliesRouter);
+app.use('/api/reactivation/queue', reactivationQueueRouter);
+app.use('/api/data-maintenance', dataMaintenanceRouter);
+app.use('/api/tasks', tasksRouter);
 
 function isCustomersTableMissing(err) {
   return err && /relation "customers" does not exist/i.test(err.message);

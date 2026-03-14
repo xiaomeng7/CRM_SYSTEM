@@ -284,7 +284,7 @@
       });
 
       tr.querySelector('.js-contact-details').addEventListener('click', function () {
-        window.alert('Details view coming soon.');
+        window.location.href = '/contact-detail.html?id=' + encodeURIComponent(c.id);
       });
 
       tr.querySelector('.js-contact-reactivate').addEventListener('click', function () {

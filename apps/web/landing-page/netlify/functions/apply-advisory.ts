@@ -167,8 +167,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
     if (!row) throw new Error("Insert failed");
 
     // Fan-out: also create a lead inside CRM (apps/crm) for the new application.
-    const crmBase = process.env.CRM_API_BASE_URL;
+    let crmBase = (process.env.CRM_API_BASE_URL || "").trim();
     if (crmBase) {
+      if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
       const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
       const messageLines = [
         `Property type: ${data.property_type}`,

@@ -358,6 +358,32 @@
         window.addEventListener('scroll', update, { passive: true });
         update();
       })();
+
+      (function ga4Events() {
+        if (typeof gtag !== 'function') return;
+        gtag('event', 'hero_view', { event_category: 'engagement' });
+        var scroll50Fired = false;
+        var formStartFired = false;
+        window.addEventListener('scroll', function() {
+          if (scroll50Fired) return;
+          var pct = (window.pageYOffset + window.innerHeight) / document.documentElement.scrollHeight;
+          if (pct >= 0.5) { scroll50Fired = true; gtag('event', 'scroll_50', { event_category: 'engagement' }); }
+        }, { passive: true });
+        var pricing = document.querySelector('.pricing-section');
+        if (pricing && window.IntersectionObserver) {
+          var obs = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) { obs.disconnect(); gtag('event', 'pricing_view', { event_category: 'engagement' }); }
+          }, { threshold: 0.5 });
+          obs.observe(pricing);
+        }
+        var firstField = document.getElementById('name');
+        if (firstField) firstField.addEventListener('focus', function() {
+          if (formStartFired) return; formStartFired = true;
+          gtag('event', 'form_start', { event_category: 'engagement' });
+        });
+        var phoneLink = document.querySelector('.header-phone');
+        if (phoneLink) phoneLink.addEventListener('click', function() { gtag('event', 'phone_click', { event_category: 'engagement' }); });
+      })();
     })();
   </script>
 </body>

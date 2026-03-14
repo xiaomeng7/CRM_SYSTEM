@@ -36,7 +36,7 @@ All variables are **backend-only**. Do not expose to the browser.
 | **DATABASE_URL** | PostgreSQL connection string. | Yes (for API, sync, automations, import) | `postgresql://user:pass@host:5432/dbname?sslmode=require` | Railway (reference or value), Neon, or .env at repo root. |
 | **DATABASE_SSL** | Use SSL for DB connection. | No | `true` or `false` | Railway / .env. Use `true` for Neon and Railway Postgres. |
 | **COMPANY_PHONE** | Company phone shown in automation SMS. | No | `0412 345 678` | Railway / .env. Not secret (appears in messages). |
-| **DRY_RUN** | When `true` or `1`, import script does not write to DB. | No | `true` or `1` | CLI only: `DRY_RUN=true pnpm import:servicem8`. Not needed in .env. |
+| **DRY_RUN** | When `true` or `1`, certain scripts (legacy import, sync) do not write to DB. | No | `true` or `1` | CLI only, e.g. `DRY_RUN=true pnpm sync:servicem8:all`。不建议再用在 legacy `import-servicem8-customers.js` 上。 |
 
 apps/crm also uses (via `@bht/integrations`): **SERVICEM8_API_KEY**, **TWILIO_ACCOUNT_SID**, **TWILIO_AUTH_TOKEN**, **TWILIO_SENDER_ID**, **TWILIO_PHONE_NUMBER** — see packages/integrations below.
 

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMS Campaign — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html" class="active">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f8fafc;">
+      <header class="header">Internal CRM</header>
+      <div id="reactivation-queue-root" class="content" style="padding:0; overflow:auto;"></div>
+    </main>
+  </div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useCallback } = React;
+
+    const STATUS_BADGE = {
+      preview: 'bg-slate-100 text-slate-700',
+      queued: 'bg-blue-100 text-blue-700',
+      sent: 'bg-emerald-100 text-emerald-700',
+      failed: 'bg-rose-100 text-rose-700',
+      cancelled: 'bg-amber-100 text-amber-700',
+    };
+
+    function formatTime(ts) {
+      if (!ts) return '—';
+      const d = new Date(ts);
+      return d.toLocaleString();
+    }
+
+    function ReactivationQueuePage() {
+      const [limit, setLimit] = useState(20);
+      const [minPriorityScore, setMinPriorityScore] = useState(40);
+      const [generateLoading, setGenerateLoading] = useState(false);
+      const [generateError, setGenerateError] = useState(null);
+      const [generateSuccess, setGenerateSuccess] = useState(null);
+      const [batches, setBatches] = useState([]);
+      const [batchesLoading, setBatchesLoading] = useState(true);
+      const [selectedBatchId, setSelectedBatchId] = useState(null);
+      const [batchItems, setBatchItems] = useState([]);
+      const [batchItemsLoading, setBatchItemsLoading] = useState(false);
+      const [sendLoading, setSendLoading] = useState(false);
+      const [sendResult, setSendResult] = useState(null);
+      const [showConfirmModal, setShowConfirmModal] = useState(false);
+      const [confirmInput, setConfirmInput] = useState('');
+
+      const fetchBatches = useCallback(async () => {
+        setBatchesLoading(true);
+        try {
+          const res = await fetch('/api/reactivation/queue?limit=300');
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Fetch failed');
+          const items = data.items || [];
+          const byBatch = {};
+          items.forEach((i) => {
+            if (!i.batch_id) return;
+            if (!byBatch[i.batch_id]) {
+              byBatch[i.batch_id] = { batch_id: i.batch_id, items: [], created_at: i.created_at };
+            }
+            byBatch[i.batch_id].items.push(i);
+            const t = new Date(i.created_at).getTime();
+            if (!byBatch[i.batch_id].created_at || new Date(byBatch[i.batch_id].created_at).getTime() > t) {
+              byBatch[i.batch_id].created_at = i.created_at;
+            }
+          });
+          const list = Object.values(byBatch).map((b) => {
+            const preview = b.items.filter((x) => x.status === 'preview' || x.status === 'queued').length;
+            const sent = b.items.filter((x) => x.status === 'sent').length;
+            const failed = b.items.filter((x) => x.status === 'failed').length;
+            return {
+              ...b,
+              total: b.items.length,
+              preview,
+              sent,
+              failed,
+            };
+          });
+          list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          setBatches(list);
+        } catch (e) {
+          setBatches([]);
+        } finally {
+          setBatchesLoading(false);
+        }
+      }, []);
+
+      const fetchBatchItems = useCallback(async (batchId) => {
+        if (!batchId) { setBatchItems([]); return; }
+        setBatchItemsLoading(true);
+        try {
+          const res = await fetch('/api/reactivation/queue?batch_id=' + encodeURIComponent(batchId));
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Fetch failed');
+          setBatchItems(data.items || []);
+        } catch (e) {
+          setBatchItems([]);
+        } finally {
+          setBatchItemsLoading(false);
+        }
+      }, []);
+
+      useEffect(() => { fetchBatches(); }, [fetchBatches]);
+      useEffect(() => { fetchBatchItems(selectedBatchId); }, [selectedBatchId, fetchBatchItems]);
+
+      const handleGenerate = async () => {
+        setGenerateError(null);
+        setGenerateSuccess(null);
+        setGenerateLoading(true);
+        try {
+          const res = await fetch('/api/reactivation/queue/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ limit, min_priority_score: minPriorityScore }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Generate failed');
+          setGenerateSuccess(`Generated ${data.generated} items. Batch: ${data.batch_id}`);
+          await fetchBatches();
+          setSelectedBatchId(data.batch_id);
+        } catch (e) {
+          setGenerateError(e.message);
+        } finally {
+          setGenerateLoading(false);
+        }
+      };
+
+      const handleOpenConfirm = () => {
+        setShowConfirmModal(true);
+        setConfirmInput('');
+        setSendResult(null);
+      };
+
+      const handleConfirmSend = async () => {
+        if (confirmInput !== 'SEND' || !selectedBatchId) return;
+        setSendLoading(true);
+        setSendResult(null);
+        try {
+          const res = await fetch('/api/reactivation/queue/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ batch_id: selectedBatchId }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Send failed');
+          setSendResult(data);
+          setShowConfirmModal(false);
+          setConfirmInput('');
+          await fetchBatches();
+          await fetchBatchItems(selectedBatchId);
+        } catch (e) {
+          setSendResult({ error: e.message });
+        } finally {
+          setSendLoading(false);
+        }
+      };
+
+      const sel = batches.find((b) => b.batch_id === selectedBatchId);
+      const previewCount = sel ? sel.preview : 0;
+      const canSend = previewCount > 0;
+
+      return (
+        <div className="min-h-full bg-slate-50 text-slate-900">
+          <div className="mx-auto max-w-[1400px] p-6">
+            <div className="mb-6">
+              <h1 className="text-3xl font-semibold tracking-tight">SMS Campaign</h1>
+              <p className="mt-2 text-sm text-slate-600">Generate queue, preview, and send reactivation SMS in batches</p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 lg:col-span-3">
+                <h2 className="text-lg font-semibold">Generate Queue</h2>
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-sm text-slate-600">Limit</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={limit}
+                      onChange={(e) => setLimit(Number(e.target.value) || 20)}
+                      className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-slate-600">Min priority score</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={minPriorityScore}
+                      onChange={(e) => setMinPriorityScore(Number(e.target.value) || 0)}
+                      className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                    />
+                  </div>
+                  {generateError && (
+                    <div className="rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-800">{generateError}</div>
+                  )}
+                  {generateSuccess && (
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800">{generateSuccess}</div>
+                  )}
+                  <button
+                    onClick={handleGenerate}
+                    disabled={generateLoading}
+                    className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+                  >
+                    {generateLoading ? 'Generating...' : 'Generate Preview Queue'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 lg:col-span-3">
+                <h2 className="text-lg font-semibold">Batch List</h2>
+                <div className="mt-4 max-h-[420px] overflow-y-auto space-y-2">
+                  {batchesLoading ? (
+                    <div className="py-8 text-center text-sm text-slate-500">Loading...</div>
+                  ) : batches.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-slate-500">No batches yet. Generate a queue first.</div>
+                  ) : (
+                    batches.map((b) => (
+                      <button
+                        key={b.batch_id}
+                        onClick={() => setSelectedBatchId(b.batch_id)}
+                        className={`w-full text-left rounded-2xl border p-4 transition-colors ${
+                          selectedBatchId === b.batch_id ? 'border-slate-900 bg-slate-50 ring-1 ring-slate-200' : 'border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div className="font-mono text-xs text-slate-600 truncate">{b.batch_id}</div>
+                        <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                          <span className={b.preview > 0 ? 'text-blue-600' : ''}>preview: {b.preview}</span>
+                          <span className={b.sent > 0 ? 'text-emerald-600' : ''}>sent: {b.sent}</span>
+                          <span className={b.failed > 0 ? 'text-rose-600' : ''}>failed: {b.failed}</span>
+                        </div>
+                        <div className="mt-1 text-xs text-slate-400">{formatTime(b.created_at)}</div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 lg:col-span-6">
+                <h2 className="text-lg font-semibold">Batch Preview</h2>
+                {!selectedBatchId ? (
+                  <div className="mt-8 py-12 text-center text-slate-500">Select a batch to preview</div>
+                ) : (
+                  <>
+                    <div className="mt-4 flex flex-wrap items-center gap-4">
+                      <div className="font-mono text-sm text-slate-600">{selectedBatchId}</div>
+                      {sel && (
+                        <div className="flex gap-3 text-sm">
+                          <span>total: {sel.total}</span>
+                          <span className="text-blue-600">preview: {sel.preview}</span>
+                          <span className="text-emerald-600">sent: {sel.sent}</span>
+                          <span className="text-rose-600">failed: {sel.failed}</span>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => fetchBatchItems(selectedBatchId)}
+                        disabled={batchItemsLoading}
+                        className="rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
+                      >
+                        Refresh
+                      </button>
+                      <button
+                        onClick={handleOpenConfirm}
+                        disabled={!canSend || sendLoading}
+                        className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Send This Batch
+                      </button>
+                    </div>
+                    {sendResult && (
+                      <div className={`mt-4 rounded-xl border px-4 py-3 text-sm ${sendResult.error ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>
+                        {sendResult.error ? sendResult.error : `Sent: ${sendResult.sent}, Failed: ${sendResult.failed}, Attempted: ${sendResult.attempted}`}
+                      </div>
+                    )}
+                    <div className="mt-4 max-h-[340px] overflow-auto">
+                      {batchItemsLoading ? (
+                        <div className="py-8 text-center text-slate-500">Loading...</div>
+                      ) : batchItems.length === 0 ? (
+                        <div className="py-8 text-center text-slate-500">No items</div>
+                      ) : (
+                        <table className="min-w-full text-left text-sm">
+                          <thead className="sticky top-0 bg-white text-slate-500">
+                            <tr className="border-b border-slate-100">
+                              <th className="p-2 font-medium">Contact</th>
+                              <th className="p-2 font-medium">Account</th>
+                              <th className="p-2 font-medium">Phone</th>
+                              <th className="p-2 font-medium">Score</th>
+                              <th className="p-2 font-medium">Status</th>
+                              <th className="p-2 font-medium">Message</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {batchItems.map((r) => (
+                              <tr key={r.id} className="border-b border-slate-50">
+                                <td className="p-2">{r.contact_name || '—'}</td>
+                                <td className="p-2">{r.account_name || '—'}</td>
+                                <td className="p-2 font-mono text-xs">{r.phone || '—'}</td>
+                                <td className="p-2">{r.priority_score ?? '—'}</td>
+                                <td className="p-2">
+                                  <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[r.status] || 'bg-slate-100 text-slate-600'}`}>
+                                    {r.status}
+                                  </span>
+                                </td>
+                                <td className="p-2 max-w-[200px] truncate text-slate-600">{r.message || '—'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {showConfirmModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <h3 className="text-lg font-semibold">Confirm Send Batch</h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  This will send SMS to all preview/queued contacts in this batch. Type SEND to continue.
+                </p>
+                <input
+                  type="text"
+                  value={confirmInput}
+                  onChange={(e) => setConfirmInput(e.target.value)}
+                  placeholder="Type SEND"
+                  className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-2"
+                />
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => { setShowConfirmModal(false); setConfirmInput(''); }}
+                    className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmSend}
+                    disabled={confirmInput !== 'SEND' || sendLoading}
+                    className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                  >
+                    {sendLoading ? 'Sending...' : 'Confirm Send'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('reactivation-queue-root'));
+    root.render(<ReactivationQueuePage />);
+  </script>
+</body>
+</html>

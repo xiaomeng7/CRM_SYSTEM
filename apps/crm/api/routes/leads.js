@@ -4,10 +4,25 @@
 
 const router = require('express').Router();
 const leads = require('../../services/leads');
+const { pool } = require('../../lib/db');
 
 router.post('/', async (req, res) => {
   try {
-    const row = await leads.create(req.body);
+    const body = req.body || {};
+    if (!body.contact_id) return res.status(400).json({ error: 'contact_id is required' });
+    const row = await leads.create({
+      contact_id: body.contact_id,
+      account_id: body.account_id,
+      source: body.source || 'reply_inbox',
+      created_by: body.created_by || 'reply-inbox',
+    });
+    if (row.contact_id && (body.source === 'reply_inbox' || body.source === 'reply-inbox')) {
+      await pool.query(
+        `INSERT INTO activities (contact_id, lead_id, activity_type, summary, created_by)
+         VALUES ($1, $2, 'lead_created', 'Lead created from reply inbox', 'reply-inbox')`,
+        [row.contact_id, row.id]
+      );
+    }
     res.status(201).json(row);
   } catch (err) {
     res.status(400).json({ error: err.message });

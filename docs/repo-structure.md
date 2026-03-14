@@ -72,7 +72,7 @@ bht-revenue-os/
 | `pnpm build:web` / `build:landing` / `build:report` | Build steps where defined |
 | `pnpm sync` | ServiceM8 → DB (from apps/crm) |
 | `pnpm automations` | Run automation engine |
-| `pnpm import:servicem8` | Import customers (apps/crm) |
+| `pnpm import:servicem8:legacy` | Legacy one-off ServiceM8 import (NOT recommended; may create noisy contacts) |
 
 ## packages/integrations
 

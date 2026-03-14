@@ -1,5 +1,25 @@
 /**
- * ServiceM8 → CRM Customer Import
+ * LEGACY SCRIPT — DO NOT USE FOR CONTACT SYNC
+ * ------------------------------------------------------------
+ * This one-off import script predates the formal ServiceM8 sync
+ * service in `apps/crm/services/servicem8-sync.js`.
+ *
+ * It creates contacts from ServiceM8 company records
+ * (company.name / company.company_name), which has been confirmed
+ * to produce non-human / noisy contacts such as:
+ *   - "Help Guide Job"
+ *   - "Card xx1246"
+ *   - "Transfer to ..."
+ *   - "PAYPAL ..."
+ *
+ * The script is kept only for historical reference and should
+ * NOT be run in production. For any customer/contacts sync or
+ * recurring import, use the new ServiceM8 sync service instead:
+ *   - apps/crm/services/servicem8-sync.js
+ *   - apps/crm/scripts/sync-servicem8-all-history.js
+ *   - apps/crm/scripts/sync-servicem8-contacts.js
+ *
+ * ServiceM8 → CRM Customer Import (LEGACY)
  * Fetches companies from ServiceM8, creates/updates accounts and contacts,
  * stores mapping in external_links. Supports DRY_RUN mode.
  */

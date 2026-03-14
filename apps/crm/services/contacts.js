@@ -27,6 +27,9 @@ async function list(filters = {}) {
   let paramIndex = 1;
   const conditions = [];
 
+  // Always hide archived contacts by default
+  conditions.push(`COALESCE(c.status, 'active') <> 'archived'`);
+
   if (q && (q + '').trim()) {
     const term = '%' + String(q).trim().replace(/%/g, '\\%') + '%';
     conditions.push(`(c.name ILIKE $${paramIndex} OR c.phone ILIKE $${paramIndex} OR c.email ILIKE $${paramIndex} OR a.suburb ILIKE $${paramIndex})`);
@@ -73,10 +76,11 @@ async function getById(id) {
   if (!isValidUuid(id)) return null;
   if (!(await contactsTableExists())) return null;
   const result = await pool.query(
-    `SELECT c.*, a.name AS linked_account_name, a.suburb AS account_suburb
+    `SELECT c.*, a.name AS linked_account_name, a.suburb AS account_suburb, c.do_not_contact
      FROM contacts c
      LEFT JOIN accounts a ON c.account_id = a.id
-     WHERE c.id = $1`,
+     WHERE c.id = $1
+       AND COALESCE(c.status, 'active') <> 'archived'`,
     [id]
   );
   const row = result.rows[0];
@@ -89,6 +93,7 @@ async function getById(id) {
     suburb: row.account_suburb,
     linked_account_id: row.account_id,
     linked_account_name: row.linked_account_name,
+    do_not_contact: !!row.do_not_contact,
     tags: [],
     reactivation_status: null,
     created_at: row.created_at,

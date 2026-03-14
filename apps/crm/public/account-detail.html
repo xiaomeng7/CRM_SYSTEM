@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Detail — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f8fafc;">
+      <header class="header">Internal CRM</header>
+      <div id="account-detail-root" class="content" style="padding:1rem;"></div>
+    </main>
+  </div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect } = React;
+    const id = new URLSearchParams(window.location.search).get('id');
+
+    function AccountDetail() {
+      const [data, setData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+
+      useEffect(() => {
+        if (!id) { setError('Missing id'); setLoading(false); return; }
+        fetch('/api/accounts/' + id + '/detail')
+          .then((r) => r.ok ? r.json() : Promise.reject(new Error('Not found')))
+          .then(setData)
+          .catch((e) => setError(e.message))
+          .finally(() => setLoading(false));
+      }, [id]);
+
+      if (loading) return <div className="p-8 text-slate-500">Loading...</div>;
+      if (error) return <div className="p-8 text-rose-600">{error} <a href="/contacts.html" className="underline">返回</a></div>;
+      if (!data) return null;
+
+      const a = data.account || {};
+      const s = data.summary || {};
+      return (
+        <div className="max-w-4xl space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">{a.name || '—'}</h1>
+            <a href="/contacts.html" className="text-sm text-slate-600 hover:underline">← 返回</a>
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Account</h2>
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              <dt className="text-slate-500">Address</dt><dd>{a.address_line || '—'}</dd>
+              <dt className="text-slate-500">Suburb</dt><dd>{a.suburb || '—'}</dd>
+              <dt className="text-slate-500">Postcode</dt><dd>{a.postcode || '—'}</dd>
+              {s.jobs_count != null && <><dt className="text-slate-500">Jobs</dt><dd>{s.jobs_count}</dd></>}
+              {s.last_job_date && <><dt className="text-slate-500">Last Job</dt><dd>{new Date(s.last_job_date).toLocaleDateString()}</dd></>}
+              {s.priority_score != null && <><dt className="text-slate-500">Priority</dt><dd>{s.priority_score}</dd></>}
+            </dl>
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Contacts</h2>
+            {data.contacts?.length ? (
+              <ul className="space-y-2 text-sm">
+                {data.contacts.map((c) => (
+                  <li key={c.id}><a href={'/contact-detail.html?id=' + c.id} className="text-blue-600 hover:underline">{c.name || '—'}</a> {c.phone || ''} {c.email || ''}</li>
+                ))}
+              </ul>
+            ) : <p className="text-slate-500">暂无</p>}
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Jobs (recent)</h2>
+            {data.jobs?.length ? (
+              <table className="min-w-full text-sm"><thead><tr className="text-left text-slate-500"><th>Job#</th><th>Suburb</th><th>Status</th><th>Date</th></tr></thead><tbody>
+                {data.jobs.map((j) => (
+                  <tr key={j.id}><td>{j.job_number || '—'}</td><td>{j.suburb || '—'}</td><td>{j.status || '—'}</td><td>{j.job_date ? new Date(j.job_date).toLocaleDateString() : '—'}</td></tr>
+                ))}
+              </tbody></table>
+            ) : <p className="text-slate-500">暂无</p>}
+          </div>
+        </div>
+      );
+    }
+    const root = ReactDOM.createRoot(document.getElementById('account-detail-root'));
+    root.render(<AccountDetail />);
+  </script>
+</body>
+</html>

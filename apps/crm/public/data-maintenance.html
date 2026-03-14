@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Maintenance — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html" class="active">Data Maintenance</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f8fafc;">
+      <header class="header">Internal CRM</header>
+      <div id="data-maintenance-root" class="content" style="padding:0; overflow:auto;"></div>
+    </main>
+  </div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect } = React;
+
+    const REPORT_TYPES = [
+      { id: 'duplicate-phones', label: 'Duplicate Phones' },
+      { id: 'duplicate-emails', label: 'Duplicate Emails' },
+      { id: 'missing-suburb', label: 'Missing Suburb' },
+      { id: 'contacts-without-phone', label: 'Contacts Without Phone' },
+      { id: 'suspicious-contacts', label: 'Suspicious Contacts' },
+      { id: 'do-not-contact', label: 'Do Not Contact' },
+    ];
+
+    const EXECUTE_ACTIONS = [
+      { id: 'normalize-phone', label: 'Normalize Phone Numbers', desc: 'Remove non-digits from phone' },
+      { id: 'normalize-email', label: 'Normalize Email Addresses', desc: 'Trim + lowercase' },
+      { id: 'fill-missing-suburb', label: 'Fill Missing Suburb From Jobs', desc: 'Backfill from jobs.suburb' },
+      { id: 'rebuild-segmentation', label: 'Rebuild Segmentation Views', desc: 'Re-run migration 005–007, 012' },
+    ];
+
+    function DataMaintenance() {
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+      const [success, setSuccess] = useState(null);
+      const [report, setReport] = useState(null);
+      const [reports, setReports] = useState([]);
+      const [execModal, setExecModal] = useState(null);
+      const [execConfirm, setExecConfirm] = useState('');
+      const [execLoading, setExecLoading] = useState(false);
+
+      const runReport = async (type) => {
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
+        try {
+          const res = await fetch('/api/data-maintenance/report?type=' + encodeURIComponent(type));
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Report failed');
+          setReport(json);
+        } catch (e) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const openExecModal = (action) => {
+        setExecModal(action);
+        setExecConfirm('');
+        setError(null);
+        setSuccess(null);
+      };
+
+      const doExecute = async () => {
+        if (execConfirm !== 'CONFIRM') {
+          setError('请在输入框中输入 CONFIRM 以确认执行');
+          return;
+        }
+        setExecLoading(true);
+        setError(null);
+        setSuccess(null);
+        try {
+          const res = await fetch('/api/data-maintenance/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: execModal.id, confirm: 'CONFIRM' }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Execute failed');
+          setSuccess(`执行成功。${json.affected !== undefined ? ' affected: ' + json.affected : ''} ${json.summary || ''}`);
+          setReports((prev) => [{ title: execModal.label, ...json, executed_at: new Date().toISOString() }, ...prev].slice(0, 20));
+          setExecModal(null);
+        } catch (e) {
+          setError(e.message);
+        } finally {
+          setExecLoading(false);
+        }
+      };
+
+      const cols = report?.rows?.[0] ? Object.keys(report.rows[0]) : [];
+      const sampleRows = (report?.rows || []).slice(0, 20);
+
+      return (
+        <div className="min-h-full bg-slate-50 text-slate-900">
+          <div className="mx-auto max-w-7xl p-6 md:p-8">
+            <h1 className="text-3xl font-semibold tracking-tight">Data Maintenance</h1>
+            <p className="mt-2 text-sm text-slate-600">数据质量检查、只读报告与数据清理工具。</p>
+
+            {error && (
+              <div className="mt-4 rounded-2xl bg-rose-50 border border-rose-200 p-4 text-rose-800">{error}</div>
+            )}
+            {success && (
+              <div className="mt-4 rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-emerald-800">{success}</div>
+            )}
+
+            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-4">
+                <h2 className="text-lg font-semibold mb-4">Data Quality Checks（只读）</h2>
+                <p className="text-sm text-slate-500 mb-4">点击查看报告，不修改数据</p>
+                <div className="space-y-2">
+                  {REPORT_TYPES.map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => runReport(r.id)}
+                      disabled={loading}
+                      className="block w-full rounded-xl bg-slate-100 px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50"
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-4">
+                <h2 className="text-lg font-semibold mb-4">Data Cleaning Tools（执行需确认）</h2>
+                <p className="text-sm text-slate-500 mb-4">执行前需在弹窗中输入 CONFIRM</p>
+                <div className="space-y-2">
+                  {EXECUTE_ACTIONS.map((a) => (
+                    <button
+                      key={a.id}
+                      onClick={() => openExecModal(a)}
+                      className="block w-full rounded-xl bg-amber-50 px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-amber-100 ring-1 ring-amber-200"
+                    >
+                      <div>{a.label}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">{a.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-4">
+                <h2 className="text-lg font-semibold mb-4">Execution Reports</h2>
+                <p className="text-sm text-slate-500 mb-4">最近报告与执行记录</p>
+                {reports.length === 0 ? (
+                  <p className="text-sm text-slate-500">暂无记录</p>
+                ) : (
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {reports.map((r, i) => (
+                      <div key={i} className="rounded-xl bg-slate-50 p-3 text-sm">
+                        <div className="font-medium">{r.title}</div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {r.executed_at ? new Date(r.executed_at).toLocaleString() : ''}
+                          {r.affected != null ? ` · affected: ${r.affected}` : ''}
+                          {r.summary ? ` · ${r.summary}` : ''}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {report && (
+              <div className="mt-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <h2 className="text-lg font-semibold">{report.title}</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  executed_at: {report.executed_at || '—'} · rows: {report.rows?.length ?? 0}
+                </p>
+                <div className="mt-4 overflow-x-auto">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="text-slate-500">
+                      <tr className="border-b border-slate-200">
+                        {cols.map((c) => (
+                          <th key={c} className="pb-2 pr-4 font-medium">{c}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sampleRows.map((row, i) => (
+                        <tr key={i} className="border-b border-slate-100">
+                          {cols.map((col) => (
+                            <td key={col} className="py-2 pr-4 text-slate-700">{String(row[col] ?? '—')}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {report.rows?.length > 20 && (
+                  <p className="mt-2 text-xs text-slate-500">仅显示前 20 条，共 {report.rows.length} 条</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {execModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => !execLoading && setExecModal(null)}>
+              <div className="rounded-2xl bg-white p-6 shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+                <h3 className="text-lg font-semibold">{execModal.label}</h3>
+                <p className="mt-2 text-sm text-slate-600">{execModal.desc}</p>
+                <p className="mt-4 text-sm text-amber-700">输入 CONFIRM 以确认执行：</p>
+                <input
+                  type="text"
+                  value={execConfirm}
+                  onChange={(e) => setExecConfirm(e.target.value)}
+                  placeholder="CONFIRM"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                {error && <p className="mt-2 text-sm text-rose-600">{error}</p>}
+                <div className="mt-6 flex gap-3">
+                  <button
+                    onClick={doExecute}
+                    disabled={execLoading || execConfirm !== 'CONFIRM'}
+                    className="flex-1 rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
+                  >
+                    {execLoading ? '执行中...' : '确认执行'}
+                  </button>
+                  <button
+                    onClick={() => setExecModal(null)}
+                    disabled={execLoading}
+                    className="rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700"
+                  >
+                    取消
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = document.getElementById('data-maintenance-root');
+    ReactDOM.createRoot(root).render(<DataMaintenance />);
+  </script>
+</body>
+</html>

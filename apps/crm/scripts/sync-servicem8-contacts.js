@@ -23,22 +23,24 @@ async function main() {
     console.log('[DRY_RUN] No database writes will be performed.\n');
   }
 
-  console.log('Fetching companies from ServiceM8...');
+  console.log('Fetching companies and contacts from ServiceM8...');
   const stats = await syncContactsFromServiceM8({
     dryRun: DRY_RUN,
+    log: (msg) => console.log(msg),
     onError(err, fields) {
       console.error(`  Error ${fields?.servicem8_id || 'unknown'}:`, err.message);
     },
   });
 
   console.log('\n--- Sync complete ---');
-  console.log(`Fetched from ServiceM8: ${stats.companiesFetched}`);
-  console.log(`Total processed:        ${stats.total}`);
-  console.log(`New accounts:            ${stats.accounts_created}`);
-  console.log(`Updated accounts:       ${stats.accounts_updated}`);
-  console.log(`New contacts:           ${stats.contacts_created}`);
-  console.log(`Updated contacts:       ${stats.contacts_updated}`);
-  console.log(`Skipped (no UUID):      ${stats.skipped}`);
+  console.log(`Companies fetched:      ${stats.companies_fetched}`);
+  console.log(`Contacts fetched:       ${stats.contacts_fetched}`);
+  console.log(`New accounts:           ${stats.accounts_created}`);
+  console.log(`Updated accounts:      ${stats.accounts_updated}`);
+  console.log(`New contacts:          ${stats.contacts_created}`);
+  console.log(`Updated contacts:      ${stats.contacts_updated}`);
+  console.log(`Contacts skipped (no account): ${stats.contacts_skipped_no_account}`);
+  console.log(`Skipped:                ${stats.skipped}`);
   console.log(`Errors:                 ${stats.errors}`);
   if (DRY_RUN) {
     console.log('\n[DRY_RUN] No changes were written to the database.');

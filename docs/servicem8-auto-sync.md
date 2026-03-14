@@ -7,9 +7,11 @@
 ## 1. 同步做什么
 
 - **方向**：ServiceM8 → CRM（单向）
-- **数据源**：ServiceM8 Companies API（`/api_1.0/company.json`）
+- **数据源**：仅 ServiceM8 客户相关 API，**不使用** payment/invoice/expense 等接口。
+  - **company.json**：公司 → accounts（name, address_line, suburb）
+  - **contact.json**：联系人 → contacts（name, phone, email），通过 contact.company_uuid 关联 account
 - **目标**：CRM 的 **accounts**、**contacts**、**external_links**
-- **性质**：幂等、可重复执行；已存在则更新，不存在则创建，不重复插入
+- **性质**：幂等、可重复执行；已存在则更新，不存在则创建
 
 同步服务由 **apps/crm/services/servicem8-sync.js** 实现，可由 CLI 脚本或未来的定时任务/API 触发。
 
@@ -19,9 +21,9 @@
 
 | 实体 | 说明 |
 |------|------|
-| **Accounts** | 公司/客户主体，来自 ServiceM8 company |
-| **Contacts** | 联系人，每个 company 对应一个主联系人 |
-| **External links** | ServiceM8 company UUID ↔ CRM account id 的映射 |
+| **Accounts** | 来自 GET /api_1.0/company.json（company.name, address, city） |
+| **Contacts** | 来自 GET /api_1.0/contact.json（contact.name, mobile/phone, email, company_uuid） |
+| **External links** | system=servicem8, external_entity_type=company, external_id=company.uuid → entity_type=account, entity_id=account.id |
 
 当前**不**同步：jobs、opportunities、双向回写。
 
@@ -29,17 +31,24 @@
 
 ## 3. 字段映射规则
 
-| ServiceM8 (Company) | CRM |
-|---------------------|-----|
-| `name` / `company_name` / `companyName` | **accounts.name** |
-| `address_1` + `address_2` + `address_suburb` + `address_post_code` | **accounts.address_line**（拼接为单行） |
-| `address_suburb` / `suburb` / `addressSuburb` | **accounts.suburb** |
-| `address_post_code` / `postcode` / `addressPostCode` | **accounts.postcode** |
-| `contact_name` / `name` / `company_name` | **contacts.name** |
-| `phone` / `phone_number` / `phoneNumber` / `mobile` | **contacts.phone** |
-| `email` | **contacts.email** |
+### Company → Account
 
-缺失字段时写入 `null`，不因缺少 phone/email/suburb 而丢弃整条记录。
+| ServiceM8 (company.json) | CRM |
+|--------------------------|-----|
+| `company.name` | **accounts.name** |
+| `company.address` | **accounts.address_line** |
+| `company.city` | **accounts.suburb** |
+
+### Contact → Contact
+
+| ServiceM8 (contact.json) | CRM |
+|---------------------------|-----|
+| `contact.name` | **contacts.name** |
+| `contact.mobile` 或 `contact.phone` | **contacts.phone** |
+| `contact.email` | **contacts.email** |
+| `contact.company_uuid` | 用于查找 CRM account_id（经 external_links 映射） |
+
+缺失字段时写入 `null`。若 contact 的 company_uuid 在 CRM 中无对应 account，则跳过该 contact。
 
 ---
 
@@ -145,4 +154,9 @@ DRY_RUN=1 node apps/crm/scripts/sync-servicem8-contacts.js
 | **apps/crm/services/servicem8-sync.js** | 同步逻辑：拉取、映射、去重、upsert、external_links |
 | **apps/crm/scripts/sync-servicem8-contacts.js** | CLI 入口，支持 DRY_RUN，调用 sync 并打印统计 |
 
-旧的一次性导入脚本 **apps/crm/scripts/import-servicem8-customers.js** 仍可使用；正式、可重复的同步以 **servicem8-sync** 服务 + 本脚本为准。
+> ⚠️ **Legacy 导入脚本（停用）**  
+> 旧的一次性导入脚本 **apps/crm/scripts/import-servicem8-customers.js** 已被标记为 *LEGACY*，并确认会把 `company.name` 当作 `contacts.name`，产生诸如 “Help Guide Job”、“Card xx1246”、“PAYPAL ...” 等脏联系人。  
+> 该脚本仅保留作历史参考，**不要再用于客户/联系人同步或导入**。正式、可重复的同步入口为：
+> - `apps/crm/services/servicem8-sync.js`
+> - `apps/crm/scripts/sync-servicem8-contacts.js`
+> - `apps/crm/scripts/sync-servicem8-all-history.js`

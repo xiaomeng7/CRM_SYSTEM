@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Detail — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f8fafc;">
+      <header class="header">Internal CRM</header>
+      <div id="contact-detail-root" class="content" style="padding:1rem;"></div>
+    </main>
+  </div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect } = React;
+    const id = new URLSearchParams(window.location.search).get('id');
+
+    function ContactDetail() {
+      const [data, setData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+
+      useEffect(() => {
+        if (!id) { setError('Missing id'); setLoading(false); return; }
+        fetch('/api/contacts/' + id + '/detail')
+          .then((r) => r.ok ? r.json() : Promise.reject(new Error('Not found')))
+          .then(setData)
+          .catch((e) => setError(e.message))
+          .finally(() => setLoading(false));
+      }, [id]);
+
+      if (loading) return <div className="p-8 text-slate-500">Loading...</div>;
+      if (error) return <div className="p-8 text-rose-600">{error} <a href="/contacts.html" className="underline">返回 Contacts</a></div>;
+      if (!data) return null;
+
+      const c = data.contact || {};
+      return (
+        <div className="max-w-4xl space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">{c.name || '—'}</h1>
+            <a href="/contacts.html" className="text-sm text-slate-600 hover:underline">← 返回 Contacts</a>
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Contact</h2>
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              <dt className="text-slate-500">Phone</dt><dd>{c.phone || '—'}</dd>
+              <dt className="text-slate-500">Email</dt><dd>{c.email || '—'}</dd>
+              <dt className="text-slate-500">Account</dt><dd><a href={'/account-detail.html?id=' + (c.linked_account_id || '')} className="text-blue-600 hover:underline">{c.linked_account_name || '—'}</a></dd>
+              <dt className="text-slate-500">Suburb</dt><dd>{c.suburb || '—'}</dd>
+              {c.do_not_contact && <><dt className="text-slate-500">Do Not Contact</dt><dd className="text-rose-600">是</dd></>}
+            </dl>
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Recent Activities</h2>
+            {data.activities?.length ? (
+              <ul className="space-y-2 text-sm">
+                {data.activities.map((a) => (
+                  <li key={a.id} className="flex justify-between"><span>{a.activity_type}</span><span>{a.occurred_at ? new Date(a.occurred_at).toLocaleString() : '—'}</span><span className="truncate max-w-xs">{a.summary || '—'}</span></li>
+                ))}
+              </ul>
+            ) : <p className="text-slate-500">暂无</p>}
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Tasks (open/pending)</h2>
+            {data.tasks?.length ? (
+              <ul className="space-y-2 text-sm">
+                {data.tasks.map((t) => (
+                  <li key={t.id} className="flex justify-between"><span>{t.title}</span><span>{t.due_at ? new Date(t.due_at).toLocaleDateString() : '—'}</span></li>
+                ))}
+              </ul>
+            ) : <p className="text-slate-500">暂无</p>}
+          </div>
+          <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-lg font-medium mb-4">Leads</h2>
+            {data.leads?.length ? (
+              <ul className="space-y-2 text-sm">
+                {data.leads.map((l) => (
+                  <li key={l.id}><a href={'/lead-detail.html?id=' + l.id} className="text-blue-600 hover:underline">{l.status}</a> {l.source} {l.created_at ? new Date(l.created_at).toLocaleDateString() : ''}</li>
+                ))}
+              </ul>
+            ) : <p className="text-slate-500">暂无</p>}
+          </div>
+        </div>
+      );
+    }
+    const root = ReactDOM.createRoot(document.getElementById('contact-detail-root'));
+    root.render(<ContactDetail />);
+  </script>
+</body>
+</html>

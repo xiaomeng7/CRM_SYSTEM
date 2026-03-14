@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>客户激活仪表盘 — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html" class="active">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f8fafc;">
+      <header class="header">Internal CRM</header>
+      <div id="reactivation-dashboard-root" class="content" style="padding:0; overflow:auto;"></div>
+    </main>
+  </div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect } = React;
+
+    function formatLastJob(months) {
+      if (months == null) return '—';
+      const m = Number(months);
+      if (m < 1) return '< 1 month ago';
+      return m + ' months ago';
+    }
+
+    function CRMReactivationDashboard() {
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [data, setData] = useState(null);
+      const [smsModal, setSmsModal] = useState(null);
+      const [smsLoading, setSmsLoading] = useState(false);
+      const [smsError, setSmsError] = useState(null);
+
+      const fetchData = () => {
+        return fetch('/api/reactivation/dashboard')
+          .then((res) => {
+            if (!res.ok) throw new Error(res.statusText || 'Fetch failed');
+            return res.json();
+          })
+          .then(setData)
+          .catch((err) => setError(err.message));
+      };
+
+      useEffect(() => {
+        fetchData().finally(() => setLoading(false));
+      }, []);
+
+      const handlePlaceholder = (e) => {
+        e.preventDefault();
+        alert('Coming soon');
+      };
+
+      const handleSendSmsClick = (item) => {
+        if (!item.contact_id) { alert('该候选无 contact_id，无法发送'); return; }
+        if (!item.phone) { alert('该候选无电话号码'); return; }
+        setSmsModal(item);
+        setSmsError(null);
+      };
+
+      const handleConfirmSendSms = async () => {
+        if (!smsModal?.contact_id) return;
+        setSmsLoading(true);
+        setSmsError(null);
+        try {
+          const res = await fetch('/api/contacts/' + smsModal.contact_id + '/reactivate', { method: 'POST' });
+          const json = await res.json();
+          if (!res.ok || !json.ok) throw new Error(json.error || '发送失败');
+          setSmsModal(null);
+          await fetchData();
+        } catch (e) {
+          setSmsError(e.message || '发送失败');
+        } finally {
+          setSmsLoading(false);
+        }
+      };
+
+      const summary = data?.summary ?? { candidates: 0, smsQueued: 0, smsSentToday: 0, replied: 0, followUpToday: 0, doNotContact: 0 };
+      const pipeline = data?.pipeline ?? [];
+      const candidates = data?.candidates ?? [];
+      const replies = data?.replies ?? [];
+      const tasks = data?.tasks ?? [];
+      const pipelineMax = Math.max(...pipeline.map((p) => p.value), 1);
+
+      const badge = (status) => {
+        const map = {
+          "待发送": "bg-slate-100 text-slate-700",
+          "已发送": "bg-blue-100 text-blue-700",
+          "已回复": "bg-emerald-100 text-emerald-700",
+          "待跟进": "bg-amber-100 text-amber-700",
+          "正向": "bg-emerald-100 text-emerald-700",
+          "中性": "bg-slate-100 text-slate-700",
+          "待识别": "bg-rose-100 text-rose-700",
+          "High": "bg-rose-100 text-rose-700",
+          "Medium": "bg-amber-100 text-amber-700",
+        };
+        return map[status] || "bg-slate-100 text-slate-700";
+      };
+
+      if (loading) {
+        return (
+          <div className="min-h-full bg-slate-50 text-slate-900 flex items-center justify-center p-8">
+            <div className="text-slate-500">Loading...</div>
+          </div>
+        );
+      }
+      if (error) {
+        return (
+          <div className="min-h-full bg-slate-50 text-slate-900 flex items-center justify-center p-8">
+            <div className="rounded-2xl bg-rose-50 border border-rose-200 p-6 text-rose-800">
+              <div className="font-medium">加载失败</div>
+              <div className="mt-2 text-sm">{error}</div>
+              <button onClick={() => window.location.reload()} className="mt-4 rounded-xl bg-rose-600 px-4 py-2 text-sm text-white">重试</button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-full bg-slate-50 text-slate-900">
+          <div className="mx-auto max-w-7xl p-6 md:p-8">
+            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight">客户激活仪表盘</h1>
+                <p className="mt-2 text-sm text-slate-600">
+                  查看谁该联系、谁已发送短信、谁已回复，以及今天需要跟进的动作。
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={handlePlaceholder} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm">生成今日名单</button>
+                <a href="/reactivation-queue.html" className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">批量发送短信</a>
+                <button onClick={handlePlaceholder} className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">导出 CSV</button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-7">
+              {[
+                ["候选客户", summary.candidates],
+                ["待发送", summary.smsQueued],
+                ["队列待发", summary.queuePreview ?? 0],
+                ["今日已发", summary.smsSentToday],
+                ["已回复", summary.replied],
+                ["今日待跟进", summary.followUpToday],
+                ["勿再联系", summary.doNotContact],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                  <div className="text-sm text-slate-500">{label}</div>
+                  <div className="mt-3 text-3xl font-semibold">{value}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">激活流程</h2>
+                  <span className="text-xs text-slate-500">最近 30 天</span>
+                </div>
+                <div className="space-y-4">
+                  {pipeline.map((item) => (
+                    <div key={item.label}>
+                      <div className="mb-1 flex items-center justify-between text-sm">
+                        <span className="text-slate-600">{item.label}</span>
+                        <span className="font-medium text-slate-900">{item.value}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-slate-100">
+                        <div
+                          className="h-2 rounded-full bg-slate-900"
+                          style={{ width: `${Math.max((item.value / pipelineMax) * 100, 8)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-8">
+                <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <h2 className="text-lg font-semibold">今日优先客户</h2>
+                  <div className="flex flex-wrap gap-2">
+                    <input
+                      className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                      placeholder="搜索姓名 / 电话 / suburb"
+                    />
+                    <select className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none">
+                      <option>全部状态</option>
+                      <option>待发送</option>
+                      <option>已发送</option>
+                      <option>已回复</option>
+                      <option>待跟进</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="text-slate-500">
+                      <tr className="border-b border-slate-100">
+                        <th className="pb-3 pr-4 font-medium">客户</th>
+                        <th className="pb-3 pr-4 font-medium">电话</th>
+                        <th className="pb-3 pr-4 font-medium">区域</th>
+                        <th className="pb-3 pr-4 font-medium">最近项目</th>
+                        <th className="pb-3 pr-4 font-medium">评分</th>
+                        <th className="pb-3 pr-4 font-medium">状态</th>
+                        <th className="pb-3 font-medium">动作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {candidates.length === 0 ? (
+                        <tr><td colSpan="7" className="py-8 text-center text-slate-500">暂无候选客户。当前 crm_account_reactivation_contacts 需满足：real_customer、有 phone、months_since_last_job ≥ 6。</td></tr>
+                      ) : (
+                        candidates.map((item) => (
+                          <tr key={item.contact_id || item.account_id} className="border-b border-slate-100 align-top">
+                            <td className="py-4 pr-4">
+                              <div className="font-medium">{item.contact_name || item.account_name || '—'}</div>
+                              <div className="mt-1 text-xs text-slate-500">{item.account_name}</div>
+                            </td>
+                            <td className="py-4 pr-4 text-slate-700">{item.phone || '—'}</td>
+                            <td className="py-4 pr-4 text-slate-700">{item.suburb || '—'}</td>
+                            <td className="py-4 pr-4 text-slate-700">
+                              <div>{formatLastJob(item.months_since_last_job)}</div>
+                              <div className="mt-1 text-xs text-slate-500">{item.jobs_count} jobs</div>
+                            </td>
+                            <td className="py-4 pr-4 font-semibold text-slate-900">{item.priority_score}</td>
+                            <td className="py-4 pr-4">
+                              <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${badge(item.status)}`}>
+                                {item.status}
+                              </span>
+                            </td>
+                            <td className="py-4">
+                              <div className="flex flex-wrap gap-2">
+                                <button
+                                  onClick={() => handleSendSmsClick(item)}
+                                  disabled={!item.contact_id || !item.phone || item.status === '已发送'}
+                                  className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  发短信
+                                </button>
+                                <button onClick={handlePlaceholder} className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">创建 Lead</button>
+                                <a href={item.contact_id ? '/contact-detail.html?id=' + item.contact_id : item.account_id ? '/account-detail.html?id=' + item.account_id : '#'} className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">详情</a>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-7">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">客户回复</h2>
+                  <a href="/reply-inbox.html" className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">Reply Inbox</a>
+                </div>
+                <div className="space-y-4">
+                  {replies.length === 0 ? (
+                    <div className="rounded-2xl border border-slate-200 p-6 text-center text-slate-500">暂无客户回复。inbound_sms 来自 Twilio webhook。</div>
+                  ) : (
+                    replies.map((reply, i) => (
+                      <div key={reply.contact_id + '-' + (reply.occurred_at || i)} className="rounded-2xl border border-slate-200 p-4">
+                        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                          <div>
+                            <div className="font-medium">{reply.contact_name}</div>
+                            <div className="mt-1 text-xs text-slate-500">{reply.phone || '—'} · {reply.time}</div>
+                          </div>
+                          <span className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-medium ${badge(reply.sentiment || '待处理')}`}>
+                            {reply.sentiment || '待处理'}
+                          </span>
+                        </div>
+                        <div className="mt-3 rounded-2xl bg-slate-50 p-3 text-sm text-slate-700">{reply.content || '—'}</div>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                          <span>下一步：{reply.nextAction}</span>
+                          <div className="flex gap-2">
+                            <button onClick={handlePlaceholder} className="rounded-xl bg-slate-900 px-3 py-1.5 font-medium text-white">创建跟进任务</button>
+                            <button onClick={handlePlaceholder} className="rounded-xl bg-white px-3 py-1.5 font-medium text-slate-700 ring-1 ring-slate-200">打开客户档案</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 xl:col-span-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">今日待跟进任务</h2>
+                  <a href="/tasks.html" className="rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200">进入任务页</a>
+                </div>
+                <div className="space-y-3">
+                  {tasks.length === 0 ? (
+                    <div className="rounded-2xl border border-slate-200 p-6 text-center text-slate-500">暂无待跟进任务。</div>
+                  ) : (
+                    tasks.map((t) => (
+                      <div key={t.id || t.task} className="rounded-2xl border border-slate-200 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="font-medium">{t.task}</div>
+                            <div className="mt-1 text-xs text-slate-500">Due: {t.due || '—'} · Owner: {t.owner || '—'}</div>
+                          </div>
+                          <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${badge(t.priority || 'Medium')}`}>
+                            {t.priority || 'Medium'}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          {smsModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                  <h3 className="text-lg font-semibold">确认发送短信</h3>
+                  <p className="mt-2 text-sm text-slate-600">联系人：{smsModal.contact_name || smsModal.account_name || '—'}</p>
+                  <p className="mt-1 text-sm text-slate-600">电话：{smsModal.phone}</p>
+                  {smsError && <p className="mt-2 text-sm text-rose-600">{smsError}</p>}
+                  <div className="mt-6 flex justify-end gap-3">
+                    <button onClick={() => { setSmsModal(null); setSmsError(null); }} className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">取消</button>
+                    <button onClick={handleConfirmSendSms} disabled={smsLoading} className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{smsLoading ? '发送中...' : '确认发送'}</button>
+                  </div>
+                </div>
+              </div>
+            )}
+        </div>
+      );
+    }
+  </script>
+</body>
+</html>

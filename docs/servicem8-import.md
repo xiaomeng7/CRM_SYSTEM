@@ -1,6 +1,11 @@
 # ServiceM8 → CRM Customer Import
 
-This document describes the import script that brings existing ServiceM8 customers into the CRM domain model (accounts, contacts, external_links).
+> ⚠️ **Legacy / Deprecated**  
+> 本文档和对应脚本 **apps/crm/scripts/import-servicem8-customers.js** 描述的是早期的一次性导入方式。该脚本会把 `company.name` 当作联系人名创建 `contacts`，已知会产生诸如 “Help Guide Job”、“Card xx1246”、“PAYPAL ...” 等脏联系人。  
+> 现在它已被标记为 *LEGACY*，仅保留作历史参考，不应再用于正式客户同步或增量导入。  
+> 正式路径请参见：`docs/servicem8-auto-sync.md`、`docs/servicem8-full-history-sync.md`、`docs/servicem8-sync-architecture.md`。
+
+This document describes the legacy import script that brings existing ServiceM8 customers into the CRM domain model (accounts, contacts, external_links).
 
 ---
 
@@ -63,22 +68,22 @@ This supports future sync (e.g. detecting when a ServiceM8 company is updated an
 
 ---
 
-## Running the Script
+## Running the Script (LEGACY ONLY — NOT RECOMMENDED)
 
 ### Normal run (writes to database)
 
 ```bash
-# From repo root
-pnpm --filter @bht/crm import:servicem8
+# From repo root (legacy)
+pnpm --filter @bht/crm import:servicem8:legacy
 
-# Or from apps/crm
+# Or from apps/crm (legacy)
 node scripts/import-servicem8-customers.js
 ```
 
 ### Dry run (no database writes)
 
 ```bash
-DRY_RUN=true pnpm --filter @bht/crm import:servicem8
+DRY_RUN=true pnpm --filter @bht/crm import:servicem8:legacy
 # or
 DRY_RUN=1 node scripts/import-servicem8-customers.js
 ```

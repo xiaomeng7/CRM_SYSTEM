@@ -6,7 +6,7 @@ Contacts 页面用于查看和激活老客户，数据来自 domain model 的 `c
 
 - **主表**：`contacts`（domain model）
 - **关联表**：`accounts`（LEFT JOIN）
-- 数据通过 `import-servicem8-customers` 脚本从 ServiceM8 导入到 contacts / accounts
+- 早期数据曾通过 `import-servicem8-customers` 脚本从 ServiceM8 导入到 contacts / accounts（该脚本现已标记为 LEGACY，可能产生脏联系人，不再使用）
 
 ## API 路由
 

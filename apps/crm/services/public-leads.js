@@ -5,6 +5,7 @@
 
 const { pool } = require('../lib/db');
 const { emit } = require('../lib/domain-events');
+const { cleanContact, cleanAccount } = require('../lib/crm/cleaning');
 
 /**
  * Create a lead from a public landing page submission.
@@ -19,16 +20,32 @@ const { emit } = require('../lib/domain-events');
  * - raw_payload (optional) — full original body for future analysis
  */
 async function createFromPublic(body = {}) {
-  const name = (body.name || '').trim();
-  const phone = (body.phone || '').trim();
-  const email = (body.email || '').trim();
-  const suburb = (body.suburb || '').trim();
+  const rawName = (body.name || '').trim();
+  const rawPhone = (body.phone || '').trim();
+  const rawEmail = (body.email || '').trim();
+  const rawSuburb = (body.suburb || '').trim();
   const source = (body.source || 'landing:advisory').trim();
   const serviceType = (body.service_type || '').trim();
   const message = (body.message || '').trim() || null;
   const rawPayload = body.raw_payload && typeof body.raw_payload === 'object'
     ? body.raw_payload
     : body;
+
+  const cleanedContact = cleanContact({
+    name: rawName,
+    phone: rawPhone,
+    email: rawEmail,
+  });
+
+  const cleanedAccount = cleanAccount({
+    name: rawName,
+    suburb: rawSuburb,
+  });
+
+  const name = cleanedContact.name || cleanedAccount.name;
+  const phone = cleanedContact.phone;
+  const email = cleanedContact.email;
+  const suburb = cleanedAccount.suburb;
 
   if (!name || !phone || !email || !suburb) {
     const missing = [];
