@@ -39,15 +39,43 @@
       const [data, setData] = useState(null);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
+      const [editing, setEditing] = useState(false);
+      const [saving, setSaving] = useState(false);
+      const [editForm, setEditForm] = useState({ name: '', phone: '', email: '' });
 
-      useEffect(() => {
-        if (!id) { setError('Missing id'); setLoading(false); return; }
+      const load = () => {
+        if (!id) return;
+        setLoading(true);
         fetch('/api/contacts/' + id + '/detail')
           .then((r) => r.ok ? r.json() : Promise.reject(new Error('Not found')))
           .then(setData)
           .catch((e) => setError(e.message))
           .finally(() => setLoading(false));
+      };
+
+      useEffect(() => {
+        if (!id) { setError('Missing id'); setLoading(false); return; }
+        load();
       }, [id]);
+
+      const startEdit = () => {
+        const c = (data && data.contact) || {};
+        setEditForm({ name: c.name || '', phone: c.phone || '', email: c.email || '' });
+        setEditing(true);
+      };
+
+      const saveEdit = () => {
+        setSaving(true);
+        fetch('/api/contacts/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editForm),
+        })
+          .then((r) => r.ok ? r.json() : Promise.reject(new Error(r.statusText)))
+          .then(() => { setEditing(false); load(); })
+          .catch((e) => alert('保存失败: ' + (e.message || e)))
+          .finally(() => setSaving(false));
+      };
 
       if (loading) return <div className="p-8 text-slate-500">Loading...</div>;
       if (error) return <div className="p-8 text-rose-600">{error} <a href="/contacts.html" className="underline">返回 Contacts</a></div>;
@@ -58,17 +86,43 @@
         <div className="max-w-4xl space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">{c.name || '—'}</h1>
-            <a href="/contacts.html" className="text-sm text-slate-600 hover:underline">← 返回 Contacts</a>
+            <div className="flex items-center gap-2">
+              {!editing ? (
+                <button type="button" onClick={startEdit} className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-200">补全信息</button>
+              ) : null}
+              <a href="/contacts.html" className="text-sm text-slate-600 hover:underline">← 返回 Contacts</a>
+            </div>
           </div>
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <h2 className="text-lg font-medium mb-4">Contact</h2>
-            <dl className="grid grid-cols-2 gap-3 text-sm">
-              <dt className="text-slate-500">Phone</dt><dd>{c.phone || '—'}</dd>
-              <dt className="text-slate-500">Email</dt><dd>{c.email || '—'}</dd>
-              <dt className="text-slate-500">Account</dt><dd><a href={'/account-detail.html?id=' + (c.linked_account_id || '')} className="text-blue-600 hover:underline">{c.linked_account_name || '—'}</a></dd>
-              <dt className="text-slate-500">Suburb</dt><dd>{c.suburb || '—'}</dd>
-              {c.do_not_contact && <><dt className="text-slate-500">Do Not Contact</dt><dd className="text-rose-600">是</dd></>}
-            </dl>
+            {editing ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">姓名</label>
+                  <input type="text" value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} className="w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="姓名" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">电话</label>
+                  <input type="text" value={editForm.phone} onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))} className="w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="电话" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">邮箱</label>
+                  <input type="email" value={editForm.email} onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))} className="w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="邮箱" />
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={saveEdit} disabled={saving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">保存</button>
+                  <button type="button" onClick={() => setEditing(false)} className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">取消</button>
+                </div>
+              </div>
+            ) : (
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <dt className="text-slate-500">Phone</dt><dd>{c.phone || '—'}</dd>
+                <dt className="text-slate-500">Email</dt><dd>{c.email || '—'}</dd>
+                <dt className="text-slate-500">Account</dt><dd><a href={'/account-detail.html?id=' + (c.linked_account_id || '')} className="text-blue-600 hover:underline">{c.linked_account_name || '—'}</a></dd>
+                <dt className="text-slate-500">Suburb</dt><dd>{c.suburb || '—'}</dd>
+                {c.do_not_contact && <><dt className="text-slate-500">Do Not Contact</dt><dd className="text-rose-600">是</dd></>}
+              </dl>
+            )}
           </div>
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <h2 className="text-lg font-medium mb-4">Recent Activities</h2>

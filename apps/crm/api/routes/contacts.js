@@ -80,6 +80,23 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+/** PATCH /api/contacts/:id — 手动补全客户信息（name, phone, email），仅更新传入的字段 */
+router.patch('/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const body = req.body || {};
+    const payload = {};
+    if (body.name !== undefined) payload.name = body.name;
+    if (body.phone !== undefined) payload.phone = body.phone;
+    if (body.email !== undefined) payload.email = body.email;
+    const row = await contacts.update(id, payload);
+    if (!row) return res.status(404).json({ error: 'Not found' });
+    res.json(row);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.patch('/:id/do-not-contact', async (req, res) => {
   try {
     const contact = await contacts.getById(req.params.id);

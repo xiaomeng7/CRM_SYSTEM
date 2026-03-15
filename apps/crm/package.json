@@ -27,6 +27,8 @@
     "report:missing-suburb": "node scripts/report-missing-suburb.js",
     "repair:suburb": "node scripts/repair-suburb-from-jobs.js",
     "db:do-not-contact-migration": "node scripts/run-do-not-contact-migration.js",
+    "db:invoice-overdue-migration": "node scripts/run-invoice-overdue-migration.js",
+    "db:quote-accepted-automation-migration": "node scripts/run-quote-accepted-automation-migration.js",
     "test:quote-sync": "node scripts/test-quote-sync.js",
     "backfill:phone-digits": "node scripts/backfill-contact-phone-digits.js",
     "quote-followup": "node scripts/run-quote-followup.js",

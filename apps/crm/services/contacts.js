@@ -1,8 +1,9 @@
 /**
- * Contacts service — list and get, from domain model (contacts + accounts).
+ * Contacts service — list, get, update (manual 补全), from domain model (contacts + accounts).
  */
 
 const { pool } = require('../lib/db');
+const { normalizePhone, normalizePhoneDigits, normalizeEmail, normalizeName } = require('../lib/crm/cleaning');
 
 let _contactsTableExists = null;
 
@@ -100,4 +101,64 @@ async function getById(id) {
   };
 }
 
-module.exports = { list, getById };
+/**
+ * Update contact fields (manual 补全). Only updates provided fields; normalizes phone → phone_digits.
+ * @param {string} id - contact UUID
+ * @param {Object} data - { name?, phone?, email? }
+ */
+async function update(id, data) {
+  if (!isValidUuid(id)) return null;
+  if (!(await contactsTableExists())) return null;
+  const existing = await getById(id);
+  if (!existing) return null;
+
+  const updates = [];
+  const params = [];
+  let idx = 1;
+
+  if (data.name !== undefined) {
+    const name = normalizeName(data.name);
+    updates.push(`name = $${idx}`);
+    params.push(name !== undefined && name !== '' ? name : null);
+    idx++;
+  }
+  if (data.phone !== undefined) {
+    const raw = typeof data.phone === 'string' ? data.phone.trim() : '';
+    const phone = raw ? (normalizePhone(raw) || raw) : null;
+    updates.push(`phone = $${idx}`);
+    params.push(phone);
+    idx++;
+  }
+  if (data.email !== undefined) {
+    const email = normalizeEmail(data.email);
+    updates.push(`email = $${idx}`);
+    params.push(email !== undefined && email !== '' ? email : null);
+    idx++;
+  }
+
+  if (updates.length === 0) return existing;
+
+  updates.push('updated_at = NOW()');
+  params.push(id);
+
+  await pool.query(
+    `UPDATE contacts SET ${updates.join(', ')} WHERE id = $${idx}`,
+    params
+  );
+
+  if (data.phone !== undefined) {
+    const raw = typeof data.phone === 'string' ? data.phone.trim() : '';
+    const digits = normalizePhoneDigits(raw || null);
+    try {
+      await pool.query(
+        `UPDATE contacts SET phone_digits = $1, phone_raw = $2, updated_at = NOW() WHERE id = $3`,
+        [digits, raw || null, id]
+      );
+    } catch (_) {
+      // phone_digits/phone_raw may not exist if migration 018 not run
+    }
+  }
+  return getById(id);
+}
+
+module.exports = { list, getById, update };
