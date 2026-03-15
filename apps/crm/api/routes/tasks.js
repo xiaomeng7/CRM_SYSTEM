@@ -4,10 +4,15 @@
  * POST /api/tasks - create a task
  * PATCH /api/tasks/:id - update task
  * POST /api/tasks/:id/complete - complete with outcome
+ *
+ * All opportunity stage changes go through the stage engine (advanceOpportunityStage);
+ * no direct UPDATE opportunities.stage from this module.
  */
 
 const router = require('express').Router();
 const { pool } = require('../../lib/db');
+const { advanceOpportunityStage } = require('../../services/opportunityStageAutomation');
+const { OPPORTUNITY_STAGES } = require('../../lib/stage-constants');
 
 router.get('/', async (req, res) => {
   try {
@@ -149,10 +154,10 @@ router.post('/:id/complete', async (req, res) => {
       if (outcome === 'interested') {
         const opp = await pool.query(
           `INSERT INTO opportunities (contact_id, account_id, stage, status, created_by)
-           SELECT $1, account_id, 'new_inquiry', 'open', 'task_complete'
+           SELECT $1, account_id, $2, 'open', 'task_complete'
            FROM contacts WHERE id = $1
            RETURNING id`,
-          [contactId]
+          [contactId, OPPORTUNITY_STAGES.NEW_INQUIRY]
         );
         if (opp.rows.length > 0) created.push({ type: 'opportunity', id: opp.rows[0].id });
       } else if (outcome === 'needs_quote') {
@@ -200,10 +205,17 @@ router.post('/:id/complete', async (req, res) => {
             `UPDATE contacts SET status = 'inactive', updated_at = NOW() WHERE id = $1`,
             [contactId]
           );
-          await pool.query(
-            `UPDATE opportunities SET status = 'closed', stage = 'lost', closed_at = NOW(), updated_at = NOW() WHERE contact_id = $1`,
+          // All stage updates via stage engine: respect stage_locked, closed stages, audit log
+          const opps = await pool.query(
+            `SELECT id FROM opportunities WHERE contact_id = $1`,
             [contactId]
           );
+          for (const o of opps.rows) {
+            await advanceOpportunityStage(o.id, 'not_interested', {
+              created_by: 'task_complete',
+              lost_reason: 'not_interested',
+            });
+          }
         }
       }
     }

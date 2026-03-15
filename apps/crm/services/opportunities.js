@@ -7,8 +7,11 @@ const { emit } = require('../lib/domain-events');
 
 const OPPORTUNITY_STAGES = [
   'new_inquiry',
+  'attempting_contact',
+  'qualified',
   'site_visit_booked',
   'inspection_done',
+  'report_sent',
   'quote_sent',
   'decision_pending',
   'won',
@@ -20,14 +23,17 @@ const STAGE_LEGACY_TO_NEW = {
   discovery: 'new_inquiry',
   inspection_booked: 'site_visit_booked',
   inspection_completed: 'inspection_done',
-  report_sent: 'quote_sent',
+  report_sent: 'report_sent',
 };
 /** Given a new stage, return DB values to match (new + legacy equiv) */
 const STAGE_FILTER_VALUES = {
   new_inquiry: ['new_inquiry', 'discovery'],
+  attempting_contact: ['attempting_contact'],
+  qualified: ['qualified'],
   site_visit_booked: ['site_visit_booked', 'inspection_booked'],
   inspection_done: ['inspection_done', 'inspection_completed'],
-  quote_sent: ['quote_sent', 'report_sent'],
+  report_sent: ['report_sent'],
+  quote_sent: ['quote_sent'],
   decision_pending: ['decision_pending'],
   won: ['won'],
   lost: ['lost'],
@@ -117,7 +123,7 @@ async function getById(id) {
   return result.rows[0] || null;
 }
 
-async function updateStage(id, newStage, createdBy = null) {
+async function updateStage(id, newStage, createdBy = null, opts = {}) {
   if (!isValidUuid(id)) return null;
   if (!isValidStage(newStage)) {
     throw new Error(`Invalid stage: ${newStage}. Allowed: ${OPPORTUNITY_STAGES.join(', ')}`);
@@ -133,6 +139,10 @@ async function updateStage(id, newStage, createdBy = null) {
     updateCols.push('won_at = COALESCE(won_at, NOW())');
   } else if (newStage === 'lost') {
     updateCols.push('lost_at = COALESCE(lost_at, NOW())');
+  }
+  if (opts.stage_locked !== undefined) {
+    updateCols.push('stage_locked = $5');
+    updateParams.push(!!opts.stage_locked);
   }
   const result = await pool.query(
     `UPDATE opportunities SET ${updateCols.join(', ')} WHERE id = $4 RETURNING *`,

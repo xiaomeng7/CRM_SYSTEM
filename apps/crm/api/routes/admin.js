@@ -108,6 +108,61 @@ router.post('/admin/actions/regenerate-candidates', async (req, res) => {
   }
 });
 
+// POST /api/admin/actions/sync-servicem8 — trigger ServiceM8 → CRM full sync (for cron or manual)
+router.post('/admin/actions/sync-servicem8', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret || req.body?.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { syncAllFromServiceM8 } = require('../../services/servicem8-sync');
+    const mode = (req.body?.mode || req.query?.mode || 'full').toLowerCase();
+    const stats = await syncAllFromServiceM8({
+      mode: mode === 'incremental' ? 'incremental' : 'full',
+      log: (msg) => console.log('[sync-servicem8]', msg),
+      onError: (err, ctx) => console.error('[sync-servicem8] error', ctx, err?.message),
+    });
+    const msg = stats.locked
+      ? 'Sync skipped (another sync is running)'
+      : `Synced: ${stats.accounts_created || 0} accounts, ${stats.contacts_created || 0} contacts, ${stats.jobs_created || 0} jobs, ${stats.invoices_created || 0} invoices, ${stats.quotes_upserted ?? stats.quotes_fetched ?? 0} quotes`;
+    res.json({
+      ok: true,
+      message: msg,
+      mode: stats.locked ? 'skipped' : mode,
+      locked: !!stats.locked,
+      ...stats,
+    });
+  } catch (e) {
+    console.error('[sync-servicem8]', e);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// POST /api/admin/actions/sync-quotes — quote sync only
+router.post('/admin/actions/sync-quotes', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret || req.body?.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { syncQuotesFromServiceM8 } = require('../../services/quote-sync');
+    const stats = await syncQuotesFromServiceM8({
+      log: (msg) => console.log('[sync-quotes]', msg),
+      onError: (err, ctx) => console.error('[sync-quotes] error', ctx, err?.message),
+    });
+    res.json({ ok: true, ...stats });
+  } catch (e) {
+    console.error('[sync-quotes]', e);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 router.post('/admin/actions/run-health-check', async (req, res) => {
   try {
     const status = await pool.query('SELECT 1').then(() => true).catch(() => false);

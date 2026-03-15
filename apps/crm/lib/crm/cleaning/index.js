@@ -1,4 +1,4 @@
-const { normalizePhone } = require('./normalizePhone');
+const { normalizePhone, normalizePhoneDigits } = require('./normalizePhone');
 const { normalizeEmail } = require('./normalizeEmail');
 const { normalizeName } = require('./normalizeName');
 const { normalizeSuburb } = require('./normalizeSuburb');
@@ -9,6 +9,7 @@ const { cleanAccount } = require('./cleanAccount');
 
 module.exports = {
   normalizePhone,
+  normalizePhoneDigits,
   normalizeEmail,
   normalizeName,
   normalizeSuburb,

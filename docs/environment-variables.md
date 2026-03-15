@@ -37,6 +37,11 @@ All variables are **backend-only**. Do not expose to the browser.
 | **DATABASE_SSL** | Use SSL for DB connection. | No | `true` or `false` | Railway / .env. Use `true` for Neon and Railway Postgres. |
 | **COMPANY_PHONE** | Company phone shown in automation SMS. | No | `0412 345 678` | Railway / .env. Not secret (appears in messages). |
 | **DRY_RUN** | When `true` or `1`, certain scripts (legacy import, sync) do not write to DB. | No | `true` or `1` | CLI only, e.g. `DRY_RUN=true pnpm sync:servicem8:all`。不建议再用在 legacy `import-servicem8-customers.js` 上。 |
+| **AUTO_SYNC_SERVICEM8** | Enable in-process scheduled ServiceM8 sync. | No | `true` or `1` | Set to enable auto sync every N hours. |
+| **AUTO_SYNC_INTERVAL_HOURS** | Sync interval in hours (when AUTO_SYNC_SERVICEM8 is set). | No | `2` | Default 2. |
+| **AUTO_INVOICE_OVERDUE_DAILY** | Enable in-process daily invoice overdue automation (scan + reminders + tasks). | No | `true` or `1` | 启动后约 2 分钟首次跑，之后每 24 小时一次。 |
+| **AUTO_CUSTOMER_SCORING_DAILY** | Enable in-process daily Customer Scoring 2.0 (value/conversion/urgency/relationship + segment). | No | `true` or `1` | 启动后约 3 分钟首次跑，之后每 24 小时一次。 |
+| **SYNC_SECRET** or **ADMIN_SECRET** | Shared secret for POST /api/admin/actions/sync-servicem8. | No | `your-secret` | If set, API trigger requires X-Sync-Secret header. |
 
 apps/crm also uses (via `@bht/integrations`): **SERVICEM8_API_KEY**, **TWILIO_ACCOUNT_SID**, **TWILIO_AUTH_TOKEN**, **TWILIO_SENDER_ID**, **TWILIO_PHONE_NUMBER** — see packages/integrations below.
 

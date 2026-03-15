@@ -175,4 +175,51 @@ app.get('/api/jobs/:id', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`CRM API running on http://localhost:${PORT}`);
+
+  // Optional: auto sync ServiceM8 on interval (set AUTO_SYNC_SERVICEM8=true)
+  const autoSync = process.env.AUTO_SYNC_SERVICEM8 === 'true' || process.env.AUTO_SYNC_SERVICEM8 === '1';
+  if (autoSync) {
+    const hours = Math.max(1, parseInt(process.env.AUTO_SYNC_INTERVAL_HOURS || '2', 10));
+    const intervalMs = hours * 60 * 60 * 1000;
+    const { syncAllFromServiceM8 } = require('../services/servicem8-sync');
+    const runSync = () => {
+      syncAllFromServiceM8({
+        log: (msg) => console.log('[auto-sync]', msg),
+        onError: (err, ctx) => console.error('[auto-sync] error', ctx, err?.message),
+      }).catch((e) => console.error('[auto-sync]', e));
+    };
+    setTimeout(runSync, 60 * 1000); // first run after 1 min (let server warm up)
+    setInterval(runSync, intervalMs);
+    console.log(`[auto-sync] ServiceM8 sync scheduled every ${hours} hour(s)`);
+  }
+
+  // Optional: run invoice overdue automation daily (e.g. 04:00); set AUTO_INVOICE_OVERDUE_DAILY=true
+  const autoInvoiceOverdue = process.env.AUTO_INVOICE_OVERDUE_DAILY === 'true' || process.env.AUTO_INVOICE_OVERDUE_DAILY === '1';
+  if (autoInvoiceOverdue) {
+    const { runOverdueScan } = require('../services/invoiceOverdueAutomation');
+    const OVERDUE_INTERVAL_MS = 24 * 60 * 60 * 1000;
+    const runOverdue = () => {
+      runOverdueScan({ dryRun: false, sendSms: true, log: (msg) => console.log('[invoice-overdue]', msg) })
+        .then((out) => console.log('[invoice-overdue] done, processed:', out.processed))
+        .catch((e) => console.error('[invoice-overdue]', e));
+    };
+    setTimeout(runOverdue, 2 * 60 * 1000); // first run 2 min after startup
+    setInterval(runOverdue, OVERDUE_INTERVAL_MS);
+    console.log('[invoice-overdue] scheduled daily (every 24h)');
+  }
+
+  // Optional: run Customer Scoring 2.0 daily; set AUTO_CUSTOMER_SCORING_DAILY=true
+  const autoScoring = process.env.AUTO_CUSTOMER_SCORING_DAILY === 'true' || process.env.AUTO_CUSTOMER_SCORING_DAILY === '1';
+  if (autoScoring) {
+    const { updateAllCustomerScores } = require('../services/customerScoringEngine');
+    const SCORING_INTERVAL_MS = 24 * 60 * 60 * 1000;
+    const runScoring = () => {
+      updateAllCustomerScores({ log: (msg) => console.log('[customer-scoring]', msg) })
+        .then((out) => console.log('[customer-scoring] done, processed:', out.processed))
+        .catch((e) => console.error('[customer-scoring]', e));
+    };
+    setTimeout(runScoring, 3 * 60 * 1000);
+    setInterval(runScoring, SCORING_INTERVAL_MS);
+    console.log('[customer-scoring] scheduled daily (every 24h)');
+  }
 });

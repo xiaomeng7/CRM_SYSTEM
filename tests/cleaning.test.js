@@ -1,6 +1,7 @@
 const assert = require('assert');
 const {
   normalizePhone,
+  normalizePhoneDigits,
   normalizeEmail,
   normalizeName,
   normalizeSuburb,
@@ -12,6 +13,14 @@ function run() {
   // Phone normalization
   assert.strictEqual(normalizePhone('0412 345 678'), '0412345678');
   assert.strictEqual(normalizePhone('+61412345678'), '0412345678');
+
+  // Digits-only (matching)
+  assert.strictEqual(normalizePhoneDigits('0412 345 678'), '0412345678');
+  assert.strictEqual(normalizePhoneDigits('+61 412 345 678'), '0412345678');
+  assert.strictEqual(normalizePhoneDigits(null), null);
+  assert.strictEqual(normalizePhoneDigits(''), null);
+  assert.strictEqual(normalizePhoneDigits('  '), null);
+  assert.strictEqual(normalizePhoneDigits('(02) 1234 5678'), '0212345678');
 
   // Email normalization
   assert.strictEqual(normalizeEmail('TEST@GMAIL.COM'), 'test@gmail.com');

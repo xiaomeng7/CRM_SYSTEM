@@ -152,6 +152,7 @@ CRM 应用位于 **apps/crm**（BHT Revenue OS 单仓）。**重要：Root Direc
 
 - 新建 **Cron**，选同一仓库，Command 填：`node api/sync-servicem8.js`，Schedule 填：`0 2 * * *`。
 - 再新建一个 **Cron**，Command：`node scripts/run-automations.js`，Schedule：`0 3 * * *`。
+- （可选）**Invoice 逾期提醒**：再新建 **Cron**，Command：`node scripts/run-invoice-overdue.js`（working directory 为 `apps/crm`），Schedule：`0 4 * * *`。若不想单独建 Cron，可在主 Web Service 的 Variables 里设 `AUTO_INVOICE_OVERDUE_DAILY=true`，由 API 进程每 24 小时自动跑一次。
 
 Cron 表达式示例：
 

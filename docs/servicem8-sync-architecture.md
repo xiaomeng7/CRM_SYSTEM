@@ -86,14 +86,46 @@
 
 ---
 
-## 8. 推荐的 Railway Cron 运行方式（建议，不自动部署）
+## 8. 自动同步（已实现）
 
-- **脚本**：使用现有 `sync-servicem8-all-history.js`（内部调用 `syncAllFromServiceM8`），或单独写一个仅调 `syncAllFromServiceM8({ mode: 'incremental' })` 的脚本。
-- **频率**：建议每小时或每 2 小时跑一次；首次或定期可跑一次全量（mode=’full’）。
-- **环境变量**：在 Railway 中配置 DATABASE_URL、SERVICEM8_API_KEY（及可选 DATABASE_SSL）。
-- **方式一**：Railway 的 Cron Jobs（若提供）定时触发上述 Node 脚本。
-- **方式二**：外部 cron（或 GitHub Actions 等）定时对部署的 API 发请求，由 API 内部调用 `syncAllFromServiceM8`（需做好鉴权与幂等）。
-- **监控**：查询 `sync_runs` 表，检查最近一条 status、error_count、finished_at，异常时告警。
+### 8.1 方式一：进程内定时（推荐，零配置）
+
+设置环境变量：
+- `AUTO_SYNC_SERVICEM8=true` — 启用定时同步
+- `AUTO_SYNC_INTERVAL_HOURS=2` — 间隔小时数（默认 2）
+
+API 启动后，会在 1 分钟后首次执行，之后按间隔循环。无需外部 cron。
+
+### 8.2 方式二：HTTP 触发（供外部 cron 调用）
+
+```http
+POST /api/admin/actions/sync-servicem8
+Content-Type: application/json
+X-Sync-Secret: <SYNC_SECRET>   # 若配置了 SYNC_SECRET 或 ADMIN_SECRET
+```
+
+可选 body：`{ "mode": "full" }` 或 `{ "mode": "incremental" }`，默认 full。
+
+**鉴权**：若设置了 `SYNC_SECRET` 或 `ADMIN_SECRET`，请求需在 header `X-Sync-Secret` 或 query `sync_secret` 中提供该值。
+
+**外部 cron 示例**（cron-job.org、GitHub Actions 等）：
+```bash
+curl -X POST "https://your-crm.up.railway.app/api/admin/actions/sync-servicem8" \
+  -H "X-Sync-Secret: $SYNC_SECRET"
+```
+
+### 8.3 方式三：手动执行
+
+- **Admin Console**：点击「Sync ServiceM8」按钮
+- **CLI**：`pnpm sync:servicem8:all`
+
+### 8.4 环境变量
+
+| 变量 | 说明 |
+|------|------|
+| AUTO_SYNC_SERVICEM8 | `true` 或 `1` 启用进程内定时同步 |
+| AUTO_SYNC_INTERVAL_HOURS | 定时间隔（小时），默认 2 |
+| SYNC_SECRET 或 ADMIN_SECRET | 可选，API 触发时鉴权 |
 
 ---
 
@@ -102,6 +134,8 @@
 | 用途           | 文件/入口 |
 |----------------|-----------|
 | 全量同步脚本   | apps/crm/scripts/sync-servicem8-all-history.js，pnpm sync:servicem8:all |
+| HTTP 触发      | POST /api/admin/actions/sync-servicem8 |
+| 进程内定时     | api/index.js（AUTO_SYNC_SERVICEM8=true 时） |
 | 同步服务       | apps/crm/services/servicem8-sync.js（syncAllFromServiceM8, ensureServiceM8LinkForAccount 等） |
 | sync_runs 表   | apps/crm/database/004_sync_runs_and_last_synced.sql |
 | 执行 004       | node apps/crm/scripts/run-sync-runs-migration.js |

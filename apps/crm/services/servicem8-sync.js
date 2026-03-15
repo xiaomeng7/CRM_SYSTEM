@@ -6,7 +6,8 @@
 
 const { ServiceM8Client } = require('@bht/integrations');
 const { pool } = require('../lib/db');
-const { cleanAccount, cleanContact } = require('../lib/crm/cleaning');
+const { cleanAccount, cleanContact, normalizePhoneDigits } = require('../lib/crm/cleaning');
+const { advanceOpportunityStage } = require('./opportunityStageAutomation');
 
 const SYSTEM = 'servicem8';
 const EXTERNAL_ENTITY_TYPE = 'company';
@@ -87,13 +88,18 @@ async function findAccountByNameAndSuburb(db, name, suburb) {
 }
 
 async function findContactByPhone(db, phone) {
-  const digits = normalizePhone(phone);
+  const digits = normalizePhoneDigits(phone);
   if (!digits) return null;
+  const digits61 = (digits.length === 10 && digits[0] === '0') ? '61' + digits.slice(1) : digits;
   const r = await db.query(
     `SELECT id FROM contacts
-     WHERE regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $1
+     WHERE (phone_digits IS NOT NULL AND phone_digits <> '' AND phone_digits = $1)
+        OR (COALESCE(phone_digits, '') = '' AND (
+             regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $1
+             OR regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $2
+           ))
      LIMIT 1`,
-    [digits]
+    [digits, digits61]
   );
   return r.rows[0]?.id || null;
 }
@@ -208,11 +214,16 @@ async function upsertOpportunityForJob(db, options = {}) {
     if (!dryRun) {
       const contact = contactId || (await getFirstContactForAccount(db, accountId));
       const inspDate = inspectionDate ? parseDate(inspectionDate) : null;
-      await db.query(
+      const ins = await db.query(
         `INSERT INTO opportunities (account_id, contact_id, stage, service_m8_job_id, inspection_date, created_by)
-         VALUES ($1, $2, 'site_visit_booked', $3, $4, 'servicem8-sync')`,
+         VALUES ($1, $2, 'site_visit_booked', $3, $4, 'servicem8-sync')
+         RETURNING id`,
         [accountId, contact, servicem8JobUuid, inspDate]
       );
+      const newOppId = ins.rows[0]?.id;
+      if (newOppId) {
+        await advanceOpportunityStage(newOppId, 'job_created', { db, created_by: 'servicem8-sync' });
+      }
     }
   } catch (err) {
     if (options.onError) options.onError(err, { servicem8_job_uuid: servicem8JobUuid });
@@ -356,14 +367,17 @@ async function syncContactsFromServiceM8(options = {}) {
         continue;
       }
 
+      const rawPhone = fields.phone;
       fields.contact_name = cleaned.name;
       fields.phone = cleaned.phone;
       fields.email = cleaned.email;
+      fields.phone_raw = rawPhone || null;
+      fields.phone_digits = normalizePhoneDigits(rawPhone) || (cleaned.phone ? normalizePhoneDigits(cleaned.phone) : null) || null;
       const accountId = companyUuidToAccountId[fields.company_uuid] || (await findAccountByExternalId(db, fields.company_uuid));
       if (!accountId) { stats.contacts_skipped_no_account++; continue; }
 
       try {
-        const contactId = await findExistingContact(db, fields.phone, fields.email);
+        const contactId = await findExistingContact(db, fields.phone || rawPhone, fields.email);
         if (contactId) {
           if (!dryRun) {
             await db.query(
@@ -371,18 +385,20 @@ async function syncContactsFromServiceM8(options = {}) {
                 name = COALESCE(NULLIF(TRIM($1), ''), name),
                 email = COALESCE(NULLIF(TRIM($2), ''), email),
                 phone = COALESCE(NULLIF(TRIM($3), ''), phone),
-                account_id = $4,
+                phone_raw = COALESCE(NULLIF(TRIM($4), ''), phone_raw),
+                phone_digits = COALESCE(NULLIF(TRIM($5), ''), phone_digits),
+                account_id = $6,
                 updated_at = NOW(), last_synced_at = NOW()
-               WHERE id = $5`,
-              [fields.contact_name || '', fields.email || '', fields.phone || '', accountId, contactId]
+               WHERE id = $7`,
+              [fields.contact_name || '', fields.email || '', fields.phone || '', fields.phone_raw || '', fields.phone_digits || '', accountId, contactId]
             );
           }
           stats.contacts_updated++;
         } else {
           if (!dryRun) {
             await db.query(
-              `INSERT INTO contacts (account_id, name, email, phone, last_synced_at, created_by) VALUES ($1, $2, $3, $4, NOW(), $5)`,
-              [accountId, fields.contact_name, fields.email || null, fields.phone || null, 'servicem8-sync']
+              `INSERT INTO contacts (account_id, name, email, phone, phone_raw, phone_digits, last_synced_at, created_by) VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7)`,
+              [accountId, fields.contact_name, fields.email || null, fields.phone || null, fields.phone_raw || null, fields.phone_digits || null, 'servicem8-sync']
             );
           }
           stats.contacts_created++;
@@ -636,7 +652,7 @@ async function insertSyncRun(db, options) {
 }
 
 async function finishSyncRun(db, runId, stats, status = 'completed') {
-  const fetched = (stats.companies_fetched || 0) + (stats.contacts_fetched || 0) + (stats.jobs_fetched || 0) + (stats.invoices_fetched || 0) + (stats.job_materials_fetched || 0);
+  const fetched = (stats.companies_fetched || 0) + (stats.contacts_fetched || 0) + (stats.jobs_fetched || 0) + (stats.invoices_fetched || 0) + (stats.job_materials_fetched || 0) + (stats.quotes_fetched || 0);
   const created = (stats.accounts_created || 0) + (stats.contacts_created || 0) + (stats.jobs_created || 0) + (stats.invoices_created || 0) + (stats.job_materials_created || 0);
   const updated = (stats.accounts_updated || 0) + (stats.contacts_updated || 0) + (stats.jobs_updated || 0) + (stats.invoices_updated || 0) + (stats.job_materials_updated || 0);
   const skipped = stats.skipped || 0;
@@ -743,6 +759,13 @@ async function syncAllFromServiceM8(options = {}) {
     stats.job_materials_updated = s5.job_materials_updated;
     stats.skipped += s5.skipped || 0;
     stats.errors += s5.errors || 0;
+
+    const { syncQuotesFromServiceM8 } = require('./quote-sync');
+    const s6 = await syncQuotesFromServiceM8({ ...syncOptions, db });
+    stats.quotes_fetched = s6.quotes_fetched || 0;
+    stats.quotes_upserted = s6.quotes_upserted || 0;
+    stats.opportunities_updated = s6.opportunities_updated || 0;
+    stats.errors += s6.errors || 0;
 
     if (runId) await finishSyncRun(db, runId, stats, stats.errors > 0 ? 'completed_with_errors' : 'completed');
     if (!skipLock) await releaseSyncLock(db).catch(() => {});

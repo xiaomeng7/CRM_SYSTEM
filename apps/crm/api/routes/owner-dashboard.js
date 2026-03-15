@@ -132,7 +132,63 @@ module.exports = require('express').Router().get('/', async (req, res) => {
       received_at: r.received_at,
     }));
 
-    res.json({ cashflow, priorityCustomers, tasks, opportunities, smsReplies });
+    // 6. Customer Scoring 2.0: Top 20 Hot Leads, High Value Dormant
+    let top20HotLeads = [];
+    let highValueDormantCustomers = [];
+    try {
+      const hotRes = await pool.query(
+        `SELECT s.contact_id, c.name, c.phone, c.email, a.name AS account_name,
+                s.total_score, s.value_score, s.conversion_score, s.urgency_score, s.relationship_score
+         FROM customer_scores s
+         JOIN contacts c ON c.id = s.contact_id
+         LEFT JOIN accounts a ON a.id = c.account_id
+         WHERE s.segment = 'Hot'
+         ORDER BY s.total_score DESC, s.calculated_at DESC
+         LIMIT 20`
+      );
+      top20HotLeads = hotRes.rows.map((r) => ({
+        contact_id: r.contact_id,
+        name: r.name,
+        phone: r.phone,
+        email: r.email,
+        account_name: r.account_name,
+        total_score: Number(r.total_score),
+        value_score: Number(r.value_score),
+        conversion_score: Number(r.conversion_score),
+        urgency_score: Number(r.urgency_score),
+        relationship_score: Number(r.relationship_score),
+      }));
+      const dormantRes = await pool.query(
+        `SELECT s.contact_id, c.name, c.phone, c.email, a.name AS account_name,
+                s.total_score, s.value_score, s.last_contact_days
+         FROM customer_scores s
+         JOIN contacts c ON c.id = s.contact_id
+         LEFT JOIN accounts a ON a.id = c.account_id
+         WHERE s.segment = 'HighValueDormant'
+         ORDER BY s.value_score DESC
+         LIMIT 50`
+      );
+      highValueDormantCustomers = dormantRes.rows.map((r) => ({
+        contact_id: r.contact_id,
+        name: r.name,
+        phone: r.phone,
+        email: r.email,
+        account_name: r.account_name,
+        total_score: Number(r.total_score),
+        value_score: Number(r.value_score),
+        last_contact_days: r.last_contact_days,
+      }));
+    } catch (_) {}
+
+    res.json({
+      cashflow,
+      priorityCustomers,
+      tasks,
+      opportunities,
+      smsReplies,
+      top20HotLeads,
+      highValueDormantCustomers,
+    });
   } catch (e) {
     console.error('GET /api/owner-dashboard error:', e);
     res.status(500).json({ error: e.message });

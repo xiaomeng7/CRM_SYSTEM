@@ -100,6 +100,76 @@ class ServiceM8Client {
     return res.json();
   }
 
+  /**
+   * Fetch job quotes. ServiceM8 may expose jobquote.json or quote.json.
+   * Returns [] if endpoint is not available (404/400/401 - e.g. not authorised).
+   */
+  async getJobQuotes(filter = '') {
+    const endpoints = ['jobquote.json', 'quote.json'];
+    for (const ep of endpoints) {
+      try {
+        let url = `${BASE_URL}/${ep}`;
+        if (filter) url += `?$filter=${encodeURIComponent(filter)}`;
+        const res = await fetch(url, { headers: this._headers() });
+        if (res.ok) return res.json();
+        if ([400, 401, 404].includes(res.status)) continue;
+        throw new Error(`ServiceM8 API error: ${res.status} ${await res.text()}`);
+      } catch (e) {
+        if (/404|400|401|not found|unauthorized|not an authorised/i.test(e.message)) continue;
+        throw e;
+      }
+    }
+    return [];
+  }
+
+  /**
+   * Create a quote in ServiceM8 linked to a job.
+   * Tries jobquote.json first (job_uuid required); falls back to quote.json if needed.
+   * @param {string} jobUuid - ServiceM8 job UUID
+   * @param {Object} opts - { amount?, total?, description?, note? }
+   * @returns {{ uuid: string }}
+   */
+  async createQuote(jobUuid, opts = {}) {
+    const amount = opts.amount != null ? Number(opts.amount) : opts.total != null ? Number(opts.total) : null;
+    const body = {
+      job_uuid: jobUuid,
+      total: amount != null ? amount : 0,
+      note: (opts.note || opts.description || '').trim() || 'Quote created from CRM',
+    };
+    if (amount != null) body.amount = amount;
+    const endpoints = ['jobquote.json', 'quote.json'];
+    for (const ep of endpoints) {
+      try {
+        const url = `${BASE_URL}/${ep}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: this._headers(),
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`ServiceM8 API error: ${res.status} ${text}`);
+        }
+        const uuid = res.headers.get('x-record-uuid') || res.headers.get('X-Record-UUID');
+        let data = {};
+        const text = await res.text();
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch (_) {}
+        }
+        const returnedUuid = data.uuid || data.UUID || uuid;
+        if (!returnedUuid) throw new Error('ServiceM8 quote creation did not return uuid');
+        return { uuid: returnedUuid };
+      } catch (e) {
+        if (ep === 'quote.json') throw e;
+        if (/404|400|401|not found|method not allowed/i.test(e.message)) continue;
+        throw e;
+      }
+    }
+    throw new Error('ServiceM8 quote creation not available (jobquote/quote endpoint)');
+  }
+
   async getCompany(uuid) {
     const url = `${BASE_URL}/company/${uuid}.json`;
     const res = await fetch(url, { headers: this._headers() });
@@ -118,6 +188,43 @@ class ServiceM8Client {
       throw new Error(`ServiceM8 API error: ${res.status} ${await res.text()}`);
     }
     return res.json();
+  }
+
+  /**
+   * Create a job in ServiceM8.
+   * @param {string} companyUuid - ServiceM8 company UUID
+   * @param {Object} opts - { job_address?, job_description?, status? }
+   * @returns {{ uuid: string, job_number?: string }}
+   */
+  async createJob(companyUuid, opts = {}) {
+    const url = `${BASE_URL}/job.json`;
+    const body = {
+      company_uuid: companyUuid,
+      job_address: (opts.job_address || '').trim() || 'Address not provided',
+      job_description: (opts.job_description || '').trim() || 'Job created from CRM',
+      status: (opts.status || '').trim() || 'Quote',
+    };
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: this._headers(),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`ServiceM8 API error: ${res.status} ${text}`);
+    }
+    const uuid = res.headers.get('x-record-uuid') || res.headers.get('X-Record-UUID');
+    let data = {};
+    const text = await res.text();
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (_) {}
+    }
+    const returnedUuid = data.uuid || data.UUID || uuid;
+    const jobNumber = data.generated_job_id ?? data.job_number ?? data.generated_job_number;
+    if (!returnedUuid) throw new Error('ServiceM8 job creation did not return uuid');
+    return { uuid: returnedUuid, job_number: jobNumber != null ? String(jobNumber) : undefined };
   }
 }
 

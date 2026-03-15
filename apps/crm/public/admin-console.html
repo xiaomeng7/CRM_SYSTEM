@@ -253,6 +253,9 @@
                 <button onClick={() => setConfirmAction('regenerate-candidates')} disabled={!!actionLoading} className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
                   {actionLoading === 'regenerate-candidates' ? 'Running...' : 'Regenerate Reactivation Candidates'}
                 </button>
+                <button onClick={() => setConfirmAction('sync-servicem8')} disabled={!!actionLoading} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+                  {actionLoading === 'sync-servicem8' ? 'Syncing...' : 'Sync ServiceM8'}
+                </button>
                 <button onClick={runHealthCheck} disabled={!!actionLoading} className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200 disabled:opacity-50">
                   {actionLoading === 'health' ? 'Running...' : 'Run Health Check'}
                 </button>
