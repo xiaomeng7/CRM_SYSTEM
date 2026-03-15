@@ -118,7 +118,7 @@ async function convertToOpportunity(id, options = {}) {
     account_id: lead.account_id,
     contact_id: lead.contact_id,
     lead_id: lead.id,
-    stage: options.stage || 'discovery',
+    stage: options.stage || 'new_inquiry',
     value_estimate: options.value_estimate,
     created_by: options.created_by || lead.created_by,
   });

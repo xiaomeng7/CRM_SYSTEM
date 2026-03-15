@@ -56,6 +56,10 @@ tr:hover td { background: #fafafa; }
 
 /* Page title */
 .page-title { margin: 0 0 1rem 0; font-size: 1.25rem; font-weight: 600; }
+.section-title { margin: 2rem 0 0.5rem 0; font-size: 1.1rem; font-weight: 600; }
+.section-note { margin: 0 0 1rem 0; font-size: 0.85rem; }
+.cashflow-tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.table-title { margin: 0; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 600; border-bottom: 1px solid var(--border); }
 
 /* Timeline (placeholder for detail pages) */
 .timeline { margin-top: 1.5rem; }
@@ -70,3 +74,28 @@ tr:hover td { background: #fafafa; }
 table select { padding: 0.2rem 0.5rem; font-size: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--card); min-width: 6rem; }
 .search { margin-bottom: 1rem; }
 .search input { padding: 0.5rem 0.75rem; width: 100%; max-width: 20rem; border: 1px solid var(--border); border-radius: 4px; }
+
+/* Owner Dashboard - fast scan layout */
+.owner-section { margin-bottom: 1.5rem; }
+.owner-section-title { margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 600; color: var(--muted); }
+.owner-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
+.owner-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; display: flex; flex-direction: column; align-items: flex-start; }
+.owner-card-value { font-size: 1.25rem; font-weight: 700; }
+.owner-card-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+.owner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+@media (max-width: 900px) { .owner-grid { grid-template-columns: 1fr; } .owner-cards { grid-template-columns: repeat(2, 1fr); } }
+.owner-panel { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; }
+.owner-list { font-size: 0.9rem; }
+.owner-list-item { padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.owner-list-item:last-child { border-bottom: 0; }
+.owner-list-item .owner-actions { display: flex; gap: 0.35rem; }
+.owner-list-item .owner-actions a { font-size: 0.75rem; padding: 0.2rem 0.5rem; }
+.owner-tasks-group { margin-bottom: 0.75rem; }
+.owner-tasks-group h4 { margin: 0 0 0.35rem 0; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+.owner-tasks-group.overdue h4 { color: var(--danger); }
+.owner-tasks-group .owner-task { padding: 0.4rem 0; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem; }
+.owner-tasks-group .owner-task-actions { display: flex; gap: 0.25rem; }
+.owner-tasks-group .owner-task-actions a { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
+.owner-opps-row { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.9rem; }
+.owner-potential { margin: 0.5rem 0 0 0; font-weight: 600; font-size: 0.95rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+.owner-table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }

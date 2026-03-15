@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tasks — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
@@ -15,42 +19,251 @@
         <a href="/leads.html">Leads</a>
         <a href="/opportunities.html">Opportunities</a>
         <a href="/contacts.html">Contacts</a>
-        <a href="/tasks.html">Tasks</a>
+        <a href="/tasks.html" class="active">Tasks</a>
         <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
         <a href="/reply-inbox.html">Reply Inbox</a>
         <a href="/reactivation-queue.html">SMS Campaign</a>
         <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/admin-console.html">Admin Console</a>
       </nav>
     </aside>
-    <main class="main">
+    <main class="main" style="background:#f8fafc;">
       <header class="header">Internal CRM</header>
-      <div class="content">
-        <h1 class="page-title">Tasks</h1>
-        <h3 style="margin:1rem 0 0.5rem 0;font-size:0.95rem;">Overdue</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Title</th><th>Due</th><th>Linked to</th><th>Actions</th></tr></thead>
-            <tbody><tr><td colspan="4" class="muted">None</td></tr></tbody>
-          </table>
-        </div>
-        <h3 style="margin:1rem 0 0.5rem 0;font-size:0.95rem;">Today</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Title</th><th>Due</th><th>Linked to</th><th>Actions</th></tr></thead>
-            <tbody><tr><td>—</td><td class="muted">—</td><td>—</td><td class="actions"><button type="button" class="btn btn-sm">Complete</button><button type="button" class="btn btn-sm">Reassign</button><a href="#" class="btn btn-sm">Open lead</a></td></tr></tbody>
-          </table>
-        </div>
-        <h3 style="margin:1rem 0 0.5rem 0;font-size:0.95rem;">Upcoming</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Title</th><th>Due</th><th>Linked to</th><th>Actions</th></tr></thead>
-            <tbody><tr><td colspan="4" class="muted">Placeholder</td></tr></tbody>
-          </table>
-        </div>
-        <p class="muted" style="margin-top:1rem;">Actions: mark complete, reassign, open linked lead/opportunity.</p>
-      </div>
+      <div id="tasks-root" class="content" style="padding:0; overflow:auto;"></div>
     </main>
   </div>
-  <script src="/js/app.js"></script>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect } = React;
+
+    const CALL_OUTCOMES = [
+      { value: 'interested', label: 'Interested' },
+      { value: 'needs_quote', label: 'Needs quote' },
+      { value: 'book_inspection', label: 'Book inspection' },
+      { value: 'call_later', label: 'Call later' },
+      { value: 'no_answer', label: 'No answer' },
+      { value: 'not_interested', label: 'Not interested' },
+    ];
+
+    const FOLLOW_UP_DELAYS = [
+      { value: '1_week', label: '1 week' },
+      { value: '1_month', label: '1 month' },
+      { value: '3_months', label: '3 months' },
+    ];
+
+    function TasksPage() {
+      const [loading, setLoading] = useState(true);
+      const [tasks, setTasks] = useState([]);
+      const [completeModal, setCompleteModal] = useState(null);
+      const [outcome, setOutcome] = useState('');
+      const [followUpDelay, setFollowUpDelay] = useState('');
+      const [completeLoading, setCompleteLoading] = useState(false);
+      const [completeError, setCompleteError] = useState(null);
+
+      const fetchTasks = () => {
+        return fetch('/api/tasks?status=open,pending')
+          .then((r) => r.ok ? r.json() : { tasks: [] })
+          .then((d) => setTasks(d.tasks || []))
+          .catch(() => setTasks([]));
+      };
+
+      useEffect(() => {
+        fetchTasks().finally(() => setLoading(false));
+      }, []);
+
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const overdue = tasks.filter((t) => {
+        const d = t.due_at ? new Date(t.due_at) : null;
+        if (!d) return false;
+        const tDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        return tDate.getTime() < today.getTime();
+      });
+      const dueToday = tasks.filter((t) => {
+        const d = t.due_at ? new Date(t.due_at) : null;
+        if (!d) return false;
+        const tDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        return tDate.getTime() === today.getTime();
+      });
+      const upcoming = tasks.filter((t) => {
+        const d = t.due_at ? new Date(t.due_at) : null;
+        if (!d) return true;
+        const tDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        return tDate.getTime() > today.getTime();
+      });
+
+      const isCallTask = (title) => (title || '').trim().toLowerCase().startsWith('call');
+
+      const handleCompleteClick = (task) => {
+        setCompleteModal(task);
+        setOutcome('');
+        setFollowUpDelay('');
+        setCompleteError(null);
+      };
+
+      const handleCompleteSubmit = async () => {
+        if (!completeModal) return;
+        const task = completeModal;
+        if (isCallTask(task.title) && !outcome) {
+          setCompleteError('Please select an outcome');
+          return;
+        }
+        if (outcome === 'call_later' && !followUpDelay) {
+          setCompleteError('Please select follow-up delay');
+          return;
+        }
+        setCompleteLoading(true);
+        setCompleteError(null);
+        try {
+          const body = { outcome: outcome || null };
+          if (outcome === 'call_later') body.follow_up_delay = followUpDelay;
+          const res = await fetch('/api/tasks/' + task.id + '/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed');
+          setCompleteModal(null);
+          await fetchTasks();
+        } catch (e) {
+          setCompleteError(e.message);
+        } finally {
+          setCompleteLoading(false);
+        }
+      };
+
+      const TaskCard = ({ task }) => (
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="font-medium text-slate-900">{task.title}</div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
+            <span>{task.contact_name || '—'}</span>
+            {task.phone && <a href={'tel:' + task.phone} className="font-mono hover:underline">{task.phone}</a>}
+            <span>{task.suburb || '—'}</span>
+          </div>
+          <div className="mt-1 text-xs text-slate-500">Due: {task.due} · Source: {task.source || '—'}</div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {task.phone && (
+              <a href={'tel:' + task.phone} className="rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50">Call</a>
+            )}
+            {task.contact_id && (
+              <a href={'/contact-detail.html?id=' + task.contact_id} className="rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50">SMS</a>
+            )}
+            <button
+              onClick={() => handleCompleteClick(task)}
+              className="rounded-xl bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+            >
+              Complete
+            </button>
+          </div>
+        </div>
+      );
+
+      const TaskSection = ({ title, items }) => (
+        <div className="mb-6">
+          <h3 className="mb-3 text-base font-semibold text-slate-700">{title}</h3>
+          {items.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-200 py-8 text-center text-sm text-slate-500">None</div>
+          ) : (
+            <div className="space-y-3">
+              {items.map((t) => (
+                <TaskCard key={t.id} task={t} />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+
+      return (
+        <div className="min-h-full bg-slate-50 text-slate-900">
+          <div className="mx-auto max-w-3xl p-6">
+            <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
+            <p className="mt-1 text-sm text-slate-600">Tasks requiring human action. Complete with outcome to create next steps.</p>
+            {loading ? (
+              <div className="mt-8 py-12 text-center text-slate-500">Loading...</div>
+            ) : (
+              <>
+                <TaskSection title="Overdue" items={overdue} />
+                <TaskSection title="Today" items={dueToday} />
+                <TaskSection title="Upcoming" items={upcoming} />
+              </>
+            )}
+          </div>
+
+          {completeModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                <h3 className="text-lg font-semibold">
+                  {isCallTask(completeModal.title) ? 'Call Outcome' : 'Complete Task'}
+                </h3>
+                <p className="mt-2 text-sm text-slate-600">{completeModal.title}</p>
+                <p className="mt-1 text-sm text-slate-500">{completeModal.contact_name}</p>
+
+                {isCallTask(completeModal.title) ? (
+                  <>
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-slate-700">Outcome</label>
+                      <div className="mt-2 space-y-2">
+                        {CALL_OUTCOMES.map((o) => (
+                          <label key={o.value} className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="outcome"
+                              value={o.value}
+                              checked={outcome === o.value}
+                              onChange={() => setOutcome(o.value)}
+                            />
+                            <span className="text-sm">{o.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    {outcome === 'call_later' && (
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-slate-700">Follow-up</label>
+                        <select
+                          value={followUpDelay}
+                          onChange={(e) => setFollowUpDelay(e.target.value)}
+                          className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                        >
+                          <option value="">Select delay</option>
+                          {FOLLOW_UP_DELAYS.map((d) => (
+                            <option key={d.value} value={d.value}>{d.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="mt-4 text-sm text-slate-500">Mark this task as completed.</p>
+                )}
+
+                {completeError && (
+                  <div className="mt-4 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">{completeError}</div>
+                )}
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => { setCompleteModal(null); setCompleteError(null); }}
+                    className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCompleteSubmit}
+                    disabled={completeLoading || (isCallTask(completeModal.title) && !outcome) || (outcome === 'call_later' && !followUpDelay)}
+                    className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                  >
+                    {completeLoading ? 'Completing...' : 'Complete'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('tasks-root'));
+    root.render(<TasksPage />);
+  </script>
 </body>
 </html>

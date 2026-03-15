@@ -24,7 +24,7 @@
     </aside>
     <main class="main">
       <header class="header">Internal CRM</header>
-      <div class="content">
+      <div class="content" data-page="opportunities">
         <h1 class="page-title">Opportunities</h1>
         <div class="table-wrap">
           <table>
@@ -32,26 +32,16 @@
               <tr>
                 <th>Contact / Account</th>
                 <th>Stage</th>
-                <th>Service type</th>
+                <th>Value</th>
                 <th>Updated</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>—</td>
-                <td><span class="badge">discovery</span></td>
-                <td>—</td>
-                <td class="muted">—</td>
-                <td class="actions">
-                  <button type="button" class="btn btn-sm">Stage</button>
-                  <a href="#" class="btn btn-sm">Linked</a>
-                </td>
-              </tr>
+            <tbody id="opportunities-tbody">
+              <tr><td colspan="5" class="muted">Loading…</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="muted" style="margin-top:1rem;">Placeholder. Actions: update stage, view linked lead/inspection/report.</p>
       </div>
     </main>
   </div>

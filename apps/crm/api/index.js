@@ -21,6 +21,9 @@ const reactivationQueueRouter = require('./routes/reactivation-queue');
 const dataMaintenanceRouter = require('./routes/data-maintenance');
 const adminRouter = require('./routes/admin');
 const tasksRouter = require('./routes/tasks');
+const priorityRouter = require('./routes/priority');
+const cashflowRouter = require('./routes/cashflow');
+const ownerDashboardRouter = require('./routes/owner-dashboard');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -43,6 +46,9 @@ app.use('/api/reactivation/queue', reactivationQueueRouter);
 app.use('/api/data-maintenance', dataMaintenanceRouter);
 app.use('/api', adminRouter);
 app.use('/api/tasks', tasksRouter);
+app.use('/api/priority', priorityRouter);
+app.use('/api/cashflow', cashflowRouter);
+app.use('/api/owner-dashboard', ownerDashboardRouter);
 
 app.get('/api/dashboard/stats', async (req, res) => {
   try {

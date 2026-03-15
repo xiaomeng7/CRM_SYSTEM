@@ -289,10 +289,22 @@ router.get('/', async (req, res) => {
       { label: '勿再联系', value: dncCand },
     ];
 
+    let priorityContacts = [];
+    try {
+      const pcRes = await pool.query(
+        `SELECT contact_id, account_id, name, phone, suburb, last_job_date, priority_score
+         FROM crm_priority_contacts
+         ORDER BY priority_score DESC
+         LIMIT 20`
+      );
+      priorityContacts = pcRes.rows;
+    } catch (_) {}
+
     res.json({
       summary,
       pipeline,
       candidates,
+      priorityContacts,
       replies,
       tasks,
     });

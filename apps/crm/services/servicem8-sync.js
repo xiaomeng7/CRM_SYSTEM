@@ -164,6 +164,62 @@ function buildSinceFilter(since, field = 'last_modified_date') {
   return s ? `${field} gt '${s}'` : '';
 }
 
+/** Get first contact_id for account (for opportunity linking). */
+async function getFirstContactForAccount(db, accountId) {
+  if (!accountId) return null;
+  const r = await db.query(
+    `SELECT id FROM contacts WHERE account_id = $1 ORDER BY created_at ASC LIMIT 1`,
+    [accountId]
+  );
+  return r.rows[0]?.id || null;
+}
+
+/**
+ * Upsert opportunity for a ServiceM8 job. Called after job sync.
+ * - Match by service_m8_job_id = ServiceM8 job uuid
+ * - Create: stage = site_visit_booked
+ * - Update: preserve stage, update inspection_date
+ */
+async function upsertOpportunityForJob(db, options = {}) {
+  const { servicem8JobUuid, accountId, contactId, inspectionDate, dryRun } = options;
+  if (!servicem8JobUuid || !accountId) return;
+  try {
+    const existing = await db.query(
+      `SELECT id, stage FROM opportunities WHERE service_m8_job_id = $1`,
+      [servicem8JobUuid]
+    );
+    if (existing.rows.length > 0) {
+      if (!dryRun) {
+        const upd = ['updated_at = NOW()'];
+        const params = [servicem8JobUuid];
+        let idx = 2;
+        if (inspectionDate != null) {
+          upd.push(`inspection_date = $${idx}`);
+          params.push(inspectionDate);
+          idx++;
+        }
+        await db.query(
+          `UPDATE opportunities SET ${upd.join(', ')} WHERE service_m8_job_id = $1`,
+          params
+        );
+      }
+      return;
+    }
+    if (!dryRun) {
+      const contact = contactId || (await getFirstContactForAccount(db, accountId));
+      const inspDate = inspectionDate ? parseDate(inspectionDate) : null;
+      await db.query(
+        `INSERT INTO opportunities (account_id, contact_id, stage, service_m8_job_id, inspection_date, created_by)
+         VALUES ($1, $2, 'site_visit_booked', $3, $4, 'servicem8-sync')`,
+        [accountId, contact, servicem8JobUuid, inspDate]
+      );
+    }
+  } catch (err) {
+    if (options.onError) options.onError(err, { servicem8_job_uuid: servicem8JobUuid });
+    else throw err;
+  }
+}
+
 // ---------- 1. Companies → accounts + external_links ----------
 async function syncCompaniesFromServiceM8(options = {}) {
   const dryRun = Boolean(options.dryRun);
@@ -405,6 +461,18 @@ async function syncJobsFromServiceM8(options = {}) {
           }
           stats.jobs_created++;
         }
+        if (accountId && !dryRun) {
+          await upsertOpportunityForJob(db, {
+            servicem8JobUuid: uuid,
+            accountId,
+            contactId: contactId || null,
+            inspectionDate: jobDate,
+            dryRun: false,
+            onError: (e, ctx) => {
+              if (options.log) options.log(`Opportunity upsert skipped for job ${ctx.servicem8_job_uuid}: ${e.message}`);
+            },
+          });
+        }
       } catch (err) {
         stats.errors++;
         if (options.onError) options.onError(err, { servicem8_job_uuid: uuid });
@@ -454,6 +522,7 @@ async function syncInvoicesFromServiceM8(options = {}) {
       const invoice_number = (inv.invoice_number || inv.invoiceNumber || inv.number || '').trim() || null;
       const amount = inv.total != null ? parseFloat(inv.total) : (inv.amount != null ? parseFloat(inv.amount) : null);
       const invoice_date = parseDate(inv.date || inv.invoice_date || inv.created_at);
+      const due_date = parseDate(inv.due_date || inv.due_date_date || inv.payment_due_date) || null;
       const status = (inv.status || inv.status_name || '').trim() || null;
 
       try {
@@ -461,17 +530,17 @@ async function syncInvoicesFromServiceM8(options = {}) {
         if (existing.rows.length > 0) {
           if (!dryRun) {
             await db.query(
-              `UPDATE invoices SET account_id = $1, job_id = $2, invoice_number = $3, amount = $4, invoice_date = $5, status = $6, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $7`,
-              [accountId, jobId, invoice_number, amount, invoice_date, status, uuid]
+              `UPDATE invoices SET account_id = $1, job_id = $2, invoice_number = $3, amount = $4, invoice_date = $5, due_date = $6, status = $7, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $8`,
+              [accountId, jobId, invoice_number, amount, invoice_date, due_date, status, uuid]
             );
           }
           stats.invoices_updated++;
         } else {
           if (!dryRun) {
             await db.query(
-              `INSERT INTO invoices (account_id, job_id, servicem8_invoice_uuid, invoice_number, amount, invoice_date, status, last_synced_at)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
-              [accountId, jobId, uuid, invoice_number, amount, invoice_date, status]
+              `INSERT INTO invoices (account_id, job_id, servicem8_invoice_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+              [accountId, jobId, uuid, invoice_number, amount, invoice_date, due_date, status]
             );
           }
           stats.invoices_created++;

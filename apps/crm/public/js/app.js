@@ -22,6 +22,7 @@
     if (page === 'leads') initLeadsPage();
     if (page === 'lead-detail') initLeadDetailPage();
     if (page === 'contacts') initContactsPage();
+    if (page === 'opportunities') initOpportunitiesPage();
   });
 
   function formatDate(value) {
@@ -42,15 +43,92 @@
   }
 
   function initDashboardPage() {
-    fetch('/api/dashboard/stats')
+    fetch('/api/owner-dashboard')
       .then(function (r) { return r.ok ? r.json() : {}; })
       .then(function (d) {
-        var el = document.getElementById('dash-leads'); if (el) el.textContent = d.leads7d != null ? d.leads7d : '—';
-        el = document.getElementById('dash-tasks'); if (el) el.textContent = d.tasksToday != null ? d.tasksToday : '—';
-        el = document.getElementById('dash-opps'); if (el) el.textContent = d.opps != null ? d.opps : '—';
-        el = document.getElementById('dash-contacts'); if (el) el.textContent = d.contactsRecent != null ? d.contactsRecent : '—';
+        var cf = d.cashflow || {};
+        var el = document.getElementById('dash-jobs-won'); if (el) el.textContent = cf.jobsWonThisWeek != null ? cf.jobsWonThisWeek : '—';
+        el = document.getElementById('dash-quotes-sent'); if (el) el.textContent = cf.quotesSent != null ? cf.quotesSent : '—';
+        el = document.getElementById('dash-invoices'); if (el) el.textContent = cf.invoicesIssued != null ? cf.invoicesIssued : '—';
+        el = document.getElementById('dash-payments'); if (el) el.textContent = formatCurrency(cf.paymentsReceived);
+        el = document.getElementById('dash-outstanding'); if (el) el.textContent = formatCurrency(cf.outstanding);
+
+        var pc = document.getElementById('priority-customers');
+        if (pc) {
+          var list = d.priorityCustomers || [];
+          if (!list.length) pc.innerHTML = '<div class="muted">No priority contacts</div>';
+          else pc.innerHTML = list.map(function (p) {
+            var call = 'tel:' + encodeURIComponent((p.phone || '').replace(/\D/g, ''));
+            var sms = '/reply-inbox.html';
+            var lead = '/leads.html?contact=' + encodeURIComponent(p.contact_id || '');
+            return '<div class="owner-list-item"><span><strong>' + escapeHtml(p.name) + '</strong> ' + escapeHtml(p.phone) + ' <span class="badge">' + escapeHtml(String(p.priority_score || '')) + '</span></span><div class="owner-actions"><a href="' + call + '" class="btn btn-sm">Call</a><a href="' + sms + '" class="btn btn-sm">SMS</a><a href="' + lead + '" class="btn btn-sm">Create Lead</a></div></div>';
+          }).join('');
+        }
+
+        var tasks = d.tasks || { overdue: [], today: [], upcoming: [] };
+        var tasksEl = document.getElementById('owner-tasks');
+        if (tasksEl) {
+          function taskRow(t) {
+            var call = t.phone ? 'tel:' + encodeURIComponent(t.phone.replace(/\D/g, '')) : '#';
+            var sms = '/reply-inbox.html';
+            var tasksUrl = '/tasks.html';
+            return '<div class="owner-task"><span>' + escapeHtml(t.title || 'Task') + ' — ' + escapeHtml(t.contact_name || '—') + '</span><div class="owner-task-actions"><a href="' + call + '" class="btn btn-sm">Call</a><a href="' + sms + '" class="btn btn-sm">SMS</a><a href="' + tasksUrl + '" class="btn btn-sm">Complete</a></div></div>';
+          }
+          var html = '';
+          if (tasks.overdue && tasks.overdue.length) html += '<div class="owner-tasks-group overdue"><h4>Overdue</h4>' + tasks.overdue.map(taskRow).join('') + '</div>';
+          if (tasks.today && tasks.today.length) html += '<div class="owner-tasks-group"><h4>Today</h4>' + tasks.today.map(taskRow).join('') + '</div>';
+          if (tasks.upcoming && tasks.upcoming.length) html += '<div class="owner-tasks-group"><h4>Upcoming</h4>' + tasks.upcoming.slice(0, 5).map(taskRow).join('') + '</div>';
+          if (!html) html = '<div class="muted">No open tasks</div>';
+          tasksEl.innerHTML = html;
+        }
+
+        var opp = d.opportunities || { stageCounts: {}, totalPotential: 0 };
+        var oppEl = document.getElementById('owner-opps');
+        if (oppEl) {
+          var stages = ['site_visit_booked', 'inspection_done', 'quote_sent', 'decision_pending', 'won'];
+          var labels = { site_visit_booked: 'Site Visit', inspection_done: 'Inspection', quote_sent: 'Quote Sent', decision_pending: 'Decision Pending', won: 'Won' };
+          oppEl.innerHTML = stages.map(function (s) {
+            var n = (opp.stageCounts || {})[s] || 0;
+            return '<div class="owner-opps-row"><span>' + (labels[s] || s) + '</span><span>' + n + '</span></div>';
+          }).join('');
+        }
+        var potEl = document.getElementById('owner-potential');
+        if (potEl) potEl.textContent = 'Total potential: ' + formatCurrency(opp.totalPotential);
+
+        var replies = d.smsReplies || [];
+        var tbody = document.getElementById('owner-sms-tbody');
+        if (tbody) {
+          if (!replies.length) tbody.innerHTML = '<tr><td colspan="4" class="muted">No recent SMS replies</td></tr>';
+          else tbody.innerHTML = replies.map(function (r) {
+            var task = '/reply-inbox.html';
+            var opp = '/opportunities.html';
+            var taskUrl = '/reply-inbox.html';
+            var oppUrl = '/opportunities.html';
+            return '<tr><td>' + escapeHtml(r.contact) + '</td><td>' + escapeHtml((r.message || '').slice(0, 80)) + '</td><td>' + formatDate(r.received_at) + '</td><td><a href="' + taskUrl + '" class="btn btn-sm">Create Task</a> <a href="' + oppUrl + '" class="btn btn-sm">Create Opportunity</a></td></tr>';
+          }).join('');
+        }
       })
-      .catch(function () {});
+      .catch(function () {
+        var els = ['priority-customers', 'owner-tasks', 'owner-opps', 'owner-sms-tbody'];
+        els.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.innerHTML = '<div class="muted">Error loading data</div>';
+        });
+      });
+  }
+
+  function formatCurrency(val) {
+    if (val == null) return '—';
+    var n = parseFloat(val);
+    if (isNaN(n)) return '—';
+    return '$' + n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
   }
 
   // Contacts list (domain model) + backend search + reactivation
@@ -160,6 +238,67 @@
           '<tr><td colspan="9" class="muted">Error loading leads.</td></tr>';
         showMessage(stateEl, 'Error loading leads. Please retry.', true);
       });
+  }
+
+  var OPPORTUNITY_STAGES = ['new_inquiry', 'site_visit_booked', 'inspection_done', 'quote_sent', 'decision_pending', 'won', 'lost'];
+  var STAGE_LEGACY_TO_NEW = { discovery: 'new_inquiry', inspection_booked: 'site_visit_booked', inspection_completed: 'inspection_done', report_sent: 'quote_sent' };
+  function normStage(s) { return (s && STAGE_LEGACY_TO_NEW[s]) || (OPPORTUNITY_STAGES.indexOf(s) >= 0 ? s : 'new_inquiry'); }
+
+  function initOpportunitiesPage() {
+    var tbody = document.getElementById('opportunities-tbody');
+    var stageSelect = document.getElementById('opportunities-stage-select');
+    var stageOptions = document.getElementById('opportunities-stage-options');
+    var stageApply = document.getElementById('opportunities-stage-apply');
+    if (!tbody) return;
+
+    function load() {
+      tbody.innerHTML = '<tr><td colspan="5" class="muted">Loading…</td></tr>';
+      fetch('/api/opportunities?limit=100')
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          if (!rows || !rows.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="muted">No opportunities</td></tr>';
+            return;
+          }
+          tbody.innerHTML = rows.map(function (o) {
+            var contactAccount = [o.contact_name, o.account_name].filter(Boolean).join(' / ') || '—';
+            var displayStage = normStage(o.stage);
+            var stageOpts = OPPORTUNITY_STAGES.map(function (s) {
+              return '<option value="' + escapeHtml(s) + '"' + (s === displayStage ? ' selected' : '') + '>' + escapeHtml(s) + '</option>';
+            }).join('');
+            var val = o.value_estimate != null ? '$' + Number(o.value_estimate).toLocaleString() : '—';
+            return '<tr data-id="' + escapeHtml(o.id) + '">' +
+              '<td>' + escapeHtml(contactAccount) + '</td>' +
+              '<td><select class="js-opp-stage">' + stageOpts + '</select></td>' +
+              '<td>' + val + '</td>' +
+              '<td class="muted">' + formatDate(o.updated_at) + '</td>' +
+              '<td><a href="/account-detail.html?id=' + encodeURIComponent(o.account_id || '') + '" class="btn btn-sm">View</a></td>' +
+              '</tr>';
+          }).join('');
+          tbody.querySelectorAll('.js-opp-stage').forEach(function (sel) {
+            sel.addEventListener('change', function () {
+              var row = sel.closest('tr');
+              var id = row && row.getAttribute('data-id');
+              var stage = sel.value;
+              if (!id) return;
+              fetch('/api/opportunities/' + encodeURIComponent(id) + '/stage', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stage: stage, created_by: 'crm-ui' })
+              })
+                .then(function (r) {
+                  if (!r.ok) throw new Error('Failed');
+                  load();
+                })
+                .catch(function () { window.alert('Failed to update stage.'); });
+            });
+          });
+        })
+        .catch(function () {
+          tbody.innerHTML = '<tr><td colspan="5" class="muted">Error loading opportunities</td></tr>';
+        });
+    }
+    load();
   }
 
   var LEAD_PIPELINE_STATUSES = ['new', 'contacted', 'qualified', 'booked', 'completed'];

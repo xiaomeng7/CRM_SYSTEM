@@ -6,16 +6,40 @@ const { pool } = require('../lib/db');
 const { emit } = require('../lib/domain-events');
 
 const OPPORTUNITY_STAGES = [
-  'discovery',
-  'inspection_booked',
-  'inspection_completed',
-  'report_sent',
+  'new_inquiry',
+  'site_visit_booked',
+  'inspection_done',
+  'quote_sent',
+  'decision_pending',
   'won',
   'lost',
 ];
 
+/** Legacy stages mapped to new (for backward compatibility) */
+const STAGE_LEGACY_TO_NEW = {
+  discovery: 'new_inquiry',
+  inspection_booked: 'site_visit_booked',
+  inspection_completed: 'inspection_done',
+  report_sent: 'quote_sent',
+};
+/** Given a new stage, return DB values to match (new + legacy equiv) */
+const STAGE_FILTER_VALUES = {
+  new_inquiry: ['new_inquiry', 'discovery'],
+  site_visit_booked: ['site_visit_booked', 'inspection_booked'],
+  inspection_done: ['inspection_done', 'inspection_completed'],
+  quote_sent: ['quote_sent', 'report_sent'],
+  decision_pending: ['decision_pending'],
+  won: ['won'],
+  lost: ['lost'],
+};
+
 function isValidStage(s) {
   return s && OPPORTUNITY_STAGES.includes(s);
+}
+
+function normalizeStage(s) {
+  if (!s) return 'new_inquiry';
+  return STAGE_LEGACY_TO_NEW[s] || (isValidStage(s) ? s : 'new_inquiry');
 }
 
 function isValidUuid(s) {
@@ -26,7 +50,7 @@ function isValidUuid(s) {
 
 async function create(data = {}) {
   const { account_id, contact_id, lead_id, stage, value_estimate, created_by } = data;
-  const s = stage && isValidStage(stage) ? stage : 'discovery';
+  const s = stage && isValidStage(stage) ? stage : 'new_inquiry';
 
   const result = await pool.query(
     `INSERT INTO opportunities (account_id, contact_id, lead_id, stage, value_estimate, status, created_by)
@@ -56,13 +80,17 @@ async function list(filters = {}) {
   let paramIndex = 1;
   const conditions = [];
 
-  if (stage && isValidStage(stage)) {
-    conditions.push(`stage = $${paramIndex}`);
-    params.push(stage);
-    paramIndex++;
+  if (stage) {
+    const norm = normalizeStage(stage);
+    if (isValidStage(norm)) {
+      const vals = STAGE_FILTER_VALUES[norm] || [norm];
+      conditions.push(`o.stage = ANY($${paramIndex})`);
+      params.push(vals);
+      paramIndex++;
+    }
   }
   if (account_id && isValidUuid(account_id)) {
-    conditions.push(`account_id = $${paramIndex}`);
+    conditions.push(`o.account_id = $${paramIndex}`);
     params.push(account_id);
     paramIndex++;
   }
@@ -71,8 +99,12 @@ async function list(filters = {}) {
   params.push(limit, offset);
 
   const result = await pool.query(
-    `SELECT * FROM opportunities ${where}
-     ORDER BY created_at DESC
+    `SELECT o.*, a.name AS account_name, c.name AS contact_name
+     FROM opportunities o
+     LEFT JOIN accounts a ON a.id = o.account_id
+     LEFT JOIN contacts c ON c.id = o.contact_id
+     ${where}
+     ORDER BY o.created_at DESC
      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
     params
   );
@@ -95,12 +127,16 @@ async function updateStage(id, newStage, createdBy = null) {
   if (!existing) return null;
 
   const closedAt = ['won', 'lost'].includes(newStage) ? new Date() : null;
+  const updateCols = ['stage = $1', 'closed_at = $2', 'updated_at = NOW()', "created_by = COALESCE($3, created_by)"];
+  const updateParams = [newStage, closedAt, createdBy, id];
+  if (newStage === 'won') {
+    updateCols.push('won_at = COALESCE(won_at, NOW())');
+  } else if (newStage === 'lost') {
+    updateCols.push('lost_at = COALESCE(lost_at, NOW())');
+  }
   const result = await pool.query(
-    `UPDATE opportunities
-     SET stage = $1, closed_at = $2, updated_at = NOW(), created_by = COALESCE($3, created_by)
-     WHERE id = $4
-     RETURNING *`,
-    [newStage, closedAt, createdBy, id]
+    `UPDATE opportunities SET ${updateCols.join(', ')} WHERE id = $4 RETURNING *`,
+    updateParams
   );
   const row = result.rows[0];
   await emit('opportunity.stage_changed', 'opportunity', row.id, {
@@ -117,4 +153,7 @@ module.exports = {
   getById,
   updateStage,
   OPPORTUNITY_STAGES,
+  STAGE_LEGACY_TO_NEW,
+  STAGE_FILTER_VALUES,
+  normalizeStage,
 };

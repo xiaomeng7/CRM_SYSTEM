@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — BHT CRM</title>
+  <title>Owner Dashboard — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
@@ -24,23 +24,59 @@
       </nav>
     </aside>
     <main class="main">
-      <header class="header">Internal CRM</header>
+      <header class="header">Owner Dashboard</header>
       <div class="content" data-page="dashboard">
-        <h1 class="page-title">Dashboard</h1>
-        <div class="cards">
-          <div class="card"><h3 id="dash-leads">—</h3><p>New leads (7d)</p></div>
-          <div class="card"><h3 id="dash-tasks">—</h3><p>Due tasks today</p></div>
-          <div class="card"><h3 id="dash-opps">—</h3><p>Open opportunities</p></div>
-          <div class="card"><h3 id="dash-contacts">—</h3><p>Recent contacts (7d)</p></div>
+        <h1 class="page-title">Owner Dashboard</h1>
+
+        <!-- 1. Cashflow -->
+        <section class="owner-section">
+          <h2 class="owner-section-title">1 Cashflow</h2>
+          <div class="owner-cards">
+            <div class="owner-card"><span class="owner-card-value" id="dash-jobs-won">—</span><span class="owner-card-label">Jobs Won This Week</span></div>
+            <div class="owner-card"><span class="owner-card-value" id="dash-quotes-sent">—</span><span class="owner-card-label">Quotes Sent</span></div>
+            <div class="owner-card"><span class="owner-card-value" id="dash-invoices">—</span><span class="owner-card-label">Invoices Issued</span></div>
+            <div class="owner-card"><span class="owner-card-value" id="dash-payments">—</span><span class="owner-card-label">Payments Received</span></div>
+            <div class="owner-card"><span class="owner-card-value" id="dash-outstanding">—</span><span class="owner-card-label">Outstanding</span></div>
+          </div>
+        </section>
+
+        <div class="owner-grid">
+          <!-- 2. Priority Customers -->
+          <section class="owner-section owner-panel">
+            <h2 class="owner-section-title">2 Priority Customers</h2>
+            <div class="owner-list" id="priority-customers">
+              <div class="muted">Loading…</div>
+            </div>
+          </section>
+
+          <!-- 3. Tasks -->
+          <section class="owner-section owner-panel">
+            <h2 class="owner-section-title">3 Tasks</h2>
+            <div class="owner-tasks" id="owner-tasks">
+              <div class="muted">Loading…</div>
+            </div>
+          </section>
+
+          <!-- 4. Opportunities -->
+          <section class="owner-section owner-panel">
+            <h2 class="owner-section-title">4 Opportunities</h2>
+            <div class="owner-opps" id="owner-opps">
+              <div class="muted">Loading…</div>
+            </div>
+            <p class="owner-potential" id="owner-potential">—</p>
+          </section>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Recent activity</th><th>Type</th><th>When</th></tr></thead>
-            <tbody>
-              <tr><td colspan="3" class="muted">Placeholder — will show recent leads, tasks, communications</td></tr>
-            </tbody>
-          </table>
-        </div>
+
+        <!-- 5. SMS Replies -->
+        <section class="owner-section">
+          <h2 class="owner-section-title">5 SMS Replies</h2>
+          <div class="owner-table-wrap">
+            <table>
+              <thead><tr><th>Contact</th><th>Message</th><th>Received</th><th>Actions</th></tr></thead>
+              <tbody id="owner-sms-tbody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </main>
   </div>
