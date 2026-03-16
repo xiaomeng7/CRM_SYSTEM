@@ -28,6 +28,7 @@
     "repair:suburb": "node scripts/repair-suburb-from-jobs.js",
     "db:do-not-contact-migration": "node scripts/run-do-not-contact-migration.js",
     "db:invoice-overdue-migration": "node scripts/run-invoice-overdue-migration.js",
+    "db:invoices-job-uuid-migration": "node scripts/run-invoices-job-uuid-migration.js",
     "db:quote-accepted-automation-migration": "node scripts/run-quote-accepted-automation-migration.js",
     "db:automation-settings-migration": "node scripts/run-automation-settings-migration.js",
     "test:quote-sync": "node scripts/test-quote-sync.js",

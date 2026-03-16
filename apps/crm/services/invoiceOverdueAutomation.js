@@ -17,23 +17,39 @@ const {
 const AUDIT_SOURCE = 'invoice-overdue';
 
 /**
- * Scan unpaid invoices with due_date < today, return rows with days_overdue and current overdue_level.
+ * Scan unpaid invoices eligible for 催款:
+ * - status != paid, amount > 0 (due amount not 0)
+ * - job must be complete (when job_id present)
+ * - 开票超过3天: either due_date < today, or when due_date is null then invoice_date + 3 <= today
+ * days_overdue: when due_date set use (today - due_date); else use (today - invoice_date - 3).
  */
 async function scanOverdueInvoices(options = {}) {
   const db = options.db || pool;
   const rows = await db.query(
-    `SELECT i.id AS invoice_id, i.account_id, i.invoice_number, i.amount, i.due_date,
+    `SELECT i.id AS invoice_id, i.account_id, i.job_id, i.invoice_number, i.amount, i.invoice_date, i.due_date,
             COALESCE(i.overdue_level, 'none') AS overdue_level,
-            (CURRENT_DATE - i.due_date)::int AS days_overdue,
+            CASE
+              WHEN i.due_date IS NOT NULL THEN (CURRENT_DATE - i.due_date)::int
+              WHEN i.invoice_date IS NOT NULL THEN GREATEST(0, (CURRENT_DATE - i.invoice_date - 3)::int)
+              ELSE 0
+            END AS days_overdue,
             c.id AS contact_id, c.name AS contact_name, c.phone AS contact_phone
      FROM invoices i
+     LEFT JOIN jobs j ON j.id = i.job_id
      LEFT JOIN LATERAL (
        SELECT id, name, phone FROM contacts WHERE account_id = i.account_id AND (phone IS NOT NULL AND TRIM(phone) <> '') ORDER BY created_at ASC LIMIT 1
      ) c ON true
      WHERE LOWER(TRIM(COALESCE(i.status, ''))) != 'paid'
-       AND i.due_date IS NOT NULL
-       AND i.due_date < CURRENT_DATE
-     ORDER BY i.due_date ASC`
+       AND COALESCE(i.amount, 0) > 0
+       AND (i.job_id IS NULL OR (
+             j.completed_at IS NOT NULL
+             OR LOWER(TRIM(COALESCE(j.status, ''))) LIKE '%complete%'
+           ))
+       AND (
+         (i.due_date IS NOT NULL AND i.due_date < CURRENT_DATE)
+         OR (i.due_date IS NULL AND i.invoice_date IS NOT NULL AND (i.invoice_date + 3) <= CURRENT_DATE)
+       )
+     ORDER BY i.due_date ASC NULLS LAST, i.invoice_date ASC NULLS LAST`
   );
   return rows.rows;
 }

@@ -414,13 +414,56 @@ async function syncContactsFromServiceM8(options = {}) {
   }
 }
 
+// ---------- Job-derived invoice: one row per job when invoice data comes from job endpoint ----------
+async function upsertInvoiceFromJob(db, jobRaw, accountId, jobId, dryRun, options = {}) {
+  const uuid = jobRaw.uuid || jobRaw.UUID;
+  if (!uuid || !accountId || !jobId) return;
+
+  const amount = jobRaw.total_invoice_amount != null ? parseFloat(jobRaw.total_invoice_amount)
+    : (jobRaw.invoice_total != null ? parseFloat(jobRaw.invoice_total)
+      : (jobRaw.invoice_amount != null ? parseFloat(jobRaw.invoice_amount)
+        : (jobRaw.amount != null ? parseFloat(jobRaw.amount) : null)));
+  const invoice_number = (jobRaw.invoice_number || jobRaw.invoiceNumber || jobRaw.invoice_ref || '').trim() || null;
+  const invoice_date = parseDate(jobRaw.date_invoiced || jobRaw.invoice_date || jobRaw.invoice_date_date || jobRaw.date || jobRaw.job_date || jobRaw.completed_at);
+  const due_date = parseDate(jobRaw.invoice_due_date || jobRaw.due_date || jobRaw.payment_due_date) || null;
+  const status = (jobRaw.invoice_status || jobRaw.invoice_status_name || jobRaw.status || '').trim() || null;
+
+  const hasInvoiceSignal = amount != null || invoice_number != null;
+  if (!hasInvoiceSignal) return;
+
+  try {
+    const existing = await db.query(`SELECT id FROM invoices WHERE servicem8_job_uuid = $1`, [uuid]);
+    if (existing.rows.length > 0) {
+      if (!dryRun) {
+        await db.query(
+          `UPDATE invoices SET account_id = $1, job_id = $2, invoice_number = COALESCE($3, invoice_number), amount = COALESCE($4, amount), invoice_date = COALESCE($5, invoice_date), due_date = COALESCE($6, due_date), status = COALESCE($7, status), updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $8`,
+          [accountId, jobId, invoice_number, amount, invoice_date, due_date, status, uuid]
+        );
+      }
+      if (options.invoiceStats) { options.invoiceStats.updated = (options.invoiceStats.updated || 0) + 1; }
+    } else {
+      if (!dryRun) {
+        await db.query(
+          `INSERT INTO invoices (account_id, job_id, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+          [accountId, jobId, uuid, invoice_number, amount, invoice_date, due_date, status]
+        );
+      }
+      if (options.invoiceStats) { options.invoiceStats.created = (options.invoiceStats.created || 0) + 1; }
+    }
+  } catch (err) {
+    if (options.onError) options.onError(err, { servicem8_job_uuid: uuid });
+  }
+}
+
 // ---------- 3. Jobs → jobs (account_id via external_links; contact_id optional) ----------
 async function syncJobsFromServiceM8(options = {}) {
   const dryRun = Boolean(options.dryRun);
   const mode = options.mode || 'full';
   const { db, release } = await getDb(options);
   const client = new ServiceM8Client();
-  const stats = { jobs_fetched: 0, jobs_created: 0, jobs_updated: 0, jobs_skipped_no_account: 0, skipped: 0, errors: 0 };
+  const stats = { jobs_fetched: 0, jobs_created: 0, jobs_updated: 0, jobs_skipped_no_account: 0, skipped: 0, errors: 0, invoices_from_job_created: 0, invoices_from_job_updated: 0 };
+  const invoiceStats = {};
   try {
     const filter = mode === 'incremental' ? buildSinceFilter(options.since) : '';
     const raw = await client.getJobs(filter);
@@ -446,9 +489,11 @@ async function syncJobsFromServiceM8(options = {}) {
       const completedAt = parseDate(j.completed_date || j.completed_at || j.finish_date);
       const contactId = null;
 
+      let jobId = null;
       try {
         const existing = await db.query(`SELECT id FROM jobs WHERE servicem8_job_uuid = $1`, [uuid]);
         if (existing.rows.length > 0) {
+          jobId = existing.rows[0].id;
           if (!dryRun) {
             await db.query(
               `UPDATE jobs SET
@@ -469,13 +514,20 @@ async function syncJobsFromServiceM8(options = {}) {
           stats.jobs_updated++;
         } else {
           if (!dryRun) {
-            await db.query(
+            const insertResult = await db.query(
               `INSERT INTO jobs (account_id, contact_id, servicem8_job_uuid, job_number, description, address_line, suburb, status, job_date, completed_at, last_synced_at)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+               RETURNING id`,
               [accountId, contactId, uuid, job_number, description, address_line, suburb, status, jobDate, completedAt]
             );
+            jobId = insertResult.rows[0]?.id || null;
+          } else {
+            jobId = null;
           }
           stats.jobs_created++;
+        }
+        if (jobId && accountId) {
+          await upsertInvoiceFromJob(db, j, accountId, jobId, dryRun, { invoiceStats, onError: options.onError });
         }
         if (accountId && !dryRun) {
           await upsertOpportunityForJob(db, {
@@ -494,13 +546,15 @@ async function syncJobsFromServiceM8(options = {}) {
         if (options.onError) options.onError(err, { servicem8_job_uuid: uuid });
       }
     }
+    stats.invoices_from_job_created = invoiceStats.created || 0;
+    stats.invoices_from_job_updated = invoiceStats.updated || 0;
     return stats;
   } finally {
     if (release) db.release();
   }
 }
 
-// ---------- 4. Invoices → invoices (account_id + job_id) ----------
+// ---------- 4. Invoices → invoices (account_id + job_id); also supports job-derived rows via servicem8_job_uuid ----------
 async function syncInvoicesFromServiceM8(options = {}) {
   const dryRun = Boolean(options.dryRun);
   const mode = options.mode || 'full';
@@ -542,21 +596,31 @@ async function syncInvoicesFromServiceM8(options = {}) {
       const status = (inv.status || inv.status_name || '').trim() || null;
 
       try {
-        const existing = await db.query(`SELECT id FROM invoices WHERE servicem8_invoice_uuid = $1`, [uuid]);
-        if (existing.rows.length > 0) {
+        const existingByInvUuid = await db.query(`SELECT id FROM invoices WHERE servicem8_invoice_uuid = $1`, [uuid]);
+        const existingByJobUuid = jobUuid ? await db.query(`SELECT id FROM invoices WHERE servicem8_job_uuid = $1`, [jobUuid]) : { rows: [] };
+
+        if (existingByInvUuid.rows.length > 0) {
           if (!dryRun) {
             await db.query(
-              `UPDATE invoices SET account_id = $1, job_id = $2, invoice_number = $3, amount = $4, invoice_date = $5, due_date = $6, status = $7, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $8`,
-              [accountId, jobId, invoice_number, amount, invoice_date, due_date, status, uuid]
+              `UPDATE invoices SET account_id = $1, job_id = $2, servicem8_job_uuid = $3, invoice_number = $4, amount = $5, invoice_date = $6, due_date = $7, status = $8, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $9`,
+              [accountId, jobId, jobUuid || null, invoice_number, amount, invoice_date, due_date, status, uuid]
+            );
+          }
+          stats.invoices_updated++;
+        } else if (existingByJobUuid.rows.length > 0) {
+          if (!dryRun) {
+            await db.query(
+              `UPDATE invoices SET servicem8_invoice_uuid = $1, account_id = $2, job_id = $3, invoice_number = $4, amount = $5, invoice_date = $6, due_date = $7, status = $8, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $9`,
+              [uuid, accountId, jobId, invoice_number, amount, invoice_date, due_date, status, jobUuid]
             );
           }
           stats.invoices_updated++;
         } else {
           if (!dryRun) {
             await db.query(
-              `INSERT INTO invoices (account_id, job_id, servicem8_invoice_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
-              [accountId, jobId, uuid, invoice_number, amount, invoice_date, due_date, status]
+              `INSERT INTO invoices (account_id, job_id, servicem8_invoice_uuid, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
+              [accountId, jobId, uuid, jobUuid || null, invoice_number, amount, invoice_date, due_date, status]
             );
           }
           stats.invoices_created++;
@@ -743,13 +807,15 @@ async function syncAllFromServiceM8(options = {}) {
     stats.jobs_fetched = s3.jobs_fetched;
     stats.jobs_created = s3.jobs_created;
     stats.jobs_updated = s3.jobs_updated;
+    stats.invoices_from_job_created = s3.invoices_from_job_created || 0;
+    stats.invoices_from_job_updated = s3.invoices_from_job_updated || 0;
     stats.skipped += s3.skipped || 0;
     stats.errors += s3.errors || 0;
 
     const s4 = await syncInvoicesFromServiceM8(syncOptions);
     stats.invoices_fetched = s4.invoices_fetched;
-    stats.invoices_created = s4.invoices_created;
-    stats.invoices_updated = s4.invoices_updated;
+    stats.invoices_created = s4.invoices_created + (stats.invoices_from_job_created || 0);
+    stats.invoices_updated = s4.invoices_updated + (stats.invoices_from_job_updated || 0);
     stats.skipped += s4.skipped || 0;
     stats.errors += s4.errors || 0;
 

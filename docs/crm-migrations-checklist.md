@@ -15,6 +15,7 @@
 | 3 | `019_quotes_followup_dates.sql` | followup_due_at、followup_state | 同上 |
 | 4 | `020_opportunity_stage_automation.sql` | automation_audit_log 扩展（action_type, trigger_event 等） | 同上 |
 | 5 | `021_invoice_overdue_automation.sql` | invoices.overdue_level、contacts.payment_risk | `node scripts/run-invoice-overdue-migration.js` |
+| 5b | `027_invoices_servicem8_job_uuid.sql` | invoices.servicem8_job_uuid（job-derived 发票幂等） | `node scripts/run-invoices-job-uuid-migration.js` |
 | 6 | `022_customer_scores.sql` | customer scoring 相关表/列 | 同上 |
 | 7 | `023_jobs_crm_creation_source.sql` | jobs.source_opportunity_id、created_via | 同上 |
 | 8 | `024_quotes_created_via.sql` | quotes.created_via | 同上 |
@@ -53,6 +54,10 @@ pnpm run db:quote-accepted-automation-migration
 # 026：automation settings（Admin 开关）
 pnpm run db:automation-settings-migration
 # 或: node scripts/run-automation-settings-migration.js
+
+# 027：invoices 支持从 job 派生（servicem8_job_uuid）
+pnpm run db:invoices-job-uuid-migration
+# 或: node scripts/run-invoices-job-uuid-migration.js
 ```
 
 其余 017–020、022–024 若无单独脚本，可直接用 `psql` 或任意 SQL 客户端按文件名顺序执行 `apps/crm/database/*.sql`。
