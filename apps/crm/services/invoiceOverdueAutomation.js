@@ -108,7 +108,7 @@ async function runLevelForInvoice(row, targetLevel, options = {}) {
   if ((targetLevel === OVERDUE_LEVEL.DAYS_3 || targetLevel === OVERDUE_LEVEL.DAYS_7 || targetLevel === OVERDUE_LEVEL.DAYS_14) && sendSms && contact?.phone && String(contact.phone).trim()) {
     try {
       if (!dryRun) {
-        const msg = renderSms(targetLevel, contact.name, invoice_number);
+        const msg = (options.customMessage && String(options.customMessage).trim()) || renderSms(targetLevel, contact.name, invoice_number);
         await sendSMS(contact.phone, msg);
         result.sms_sent = true;
       } else {

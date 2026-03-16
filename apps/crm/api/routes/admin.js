@@ -202,4 +202,113 @@ router.get('/admin/system-health', async (req, res) => {
   }
 });
 
+// ---------- 自动化控制（开关 + 催款预览/发送）----------
+const automationSettings = require('../../services/automationSettings');
+const {
+  scanOverdueInvoices,
+  getLevelToTrigger,
+  runLevelForInvoice,
+} = require('../../services/invoiceOverdueAutomation');
+const { renderSms } = require('../../lib/invoice-overdue-config');
+
+router.get('/admin/automation-settings', async (req, res) => {
+  try {
+    const all = await automationSettings.getAll();
+    res.json({
+      invoice_overdue_enabled: all.invoice_overdue_enabled !== 'false',
+      invoice_overdue_enabled_updated_at: all.invoice_overdue_enabled_updated_at || null,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.patch('/admin/automation-settings', async (req, res) => {
+  try {
+    const body = req.body || {};
+    if (body.invoice_overdue_enabled !== undefined) {
+      await automationSettings.set('invoice_overdue_enabled', body.invoice_overdue_enabled);
+    }
+    const all = await automationSettings.getAll();
+    res.json({
+      invoice_overdue_enabled: all.invoice_overdue_enabled !== 'false',
+      invoice_overdue_enabled_updated_at: all.invoice_overdue_enabled_updated_at || null,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/** GET 催款预览：本次会催的名单、天数、金额、拟发短信内容 */
+router.get('/admin/overdue-preview', async (req, res) => {
+  try {
+    const rows = await scanOverdueInvoices({ db: pool });
+    const list = [];
+    for (const row of rows) {
+      const level = getLevelToTrigger(row);
+      if (!level) continue;
+      const message = renderSms(level, row.contact_name, row.invoice_number);
+      list.push({
+        invoice_id: row.invoice_id,
+        account_id: row.account_id,
+        contact_id: row.contact_id,
+        contact_name: row.contact_name || '—',
+        contact_phone: row.contact_phone || null,
+        invoice_number: row.invoice_number,
+        amount: row.amount,
+        due_date: row.due_date,
+        days_overdue: row.days_overdue,
+        overdue_level: row.overdue_level,
+        level_trigger: level,
+        message,
+      });
+    }
+    res.json({ items: list });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/** POST 催款发送：对选中的项发送短信（可带自定义 message），并执行 task/level 更新 */
+router.post('/admin/overdue-send', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const items = Array.isArray(body.items) ? body.items : [];
+    const results = [];
+    for (const it of items) {
+      const invoiceId = it.invoice_id;
+      const customMessage = (it.message && String(it.message).trim()) || null;
+      if (!invoiceId) {
+        results.push({ invoice_id: null, error: 'missing invoice_id' });
+        continue;
+      }
+      const rows = await scanOverdueInvoices({ db: pool });
+      const row = rows.find((r) => r.invoice_id === invoiceId);
+      if (!row) {
+        results.push({ invoice_id: invoiceId, error: 'not in overdue list or already paid' });
+        continue;
+      }
+      const level = getLevelToTrigger(row);
+      if (!level) {
+        results.push({ invoice_id: invoiceId, error: 'no level to trigger' });
+        continue;
+      }
+      try {
+        const r = await runLevelForInvoice(row, level, {
+          db: pool,
+          dryRun: false,
+          sendSms: true,
+          customMessage,
+        });
+        results.push({ invoice_id: invoiceId, level, task_created: r.task_created, sms_sent: r.sms_sent, error: r.sms_error || null });
+      } catch (e) {
+        results.push({ invoice_id: invoiceId, error: e.message || String(e) });
+      }
+    }
+    res.json({ ok: true, results });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 module.exports = router;

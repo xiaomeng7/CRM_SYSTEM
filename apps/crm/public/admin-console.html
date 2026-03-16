@@ -58,18 +58,25 @@
       const [actionLoading, setActionLoading] = useState(null);
       const [actionMsg, setActionMsg] = useState(null);
       const [confirmAction, setConfirmAction] = useState(null);
+      const [automationSettings, setAutomationSettings] = useState(null);
+      const [overduePreview, setOverduePreview] = useState({ items: [] });
+      const [overdueLoading, setOverdueLoading] = useState(false);
+      const [overdueSendLoading, setOverdueSendLoading] = useState(false);
+      const [selectedOverdue, setSelectedOverdue] = useState(new Set());
+      const [editMessages, setEditMessages] = useState({});
 
       const fetchAll = async () => {
         setLoading(true);
         setError(null);
         try {
-          const [statusRes, queueRes, actRes, errRes, wrkRes, healthRes] = await Promise.all([
+          const [statusRes, queueRes, actRes, errRes, wrkRes, healthRes, autoRes] = await Promise.all([
             fetch('/api/system/status'),
             fetch('/api/reactivation/queue/stats'),
             fetch('/api/admin/recent-activities'),
             fetch('/api/admin/errors'),
             fetch('/api/admin/workers'),
             fetch('/api/admin/system-health'),
+            fetch('/api/admin/automation-settings'),
           ]);
           setSystemStatus(await statusRes.json().catch(() => null));
           setQueueStats(await queueRes.json().catch(() => null));
@@ -77,6 +84,7 @@
           setErrors(await errRes.json().catch(() => []));
           setWorkers(await wrkRes.json().catch(() => null));
           setHealth(await healthRes.json().catch(() => null));
+          setAutomationSettings(await autoRes.json().catch(() => null));
         } catch (e) {
           setError('Unable to fetch status');
         } finally {
@@ -84,7 +92,78 @@
         }
       };
 
+      const loadOverduePreview = async () => {
+        setOverdueLoading(true);
+        try {
+          const res = await fetch('/api/admin/overdue-preview');
+          const data = await res.json();
+          setOverduePreview(data.items ? { items: data.items } : { items: [] });
+          setSelectedOverdue(new Set());
+          setEditMessages({});
+        } catch (e) {
+          setActionMsg('Error: ' + (e.message || 'load overdue failed'));
+        } finally {
+          setOverdueLoading(false);
+        }
+      };
+
+      const toggleAutomation = async (key, value) => {
+        try {
+          const res = await fetch('/api/admin/automation-settings', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [key]: value }),
+          });
+          const data = await res.json();
+          setAutomationSettings(data);
+          setActionMsg(value ? '已开启自动催款' : '已关闭自动催款');
+        } catch (e) {
+          setActionMsg('Error: ' + (e.message || 'toggle failed'));
+        }
+      };
+
+      const sendOverdue = async (itemsToSend) => {
+        if (!itemsToSend.length) return;
+        setOverdueSendLoading(true);
+        setActionMsg(null);
+        try {
+          const payload = itemsToSend.map((it) => ({
+            invoice_id: it.invoice_id,
+            message: editMessages[it.invoice_id] || it.message,
+          }));
+          const res = await fetch('/api/admin/overdue-send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: payload }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Send failed');
+          const failed = (data.results || []).filter((r) => r.error);
+          setActionMsg(failed.length ? `已发送 ${data.results.length - failed.length} 条，失败 ${failed.length} 条` : `已发送 ${data.results.length} 条`);
+          loadOverduePreview();
+        } catch (e) {
+          setActionMsg('Error: ' + (e.message || 'send failed'));
+        } finally {
+          setOverdueSendLoading(false);
+        }
+      };
+
+      const toggleSelectOverdue = (invoiceId) => {
+        setSelectedOverdue((prev) => {
+          const next = new Set(prev);
+          if (next.has(invoiceId)) next.delete(invoiceId);
+          else next.add(invoiceId);
+          return next;
+        });
+      };
+
+      const selectAllOverdue = (checked) => {
+        if (checked) setSelectedOverdue(new Set((overduePreview.items || []).map((i) => i.invoice_id)));
+        else setSelectedOverdue(new Set());
+      };
+
       useEffect(() => { fetchAll(); }, []);
+      useEffect(() => { loadOverduePreview(); }, []);
 
       const runAction = async (action) => {
         if (!confirmAction) return;
@@ -183,6 +262,103 @@
                   <div><span className="text-slate-500">Sent Today</span><div className="text-2xl font-semibold">{queueStats?.sent_today ?? '—'}</div></div>
                   <div><span className="text-slate-500">Failed</span><div className="text-2xl font-semibold text-rose-600">{queueStats?.failed ?? '—'}</div></div>
                 </div>
+              </div>
+            </section>
+
+            {/* 自动化控制 */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">自动化控制</h2>
+              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <div className="flex flex-wrap items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-slate-700">自动催款</span>
+                    <button
+                      role="switch"
+                      aria-checked={automationSettings?.invoice_overdue_enabled !== false}
+                      onClick={() => toggleAutomation('invoice_overdue_enabled', !(automationSettings?.invoice_overdue_enabled !== false))}
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${automationSettings?.invoice_overdue_enabled !== false ? 'bg-blue-600' : 'bg-slate-200'}`}
+                    >
+                      <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition ${automationSettings?.invoice_overdue_enabled !== false ? 'translate-x-5' : 'translate-x-1'}`} style={{ top: '2px' }} />
+                    </button>
+                    <span className="text-sm text-slate-500">{automationSettings?.invoice_overdue_enabled !== false ? '已开启' : '已关闭'}</span>
+                  </div>
+                  {automationSettings?.invoice_overdue_enabled_updated_at && (
+                    <span className="text-xs text-slate-400">上次变更: {formatTime(automationSettings.invoice_overdue_enabled_updated_at)}</span>
+                  )}
+                </div>
+                <p className="mt-2 text-xs text-slate-500">关闭后，定时任务不会自动发送催款短信；仍可在此页「催款管理」中手动选择并发送。</p>
+              </div>
+            </section>
+
+            {/* 催款管理 */}
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold mb-4">催款管理</h2>
+              <p className="text-sm text-slate-600 mb-3">当前会触发提醒的未付发票：可勾选、修改短信内容、单独发送或批量发送。</p>
+              <div className="flex gap-2 mb-3">
+                <button onClick={loadOverduePreview} disabled={overdueLoading} className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50">刷新列表</button>
+                <button
+                  onClick={() => sendOverdue((overduePreview.items || []).filter((i) => selectedOverdue.has(i.invoice_id)))}
+                  disabled={overdueSendLoading || selectedOverdue.size === 0}
+                  className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {overdueSendLoading ? '发送中...' : `批量发送选中 (${selectedOverdue.size})`}
+                </button>
+              </div>
+              <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+                {overdueLoading ? (
+                  <div className="p-8 text-center text-slate-500">加载中...</div>
+                ) : !(overduePreview.items && overduePreview.items.length) ? (
+                  <div className="p-8 text-center text-slate-500">暂无需要催款的发票</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-slate-50 text-slate-600">
+                        <tr>
+                          <th className="px-3 py-2 text-left font-medium w-10">
+                            <input type="checkbox" checked={selectedOverdue.size === (overduePreview.items || []).length} onChange={(e) => selectAllOverdue(e.target.checked)} />
+                          </th>
+                          <th className="px-3 py-2 text-left font-medium">客户</th>
+                          <th className="px-3 py-2 text-left font-medium">逾期(天)</th>
+                          <th className="px-3 py-2 text-left font-medium">金额</th>
+                          <th className="px-3 py-2 text-left font-medium">发票号</th>
+                          <th className="px-3 py-2 text-left font-medium">拟发信息</th>
+                          <th className="px-3 py-2 text-left font-medium w-24">操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(overduePreview.items || []).map((it) => (
+                          <tr key={it.invoice_id} className="border-t border-slate-100 hover:bg-slate-50/50">
+                            <td className="px-3 py-2">
+                              <input type="checkbox" checked={selectedOverdue.has(it.invoice_id)} onChange={() => toggleSelectOverdue(it.invoice_id)} disabled={!it.contact_phone} />
+                            </td>
+                            <td className="px-3 py-2 font-medium">{it.contact_name}</td>
+                            <td className="px-3 py-2">{it.days_overdue}</td>
+                            <td className="px-3 py-2">${it.amount != null ? Number(it.amount).toFixed(2) : '—'}</td>
+                            <td className="px-3 py-2">{it.invoice_number || '—'}</td>
+                            <td className="px-3 py-2 max-w-xs">
+                              <textarea
+                                value={editMessages[it.invoice_id] !== undefined ? editMessages[it.invoice_id] : it.message}
+                                onChange={(e) => setEditMessages((prev) => ({ ...prev, [it.invoice_id]: e.target.value }))}
+                                rows={2}
+                                className="w-full rounded border border-slate-200 px-2 py-1 text-xs"
+                                placeholder="短信内容"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <button
+                                onClick={() => sendOverdue([it])}
+                                disabled={overdueSendLoading || !it.contact_phone}
+                                className="rounded-lg bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50"
+                              >
+                                单独发送
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </section>
 

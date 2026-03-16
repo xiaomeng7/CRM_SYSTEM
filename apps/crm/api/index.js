@@ -193,19 +193,22 @@ app.listen(PORT, () => {
     console.log(`[auto-sync] ServiceM8 sync scheduled every ${hours} hour(s)`);
   }
 
-  // Optional: run invoice overdue automation daily (e.g. 04:00); set AUTO_INVOICE_OVERDUE_DAILY=true
+  // Optional: run invoice overdue automation daily; set AUTO_INVOICE_OVERDUE_DAILY=true. Admin can toggle via automation_settings.
   const autoInvoiceOverdue = process.env.AUTO_INVOICE_OVERDUE_DAILY === 'true' || process.env.AUTO_INVOICE_OVERDUE_DAILY === '1';
   if (autoInvoiceOverdue) {
     const { runOverdueScan } = require('../services/invoiceOverdueAutomation');
+    const { getEnabled } = require('../services/automationSettings');
     const OVERDUE_INTERVAL_MS = 24 * 60 * 60 * 1000;
-    const runOverdue = () => {
+    const runOverdue = async () => {
+      const enabled = await getEnabled('invoice_overdue_enabled');
+      if (!enabled) return;
       runOverdueScan({ dryRun: false, sendSms: true, log: (msg) => console.log('[invoice-overdue]', msg) })
         .then((out) => console.log('[invoice-overdue] done, processed:', out.processed))
         .catch((e) => console.error('[invoice-overdue]', e));
     };
-    setTimeout(runOverdue, 2 * 60 * 1000); // first run 2 min after startup
+    setTimeout(runOverdue, 2 * 60 * 1000);
     setInterval(runOverdue, OVERDUE_INTERVAL_MS);
-    console.log('[invoice-overdue] scheduled daily (every 24h)');
+    console.log('[invoice-overdue] scheduled daily (every 24h); toggle in Admin → 自动化控制');
   }
 
   // Optional: run Customer Scoring 2.0 daily; set AUTO_CUSTOMER_SCORING_DAILY=true

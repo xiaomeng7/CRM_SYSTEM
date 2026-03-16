@@ -19,6 +19,7 @@
 | 7 | `023_jobs_crm_creation_source.sql` | jobs.source_opportunity_id、created_via | 同上 |
 | 8 | `024_quotes_created_via.sql` | quotes.created_via | 同上 |
 | 9 | `025_quote_accepted_automation.sql` | opportunities.probability、tasks.task_type | `node scripts/run-quote-accepted-automation-migration.js` |
+| 10 | `026_automation_settings.sql` | Admin 自动化开关（如 invoice_overdue_enabled） | `node scripts/run-automation-settings-migration.js` |
 
 ---
 
@@ -30,6 +31,7 @@
 - [ ] 016_opportunities_service_m8_fields.sql（service_m8_job_id, inspection_date）
 - [ ] **021_invoice_overdue_automation.sql**（invoice overdue 自动化必需）
 - [ ] **025_quote_accepted_automation.sql**（quote accepted 自动化、task_type 必需）
+- [ ] **026_automation_settings.sql**（Admin 自动化控制开关，可选）
 
 若未执行 021，`test-invoice-overdue.js` 与 `AUTO_INVOICE_OVERDUE_DAILY` 会报错：`column i.overdue_level does not exist`。
 
@@ -47,6 +49,10 @@ pnpm run db:invoice-overdue-migration
 # 025：quote accepted automation
 pnpm run db:quote-accepted-automation-migration
 # 或: node scripts/run-quote-accepted-automation-migration.js
+
+# 026：automation settings（Admin 开关）
+pnpm run db:automation-settings-migration
+# 或: node scripts/run-automation-settings-migration.js
 ```
 
 其余 017–020、022–024 若无单独脚本，可直接用 `psql` 或任意 SQL 客户端按文件名顺序执行 `apps/crm/database/*.sql`。
