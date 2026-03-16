@@ -65,6 +65,7 @@
       const [selectedOverdue, setSelectedOverdue] = useState(new Set());
       const [editMessages, setEditMessages] = useState({});
       const [minDaysOverdue, setMinDaysOverdue] = useState('3');
+      const [maxDaysOverdue, setMaxDaysOverdue] = useState('');
       const [minAmount, setMinAmount] = useState('');
 
       const fetchAll = async () => {
@@ -100,6 +101,9 @@
           const params = new URLSearchParams();
           if (minDaysOverdue && !Number.isNaN(Number(minDaysOverdue))) {
             params.set('min_days_overdue', String(Number(minDaysOverdue)));
+          }
+          if (maxDaysOverdue && !Number.isNaN(Number(maxDaysOverdue))) {
+            params.set('max_days_overdue', String(Number(maxDaysOverdue)));
           }
           if (minAmount && !Number.isNaN(Number(minAmount))) {
             params.set('min_amount', String(Number(minAmount)));
@@ -318,6 +322,18 @@
                     <option value="7">≥ 7 天</option>
                     <option value="14">≥ 14 天</option>
                   </select>
+                </div>
+                <div className="flex items-center gap-1">
+                  <label className="text-xs text-slate-500">最大逾期天数</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={maxDaysOverdue}
+                    onChange={(e) => setMaxDaysOverdue(e.target.value)}
+                    placeholder="如 30"
+                    className="w-20 rounded border border-slate-200 px-2 py-1 text-xs"
+                  />
                 </div>
                 <div className="flex items-center gap-1">
                   <label className="text-xs text-slate-500">最小金额</label>
