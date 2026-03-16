@@ -243,10 +243,25 @@ router.patch('/admin/automation-settings', async (req, res) => {
 router.get('/admin/overdue-preview', async (req, res) => {
   try {
     const rows = await scanOverdueInvoices({ db: pool });
+    const minDays = req.query.min_days_overdue != null ? Number(req.query.min_days_overdue) : null;
+    const maxDays = req.query.max_days_overdue != null ? Number(req.query.max_days_overdue) : null;
+    const minAmount = req.query.min_amount != null ? Number(req.query.min_amount) : null;
+    const maxAmount = req.query.max_amount != null ? Number(req.query.max_amount) : null;
+    const levelFilter = typeof req.query.level === 'string' && req.query.level.trim()
+      ? String(req.query.level).trim().toLowerCase()
+      : null;
+
     const list = [];
     for (const row of rows) {
       const level = getLevelToTrigger(row);
       if (!level) continue;
+      const days = row.days_overdue != null ? Number(row.days_overdue) : null;
+      const amount = row.amount != null ? Number(row.amount) : null;
+      if (minDays != null && (days == null || days < minDays)) continue;
+      if (maxDays != null && (days == null || days > maxDays)) continue;
+      if (minAmount != null && (amount == null || amount < minAmount)) continue;
+      if (maxAmount != null && (amount == null || amount > maxAmount)) continue;
+      if (levelFilter && String(level).toLowerCase() !== levelFilter) continue;
       const message = renderSms(level, row.contact_name, row.invoice_number);
       list.push({
         invoice_id: row.invoice_id,

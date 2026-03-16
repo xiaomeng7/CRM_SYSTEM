@@ -64,6 +64,8 @@
       const [overdueSendLoading, setOverdueSendLoading] = useState(false);
       const [selectedOverdue, setSelectedOverdue] = useState(new Set());
       const [editMessages, setEditMessages] = useState({});
+      const [minDaysOverdue, setMinDaysOverdue] = useState('3');
+      const [minAmount, setMinAmount] = useState('');
 
       const fetchAll = async () => {
         setLoading(true);
@@ -95,7 +97,16 @@
       const loadOverduePreview = async () => {
         setOverdueLoading(true);
         try {
-          const res = await fetch('/api/admin/overdue-preview');
+          const params = new URLSearchParams();
+          if (minDaysOverdue && !Number.isNaN(Number(minDaysOverdue))) {
+            params.set('min_days_overdue', String(Number(minDaysOverdue)));
+          }
+          if (minAmount && !Number.isNaN(Number(minAmount))) {
+            params.set('min_amount', String(Number(minAmount)));
+          }
+          const qs = params.toString();
+          const url = qs ? `/api/admin/overdue-preview?${qs}` : '/api/admin/overdue-preview';
+          const res = await fetch(url);
           const data = await res.json();
           setOverduePreview(data.items ? { items: data.items } : { items: [] });
           setSelectedOverdue(new Set());
@@ -294,7 +305,32 @@
             <section className="mt-8">
               <h2 className="text-lg font-semibold mb-4">催款管理</h2>
               <p className="text-sm text-slate-600 mb-3">当前会触发提醒的未付发票：可勾选、修改短信内容、单独发送或批量发送。</p>
-              <div className="flex gap-2 mb-3">
+              <div className="flex flex-wrap items-end gap-3 mb-3">
+                <div className="flex items-center gap-1">
+                  <label className="text-xs text-slate-500">最小逾期天数</label>
+                  <select
+                    value={minDaysOverdue}
+                    onChange={(e) => setMinDaysOverdue(e.target.value)}
+                    className="rounded border border-slate-200 px-2 py-1 text-xs"
+                  >
+                    <option value="">全部</option>
+                    <option value="3">≥ 3 天</option>
+                    <option value="7">≥ 7 天</option>
+                    <option value="14">≥ 14 天</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-1">
+                  <label className="text-xs text-slate-500">最小金额</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="10"
+                    value={minAmount}
+                    onChange={(e) => setMinAmount(e.target.value)}
+                    placeholder="如 200"
+                    className="w-24 rounded border border-slate-200 px-2 py-1 text-xs"
+                  />
+                </div>
                 <button onClick={loadOverduePreview} disabled={overdueLoading} className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50">刷新列表</button>
                 <button
                   onClick={() => sendOverdue((overduePreview.items || []).filter((i) => selectedOverdue.has(i.invoice_id)))}
