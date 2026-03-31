@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rental Changeover Electrical Inspection | Better Home Technology – Adelaide</title>
+  <meta name="description" content="Fast, professional electrical compliance checks for rental property changeovers. PDF report within 24 hours. Serving property managers across Adelaide metro.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .check-list { list-style: none; padding: 0; margin: 0; }
+    .check-list li { padding: 0.55rem 0; border-bottom: 1px solid var(--border-soft); display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9375rem; }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li::before { content: "✓"; color: #1a1a1a; font-weight: 700; flex-shrink: 0; margin-top: 0.05rem; }
+    .scope-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .scope-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+    .scope-card h4 { margin: 0 0 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+    .scope-card p { margin: 0; font-size: 0.9375rem; line-height: 1.5; }
+    .process-steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .process-step { position: relative; padding: 1.25rem 1.25rem 1.25rem 3.25rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .process-step::before { counter-increment: step; content: counter(step); position: absolute; left: 1rem; top: 1.25rem; width: 1.5rem; height: 1.5rem; background: var(--text); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+    .process-step h4 { margin: 0 0 0.35rem; font-size: 0.9375rem; }
+    .process-step p { margin: 0; font-size: 0.875rem; color: var(--muted); line-height: 1.5; }
+    .pricing-card { background: var(--card); border: 2px solid var(--text); border-radius: var(--radius); padding: 2rem 2.5rem; max-width: 520px; }
+    .pricing-card .price { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    .pricing-card .price-sub { font-size: 1rem; color: var(--muted); margin-top: 0.25rem; }
+    .badge-tag { display: inline-block; background: #f0f0f0; color: var(--text); font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+    .report-preview-cta { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; font-weight: 500; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
+    .report-preview-cta:hover { color: var(--text); border-color: var(--text); }
+    .faq-item { border-bottom: 1px solid var(--border-soft); padding: 1.25rem 0; }
+    .faq-item:first-child { border-top: 1px solid var(--border-soft); }
+    .faq-q { font-weight: 600; margin-bottom: 0.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .faq-a { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0; }
+    .volume-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .volume-table th, .volume-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border-soft); font-size: 0.9375rem; }
+    .volume-table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+    .success-banner { display: none; background: #f0faf4; border: 1px solid #b6e2c8; border-radius: var(--radius); padding: 1.5rem; text-align: center; }
+    .success-banner.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <span class="header-brand">Better Home Technology</span>
+      <div class="header-right">
+        <a href="tel:0493208540" class="header-phone">0493 208 540</a>
+        <a href="#enquire" class="header-cta">Enquire Now</a>
+      </div>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+
+    <!-- Hero -->
+    <section class="hero" style="padding: 4rem 0 3.5rem;">
+      <div class="container" style="max-width: 820px;">
+        <div style="margin-bottom: 1rem;">
+          <span class="badge-tag">For Property Managers</span>
+        </div>
+        <h1 style="font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 1.25rem;">
+          Rental Changeover Electrical Inspection.<br>
+          <span style="color: var(--muted); font-weight: 400;">PDF report within 24 hours.</span>
+        </h1>
+        <p style="font-size: 1.125rem; color: var(--muted); max-width: 600px; margin: 0 0 2rem; line-height: 1.65;">
+          A professional electrical compliance check every time a tenancy changes hands.
+          Protect your landlords, cover your liability, and keep your properties safe — without the paperwork headache.
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+          <a href="#enquire" class="header-cta" style="font-size: 1rem; padding: 0.75rem 1.75rem;">Book an Inspection</a>
+          <a href="/sample-rental-report.html" target="_blank" class="report-preview-cta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            View sample report
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- Why section -->
+    <section style="padding: 4rem 0; background: var(--section-alt);">
+      <div class="container" style="max-width: 900px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+          <div>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem;">Why at every changeover?</h2>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0 0 1.25rem;">
+              Electrical faults are one of the leading causes of house fires in Australia. Without a documented inspection at changeover, the liability sits with the property manager and landlord.
+            </p>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0;">
+              South Australian legislation requires rental properties to meet minimum safety standards. An independent electrical report gives you written evidence of compliance — before the new tenant moves in.
+            </p>
+          </div>
+          <div>
+            <ul class="check-list">
+              <li>RCD / safety switch compliance confirmed in writing</li>
+              <li>Switchboard condition documented with photos</li>
+              <li>Any urgent faults flagged immediately by phone</li>
+              <li>Report formatted for landlord communication</li>
+              <li>All reports archived — accessible any time</li>
+              <li>One call, we handle the rest</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What's included -->
+    <section style="padding: 4rem 0;">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.5rem;">What's included</h2>
+        <p style="color: var(--muted); margin: 0 0 0.5rem;">Every inspection covers the following — no extras, no surprises.</p>
+        <p style="color: var(--muted); font-size: 0.875rem; margin: 0;">On-site time approximately 45 minutes.</p>
+        <div class="scope-grid">
+          <div class="scope-card">
+            <h4>RCD / Safety Switch Testing</h4>
+            <p>Every safety switch tested and response time recorded. Pass/fail clearly stated in report.</p>
+          </div>
+          <div class="scope-card">
+            <h4>Switchboard Inspection</h4>
+            <p>Visual check for compliance, labelling, signs of overheating, DIY modifications, or unsafe wiring.</p>
+          </div>
+          <div class="scope-card">
+            <h4>Smoke Alarm Check</h4>
+            <p>Location and quantity verified against SA legislative requirements for tenanted properties.</p>
+          </div>
+          <div class="scope-card">
+            <h4>Outlet & Lighting Check</h4>
+            <p>Functionality test of general power outlets and lighting circuits throughout the property.</p>
+          </div>
+          <div class="scope-card">
+            <h4>Hot Water System</h4>
+            <p>Electrical connection and isolator switch inspected. Temperature relief valve noted.</p>
+          </div>
+          <div class="scope-card">
+            <h4>Written PDF Report</h4>
+            <p>Delivered within 24 hours. Pass/fail summary, findings, photos, and recommended actions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- How it works -->
+    <section style="padding: 4rem 0; background: var(--section-alt);">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem;">How it works</h2>
+        <p style="color: var(--muted); margin: 0 0 0.5rem;">Designed to fit into your changeover workflow without friction.</p>
+        <div class="process-steps">
+          <div class="process-step">
+            <h4>Submit request</h4>
+            <p>Fill in the property address and preferred date using the form below.</p>
+          </div>
+          <div class="process-step">
+            <h4>We confirm &amp; schedule</h4>
+            <p>We contact you within 2 hours to confirm the booking and access arrangements.</p>
+          </div>
+          <div class="process-step">
+            <h4>Inspection on site</h4>
+            <p>Licensed electrician on site for approximately 45 minutes. No need for you to attend.</p>
+          </div>
+          <div class="process-step">
+            <h4>Report delivered</h4>
+            <p>PDF report emailed within 24 hours. Ready to forward to your landlord immediately.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section style="padding: 4rem 0;" id="pricing">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem;">Pricing</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+          <div class="pricing-card">
+            <div style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.75rem;">Standard</div>
+            <div class="price">$750</div>
+            <div class="price-sub">+ GST per inspection</div>
+            <ul class="check-list" style="margin-top: 1.5rem;">
+              <li>On-site inspection (~45 min)</li>
+              <li>Full PDF compliance report</li>
+              <li>Delivered within 24 hours</li>
+              <li>Photos included</li>
+              <li>Covers Adelaide metro</li>
+            </ul>
+            <a href="#enquire" class="header-cta" style="display: block; text-align: center; margin-top: 1.5rem; font-size: 0.9375rem;">Book Now</a>
+          </div>
+          <div>
+            <div style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.75rem;">Volume Pricing</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 0.75rem;">Managing multiple properties? We offer preferred rates for agencies with regular volume.</p>
+            <table class="volume-table">
+              <thead>
+                <tr><th>Monthly volume</th><th>Rate per inspection</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1–4</td><td>$750 + GST</td></tr>
+                <tr><td>5–9</td><td>$690 + GST</td></tr>
+                <tr><td>10+</td><td>Contact for quote</td></tr>
+              </tbody>
+            </table>
+            <p style="color: var(--muted); font-size: 0.875rem; margin-top: 1rem;">Invoiced monthly. No lock-in contract required.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- FAQ -->
+    <section style="padding: 4rem 0; background: var(--section-alt);">
+      <div class="container" style="max-width: 720px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem;">Common questions</h2>
+        <p style="color: var(--muted); margin: 0 0 1.5rem;">Everything property managers typically ask before getting started.</p>
+        <div class="faq-item">
+          <div class="faq-q">Do I need to be present during the inspection?</div>
+          <p class="faq-a">No. We just need property access arranged — key lockbox, access to the premises, or coordination with the outgoing tenant. We'll handle the rest.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What if you find a serious fault?</div>
+          <p class="faq-a">We'll call you immediately. For safety-critical faults (e.g. failed RCD, exposed wiring), we'll advise on whether the property can be occupied before repairs are made.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I pass the cost on to the landlord?</div>
+          <p class="faq-a">Yes — most agencies include this as part of routine changeover costs charged to the landlord. We can issue the invoice in the landlord's name if required.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How quickly can you schedule an inspection?</div>
+          <p class="faq-a">We typically schedule within 2–3 business days of your request. For urgent changeovers, call us directly on 0493 208 540 and we'll do our best to accommodate.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Are your electricians licensed in South Australia?</div>
+          <p class="faq-a">Yes. All inspections are conducted by a licensed electrician. SA Electrical Contractor Licence No. PGE275430. Better Home Technology Pty Ltd ABN 56 613 514 640.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What areas do you cover?</div>
+          <p class="faq-a">We cover the Adelaide metropolitan area including inner suburbs, northern suburbs, southern suburbs, eastern hills, and the Fleurieu peninsula fringe. Contact us if you're unsure about your area.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enquiry form -->
+    <section style="padding: 4rem 0;" id="enquire">
+      <div class="container" style="max-width: 640px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem;">Enquire or book an inspection</h2>
+        <p style="color: var(--muted); margin: 0 0 2rem;">Fill in your details and we'll be in touch within 2 hours during business hours.</p>
+
+        <div class="success-banner" id="success-banner">
+          <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Enquiry received ✓</div>
+          <p style="color: var(--muted); margin: 0;">We'll contact you within 2 hours during business hours to confirm the booking.</p>
+        </div>
+
+        <form id="rental-form" novalidate>
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="agency_name">Agency / Company name *</label>
+              <input class="field-input" id="agency_name" name="agency_name" type="text" placeholder="e.g. Ray White Adelaide" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="contact_name">Your name *</label>
+              <input class="field-input" id="contact_name" name="contact_name" type="text" placeholder="First and last name" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="phone">Phone *</label>
+              <input class="field-input" id="phone" name="phone" type="tel" placeholder="0412 345 678" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="email">Email *</label>
+              <input class="field-input" id="email" name="email" type="email" placeholder="you@agency.com.au" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="property_address">Property address *</label>
+            <input class="field-input" id="property_address" name="property_address" type="text" placeholder="e.g. 12 King William St, Unley SA 5061" required>
+          </div>
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="preferred_date">Preferred inspection date</label>
+              <input class="field-input" id="preferred_date" name="preferred_date" type="date">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="portfolio_size">Properties you manage</label>
+              <select class="field-input" id="portfolio_size" name="portfolio_size">
+                <option value="">Select…</option>
+                <option value="1-5">1–5</option>
+                <option value="6-20">6–20</option>
+                <option value="21-50">21–50</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="notes">Access notes / anything else we should know</label>
+            <textarea class="field-input" id="notes" name="notes" rows="3" placeholder="e.g. Lockbox code, access contact, particular concerns…" style="resize: vertical;"></textarea>
+          </div>
+
+          <div id="form-error" style="display:none; color: var(--error); font-size: 0.9rem; margin-bottom: 1rem; padding: 0.75rem; background: #fff0f0; border-radius: var(--radius-sm);"></div>
+
+          <button type="submit" id="submit-btn" class="header-cta" style="width: 100%; text-align: center; font-size: 1rem; padding: 0.85rem; border: none; cursor: pointer;">
+            Send Enquiry
+          </button>
+          <p style="color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 0.75rem;">
+            We'll respond within 2 hours during business hours (Mon–Fri 8am–5pm ACST).
+          </p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top: 1px solid var(--border); padding: 2rem 0; background: var(--card);">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-weight: 600; margin-bottom: 0.25rem;">Better Home Technology Pty Ltd</div>
+        <div style="color: var(--muted); font-size: 0.875rem;">ABN 56 613 514 640 · Electrical Contractor Licence PGE275430</div>
+        <div style="color: var(--muted); font-size: 0.875rem;">Serving Adelaide Metropolitan Area</div>
+      </div>
+      <div style="text-align: right; color: var(--muted); font-size: 0.875rem;">
+        <div><a href="tel:0493208540" style="color: var(--muted);">0493 208 540</a></div>
+        <div><a href="mailto:info@bhtechnology.com.au" style="color: var(--muted);">info@bhtechnology.com.au</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky header
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('is-stuck', window.scrollY > 10);
+    });
+
+    // Form submission
+    const form = document.getElementById('rental-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorDiv = document.getElementById('form-error');
+    const successBanner = document.getElementById('success-banner');
+
+    function showError(msg) {
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Enquiry';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      const agency_name = document.getElementById('agency_name').value.trim();
+      const contact_name = document.getElementById('contact_name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const property_address = document.getElementById('property_address').value.trim();
+      const preferred_date = document.getElementById('preferred_date').value;
+      const portfolio_size = document.getElementById('portfolio_size').value;
+      const notes = document.getElementById('notes').value.trim();
+
+      if (!agency_name) return showError('Agency name is required.');
+      if (!contact_name) return showError('Contact name is required.');
+      if (!phone || phone.length < 8) return showError('A valid phone number is required.');
+      if (!email || !email.includes('@')) return showError('A valid email address is required.');
+      if (!property_address) return showError('Property address is required.');
+
+      const params = new URLSearchParams(window.location.search);
+      const payload = {
+        agency_name,
+        contact_name,
+        phone,
+        email,
+        property_address,
+        preferred_date: preferred_date || null,
+        portfolio_size: portfolio_size || null,
+        notes: notes || null,
+        product_type: 'rental_lite',
+        source: 'landing:rental_lite',
+        utm_source: params.get('utm_source') || null,
+        utm_medium: params.get('utm_medium') || null,
+        utm_campaign: params.get('utm_campaign') || null,
+        page_url: window.location.href,
+      };
+
+      try {
+        const res = await fetch('/api/apply-rental', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (!res.ok) return showError(json.error || 'Something went wrong. Please try again or call us directly.');
+        form.style.display = 'none';
+        successBanner.classList.add('visible');
+        window.scrollTo({ top: document.getElementById('enquire').offsetTop - 80, behavior: 'smooth' });
+      } catch (err) {
+        showError('Network error. Please try again or call 0493 208 540.');
+      }
+    });
+  </script>
+</body>
+</html>
