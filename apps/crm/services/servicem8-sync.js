@@ -214,9 +214,13 @@ async function upsertOpportunityForJob(db, options = {}) {
     if (!dryRun) {
       const contact = contactId || (await getFirstContactForAccount(db, accountId));
       const inspDate = inspectionDate ? parseDate(inspectionDate) : null;
+      // Use ON CONFLICT to prevent duplicates if sync runs multiple times
       const ins = await db.query(
         `INSERT INTO opportunities (account_id, contact_id, stage, service_m8_job_id, inspection_date, created_by)
          VALUES ($1, $2, 'site_visit_booked', $3, $4, 'servicem8-sync')
+         ON CONFLICT (service_m8_job_id) DO UPDATE
+           SET inspection_date = COALESCE(EXCLUDED.inspection_date, opportunities.inspection_date),
+               updated_at = NOW()
          RETURNING id`,
         [accountId, contact, servicem8JobUuid, inspDate]
       );

@@ -39,11 +39,16 @@ module.exports = require('express').Router().get('/', async (req, res) => {
       pool.query(
         `SELECT COUNT(*) AS n FROM invoices WHERE invoice_date >= date_trunc('week', CURRENT_DATE)::date`
       ),
+      // Revenue received: paid invoices in last 3 months
       pool.query(
-        `SELECT COALESCE(SUM(amount), 0) AS total FROM invoices WHERE LOWER(TRIM(COALESCE(status, ''))) = 'paid'`
+        `SELECT COALESCE(SUM(amount), 0) AS total FROM invoices
+         WHERE status = 'paid'
+         AND COALESCE(paid_at, invoice_date, updated_at) >= NOW() - INTERVAL '3 months'`
       ),
+      // Outstanding: only real in-progress work orders (not quotes/pipeline/void)
       pool.query(
-        `SELECT COALESCE(SUM(amount), 0) AS total FROM invoices WHERE LOWER(TRIM(COALESCE(status, ''))) != 'paid'`
+        `SELECT COALESCE(SUM(amount), 0) AS total FROM invoices
+         WHERE status = 'outstanding'`
       ),
     ]);
 
@@ -95,18 +100,24 @@ module.exports = require('express').Router().get('/', async (req, res) => {
     }
     const tasks = grouped;
 
-    // 4. Opportunities by stage + total potential
-    const oppStages = ['site_visit_booked', 'inspection_done', 'quote_sent', 'decision_pending', 'won'];
+    // 4. Opportunities by stage — last 3 months, real stages
+    const oppStages = ['site_visit_booked', 'quote_sent', 'won', 'lost'];
     const stageCounts = {};
-    let totalPotential = 0;
+    // Pipeline value = sum of invoice amounts for quotes in last 3 months
+    const pipelineRes = await pool.query(
+      `SELECT COALESCE(SUM(amount), 0) AS total FROM invoices
+       WHERE status = 'pipeline'
+       AND COALESCE(invoice_date, updated_at) >= NOW() - INTERVAL '3 months'`
+    );
+    const totalPotential = parseFloat(pipelineRes.rows[0]?.total ?? 0);
     for (const stage of oppStages) {
       const r = await pool.query(
-        `SELECT COUNT(*) AS n, COALESCE(SUM(value_estimate), 0) AS val
-         FROM opportunities WHERE stage = $1 AND COALESCE(status, 'open') = 'open'`,
+        `SELECT COUNT(*) AS n FROM opportunities
+         WHERE stage = $1
+         AND COALESCE(won_at, lost_at, inspection_date, created_at) >= NOW() - INTERVAL '3 months'`,
         [stage]
       );
       stageCounts[stage] = parseInt(r.rows[0]?.n ?? 0, 10);
-      if (stage !== 'won') totalPotential += parseFloat(r.rows[0]?.val ?? 0);
     }
     const opportunities = { stageCounts, totalPotential };
 

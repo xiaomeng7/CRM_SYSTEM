@@ -136,11 +136,10 @@
     if (!el) return;
     var stages = (opps && opps.stageCounts) ? opps.stageCounts : {};
     var labels = [
-      ['site_visit_booked', 'Site Visit'],
-      ['inspection_done', 'Inspected'],
+      ['site_visit_booked', 'In Progress'],
       ['quote_sent', 'Quote Sent'],
-      ['decision_pending', 'Deciding'],
-      ['won', 'Won'],
+      ['won', 'Won ✓'],
+      ['lost', 'Lost'],
     ];
     var bar = labels.map(function (pair) {
       return '<div class="pipeline-stage">' +
