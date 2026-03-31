@@ -58,7 +58,7 @@ WITH lead_bucket AS (
 agg AS (
   SELECT
     lb.bucket_key,
-    MAX(lb.campaign_id) AS campaign_id,
+    MAX(lb.campaign_id::text)::uuid AS campaign_id,
     MAX(lb.utm_raw) AS utm_from_leads,
     COUNT(DISTINCT lb.lead_id)::BIGINT AS leads
   FROM lead_bucket lb
