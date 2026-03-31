@@ -148,4 +148,47 @@ router.post('/:id/reactivate', async (req, res) => {
   }
 });
 
+// POST /api/contacts/:id/send-sms — send a custom SMS and record it
+router.post('/:id/send-sms', async (req, res) => {
+  try {
+    const message = String((req.body || {}).message || '').trim();
+    if (!message) return res.status(400).json({ ok: false, error: 'message required' });
+
+    const contact = await contacts.getById(req.params.id);
+    if (!contact) return res.status(404).json({ ok: false, error: 'Contact not found' });
+    if (!contact.phone) return res.status(400).json({ ok: false, error: 'Contact has no phone number' });
+
+    await sendSMS(contact.phone, message);
+
+    await pool.query(
+      `INSERT INTO activities (contact_id, activity_type, summary, created_by, occurred_at)
+       VALUES ($1, 'outbound_sms', $2, 'crm', NOW())`,
+      [contact.id, message]
+    );
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('send-sms error:', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// GET /api/contacts/:id/sms-thread — full SMS conversation (inbound + outbound)
+router.get('/:id/sms-thread', async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT id, activity_type, summary, occurred_at, created_by
+       FROM activities
+       WHERE contact_id = $1
+         AND activity_type IN ('inbound_sms', 'outbound_sms', 'sms', 'reactivation_sms')
+       ORDER BY occurred_at ASC
+       LIMIT 100`,
+      [req.params.id]
+    );
+    res.json({ ok: true, messages: r.rows });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 module.exports = router;

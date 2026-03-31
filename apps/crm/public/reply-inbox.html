@@ -59,6 +59,11 @@
       const [recentActivities, setRecentActivities] = useState([]);
       const [loadingActivities, setLoadingActivities] = useState(false);
       const [actionBusy, setActionBusy] = useState(false);
+      const [replyText, setReplyText] = useState('');
+      const [sendingReply, setSendingReply] = useState(false);
+      const [replyStatus, setReplyStatus] = useState(null);
+      const [smsThread, setSmsThread] = useState([]);
+      const [loadingThread, setLoadingThread] = useState(false);
       const [createLeadSuccess, setCreateLeadSuccess] = useState(false);
       const [createLeadError, setCreateLeadError] = useState(null);
 
@@ -88,6 +93,46 @@
           .catch(() => setRecentActivities([]))
           .finally(() => setLoadingActivities(false));
       }, [selected?.contact_id]);
+
+      const loadThread = (contactId) => {
+        if (!contactId) return;
+        setLoadingThread(true);
+        fetch('/api/contacts/' + contactId + '/sms-thread')
+          .then((res) => res.ok ? res.json() : { messages: [] })
+          .then((j) => setSmsThread(j.messages || []))
+          .catch(() => setSmsThread([]))
+          .finally(() => setLoadingThread(false));
+      };
+
+      useEffect(() => {
+        if (!selected?.contact_id) { setSmsThread([]); return; }
+        loadThread(selected.contact_id);
+        setReplyText('');
+        setReplyStatus(null);
+      }, [selected?.contact_id]);
+
+      const handleSendReply = async () => {
+        const msg = replyText.trim();
+        if (!msg || !selected?.contact_id) return;
+        setSendingReply(true);
+        setReplyStatus(null);
+        try {
+          const res = await fetch('/api/contacts/' + selected.contact_id + '/send-sms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Failed to send');
+          setReplyText('');
+          setReplyStatus({ ok: true, text: '发送成功 ✓' });
+          loadThread(selected.contact_id);
+        } catch (e) {
+          setReplyStatus({ ok: false, text: e.message || '发送失败' });
+        } finally {
+          setSendingReply(false);
+        }
+      };
 
       const handleCreateTask = async () => {
         if (!selected?.contact_id) {
@@ -423,24 +468,46 @@
 
                       {selected.contact_id && (
                         <div className="mt-8">
-                          <div className="text-sm font-medium text-slate-600 mb-3">Recent activities</div>
-                          {loadingActivities ? (
-                            <div className="text-sm text-slate-500">Loading...</div>
-                          ) : recentActivities.length === 0 ? (
-                            <div className="text-sm text-slate-500">暂无活动记录</div>
-                          ) : (
-                            <ul className="space-y-2">
-                              {recentActivities.map((a) => (
-                                <li key={a.id} className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
-                                  <div className="flex items-center justify-between">
-                                    <span className="font-medium text-slate-700">{a.activity_type}</span>
-                                    <span className="text-slate-500">{formatTime(a.occurred_at)}</span>
+                          <div className="text-sm font-medium text-slate-600 mb-3">SMS 对话记录</div>
+                          <div className="rounded-2xl bg-slate-50 border border-slate-200 flex flex-col" style={{minHeight:'220px', maxHeight:'320px'}}>
+                            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                              {loadingThread ? (
+                                <div className="text-sm text-slate-400 text-center pt-8">Loading...</div>
+                              ) : smsThread.length === 0 ? (
+                                <div className="text-sm text-slate-400 text-center pt-8">暂无短信记录</div>
+                              ) : smsThread.map((m) => {
+                                const isOut = m.activity_type === 'outbound_sms';
+                                return (
+                                  <div key={m.id} className={`flex ${isOut ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm ${isOut ? 'bg-slate-800 text-white rounded-br-sm' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-sm'}`}>
+                                      <div style={{whiteSpace:'pre-wrap'}}>{m.summary}</div>
+                                      <div className={`mt-1 text-xs ${isOut ? 'text-slate-400' : 'text-slate-400'}`}>{formatTime(m.occurred_at)}</div>
+                                    </div>
                                   </div>
-                                  <div className="mt-1 text-slate-600 truncate">{a.summary || '—'}</div>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
+                                );
+                              })}
+                            </div>
+                            <div className="border-t border-slate-200 p-3 flex gap-2">
+                              <textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendReply(); } }}
+                                placeholder="回复客户… (Enter 发送, Shift+Enter 换行)"
+                                rows={2}
+                                className="flex-1 resize-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                              />
+                              <button
+                                onClick={handleSendReply}
+                                disabled={sendingReply || !replyText.trim()}
+                                className="self-end rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+                              >
+                                {sendingReply ? '发送中…' : '发送'}
+                              </button>
+                            </div>
+                            {replyStatus && (
+                              <div className={`px-3 pb-3 text-xs ${replyStatus.ok ? 'text-emerald-600' : 'text-rose-600'}`}>{replyStatus.text}</div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </>

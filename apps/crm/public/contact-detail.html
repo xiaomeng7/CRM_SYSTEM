@@ -36,6 +36,17 @@
     const { useState, useEffect } = React;
     const id = new URLSearchParams(window.location.search).get('id');
 
+    function formatTime(ts) {
+      if (!ts) return '—';
+      const d = new Date(ts);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (t.getTime() === today.getTime()) return `Today ${timeStr}`;
+      return d.toLocaleDateString() + ' ' + timeStr;
+    }
+
     function ContactDetail() {
       const [data, setData] = useState(null);
       const [loading, setLoading] = useState(true);
@@ -43,6 +54,11 @@
       const [editing, setEditing] = useState(false);
       const [saving, setSaving] = useState(false);
       const [editForm, setEditForm] = useState({ name: '', phone: '', email: '' });
+      const [smsThread, setSmsThread] = useState([]);
+      const [loadingThread, setLoadingThread] = useState(false);
+      const [replyText, setReplyText] = useState('');
+      const [sendingReply, setSendingReply] = useState(false);
+      const [replyStatus, setReplyStatus] = useState(null);
 
       const load = () => {
         if (!id) return;
@@ -57,7 +73,41 @@
       useEffect(() => {
         if (!id) { setError('Missing id'); setLoading(false); return; }
         load();
+        loadThread();
       }, [id]);
+
+      const loadThread = () => {
+        if (!id) return;
+        setLoadingThread(true);
+        fetch('/api/contacts/' + id + '/sms-thread')
+          .then((r) => r.ok ? r.json() : { messages: [] })
+          .then((j) => setSmsThread(j.messages || []))
+          .catch(() => setSmsThread([]))
+          .finally(() => setLoadingThread(false));
+      };
+
+      const handleSendReply = async () => {
+        const msg = replyText.trim();
+        if (!msg) return;
+        setSendingReply(true);
+        setReplyStatus(null);
+        try {
+          const res = await fetch('/api/contacts/' + id + '/send-sms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Failed');
+          setReplyText('');
+          setReplyStatus({ ok: true, text: '发送成功 ✓' });
+          loadThread();
+        } catch (e) {
+          setReplyStatus({ ok: false, text: e.message || '发送失败' });
+        } finally {
+          setSendingReply(false);
+        }
+      };
 
       const startEdit = () => {
         const c = (data && data.contact) || {};
@@ -134,6 +184,60 @@
                 ))}
               </ul>
             ) : <p className="text-slate-500">暂无</p>}
+          </div>
+
+          <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-lg font-medium">SMS 对话</h2>
+              <button onClick={loadThread} className="text-xs text-slate-500 hover:text-slate-700">刷新</button>
+            </div>
+            <div className="flex flex-col" style={{height:'360px'}}>
+              <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-50">
+                {loadingThread ? (
+                  <div className="text-sm text-slate-400 text-center pt-12">Loading...</div>
+                ) : smsThread.length === 0 ? (
+                  <div className="text-sm text-slate-400 text-center pt-12">暂无短信记录</div>
+                ) : smsThread.map((m) => {
+                  const isOut = m.activity_type === 'outbound_sms';
+                  return (
+                    <div key={m.id} className={`flex ${isOut ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-xs lg:max-w-sm rounded-2xl px-4 py-2.5 text-sm shadow-sm ${isOut ? 'bg-slate-800 text-white rounded-br-sm' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-sm'}`}>
+                        <div style={{whiteSpace:'pre-wrap'}}>{m.summary}</div>
+                        <div className="mt-1 text-xs opacity-60">{formatTime(m.occurred_at)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {c.do_not_contact ? (
+                <div className="border-t border-slate-200 p-4 bg-rose-50 text-sm text-rose-700">该联系人已标记为 Do Not Contact，无法发送短信。</div>
+              ) : !c.phone ? (
+                <div className="border-t border-slate-200 p-4 bg-slate-100 text-sm text-slate-500">该联系人没有手机号，无法发送短信。</div>
+              ) : (
+                <div className="border-t border-slate-200 bg-white p-3">
+                  <div className="flex gap-2">
+                    <textarea
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendReply(); } }}
+                      placeholder={`发短信给 ${c.name || c.phone}… (Enter 发送, Shift+Enter 换行)`}
+                      rows={2}
+                      className="flex-1 resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                    />
+                    <button
+                      onClick={handleSendReply}
+                      disabled={sendingReply || !replyText.trim()}
+                      className="self-end rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+                    >
+                      {sendingReply ? '发送中…' : '发送'}
+                    </button>
+                  </div>
+                  {replyStatus && (
+                    <div className={`mt-2 text-xs ${replyStatus.ok ? 'text-emerald-600' : 'text-rose-600'}`}>{replyStatus.text}</div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <h2 className="text-lg font-medium mb-4">Tasks (open/pending)</h2>
