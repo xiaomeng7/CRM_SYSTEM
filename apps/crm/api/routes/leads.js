@@ -47,10 +47,27 @@ router.get('/:id', async (req, res) => {
     const row = await leads.getById(req.params.id);
     if (!row) return res.status(404).json({ error: 'Not found' });
     const enriched = await pool.query(
-      `SELECT l.*, c.name AS contact_name, c.phone AS contact_phone, a.suburb AS account_suburb
+      `SELECT
+         l.*,
+         c.name AS contact_name,
+         c.phone AS contact_phone,
+         a.suburb AS account_suburb,
+         (sc.j->>'score')::numeric AS latest_score,
+         COALESCE(sc.j->>'tier', sc.j->>'score_grade') AS latest_tier,
+         (sc.j->>'expected_value')::numeric AS latest_expected_value,
+         COALESCE(sc.j->>'recommended_action', '') AS latest_recommended_action,
+         COALESCE(sc.j->>'reasoning', sc.j->>'rationale', '') AS latest_reasoning,
+         COALESCE(sc.j->>'scored_at', sc.j->>'created_at') AS latest_scored_at
        FROM leads l
        LEFT JOIN contacts c ON l.contact_id = c.id
        LEFT JOIN accounts a ON l.account_id = a.id
+       LEFT JOIN LATERAL (
+         SELECT to_jsonb(ls) AS j
+         FROM lead_scores ls
+         WHERE ls.lead_id = l.id
+         ORDER BY COALESCE(ls.scored_at, ls.created_at) DESC, ls.created_at DESC, ls.id DESC
+         LIMIT 1
+       ) sc ON TRUE
        WHERE l.id = $1`,
       [row.id]
     ).then((r) => r.rows[0]).catch(() => row);

@@ -24,6 +24,18 @@ const tasksRouter = require('./routes/tasks');
 const priorityRouter = require('./routes/priority');
 const cashflowRouter = require('./routes/cashflow');
 const ownerDashboardRouter = require('./routes/owner-dashboard');
+const aiRouter = require('./routes/ai');
+const weeklyDashboardRouter = require('./routes/weekly-dashboard');
+const campaignRoiRouter = require('./routes/campaign-roi');
+const campaignRoiInsightsRouter = require('./routes/campaign-roi-insights');
+const campaignActionPlansRouter = require('./routes/campaign-action-plans');
+const campaignActionPlanHistoryRouter = require('./routes/campaign-action-plan-history');
+const campaignActionPlanReadyRouter = require('./routes/campaign-action-plan-ready');
+const adGenerationRouter = require('./routes/ad-generation');
+const adExecutionRouter = require('./routes/ad-execution');
+const adVariantReviewRouter = require('./routes/ad-variant-review');
+const landingVariantReviewRouter = require('./routes/landing-variant-review');
+const adPublishRouter = require('./routes/ad-publish');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -49,6 +61,18 @@ app.use('/api/tasks', tasksRouter);
 app.use('/api/priority', priorityRouter);
 app.use('/api/cashflow', cashflowRouter);
 app.use('/api/owner-dashboard', ownerDashboardRouter);
+app.use('/api/ai', aiRouter);
+app.use('/api/dashboard/weekly', weeklyDashboardRouter);
+app.use('/api/dashboard/campaign-roi', campaignRoiRouter);
+app.use('/api/dashboard/campaign-roi-insights', campaignRoiInsightsRouter);
+app.use('/api/dashboard/campaign-action-plans', campaignActionPlansRouter);
+app.use('/api/dashboard/campaign-action-plan-history', campaignActionPlanHistoryRouter);
+app.use('/api/dashboard/campaign-action-plan-ready', campaignActionPlanReadyRouter);
+app.use('/api/ad-generation', adGenerationRouter);
+app.use('/api/ad-execution', adExecutionRouter);
+app.use('/api/ad-variants', adVariantReviewRouter);
+app.use('/api/landing-variants', landingVariantReviewRouter);
+app.use('/api/ad-publish', adPublishRouter);
 
 app.get('/api/dashboard/stats', async (req, res) => {
   try {

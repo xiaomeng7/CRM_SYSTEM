@@ -2,6 +2,10 @@ const router = require('express').Router();
 const { pool } = require('../../lib/db');
 const { normalizePhoneDigits } = require('../../lib/crm/cleaning');
 const { processQuoteEvent } = require('../../services/quote-sync');
+const {
+  handleInboundReply,
+  resolveLatestLeadIdForContact,
+} = require('../../services/inboundReplyEngine');
 
 /** Match contact by inbound number: phone_digits first, then fallback to legacy phone. */
 async function matchContactByInboundPhone(from) {
@@ -61,34 +65,34 @@ router.post('/twilio/inbound-sms', async (req, res) => {
     const summary = body.length > 500 ? body.slice(0, 497) + '...' : body;
 
     if (contact) {
-      // Record inbound SMS activity
-      await pool.query(
+      const actRes = await pool.query(
         `INSERT INTO activities (contact_id, lead_id, opportunity_id, activity_type, summary, created_by)
-         VALUES ($1, NULL, NULL, 'inbound_sms', $2, 'twilio-webhook')`,
+         VALUES ($1, NULL, NULL, 'inbound_sms', $2, 'twilio-webhook')
+         RETURNING id`,
         [contact.id, summary]
       );
+      const activityId = actRes.rows[0]?.id || null;
+      const leadId = await resolveLatestLeadIdForContact(contact.id);
 
-      // Minimal duplicate prevention: avoid creating multiple follow-up tasks in 24h for same contact
-      const duplicateCheck = await pool.query(
-        `SELECT 1
-         FROM tasks
-         WHERE contact_id = $1
-           AND created_by = 'twilio-webhook'
-           AND created_at >= NOW() - INTERVAL '24 hours'
-         LIMIT 1`,
-        [contact.id]
-      );
-
-      if (duplicateCheck.rows.length === 0) {
-        const contactName = (contact.name || '').trim() || 'customer';
-        const title = `Follow up SMS reply from ${contactName}`;
-
-        await pool.query(
-          `INSERT INTO tasks (contact_id, lead_id, opportunity_id, inspection_id, title, status, due_at, created_by)
-           VALUES ($1, NULL, NULL, NULL, $2, 'open', NOW(), 'twilio-webhook')`,
-          [contact.id, title]
-        );
-      }
+      const enginePayload = {
+        activityId,
+        contactId: contact.id,
+        leadId,
+        from: fromStr,
+        body: summary,
+      };
+      // v1.1: respond immediately so Twilio does not retry on slow OpenAI/SMS/DB.
+      setImmediate(() => {
+        handleInboundReply(enginePayload)
+          .then((engineResult) => {
+            if (engineResult && !engineResult.skipped && !engineResult.error) {
+              console.log('[inbound-sms] inbound-reply-engine (async):', JSON.stringify(engineResult));
+            }
+          })
+          .catch((e) => {
+            console.warn('[inbound-sms] inbound-reply-engine (async):', e.message || e);
+          });
+      });
     } else {
       console.warn('[inbound-sms] no contact match from_raw=%s digits=%s strategy=unmatched', fromStr, digits);
       await pool.query(

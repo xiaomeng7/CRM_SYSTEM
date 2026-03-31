@@ -427,6 +427,10 @@ async function upsertInvoiceFromJob(db, jobRaw, accountId, jobId, dryRun, option
   const invoice_date = parseDate(jobRaw.date_invoiced || jobRaw.invoice_date || jobRaw.invoice_date_date || jobRaw.date || jobRaw.job_date || jobRaw.completed_at);
   const due_date = parseDate(jobRaw.invoice_due_date || jobRaw.due_date || jobRaw.payment_due_date) || null;
   const status = (jobRaw.invoice_status || jobRaw.invoice_status_name || jobRaw.status || '').trim() || null;
+  const oppId = await db.query(
+    `SELECT source_opportunity_id FROM jobs WHERE id = $1 LIMIT 1`,
+    [jobId]
+  ).then((r) => r.rows[0]?.source_opportunity_id || null);
 
   const hasInvoiceSignal = amount != null || invoice_number != null;
   if (!hasInvoiceSignal) return;
@@ -436,17 +440,17 @@ async function upsertInvoiceFromJob(db, jobRaw, accountId, jobId, dryRun, option
     if (existing.rows.length > 0) {
       if (!dryRun) {
         await db.query(
-          `UPDATE invoices SET account_id = $1, job_id = $2, invoice_number = COALESCE($3, invoice_number), amount = COALESCE($4, amount), invoice_date = COALESCE($5, invoice_date), due_date = COALESCE($6, due_date), status = COALESCE($7, status), updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $8`,
-          [accountId, jobId, invoice_number, amount, invoice_date, due_date, status, uuid]
+          `UPDATE invoices SET account_id = $1, job_id = $2, opportunity_id = COALESCE($3, opportunity_id), invoice_number = COALESCE($4, invoice_number), amount = COALESCE($5, amount), invoice_date = COALESCE($6, invoice_date), due_date = COALESCE($7, due_date), status = COALESCE($8, status), updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $9`,
+          [accountId, jobId, oppId, invoice_number, amount, invoice_date, due_date, status, uuid]
         );
       }
       if (options.invoiceStats) { options.invoiceStats.updated = (options.invoiceStats.updated || 0) + 1; }
     } else {
       if (!dryRun) {
         await db.query(
-          `INSERT INTO invoices (account_id, job_id, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
-          [accountId, jobId, uuid, invoice_number, amount, invoice_date, due_date, status]
+          `INSERT INTO invoices (account_id, job_id, opportunity_id, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
+          [accountId, jobId, oppId, uuid, invoice_number, amount, invoice_date, due_date, status]
         );
       }
       if (options.invoiceStats) { options.invoiceStats.created = (options.invoiceStats.created || 0) + 1; }
@@ -588,6 +592,9 @@ async function syncInvoicesFromServiceM8(options = {}) {
       const accountId = companyUuid ? (companyUuidToAccountId[companyUuid] || (await findAccountByExternalId(db, companyUuid))) : null;
       const jobUuid = inv.job_uuid || inv.jobUUID || inv.job;
       const jobId = jobUuid ? jobUuidToId[jobUuid] : null;
+      const opportunityId = jobId
+        ? await db.query(`SELECT source_opportunity_id FROM jobs WHERE id = $1`, [jobId]).then((r) => r.rows[0]?.source_opportunity_id || null)
+        : null;
 
       const invoice_number = (inv.invoice_number || inv.invoiceNumber || inv.number || '').trim() || null;
       const amount = inv.total != null ? parseFloat(inv.total) : (inv.amount != null ? parseFloat(inv.amount) : null);
@@ -602,25 +609,25 @@ async function syncInvoicesFromServiceM8(options = {}) {
         if (existingByInvUuid.rows.length > 0) {
           if (!dryRun) {
             await db.query(
-              `UPDATE invoices SET account_id = $1, job_id = $2, servicem8_job_uuid = $3, invoice_number = $4, amount = $5, invoice_date = $6, due_date = $7, status = $8, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $9`,
-              [accountId, jobId, jobUuid || null, invoice_number, amount, invoice_date, due_date, status, uuid]
+              `UPDATE invoices SET account_id = $1, job_id = $2, opportunity_id = COALESCE($3, opportunity_id), servicem8_job_uuid = $4, invoice_number = $5, amount = $6, invoice_date = $7, due_date = $8, status = $9, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $10`,
+              [accountId, jobId, opportunityId, jobUuid || null, invoice_number, amount, invoice_date, due_date, status, uuid]
             );
           }
           stats.invoices_updated++;
         } else if (existingByJobUuid.rows.length > 0) {
           if (!dryRun) {
             await db.query(
-              `UPDATE invoices SET servicem8_invoice_uuid = $1, account_id = $2, job_id = $3, invoice_number = $4, amount = $5, invoice_date = $6, due_date = $7, status = $8, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $9`,
-              [uuid, accountId, jobId, invoice_number, amount, invoice_date, due_date, status, jobUuid]
+              `UPDATE invoices SET servicem8_invoice_uuid = $1, account_id = $2, job_id = $3, opportunity_id = COALESCE($4, opportunity_id), invoice_number = $5, amount = $6, invoice_date = $7, due_date = $8, status = $9, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $10`,
+              [uuid, accountId, jobId, opportunityId, invoice_number, amount, invoice_date, due_date, status, jobUuid]
             );
           }
           stats.invoices_updated++;
         } else {
           if (!dryRun) {
             await db.query(
-              `INSERT INTO invoices (account_id, job_id, servicem8_invoice_uuid, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
-              [accountId, jobId, uuid, jobUuid || null, invoice_number, amount, invoice_date, due_date, status]
+              `INSERT INTO invoices (account_id, job_id, opportunity_id, servicem8_invoice_uuid, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
+              [accountId, jobId, opportunityId, uuid, jobUuid || null, invoice_number, amount, invoice_date, due_date, status]
             );
           }
           stats.invoices_created++;

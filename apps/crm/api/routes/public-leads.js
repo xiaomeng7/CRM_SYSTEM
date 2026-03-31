@@ -8,7 +8,11 @@ const publicLeads = require('../../services/public-leads');
 
 router.post('/', async (req, res) => {
   try {
-    const result = await publicLeads.createFromPublic(req.body || {});
+    const payload = {
+      ...(req.body || {}),
+      _request_referrer: req.headers.referer || req.headers.referrer || null,
+    };
+    const result = await publicLeads.createFromPublic(payload);
     res.status(201).json({
       ok: true,
       lead_id: result.lead.id,

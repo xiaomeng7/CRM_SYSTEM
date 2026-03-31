@@ -235,7 +235,7 @@
       .catch(function (err) {
         console.error(err);
         tbody.innerHTML =
-          '<tr><td colspan="9" class="muted">Error loading leads.</td></tr>';
+          '<tr><td colspan="11" class="muted">Error loading leads.</td></tr>';
         showMessage(stateEl, 'Error loading leads. Please retry.', true);
       });
   }
@@ -306,7 +306,7 @@
   function renderLeads(tbody, leads) {
     if (!leads.length) {
       tbody.innerHTML =
-        '<tr><td colspan="9" class="muted">No leads found.</td></tr>';
+        '<tr><td colspan="11" class="muted">No leads found.</td></tr>';
       return;
     }
     tbody.innerHTML = '';
@@ -330,6 +330,8 @@
         '<td>' + escapeHtml(displayPhone) + '</td>' +
         '<td>' + escapeHtml(displaySuburb) + '</td>' +
         '<td>' + escapeHtml(lead.source || '—') + '</td>' +
+        '<td>' + (lead.latest_score != null ? escapeHtml(String(lead.latest_score)) : '—') + '</td>' +
+        '<td>' + escapeHtml(lead.latest_tier || '—') + '</td>' +
         '<td>' + escapeHtml(lead.service_type || '—') + '</td>' +
         '<td>' + statusCell + '</td>' +
         '<td class="muted">' + formatDate(lead.created_at) + '</td>' +
@@ -476,6 +478,12 @@
     var phoneEl = document.getElementById('lead-phone');
     var suburbEl = document.getElementById('lead-suburb');
     var metaEl = document.getElementById('lead-meta');
+    var scoreEl = document.getElementById('lead-score');
+    var tierEl = document.getElementById('lead-tier');
+    var expectedValueEl = document.getElementById('lead-expected-value');
+    var actionEl = document.getElementById('lead-recommended-action');
+    var reasoningEl = document.getElementById('lead-reasoning');
+    var scoredAtEl = document.getElementById('lead-scored-at');
 
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
@@ -505,6 +513,16 @@
         if (lead.service_type) parts.push('Service: ' + lead.service_type);
         if (lead.status) parts.push('Status: ' + lead.status);
         metaEl.textContent = parts.join(' | ') || '—';
+        if (scoreEl) scoreEl.textContent = lead.latest_score != null ? String(lead.latest_score) : '—';
+        if (tierEl) tierEl.textContent = lead.latest_tier || '—';
+        if (expectedValueEl) {
+          expectedValueEl.textContent = lead.latest_expected_value != null && !isNaN(Number(lead.latest_expected_value))
+            ? '$' + Number(lead.latest_expected_value).toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+            : '—';
+        }
+        if (actionEl) actionEl.textContent = lead.latest_recommended_action || '—';
+        if (reasoningEl) reasoningEl.textContent = lead.latest_reasoning || '—';
+        if (scoredAtEl) scoredAtEl.textContent = formatDate(lead.latest_scored_at);
       })
       .catch(function (err) {
         console.error(err);

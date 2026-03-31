@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CEO Daily — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .ceo-attention {
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .ceo-attention.has-issues { background: #f8d7da; border-color: #f5c2c7; }
+    .ceo-attention-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+    .ceo-attention-items { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .ceo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      background: #fff;
+      border: 1px solid var(--border);
+      font-size: 0.82rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .ceo-badge.danger { background: #f8d7da; border-color: #f5c2c7; color: #842029; }
+    .ceo-badge.warning { background: #fff3cd; border-color: #ffecb5; color: #664d03; }
+    .ceo-badge.info { background: #cff4fc; border-color: #b6effb; color: #055160; }
+    .ceo-badge.ok { background: #d1e7dd; border-color: #badbcc; color: #0f5132; }
+    .pipeline-bar { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .pipeline-stage {
+      flex: 1;
+      min-width: 4.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.4rem 0.5rem;
+      text-align: center;
+    }
+    .pipeline-stage .stage-count { font-size: 1.2rem; font-weight: 700; }
+    .pipeline-stage .stage-label { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .panel-header h3 { margin: 0; font-size: 0.95rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html" class="active">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/growth-console.html">Growth Ops</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header" style="justify-content:space-between;">
+        <span style="font-weight:600;">CEO Daily View</span>
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <span id="ceo-last-updated" style="font-size:0.8rem;color:var(--muted);"></span>
+          <button type="button" class="btn btn-sm" id="ceo-refresh">Refresh</button>
+        </div>
+      </header>
+      <div class="content">
+        <div id="ceo-msg" style="display:none;" class="growth-msg"></div>
+
+        <!-- 5 metric cards -->
+        <div class="owner-cards" style="margin-bottom:1.5rem;">
+          <div class="owner-card">
+            <div class="owner-card-value" id="m-jobs">—</div>
+            <div class="owner-card-label">Jobs Won This Week</div>
+          </div>
+          <div class="owner-card">
+            <div class="owner-card-value" id="m-received">—</div>
+            <div class="owner-card-label">Revenue Received</div>
+          </div>
+          <div class="owner-card">
+            <div class="owner-card-value" id="m-outstanding" style="color:var(--danger)">—</div>
+            <div class="owner-card-label">Outstanding Invoices</div>
+          </div>
+          <div class="owner-card">
+            <div class="owner-card-value" id="m-pipeline">—</div>
+            <div class="owner-card-label">Pipeline Value</div>
+          </div>
+          <div class="owner-card">
+            <div class="owner-card-value" id="m-overdue" style="color:var(--danger)">—</div>
+            <div class="owner-card-label">Overdue Tasks</div>
+          </div>
+        </div>
+
+        <!-- Needs Attention -->
+        <div id="ceo-attention" class="ceo-attention">
+          <span class="ceo-attention-title">Needs Attention</span>
+          <div id="ceo-attention-items" class="ceo-attention-items">
+            <span style="color:var(--muted);font-size:0.85rem;">Loading…</span>
+          </div>
+        </div>
+
+        <!-- 3-column grid -->
+        <div class="owner-grid">
+          <!-- Today's Tasks -->
+          <div class="owner-panel">
+            <div class="panel-header">
+              <h3>Today's Tasks</h3>
+              <a href="/tasks.html" class="btn btn-sm">View All</a>
+            </div>
+            <div id="ceo-tasks" class="owner-list">
+              <div class="muted" style="font-size:0.85rem;">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Pipeline -->
+          <div class="owner-panel">
+            <div class="panel-header">
+              <h3>Pipeline</h3>
+              <a href="/opportunities.html" class="btn btn-sm">View All</a>
+            </div>
+            <div id="ceo-pipeline">
+              <div class="muted" style="font-size:0.85rem;">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Hot Leads -->
+          <div class="owner-panel">
+            <div class="panel-header">
+              <h3>Hot Leads</h3>
+              <a href="/leads.html" class="btn btn-sm">View All</a>
+            </div>
+            <div id="ceo-hot-leads" class="owner-list">
+              <div class="muted" style="font-size:0.85rem;">Loading…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom 3-column grid -->
+        <div class="owner-grid">
+          <!-- Ad Performance (spans 2) -->
+          <div class="owner-panel" style="grid-column:span 2;">
+            <div class="panel-header">
+              <h3>Ad Performance</h3>
+              <a href="/growth-console.html" class="btn btn-sm">Full View</a>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Campaign</th>
+                    <th>Leads</th>
+                    <th>Revenue</th>
+                    <th>Cost</th>
+                    <th>ROI</th>
+                  </tr>
+                </thead>
+                <tbody id="ceo-roi-tbody">
+                  <tr><td colspan="5" class="muted">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SMS Replies -->
+          <div class="owner-panel">
+            <div class="panel-header">
+              <h3>Recent SMS Replies</h3>
+              <a href="/reply-inbox.html" class="btn btn-sm">Inbox</a>
+            </div>
+            <div id="ceo-sms" class="owner-list">
+              <div class="muted" style="font-size:0.85rem;">Loading…</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="/js/ceo-daily.js"></script>
+</body>
+</html>

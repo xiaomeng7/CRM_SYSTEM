@@ -9,6 +9,9 @@ node_modules/
 # Lockfile: monorepo uses pnpm; ignore npm lock to avoid confusion
 package-lock.json
 
+# Claude Code internal
+.claude/
+
 # Build / runtime
 *.log
 .DS_Store
