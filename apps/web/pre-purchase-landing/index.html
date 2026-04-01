@@ -28,11 +28,13 @@
     .scope-item h4 { margin: 0 0 0.35rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
     .scope-item p { margin: 0; font-size: 0.875rem; line-height: 1.5; }
     .urgency-bar { background: #fff8ed; border: 1px solid #ffd980; border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9375rem; }
-    .steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
-    .step { position: relative; padding: 1.25rem 1.25rem 1.25rem 3.25rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
-    .step::before { counter-increment: step; content: counter(step); position: absolute; left: 1rem; top: 1.25rem; width: 1.5rem; height: 1.5rem; background: var(--text); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
-    .step h4 { margin: 0 0 0.25rem; font-size: 0.9375rem; }
-    .step p { margin: 0; font-size: 0.875rem; color: var(--muted); line-height: 1.5; }
+    .steps { counter-reset: step; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-top: 1.25rem; }
+    @media (max-width: 860px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+    .step { position: relative; padding: 3rem 1rem 1.1rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); word-wrap: break-word; overflow-wrap: break-word; }
+    .step::before { counter-increment: step; content: counter(step); position: absolute; left: 1rem; top: 1rem; width: 1.75rem; height: 1.75rem; background: var(--text); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+    .step h4 { margin: 0 0 0.4rem; font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
+    .step p { margin: 0; font-size: 0.825rem; color: var(--muted); line-height: 1.55; }
     .pricing-box { background: var(--card); border: 2px solid var(--text); border-radius: var(--radius); padding: 2rem 2.5rem; max-width: 480px; }
     .price-main { font-size: 2.75rem; font-weight: 700; letter-spacing: -0.03em; }
     .price-note { color: var(--muted); font-size: 0.9375rem; margin-top: 0.25rem; }
@@ -53,7 +55,7 @@
     <div class="container header-inner">
       <span class="header-brand">Better Home Technology</span>
       <div class="header-right">
-        <a href="tel:0493208540" class="header-phone">0493 208 540</a>
+        <a href="tel:0410323034" class="header-phone">0410 323 034</a>
         <a href="#book" class="header-cta">Book Inspection</a>
       </div>
     </div>
@@ -369,7 +371,7 @@
         <div style="color:var(--muted); font-size:0.875rem;">Serving Adelaide Metropolitan Area</div>
       </div>
       <div style="text-align:right; color:var(--muted); font-size:0.875rem;">
-        <div><a href="tel:0493208540" style="color:var(--muted);">0493 208 540</a></div>
+        <div><a href="tel:0410323034" style="color:var(--muted);">0410 323 034</a></div>
         <div><a href="mailto:info@bhtechnology.com.au" style="color:var(--muted);">info@bhtechnology.com.au</a></div>
       </div>
     </div>
@@ -440,12 +442,12 @@
           body: JSON.stringify(payload),
         });
         const json = await res.json();
-        if (!res.ok) return showError(json.error || 'Something went wrong. Please call us on 0493 208 540.');
+        if (!res.ok) return showError(json.error || 'Something went wrong. Please call us on 0410 323 034.');
         form.style.display = 'none';
         successBanner.classList.add('visible');
         window.scrollTo({ top: document.getElementById('book').offsetTop - 80, behavior: 'smooth' });
       } catch {
-        showError('Network error. Please try again or call 0493 208 540.');
+        showError('Network error. Please try again or call 0410 323 034.');
       }
     });
   </script>

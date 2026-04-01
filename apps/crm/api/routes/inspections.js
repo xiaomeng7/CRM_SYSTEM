@@ -126,7 +126,7 @@ router.post('/pre-purchase', async (req, res) => {
         await sendSMS(contact_phone,
           `Hi, this is Better Home Technology. Your pre-purchase electrical inspection is complete. ` +
           `Your report will be ready within 24 hours. We'll send it to you as soon as it's ready. ` +
-          `Questions? Call us on 0493 208 540.`
+          `Questions? Call us on 0410 323 034.`
         );
         await pool.query(
           `INSERT INTO activities (contact_id, activity_type, summary, created_by, occurred_at)
@@ -227,7 +227,7 @@ router.patch('/:id/status', async (req, res) => {
       try {
         await sendSMS(insp.contact_phone,
           `Your electrical inspection report is ready! View it here: https://inspection.bhtechnology.com.au/report/${insp.id} ` +
-          `Verdict: Option ${insp.verdict}. Questions? Call 0493 208 540.`
+          `Verdict: Option ${insp.verdict}. Questions? Call 0410 323 034.`
         );
       } catch (smsErr) {
         console.warn('[status patch] report SMS failed:', smsErr.message);
