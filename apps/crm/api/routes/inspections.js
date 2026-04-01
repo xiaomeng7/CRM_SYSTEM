@@ -20,14 +20,12 @@ router.get('/job-lookup', async (req, res) => {
     // Look up job in CRM jobs table first
     const jobRow = await pool.query(
       `SELECT j.id, j.job_number, j.servicem8_job_uuid, j.description, j.address_line, j.suburb,
-              j.status, j.source_opportunity_id,
+              j.status,
               a.name AS account_name, a.postcode,
-              c.name AS contact_name, c.phone AS contact_phone, c.email AS contact_email,
-              o.product_type
+              c.name AS contact_name, c.phone AS contact_phone, c.email AS contact_email
        FROM jobs j
        LEFT JOIN accounts a ON a.id = j.account_id
        LEFT JOIN contacts c ON c.id = j.contact_id
-       LEFT JOIN opportunities o ON o.id = j.source_opportunity_id
        WHERE j.job_number = $1
        LIMIT 1`,
       [jobNumber]
@@ -39,22 +37,45 @@ router.get('/job-lookup', async (req, res) => {
         ok: true,
         found: true,
         job: {
-          job_number: r.job_number,
-          job_uuid: r.servicem8_job_uuid,
-          address: [r.address_line, r.suburb].filter(Boolean).join(', '),
-          account_name: r.account_name,
-          contact_name: r.contact_name,
+          job_number:    r.job_number,
+          job_uuid:      r.servicem8_job_uuid,
+          address:       [r.address_line, r.suburb].filter(Boolean).join(', '),
+          account_name:  r.account_name,
+          contact_name:  r.contact_name,
           contact_phone: r.contact_phone,
           contact_email: r.contact_email,
-          product_type: r.product_type || 'pre_purchase',
-          description: r.description,
-          opportunity_id: r.source_opportunity_id,
+          product_type:  'pre_purchase',
+          description:   r.description,
         },
       });
     }
 
-    // Fallback: check opportunities by service_m8_job_id or just return not found
-    return res.json({ ok: true, found: false, message: 'Job not found in CRM. Please verify job number.' });
+    // Also try ServiceM8 UUID match
+    const uuidRow = await pool.query(
+      `SELECT j.job_number, j.servicem8_job_uuid, j.address_line, j.suburb,
+              a.name AS account_name, c.name AS contact_name, c.phone AS contact_phone
+       FROM jobs j
+       LEFT JOIN accounts a ON a.id = j.account_id
+       LEFT JOIN contacts c ON c.id = j.contact_id
+       WHERE j.servicem8_job_uuid = $1 LIMIT 1`,
+      [jobNumber]
+    );
+    if (uuidRow.rows[0]) {
+      const r = uuidRow.rows[0];
+      return res.json({
+        ok: true, found: true,
+        job: {
+          job_number:    r.job_number || jobNumber,
+          address:       [r.address_line, r.suburb].filter(Boolean).join(', '),
+          account_name:  r.account_name,
+          contact_name:  r.contact_name,
+          contact_phone: r.contact_phone,
+          product_type:  'pre_purchase',
+        },
+      });
+    }
+
+    return res.json({ ok: true, found: false, message: 'Job not found in CRM. You can still proceed and enter details manually.' });
   } catch (e) {
     console.error('[job-lookup]', e);
     res.status(500).json({ ok: false, error: e.message });

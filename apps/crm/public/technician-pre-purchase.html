@@ -293,59 +293,107 @@
       const [jobNumber, setJobNumber] = useState('');
       const [loading, setLoading]     = useState(false);
       const [error, setError]         = useState('');
+      const [prefilled, setPrefilled] = useState(null);
 
       async function handleLookup() {
         const jn = jobNumber.trim();
         if (!jn) { setError('Please enter a job number.'); return; }
-        setError('');
-        setLoading(true);
+        setError(''); setPrefilled(null); setLoading(true);
         try {
           const res = await fetch(`/api/inspections/job-lookup?job_number=${encodeURIComponent(jn)}`);
-          if (!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            throw new Error(body.error || `Server error ${res.status}`);
-          }
           const data = await res.json();
-          onFound({
-            job_number:  jn,
-            client_name: data.client_name || '',
-            address:     data.address     || '',
-            phone:       data.phone       || '',
-          });
+          if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+          if (data.found && data.job) {
+            setPrefilled(data.job);
+          } else {
+            setError(data.message || 'Job not found — you can still proceed manually below.');
+          }
         } catch (err) {
-          setError(err.message || 'Could not find job. Check the number and try again.');
+          setError(err.message || 'Could not reach server. Check connection and try again.');
         } finally {
           setLoading(false);
         }
+      }
+
+      function handleConfirmPrefill() {
+        onFound({
+          job_number:     prefilled.job_number   || jobNumber.trim(),
+          client_name:    prefilled.contact_name  || prefilled.account_name || '',
+          address:        prefilled.address        || '',
+          phone:          prefilled.contact_phone  || '',
+          opportunity_id: prefilled.opportunity_id || null,
+        });
+      }
+
+      function handleSkip() {
+        onFound({ job_number: jobNumber.trim(), client_name: '', address: '', phone: '' });
       }
 
       return (
         <div className="px-4 py-6 max-w-lg mx-auto">
           <div className="mb-6 text-center">
             <div className="text-2xl font-bold text-slate-900 mb-1">Start Inspection</div>
-            <div className="text-slate-500 text-sm">Enter the ServiceM8 job number to begin</div>
+            <div className="text-slate-500 text-sm">Pre-Purchase Electrical Inspection</div>
           </div>
           <Card>
-            <TextInput
-              label="Job Number"
-              value={jobNumber}
-              onChange={setJobNumber}
-              placeholder="e.g. J-12345"
-              required
-            />
+            <div className="mb-1 text-sm font-semibold text-slate-700">
+              ServiceM8 Job Number <span className="font-normal text-slate-400">(optional)</span>
+            </div>
+            <div className="text-xs text-slate-500 mb-3">
+              Enter to auto-fill client name, address and phone. Or skip to enter details manually.
+            </div>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={jobNumber}
+                onChange={e => { setJobNumber(e.target.value); setPrefilled(null); setError(''); }}
+                onKeyDown={e => e.key === 'Enter' && handleLookup()}
+                placeholder="e.g. 00123 or J-12345"
+                className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              />
+              <button
+                type="button"
+                onClick={handleLookup}
+                disabled={loading || !jobNumber.trim()}
+                className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white active:bg-blue-700 disabled:opacity-50"
+              >
+                {loading ? '…' : 'Fetch'}
+              </button>
+            </div>
+
             {error && (
-              <div className="mb-3 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700">
-                {error}
+              <div className="mb-3 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                ⚠️ {error}
               </div>
             )}
-            <button
-              type="button"
-              onClick={handleLookup}
-              disabled={loading}
-              className="w-full rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white active:bg-blue-700 disabled:opacity-60"
-            >
-              {loading ? 'Looking up…' : 'Look Up Job'}
-            </button>
+
+            {prefilled && (
+              <div className="mb-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm">
+                <div className="font-semibold text-emerald-800 mb-2">✓ Job found — will be pre-filled:</div>
+                {(prefilled.contact_name || prefilled.account_name) && (
+                  <div className="text-slate-700">👤 {prefilled.contact_name || prefilled.account_name}</div>
+                )}
+                {prefilled.address && <div className="text-slate-700">📍 {prefilled.address}</div>}
+                {prefilled.contact_phone && <div className="text-slate-700">📞 {prefilled.contact_phone}</div>}
+                <button
+                  type="button"
+                  onClick={handleConfirmPrefill}
+                  className="mt-3 w-full rounded-xl bg-emerald-600 px-6 py-3 text-base font-semibold text-white active:bg-emerald-700"
+                >
+                  Use These Details &amp; Start →
+                </button>
+              </div>
+            )}
+
+            {!prefilled && (
+              <button
+                type="button"
+                onClick={handleSkip}
+                className="w-full rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-base font-semibold text-slate-700 active:bg-slate-50"
+              >
+                {jobNumber.trim() ? 'Continue with This Job # →' : 'Start Without Job Number →'}
+              </button>
+            )}
           </Card>
         </div>
       );
