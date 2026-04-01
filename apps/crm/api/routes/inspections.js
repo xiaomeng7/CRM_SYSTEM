@@ -156,6 +156,23 @@ router.post('/pre-purchase', async (req, res) => {
   }
 });
 
+// GET /api/inspections/stats — status + verdict counts
+router.get('/stats', async (req, res) => {
+  try {
+    const [statusR, verdictR] = await Promise.all([
+      pool.query(`SELECT status, COUNT(*) AS cnt FROM pre_purchase_inspections GROUP BY status`),
+      pool.query(`SELECT verdict, COUNT(*) AS cnt FROM pre_purchase_inspections GROUP BY verdict`),
+    ]);
+    const byStatus  = {};
+    statusR.rows.forEach(r => { byStatus[r.status] = Number(r.cnt); });
+    const byVerdict = {};
+    verdictR.rows.forEach(r => { byVerdict[r.verdict] = Number(r.cnt); });
+    res.json({ ok: true, byStatus, byVerdict });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 // GET /api/inspections — list (admin)
 router.get('/', async (req, res) => {
   try {

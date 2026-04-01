@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspection Review — BHT CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/b2b-prospects.html">B2B Prospects</a>
+        <a href="/inspection-review.html" class="active">Inspection Review</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/growth-console.html">Growth Ops</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main" style="background:#f1f5f9;">
+      <header class="header">Internal CRM</header>
+      <div id="ir-root" style="height:calc(100vh - 48px); overflow:hidden;"></div>
+    </main>
+  </div>
+
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    /* ── constants ── */
+    const STATUS_META = {
+      submitted: { label: 'Submitted',  cls: 'bg-amber-100 text-amber-700',   dot: 'bg-amber-400' },
+      review:    { label: 'In Review',  cls: 'bg-blue-100 text-blue-700',     dot: 'bg-blue-400' },
+      approved:  { label: 'Approved',   cls: 'bg-violet-100 text-violet-700', dot: 'bg-violet-400' },
+      sent:      { label: 'Report Sent',cls: 'bg-emerald-100 text-emerald-700',dot: 'bg-emerald-500' },
+    };
+    const VERDICT_META = {
+      A: { label: 'Option A', cls: 'bg-emerald-100 text-emerald-700 border border-emerald-300', desc: 'Low risk — minor works only' },
+      B: { label: 'Option B', cls: 'bg-amber-100 text-amber-800 border border-amber-300',    desc: 'Moderate — plan remediation' },
+      C: { label: 'Option C', cls: 'bg-rose-100 text-rose-700 border border-rose-300',        desc: 'High risk — major works required' },
+    };
+    const RISK_META = {
+      low:      'text-emerald-600',
+      moderate: 'text-amber-600',
+      high:     'text-rose-600',
+    };
+
+    const fmt$ = (n) => n != null ? '$' + Number(n).toLocaleString() : '—';
+    const fmtDate = (s) => s ? new Date(s).toLocaleString('en-AU', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+    const fmtDay  = (s) => s ? new Date(s).toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+    /* ── StatusBadge ── */
+    function StatusBadge({ status }) {
+      const m = STATUS_META[status] || STATUS_META.submitted;
+      return <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${m.cls}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`}></span>{m.label}
+      </span>;
+    }
+
+    /* ── VerdictBadge ── */
+    function VerdictBadge({ verdict }) {
+      if (!verdict) return <span className="text-slate-400 text-xs">—</span>;
+      const m = VERDICT_META[verdict] || {};
+      return <span className={`inline-flex items-center text-xs font-bold px-2 py-0.5 rounded ${m.cls}`}>{m.label}</span>;
+    }
+
+    /* ── ModuleSection ── */
+    function ModuleSection({ title, data, icon }) {
+      const [open, setOpen] = useState(true);
+      if (!data || Object.keys(data).length === 0) return null;
+      const entries = Object.entries(data).filter(([k]) => !['id'].includes(k));
+      const fmt = (v) => {
+        if (v === null || v === undefined || v === '') return <span className="text-slate-400">—</span>;
+        if (typeof v === 'boolean') return v ? '✓ Yes' : '✗ No';
+        if (typeof v === 'object') return <pre className="text-xs bg-slate-100 rounded p-1 overflow-auto max-h-24">{JSON.stringify(v, null, 2)}</pre>;
+        return String(v);
+      };
+      const fmtKey = (k) => k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      return (
+        <div className="mb-3 border border-slate-200 rounded-lg overflow-hidden">
+          <button onClick={() => setOpen(o=>!o)}
+            className="w-full flex items-center justify-between px-3 py-2 bg-slate-50 hover:bg-slate-100 text-left">
+            <span className="font-semibold text-slate-700 text-sm flex items-center gap-2">
+              <span>{icon}</span>{title}
+            </span>
+            <span className="text-slate-400 text-xs">{open ? '▲' : '▼'}</span>
+          </button>
+          {open && (
+            <div className="px-3 py-2 grid grid-cols-2 gap-x-4 gap-y-1">
+              {entries.map(([k, v]) => (
+                <div key={k} className="col-span-1">
+                  <span className="text-xs text-slate-500 block">{fmtKey(k)}</span>
+                  <span className="text-sm text-slate-800">{fmt(v)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ── FindingsList ── */
+    function FindingsList({ output }) {
+      if (!output?.findings?.length) return <p className="text-slate-400 text-sm">No findings recorded.</p>;
+      const PRIORITY_META = {
+        IMMEDIATE:       'bg-rose-100 text-rose-700 border border-rose-300',
+        PRIORITY_ACTION: 'bg-orange-100 text-orange-700 border border-orange-300',
+        PLAN:            'bg-amber-100 text-amber-700 border border-amber-300',
+        MONITOR:         'bg-blue-100 text-blue-700 border border-blue-300',
+      };
+      return (
+        <div className="space-y-1.5">
+          {output.findings.map((f, i) => (
+            <div key={i} className="flex items-start gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2">
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${PRIORITY_META[f.priority] || 'bg-slate-100 text-slate-600'}`}>
+                {f.priority?.replace('_', ' ') || '—'}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-slate-800">{f.label}</p>
+                {(f.cost_low != null || f.cost_high != null) && (
+                  <p className="text-xs text-slate-500">{fmt$(f.cost_low)} – {fmt$(f.cost_high)}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    /* ── CostOptionsTable ── */
+    function CostOptionsTable({ output }) {
+      if (!output) return null;
+      const rows = [
+        { opt: 'Option A', desc: 'Priority Actions only', low: output.option_a_low, high: output.option_a_high, risk: output.option_a_risk },
+        { opt: 'Option B', desc: 'Priority + Planned works', low: output.option_b_low, high: output.option_b_high, risk: output.option_b_risk },
+        { opt: 'Option C', desc: 'Full remediation', low: output.option_c_low, high: output.option_c_high, risk: output.option_c_risk },
+      ];
+      return (
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="bg-slate-50 text-slate-600 text-xs uppercase">
+              <th className="text-left px-3 py-2 font-semibold">Option</th>
+              <th className="text-left px-3 py-2 font-semibold">Scope</th>
+              <th className="text-right px-3 py-2 font-semibold">Low</th>
+              <th className="text-right px-3 py-2 font-semibold">High</th>
+              <th className="text-left px-3 py-2 font-semibold">Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(r => (
+              <tr key={r.opt} className="border-t border-slate-200">
+                <td className="px-3 py-2 font-semibold text-slate-700">{r.opt}</td>
+                <td className="px-3 py-2 text-slate-500">{r.desc}</td>
+                <td className="px-3 py-2 text-right text-slate-700">{fmt$(r.low)}</td>
+                <td className="px-3 py-2 text-right text-slate-700">{fmt$(r.high)}</td>
+                <td className={`px-3 py-2 capitalize font-medium ${RISK_META[r.risk] || 'text-slate-600'}`}>{r.risk || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    }
+
+    /* ── InspectionDetail ── */
+    function InspectionDetail({ inspection: insp, onUpdate, onClose }) {
+      const [notes, setNotes]       = useState(insp.engineer_notes || '');
+      const [saving, setSaving]     = useState(false);
+      const [flash, setFlash]       = useState(null);
+      const [confirmSend, setConfirmSend] = useState(false);
+
+      useEffect(() => {
+        setNotes(insp.engineer_notes || '');
+        setFlash(null);
+        setConfirmSend(false);
+      }, [insp.id]);
+
+      const patchStatus = async (status, extraMsg) => {
+        setSaving(true);
+        try {
+          const resp = await fetch('/api/inspections/' + insp.id + '/status', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status, engineer_notes: notes }),
+          });
+          const j = await resp.json();
+          if (!j.ok) throw new Error(j.error || 'Failed');
+          setFlash({ type: 'success', msg: extraMsg || 'Status updated.' });
+          onUpdate(j.inspection);
+        } catch(e) {
+          setFlash({ type: 'error', msg: e.message });
+        } finally {
+          setSaving(false);
+          setConfirmSend(false);
+        }
+      };
+
+      const saveNotes = async () => {
+        setSaving(true);
+        try {
+          const resp = await fetch('/api/inspections/' + insp.id + '/status', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: insp.status, engineer_notes: notes }),
+          });
+          const j = await resp.json();
+          if (!j.ok) throw new Error(j.error || 'Failed');
+          setFlash({ type: 'success', msg: 'Notes saved.' });
+          onUpdate(j.inspection);
+        } catch(e) {
+          setFlash({ type: 'error', msg: e.message });
+        } finally {
+          setSaving(false);
+        }
+      };
+
+      const propInfo  = insp.property_info   || {};
+      const swData    = insp.switchboard_data || {};
+      const safeData  = insp.safety_data      || {};
+      const wireData  = insp.wiring_data      || {};
+      const circData  = insp.circuits_data    || {};
+      const solData   = insp.solar_battery_data || {};
+      const decEng    = insp.decision_engine_output || {};
+
+      return (
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="px-5 pt-4 pb-3 border-b border-slate-200 bg-white flex items-start justify-between shrink-0">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg font-bold text-slate-800">{insp.job_number || 'No job #'}</span>
+                <VerdictBadge verdict={insp.verdict} />
+                <StatusBadge status={insp.status} />
+              </div>
+              <p className="text-sm text-slate-500">
+                {propInfo.address || propInfo.property_address || '—'} &nbsp;·&nbsp; Submitted {fmtDate(insp.submitted_at)}
+              </p>
+              <p className="text-sm text-slate-500">
+                Phone: <span className="font-medium text-slate-700">{insp.contact_phone || '—'}</span>
+                &nbsp;·&nbsp; Risk: <span className={`font-medium capitalize ${RISK_META[insp.risk_level] || 'text-slate-600'}`}>{insp.risk_level || '—'}</span>
+                &nbsp;·&nbsp; Cost: <span className="font-medium text-slate-700">{fmt$(insp.cost_low)} – {fmt$(insp.cost_high)}</span>
+              </p>
+            </div>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none ml-4">✕</button>
+          </div>
+
+          {/* Scrollable body */}
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+
+            {/* Flash */}
+            {flash && (
+              <div className={`text-sm px-3 py-2 rounded-lg font-medium ${flash.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                {flash.msg}
+              </div>
+            )}
+
+            {/* Cost options */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+                <h3 className="font-semibold text-slate-700 text-sm">💰 Cost Options Summary</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <CostOptionsTable output={decEng} />
+              </div>
+            </div>
+
+            {/* Findings */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+                <h3 className="font-semibold text-slate-700 text-sm">⚠️ Decision Engine Findings ({decEng?.findings?.length || 0})</h3>
+              </div>
+              <div className="px-4 py-3">
+                <FindingsList output={decEng} />
+              </div>
+            </div>
+
+            {/* Technician assessment notes */}
+            {insp.assessment_notes && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <h3 className="font-semibold text-amber-800 text-sm mb-1">📋 Technician Assessment Notes</h3>
+                <p className="text-sm text-amber-900 whitespace-pre-wrap">{insp.assessment_notes}</p>
+              </div>
+            )}
+
+            {/* Module data */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+                <h3 className="font-semibold text-slate-700 text-sm">🔍 Inspection Modules</h3>
+              </div>
+              <div className="px-4 py-3 space-y-1">
+                <ModuleSection title="Property Info"    data={propInfo}  icon="🏠" />
+                <ModuleSection title="Switchboard"      data={swData}    icon="⚡" />
+                <ModuleSection title="Safety Devices"   data={safeData}  icon="🛡️" />
+                <ModuleSection title="Wiring"           data={wireData}  icon="🔌" />
+                <ModuleSection title="Circuits & Load"  data={circData}  icon="🔋" />
+                {Object.keys(solData).length > 0 && (
+                  <ModuleSection title="Solar & Battery" data={solData}  icon="☀️" />
+                )}
+              </div>
+            </div>
+
+            {/* Engineer notes */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+                <h3 className="font-semibold text-slate-700 text-sm">📝 Engineer Notes</h3>
+              </div>
+              <div className="px-4 py-3">
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  rows={4}
+                  placeholder="Add review notes, amendments, or approval comments…"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <button
+                  onClick={saveNotes}
+                  disabled={saving}
+                  className="mt-2 text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium disabled:opacity-50">
+                  {saving ? 'Saving…' : 'Save Notes'}
+                </button>
+              </div>
+            </div>
+
+            {/* Raw JSON (collapsed) */}
+            <RawDataSection inspection={insp} />
+
+          </div>
+
+          {/* Action bar */}
+          <div className="px-5 py-4 border-t border-slate-200 bg-white shrink-0">
+            {insp.status === 'sent' ? (
+              <div className="flex items-center gap-2 text-sm text-emerald-700 font-medium">
+                <span>✅ Report sent to client</span>
+                {insp.sent_at && <span className="text-slate-400 font-normal">· {fmtDate(insp.sent_at)}</span>}
+              </div>
+            ) : confirmSend ? (
+              <div className="space-y-2">
+                <p className="text-sm text-slate-700">
+                  Send report-ready SMS to <strong>{insp.contact_phone || '(no phone)'}</strong>?
+                  This will update status to <strong>Sent</strong>.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => patchStatus('sent', '✅ Report sent! SMS dispatched to client.')}
+                    disabled={saving}
+                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold disabled:opacity-50">
+                    {saving ? 'Sending…' : 'Confirm — Send Now'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmSend(false)}
+                    className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {insp.status === 'submitted' && (
+                  <button
+                    onClick={() => patchStatus('review', 'Marked as In Review.')}
+                    disabled={saving}
+                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-50">
+                    🔍 Start Review
+                  </button>
+                )}
+                {(insp.status === 'submitted' || insp.status === 'review') && (
+                  <button
+                    onClick={() => patchStatus('approved', 'Inspection approved.')}
+                    disabled={saving}
+                    className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold disabled:opacity-50">
+                    ✓ Approve
+                  </button>
+                )}
+                {(insp.status === 'review' || insp.status === 'approved') && (
+                  <button
+                    onClick={() => setConfirmSend(true)}
+                    disabled={saving}
+                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold disabled:opacity-50">
+                    📲 Send Report to Client
+                  </button>
+                )}
+                {insp.status === 'submitted' && (
+                  <button
+                    onClick={() => setConfirmSend(true)}
+                    disabled={saving}
+                    className="px-4 py-2 rounded-lg border border-emerald-400 text-emerald-700 hover:bg-emerald-50 text-sm font-semibold disabled:opacity-50">
+                    ⚡ Quick Send (skip review)
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── RawDataSection ── */
+    function RawDataSection({ inspection }) {
+      const [open, setOpen] = useState(false);
+      return (
+        <div className="border border-slate-200 rounded-xl overflow-hidden">
+          <button onClick={() => setOpen(o=>!o)}
+            className="w-full flex items-center justify-between px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-left">
+            <span className="font-semibold text-slate-500 text-xs uppercase tracking-wide">Raw JSON</span>
+            <span className="text-slate-400 text-xs">{open ? '▲' : '▼'}</span>
+          </button>
+          {open && (
+            <pre className="px-4 py-3 text-xs text-slate-600 overflow-auto max-h-64 bg-white">
+              {JSON.stringify(inspection, null, 2)}
+            </pre>
+          )}
+        </div>
+      );
+    }
+
+    /* ── Main App ── */
+    function InspectionReviewApp() {
+      const [inspections, setInspections] = useState([]);
+      const [total, setTotal]             = useState(0);
+      const [loading, setLoading]         = useState(true);
+      const [selected, setSelected]       = useState(null);
+      const [filter, setFilter]           = useState({ status: '', verdict: '' });
+      const [stats, setStats]             = useState({ submitted: 0, review: 0, approved: 0, sent: 0 });
+
+      const loadStats = () => {
+        fetch('/api/inspections/stats')
+          .then(r => r.json())
+          .then(j => {
+            if (j.ok) setStats({ submitted: 0, review: 0, approved: 0, sent: 0, ...j.byStatus });
+          })
+          .catch(() => {});
+      };
+
+      const load = useCallback((f = filter) => {
+        setLoading(true);
+        const p = new URLSearchParams();
+        if (f.status)  p.set('status', f.status);
+        if (f.verdict) p.set('verdict', f.verdict);
+        p.set('limit', '200');
+        fetch('/api/inspections?' + p)
+          .then(r => r.json())
+          .then(j => {
+            const rows = j.inspections || [];
+            setInspections(rows);
+            setTotal(rows.length);
+          })
+          .catch(() => {})
+          .finally(() => setLoading(false));
+      }, []);
+
+      useEffect(() => { load(); loadStats(); }, []);
+
+      // Load full inspection when selecting a row
+      const selectRow = async (insp) => {
+        // Fetch full record (includes JSONB modules)
+        try {
+          const r = await fetch('/api/inspections/' + insp.id);
+          const j = await r.json();
+          if (j.ok) setSelected(j.inspection);
+          else setSelected(insp);
+        } catch {
+          setSelected(insp);
+        }
+      };
+
+      const handleUpdate = (updated) => {
+        setInspections(prev => prev.map(i => i.id === updated.id ? { ...i, ...updated } : i));
+        setSelected(updated);
+        loadStats();
+      };
+
+      const applyFilter = (key, val) => {
+        const f = { ...filter, [key]: val };
+        setFilter(f);
+        load(f);
+      };
+
+      return (
+        <div style={{ display:'flex', height:'100%', overflow:'hidden' }}>
+
+          {/* ── Left panel: list ── */}
+          <div style={{ width: selected ? '400px' : '100%', minWidth:'340px', flexShrink:0, display:'flex', flexDirection:'column', borderRight:'1px solid #e2e8f0', background:'#fff', overflowY:'hidden' }}>
+
+            {/* Stats row */}
+            <div className="px-4 py-3 border-b border-slate-200 flex gap-3 shrink-0">
+              {Object.entries(STATUS_META).map(([k, m]) => (
+                <button key={k}
+                  onClick={() => applyFilter('status', filter.status === k ? '' : k)}
+                  className={`flex flex-col items-center px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${filter.status === k ? m.cls + ' border-current' : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                  <span className="text-base font-bold">{stats[k] || 0}</span>
+                  <span>{m.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Filters */}
+            <div className="px-4 py-2.5 border-b border-slate-200 flex gap-2 items-center shrink-0">
+              <span className="text-xs text-slate-500 font-medium">Verdict:</span>
+              {['', 'A', 'B', 'C'].map(v => (
+                <button key={v}
+                  onClick={() => applyFilter('verdict', v)}
+                  className={`text-xs px-2 py-1 rounded font-semibold transition-all ${filter.verdict === v
+                    ? (v === 'A' ? 'bg-emerald-100 text-emerald-700' : v === 'B' ? 'bg-amber-100 text-amber-700' : v === 'C' ? 'bg-rose-100 text-rose-700' : 'bg-slate-200 text-slate-700')
+                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                  {v === '' ? 'All' : 'Option ' + v}
+                </button>
+              ))}
+              <span className="ml-auto text-xs text-slate-400">{total} inspection{total !== 1 ? 's' : ''}</span>
+            </div>
+
+            {/* Table */}
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="flex items-center justify-center h-32 text-slate-400 text-sm">Loading…</div>
+              ) : inspections.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-40 text-slate-400">
+                  <span className="text-3xl mb-2">📋</span>
+                  <p className="text-sm">No inspections found</p>
+                </div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-slate-50 z-10">
+                    <tr className="text-xs text-slate-500 uppercase">
+                      <th className="text-left px-4 py-2 font-semibold">Job</th>
+                      <th className="text-left px-3 py-2 font-semibold">Verdict</th>
+                      <th className="text-left px-3 py-2 font-semibold">Cost Range</th>
+                      <th className="text-left px-3 py-2 font-semibold">Status</th>
+                      <th className="text-left px-3 py-2 font-semibold">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {inspections.map(insp => (
+                      <tr key={insp.id}
+                        onClick={() => selectRow(insp)}
+                        className={`cursor-pointer border-t border-slate-100 transition-colors ${selected?.id === insp.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}>
+                        <td className="px-4 py-2.5">
+                          <span className="font-semibold text-slate-800">{insp.job_number || '—'}</span>
+                          {insp.contact_phone && <span className="block text-xs text-slate-400">{insp.contact_phone}</span>}
+                        </td>
+                        <td className="px-3 py-2.5"><VerdictBadge verdict={insp.verdict} /></td>
+                        <td className="px-3 py-2.5 text-slate-600 text-xs whitespace-nowrap">
+                          {insp.cost_low != null ? fmt$(insp.cost_low) + ' – ' + fmt$(insp.cost_high) : '—'}
+                        </td>
+                        <td className="px-3 py-2.5"><StatusBadge status={insp.status} /></td>
+                        <td className="px-3 py-2.5 text-xs text-slate-400 whitespace-nowrap">{fmtDay(insp.submitted_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* ── Right panel: detail ── */}
+          {selected && (
+            <div style={{ flex:1, overflowY:'hidden', display:'flex', flexDirection:'column', background:'#f8fafc' }}>
+              <InspectionDetail
+                key={selected.id}
+                inspection={selected}
+                onUpdate={handleUpdate}
+                onClose={() => setSelected(null)}
+              />
+            </div>
+          )}
+
+          {/* Empty state when nothing selected */}
+          {!selected && !loading && inspections.length > 0 && (
+            <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', background:'#f8fafc', color:'#94a3b8', flexDirection:'column', gap:'8px' }}>
+              <span style={{ fontSize:'2.5rem' }}>🔍</span>
+              <p style={{ fontSize:'0.9rem' }}>Select an inspection to review</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('ir-root')).render(<InspectionReviewApp />);
+  </script>
+</body>
+</html>
