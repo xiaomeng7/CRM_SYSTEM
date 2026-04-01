@@ -253,4 +253,19 @@ app.listen(PORT, () => {
     setInterval(runScoring, SCORING_INTERVAL_MS);
     console.log('[customer-scoring] scheduled daily (every 24h)');
   }
+
+  // Inspection follow-up SMS D+1/7/14; set AUTO_INSPECTION_FOLLOWUP=true
+  const autoFollowup = process.env.AUTO_INSPECTION_FOLLOWUP === 'true' || process.env.AUTO_INSPECTION_FOLLOWUP === '1';
+  if (autoFollowup) {
+    const { runFollowupSequence } = require('../services/inspectionFollowupScheduler');
+    const FOLLOWUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+    const runFollowup = () => {
+      runFollowupSequence({ log: (msg) => console.log('[inspection-followup]', msg) })
+        .then((out) => console.log('[inspection-followup] done, sent:', out.sent))
+        .catch((e) => console.error('[inspection-followup]', e));
+    };
+    setTimeout(runFollowup, 5 * 60 * 1000);
+    setInterval(runFollowup, FOLLOWUP_INTERVAL_MS);
+    console.log('[inspection-followup] D+1/7/14 SMS scheduled daily');
+  }
 });

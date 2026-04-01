@@ -272,6 +272,52 @@ async function createFromPublic(body = {}) {
 
     await client.query('COMMIT');
 
+    // Fire-and-forget: auto Opportunity + Task + Confirmation SMS (never blocks intake)
+    setImmediate(async () => {
+      try {
+        // 1. Create Opportunity
+        const oppResult = await pool.query(
+          `INSERT INTO opportunities (account_id, contact_id, lead_id, stage, product_type, status, created_by)
+           VALUES ($1, $2, $3, 'new_enquiry', $4, 'open', 'landing-page') RETURNING id`,
+          [accountId, contactId, lead.id, productType || serviceType || null]
+        );
+        const oppId = oppResult.rows[0].id;
+
+        // 2. Create follow-up task due in 4 hours
+        await pool.query(
+          `INSERT INTO tasks (contact_id, lead_id, opportunity_id, title, due_at, status, assigned_to, created_by)
+           VALUES ($1, $2, $3, $4, NOW() + INTERVAL '4 hours', 'open', 'meng', 'auto-intake')`,
+          [contactId, lead.id, oppId,
+           `📞 Call back — ${name} (${productType || serviceType || 'enquiry'})`]
+        );
+
+        // 3. Confirmation SMS
+        const { sendSMS } = require('@bht/integrations');
+        const firstName = name.split(' ')[0] || name;
+        let smsBody;
+        if (productType === 'pre_purchase') {
+          smsBody = `Hi ${firstName}, thanks for booking a pre-purchase electrical inspection with Better Home Technology. We'll be in touch within 2 hours to confirm your inspection time. Questions? Call 0410 323 034. – Meng`;
+        } else if (productType === 'rental_lite') {
+          smsBody = `Hi ${firstName}, thanks for your rental inspection enquiry with Better Home Technology. We'll contact you shortly to confirm details. Questions? Call 0410 323 034. – Meng`;
+        } else if (productType === 'energy_audit' || serviceType === 'energy_audit') {
+          smsBody = `Hi ${firstName}, thanks for your energy advisory enquiry with Better Home Technology. We'll be in touch shortly. Questions? Call 0410 323 034. – Meng`;
+        } else {
+          smsBody = `Hi ${firstName}, thanks for contacting Better Home Technology. We'll be in touch soon. Questions? Call 0410 323 034. – Meng`;
+        }
+
+        if (phone && smsBody) {
+          await sendSMS(phone, smsBody);
+          await pool.query(
+            `INSERT INTO activities (contact_id, lead_id, activity_type, summary, created_by, occurred_at)
+             VALUES ($1, $2, 'outbound_sms', $3, 'auto-intake', NOW())`,
+            [contactId, lead.id, `Confirmation SMS sent: ${smsBody.substring(0, 120)}`]
+          );
+        }
+      } catch (autoErr) {
+        console.error('[public-leads] auto-intake actions failed:', autoErr.message);
+      }
+    });
+
     await emit('lead.created', 'lead', lead.id, {
       lead_id: lead.id,
       source: lead.source,

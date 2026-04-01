@@ -195,6 +195,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/inspections/public/:id — client-facing sanitised report
+router.get('/public/:id', async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT id, job_number, verdict, risk_level, cost_low, cost_high,
+              property_info, switchboard_data, safety_data, wiring_data,
+              circuits_data, solar_battery_data, assessment_notes,
+              decision_engine_output, status, sent_at, submitted_at
+       FROM pre_purchase_inspections WHERE id = $1`,
+      [req.params.id]
+    );
+    if (!r.rows[0]) return res.status(404).json({ ok: false, error: 'Report not found' });
+    const insp = r.rows[0];
+    if (insp.status !== 'sent') {
+      return res.status(403).json({ ok: false, error: 'Report not yet available. Please check back soon.' });
+    }
+    res.json({ ok: true, report: insp });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 // GET /api/inspections/:id
 router.get('/:id', async (req, res) => {
   try {
@@ -226,7 +248,7 @@ router.patch('/:id/status', async (req, res) => {
     if (status === 'sent' && insp.contact_phone) {
       try {
         await sendSMS(insp.contact_phone,
-          `Your electrical inspection report is ready! View it here: https://inspection.bhtechnology.com.au/report/${insp.id} ` +
+          `Your electrical inspection report is ready! View it here: ${(process.env.CRM_PUBLIC_URL || 'https://crm.bhtechnology.com.au').replace(/\/$/, '')}/inspection-report.html?id=${insp.id} ` +
           `Verdict: Option ${insp.verdict}. Questions? Call 0410 323 034.`
         );
       } catch (smsErr) {
