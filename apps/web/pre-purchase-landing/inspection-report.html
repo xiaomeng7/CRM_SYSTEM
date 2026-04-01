@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electrical Inspection Report — Better Home Technology</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --text: #1a1a1a; --muted: #6b6b6b; --border: #e2e8f0;
+      --card: #ffffff; --bg: #f8fafc;
+      --green: #15803d; --green-bg: #f0faf4; --green-border: #bbf7d0;
+      --amber: #92400e; --amber-bg: #fffbeb; --amber-border: #fde68a;
+      --red: #991b1b;   --red-bg: #fff1f2;   --red-border: #fecaca;
+      --radius: 10px;
+    }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px; line-height: 1.6; color: var(--text); background: var(--bg); }
+    a { color: var(--text); }
+
+    /* Header */
+    .report-header {
+      background: var(--text); color: #fff;
+      padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .report-header .brand { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; }
+    .report-header .doc-label { font-size: 0.8rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* Container */
+    .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* Verdict banner */
+    .verdict-banner {
+      border-radius: var(--radius); padding: 1.75rem 2rem; margin-bottom: 2rem;
+      display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .verdict-banner.A { background: var(--green-bg); border: 2px solid var(--green-border); }
+    .verdict-banner.B { background: var(--amber-bg); border: 2px solid var(--amber-border); }
+    .verdict-banner.C { background: var(--red-bg);   border: 2px solid var(--red-border); }
+    .verdict-circle {
+      width: 3.5rem; height: 3.5rem; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; font-weight: 800; flex-shrink: 0;
+    }
+    .verdict-banner.A .verdict-circle { background: var(--green-border); color: var(--green); }
+    .verdict-banner.B .verdict-circle { background: var(--amber-border); color: var(--amber); }
+    .verdict-banner.C .verdict-circle { background: var(--red-border);   color: var(--red); }
+    .verdict-info h2 { margin: 0 0 0.25rem; font-size: 1.2rem; font-weight: 700; }
+    .verdict-info p  { margin: 0; font-size: 0.9rem; color: var(--muted); }
+    .verdict-banner.A .verdict-info h2 { color: var(--green); }
+    .verdict-banner.B .verdict-info h2 { color: var(--amber); }
+    .verdict-banner.C .verdict-info h2 { color: var(--red); }
+
+    /* Section */
+    .section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 1.25rem; overflow: hidden; }
+    .section-head { padding: 0.9rem 1.5rem; background: #f8fafc; border-bottom: 1px solid var(--border);
+      font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+    .section-body { padding: 1.25rem 1.5rem; }
+
+    /* Meta grid */
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .meta-item label { display: block; font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--muted); font-weight: 600; margin-bottom: 0.2rem; }
+    .meta-item span  { font-size: 0.9375rem; font-weight: 500; }
+
+    /* Cost table */
+    .cost-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .cost-table th { background: #f1f5f9; text-align: left; padding: 0.6rem 1rem;
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+    .cost-table td { padding: 0.7rem 1rem; border-top: 1px solid var(--border); }
+    .cost-table tr.recommended td { font-weight: 700; }
+    .cost-table .badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem;
+      border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; margin-left: 0.5rem;
+    }
+    .badge-rec { background: #dbeafe; color: #1e40af; }
+
+    /* Findings */
+    .finding {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.9rem 0; border-bottom: 1px solid var(--border);
+    }
+    .finding:last-child { border-bottom: none; }
+    .finding-tag {
+      flex-shrink: 0; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.55rem;
+      border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px;
+    }
+    .tag-IMMEDIATE       { background: #fee2e2; color: #991b1b; }
+    .tag-PRIORITY_ACTION { background: #ffedd5; color: #9a3412; }
+    .tag-PLAN            { background: #fef3c7; color: #92400e; }
+    .tag-MONITOR         { background: #dbeafe; color: #1e40af; }
+    .finding-body p { margin: 0 0 0.15rem; font-weight: 600; font-size: 0.9375rem; }
+    .finding-body span { color: var(--muted); font-size: 0.875rem; }
+
+    /* Next steps */
+    .next-steps { list-style: none; margin: 0; padding: 0; }
+    .next-steps li { display: flex; gap: 0.75rem; padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border); font-size: 0.9375rem; }
+    .next-steps li:last-child { border-bottom: none; }
+    .next-steps .num { flex-shrink: 0; width: 1.5rem; height: 1.5rem; background: var(--text);
+      color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
+
+    /* CTA */
+    .cta-box { background: var(--text); color: #fff; border-radius: var(--radius);
+      padding: 2rem; text-align: center; margin-bottom: 2rem; }
+    .cta-box h3 { margin: 0 0 0.5rem; font-size: 1.1rem; }
+    .cta-box p  { margin: 0 0 1.25rem; opacity: 0.75; font-size: 0.9rem; }
+    .cta-btn { display: inline-block; background: #fff; color: var(--text);
+      font-weight: 700; padding: 0.75rem 2rem; border-radius: 6px; text-decoration: none;
+      font-size: 0.9375rem; }
+    .cta-btn:hover { opacity: 0.9; }
+
+    /* Loading / error states */
+    .state-center { min-height: 60vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; gap: 1rem; color: var(--muted); }
+    .spinner { width: 2rem; height: 2rem; border: 3px solid var(--border);
+      border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    .report-footer { text-align: center; color: var(--muted); font-size: 0.8rem;
+      padding: 2rem 1.5rem; border-top: 1px solid var(--border); }
+
+    @media (max-width: 600px) {
+      .container { padding: 1.25rem 1rem; }
+      .verdict-banner { flex-direction: column; gap: 1rem; }
+      .report-header { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media print {
+      .cta-box { display: none; }
+      .report-header { background: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="report-header">
+  <div>
+    <div class="brand">Better Home Technology</div>
+    <div class="doc-label">Pre-Purchase Electrical Inspection Report</div>
+  </div>
+  <div style="font-size:0.85rem; opacity:0.7;">ABN 56 613 514 640 · Lic PGE275430</div>
+</header>
+
+<div id="app">
+  <div class="state-center">
+    <div class="spinner"></div>
+    <p>Loading your report…</p>
+  </div>
+</div>
+
+<script>
+(async () => {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const app = document.getElementById('app');
+
+  if (!id) {
+    app.innerHTML = `<div class="state-center">
+      <div style="font-size:2.5rem">📋</div>
+      <p>No report ID provided. Please use the link from your SMS.</p>
+      <p><a href="tel:0410323034">Call us: 0410 323 034</a></p>
+    </div>`;
+    return;
+  }
+
+  let report;
+  try {
+    const res = await fetch('https://crmsystem-production-70c2.up.railway.app/api/inspections/public/' + id);
+    const j = await res.json();
+    if (!j.ok) throw new Error(j.error || 'Report unavailable');
+    report = j.report;
+  } catch (e) {
+    app.innerHTML = `<div class="state-center">
+      <div style="font-size:2.5rem">⚠️</div>
+      <p style="font-weight:600;">${e.message}</p>
+      <p>If you received a link via SMS, your report may still be processing.<br>
+         Questions? Call <a href="tel:0410323034">0410 323 034</a></p>
+    </div>`;
+    return;
+  }
+
+  // ── helpers ──
+  const fmtDate = (s) => s ? new Date(s).toLocaleDateString('en-AU', { day:'2-digit', month:'long', year:'numeric' }) : '—';
+  const fmt$ = (n) => n != null ? '$' + Number(n).toLocaleString() : '—';
+  const propInfo = report.property_info || {};
+  const dec = report.decision_engine_output || {};
+  const findings = dec.findings || [];
+
+  const VERDICT_DESC = {
+    A: { title: 'Option A — Low Risk', desc: 'The electrical installation is in generally good condition. Only minor or routine works are recommended.' },
+    B: { title: 'Option B — Moderate Risk', desc: 'Some issues were identified that should be addressed. Remediation is recommended before or shortly after settlement.' },
+    C: { title: 'Option C — High Risk', desc: 'Significant electrical issues were found. We strongly recommend obtaining quotes for remediation before proceeding with purchase.' },
+  };
+  const vd = VERDICT_DESC[report.verdict] || { title: 'Report', desc: '' };
+
+  const options = [
+    { key: 'A', label: 'Option A', desc: 'Priority Actions only (immediate safety)',    low: dec.option_a_low, high: dec.option_a_high, risk: dec.option_a_risk },
+    { key: 'B', label: 'Option B', desc: 'Priority + Planned remediation',              low: dec.option_b_low, high: dec.option_b_high, risk: dec.option_b_risk },
+    { key: 'C', label: 'Option C', desc: 'Full electrical remediation',                 low: dec.option_c_low, high: dec.option_c_high, risk: dec.option_c_risk },
+  ];
+
+  const PRIORITY_ORDER = ['IMMEDIATE', 'PRIORITY_ACTION', 'PLAN', 'MONITOR'];
+  const sortedFindings = [...findings].sort((a, b) =>
+    PRIORITY_ORDER.indexOf(a.priority) - PRIORITY_ORDER.indexOf(b.priority)
+  );
+
+  const tagClass = (p) => ({
+    IMMEDIATE: 'tag-IMMEDIATE', PRIORITY_ACTION: 'tag-PRIORITY_ACTION',
+    PLAN: 'tag-PLAN', MONITOR: 'tag-MONITOR',
+  }[p] || 'tag-MONITOR');
+
+  const tagLabel = (p) => ({
+    IMMEDIATE: 'Immediate', PRIORITY_ACTION: 'Priority Action',
+    PLAN: 'Plan', MONITOR: 'Monitor',
+  }[p] || p);
+
+  const nextSteps = {
+    A: [
+      'Share this report with your conveyancer and building inspector.',
+      'Contact us for a fixed-price quote on the priority items.',
+      'Schedule remediation works at a time that suits you.',
+    ],
+    B: [
+      'Share this report with your conveyancer before proceeding.',
+      'Request a written quote from us for the recommended works.',
+      'Factor remediation costs into your purchase negotiations.',
+      'Schedule works shortly after settlement.',
+    ],
+    C: [
+      'Share this report with your conveyancer and solicitor immediately.',
+      'Consider negotiating on price or requesting works as a condition of sale.',
+      'Contact us for a detailed written quote for all findings.',
+      'Do not proceed without understanding the full cost of remediation.',
+    ],
+  };
+
+  const steps = nextSteps[report.verdict] || nextSteps.B;
+
+  app.innerHTML = `
+  <div class="container">
+
+    <!-- Verdict banner -->
+    <div class="verdict-banner ${report.verdict}">
+      <div class="verdict-circle">${report.verdict}</div>
+      <div class="verdict-info">
+        <h2>${vd.title}</h2>
+        <p>${vd.desc}</p>
+      </div>
+    </div>
+
+    <!-- Property info -->
+    <div class="section">
+      <div class="section-head">🏠 Property Details</div>
+      <div class="section-body">
+        <div class="meta-grid">
+          <div class="meta-item"><label>Address</label><span>${propInfo.address || propInfo.property_address || '—'}</span></div>
+          <div class="meta-item"><label>Property Type</label><span>${propInfo.property_type || '—'}</span></div>
+          <div class="meta-item"><label>Job Reference</label><span>${report.job_number || '—'}</span></div>
+          <div class="meta-item"><label>Inspection Date</label><span>${fmtDate(report.submitted_at)}</span></div>
+          <div class="meta-item"><label>Report Issued</label><span>${fmtDate(report.sent_at)}</span></div>
+          <div class="meta-item"><label>Risk Level</label><span style="text-transform:capitalize; font-weight:700;">${report.risk_level || '—'}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost estimate -->
+    <div class="section">
+      <div class="section-head">💰 Remediation Cost Estimate</div>
+      <div class="section-body" style="padding:0;">
+        <table class="cost-table">
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Scope</th>
+              <th>Estimated Range</th>
+              <th>Risk After Works</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${options.map(o => `
+              <tr class="${o.key === report.verdict ? 'recommended' : ''}">
+                <td>${o.label}${o.key === report.verdict ? '<span class="badge badge-rec">Recommended</span>' : ''}</td>
+                <td style="color:var(--muted)">${o.desc}</td>
+                <td>${fmt$(o.low)} – ${fmt$(o.high)}</td>
+                <td style="text-transform:capitalize">${o.risk || '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Findings -->
+    ${sortedFindings.length > 0 ? `
+    <div class="section">
+      <div class="section-head">⚠️ Findings (${sortedFindings.length})</div>
+      <div class="section-body">
+        ${sortedFindings.map(f => `
+          <div class="finding">
+            <span class="finding-tag ${tagClass(f.priority)}">${tagLabel(f.priority)}</span>
+            <div class="finding-body">
+              <p>${f.label}</p>
+              ${(f.cost_low != null || f.cost_high != null) ? `<span>Estimated cost: ${fmt$(f.cost_low)} – ${fmt$(f.cost_high)}</span>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Technician notes -->
+    ${report.assessment_notes ? `
+    <div class="section">
+      <div class="section-head">📋 Technician Notes</div>
+      <div class="section-body">
+        <p style="margin:0; white-space:pre-wrap; color:var(--muted);">${report.assessment_notes}</p>
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Next steps -->
+    <div class="section">
+      <div class="section-head">✅ Recommended Next Steps</div>
+      <div class="section-body">
+        <ul class="next-steps">
+          ${steps.map((s, i) => `<li><span class="num">${i+1}</span><span>${s}</span></li>`).join('')}
+        </ul>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-box">
+      <h3>Questions about your report?</h3>
+      <p>Our licensed electrician can walk you through the findings in a 15-minute call — no charge.</p>
+      <a href="tel:0410323034" class="cta-btn">📞 Call Meng — 0410 323 034</a>
+    </div>
+
+  </div>
+
+  <footer class="report-footer">
+    <p>Better Home Technology Pty Ltd · ABN 56 613 514 640 · Electrical Contractor Licence PGE275430</p>
+    <p>Serving Adelaide Metropolitan Area · info@bhtechnology.com.au · 0410 323 034</p>
+    <p style="margin-top:0.5rem; font-size:0.75rem;">
+      This report is prepared by a licensed electrician based on a visual and functional inspection.
+      It does not constitute a warranty and should be read in conjunction with a full building inspection.
+    </p>
+  </footer>
+  `;
+})();
+</script>
+
+</body>
+</html>

@@ -195,8 +195,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/inspections/public/:id — client-facing sanitised report
+// GET /api/inspections/public/:id — client-facing sanitised report (CORS-open)
 router.get('/public/:id', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
   try {
     const r = await pool.query(
       `SELECT id, job_number, verdict, risk_level, cost_low, cost_high,
@@ -248,7 +250,7 @@ router.patch('/:id/status', async (req, res) => {
     if (status === 'sent' && insp.contact_phone) {
       try {
         await sendSMS(insp.contact_phone,
-          `Your electrical inspection report is ready! View it here: ${(process.env.CRM_PUBLIC_URL || 'https://crm.bhtechnology.com.au').replace(/\/$/, '')}/inspection-report.html?id=${insp.id} ` +
+          `Your electrical inspection report is ready! View it here: ${(process.env.REPORT_BASE_URL || 'https://pre-purchase.bhtechnology.com.au').replace(/\/$/, '')}/inspection-report.html?id=${insp.id} ` +
           `Verdict: Option ${insp.verdict}. Questions? Call 0410 323 034.`
         );
       } catch (smsErr) {
