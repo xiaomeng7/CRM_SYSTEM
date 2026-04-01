@@ -37,6 +37,7 @@ const adVariantReviewRouter = require('./routes/ad-variant-review');
 const landingVariantReviewRouter = require('./routes/landing-variant-review');
 const adPublishRouter = require('./routes/ad-publish');
 const b2bProspectsRouter = require('./routes/b2b-prospects');
+const inspectionsRouter = require('./routes/inspections');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -75,6 +76,7 @@ app.use('/api/ad-variants', adVariantReviewRouter);
 app.use('/api/landing-variants', landingVariantReviewRouter);
 app.use('/api/ad-publish', adPublishRouter);
 app.use('/api/b2b-prospects', b2bProspectsRouter);
+app.use('/api/inspections', inspectionsRouter);
 
 app.get('/api/dashboard/stats', async (req, res) => {
   try {

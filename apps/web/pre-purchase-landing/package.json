@@ -1,0 +1,16 @@
+{
+  "name": "@bht/pre-purchase-landing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -l 3007",
+    "build": "echo 'Static site; no build step.'"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.0.0",
+    "typescript": "^5.0.0"
+  }
+}

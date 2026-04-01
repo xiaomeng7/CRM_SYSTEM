@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pre-Purchase Electrical Inspection | Better Home Technology – Adelaide</title>
+  <meta name="description" content="Before you sign. An independent electrical risk assessment for Adelaide home buyers. Know exactly what you're buying — and what it will cost to fix.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+    @media (max-width: 680px) { .risk-grid { grid-template-columns: 1fr; } }
+    .risk-card { border-radius: var(--radius); padding: 1.5rem; border: 2px solid; }
+    .risk-a { background: #f0faf4; border-color: #b6e2c8; }
+    .risk-b { background: #fffbf0; border-color: #ffd980; }
+    .risk-c { background: #fff5f5; border-color: #ffb3b3; }
+    .risk-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    .risk-a .risk-label { color: #1a7a3a; }
+    .risk-b .risk-label { color: #7a5500; }
+    .risk-c .risk-label { color: #c00; }
+    .risk-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .risk-body { font-size: 0.875rem; line-height: 1.6; color: var(--muted); }
+    .check-list { list-style: none; padding: 0; margin: 0; }
+    .check-list li { padding: 0.55rem 0; border-bottom: 1px solid var(--border-soft); display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9375rem; }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li::before { content: "✓"; color: #1a1a1a; font-weight: 700; flex-shrink: 0; }
+    .scope-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.25rem; }
+    .scope-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; }
+    .scope-item h4 { margin: 0 0 0.35rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+    .scope-item p { margin: 0; font-size: 0.875rem; line-height: 1.5; }
+    .urgency-bar { background: #fff8ed; border: 1px solid #ffd980; border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9375rem; }
+    .steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
+    .step { position: relative; padding: 1.25rem 1.25rem 1.25rem 3.25rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .step::before { counter-increment: step; content: counter(step); position: absolute; left: 1rem; top: 1.25rem; width: 1.5rem; height: 1.5rem; background: var(--text); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+    .step h4 { margin: 0 0 0.25rem; font-size: 0.9375rem; }
+    .step p { margin: 0; font-size: 0.875rem; color: var(--muted); line-height: 1.5; }
+    .pricing-box { background: var(--card); border: 2px solid var(--text); border-radius: var(--radius); padding: 2rem 2.5rem; max-width: 480px; }
+    .price-main { font-size: 2.75rem; font-weight: 700; letter-spacing: -0.03em; }
+    .price-note { color: var(--muted); font-size: 0.9375rem; margin-top: 0.25rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 580px) { .form-row { grid-template-columns: 1fr; } }
+    .success-banner { display: none; background: #f0faf4; border: 1px solid #b6e2c8; border-radius: var(--radius); padding: 1.75rem; text-align: center; }
+    .success-banner.visible { display: block; }
+    .trust-bar { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; margin-top: 1.5rem; }
+    .trust-item { font-size: 0.875rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem; }
+    .trust-item::before { content: "✓"; font-weight: 700; color: var(--text); }
+    .report-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9375rem; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 1px; text-decoration: none; }
+    .report-link:hover { color: var(--text); border-color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <span class="header-brand">Better Home Technology</span>
+      <div class="header-right">
+        <a href="tel:0493208540" class="header-phone">0493 208 540</a>
+        <a href="#book" class="header-cta">Book Inspection</a>
+      </div>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+
+    <!-- Hero -->
+    <section style="padding: 4.5rem 0 3.5rem;">
+      <div class="container" style="max-width: 840px;">
+        <div style="margin-bottom: 1rem;">
+          <span style="display:inline-block; background:#f0f0f0; color:#555; font-size:0.75rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; letter-spacing:0.04em; text-transform:uppercase;">Pre-Purchase Electrical Inspection</span>
+        </div>
+        <h1 style="font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin: 0 0 1.25rem;">
+          Know the electrical before<br>you sign the contract.
+        </h1>
+        <p style="font-size: 1.125rem; color: var(--muted); max-width: 580px; margin: 0 0 0.75rem; line-height: 1.65;">
+          An independent electrical risk assessment for Adelaide home buyers. We inspect, rate the risk, and give you a clear decision — in plain English — before settlement.
+        </p>
+        <p style="font-size: 1rem; color: var(--muted); max-width: 560px; margin: 0 0 2rem; line-height: 1.65;">
+          Report delivered within 24 hours.
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+          <a href="#book" class="header-cta" style="font-size: 1rem; padding: 0.8rem 2rem;">Book Now — $495 + GST</a>
+          <a href="/sample-pre-purchase-report.html" target="_blank" class="report-link">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            View sample report
+          </a>
+        </div>
+        <div class="trust-bar">
+          <span class="trust-item">Licensed electrician on site</span>
+          <span class="trust-item">Independent — we don't do repairs</span>
+          <span class="trust-item">Adelaide metro coverage</span>
+          <span class="trust-item">24-hour report turnaround</span>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- The 3 outcomes -->
+    <section style="padding: 4rem 0; background: var(--section-alt);">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.5rem;">Your report will tell you one of three things</h2>
+        <p style="color: var(--muted); margin: 0 0 0.5rem;">We don't write 40-page technical reports. We give you a clear verdict and a cost estimate.</p>
+        <div class="risk-grid">
+          <div class="risk-card risk-a">
+            <div class="risk-label">🟢 Option A — Green Light</div>
+            <div class="risk-title">Safe to buy</div>
+            <div class="risk-body">Electrical system is compliant and in good condition. No material concerns. Proceed with confidence.</div>
+          </div>
+          <div class="risk-card risk-b">
+            <div class="risk-label">🟡 Option B — Proceed with Budget</div>
+            <div class="risk-title">Buy — but plan for upgrades</div>
+            <div class="risk-body">Mostly sound, but specific items need attention. We'll give you a cost estimate ($3,000–$8,000 typical) so you can negotiate or budget accordingly.</div>
+          </div>
+          <div class="risk-card risk-c">
+            <div class="risk-label">🔴 Option C — High Risk</div>
+            <div class="risk-title">Walk away or negotiate hard</div>
+            <div class="risk-body">Non-compliant wiring, unlicensed work, or major rewire risk. Potential cost $15,000+. We'll tell you exactly why and what the full scope looks like.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who it's for -->
+    <section style="padding: 4rem 0;">
+      <div class="container" style="max-width: 900px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+          <div>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem;">Built for home buyers</h2>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0 0 1.25rem;">
+              A standard building inspection tells you about cracks and roof tiles. It rarely goes deep on the electrical system — and an outdated switchboard or non-compliant wiring can cost tens of thousands to fix post-settlement.
+            </p>
+            <p style="color: var(--muted); line-height: 1.7; margin: 0;">
+              Our inspection is designed to run alongside your building inspection, in the same inspection window. One extra call, and you'll have the complete picture before you commit.
+            </p>
+          </div>
+          <div>
+            <ul class="check-list">
+              <li>Run alongside your building inspection — same day</li>
+              <li>Complete in approximately 60 minutes on site</li>
+              <li>Plain-English report — no electrician required to interpret</li>
+              <li>Clear cost estimate for any remediation work</li>
+              <li>Useful for price negotiation with vendor</li>
+              <li>We're independent — we don't profit from recommending repairs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- What we inspect -->
+    <section style="padding: 4rem 0; background: var(--section-alt);">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.35rem;">What we inspect</h2>
+        <p style="color: var(--muted); margin: 0;">7 core areas. Approximately 60 minutes on site.</p>
+        <div class="scope-grid">
+          <div class="scope-item">
+            <h4>Switchboard & Supply</h4>
+            <p>Age, compliance, capacity, safety switches, metering, main isolator condition.</p>
+          </div>
+          <div class="scope-item">
+            <h4>Wiring Condition</h4>
+            <p>Visible wiring age and type. Signs of DIY work, damaged insulation, or unlicensed modifications.</p>
+          </div>
+          <div class="scope-item">
+            <h4>Safety Devices</h4>
+            <p>RCD / safety switch test. Smoke alarm type, quantity, and location compliance.</p>
+          </div>
+          <div class="scope-item">
+            <h4>Circuits & Load Capacity</h4>
+            <p>Circuit layout, overloaded circuits, suitability for modern appliance loads.</p>
+          </div>
+          <div class="scope-item">
+            <h4>Earthing & Bonding</h4>
+            <p>Main earth connection, equipotential bonding in wet areas, outdoor circuits.</p>
+          </div>
+          <div class="scope-item">
+            <h4>Solar & Battery (if present)</h4>
+            <p>Inverter condition, battery install compliance, grid connection safety.</p>
+          </div>
+          <div class="scope-item">
+            <h4>Future Readiness</h4>
+            <p>Capacity for EV charger, additional circuits, or solar installation at this property.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section style="padding: 4rem 0;">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem;">How it works</h2>
+        <p style="color: var(--muted); margin: 0 0 0.25rem;">Book today. Report in your inbox before the end of the next business day.</p>
+        <div class="steps">
+          <div class="step">
+            <h4>Book online</h4>
+            <p>Fill in the property address and inspection date. Takes 2 minutes.</p>
+          </div>
+          <div class="step">
+            <h4>We confirm</h4>
+            <p>We call or text within 2 hours to confirm access and timing.</p>
+          </div>
+          <div class="step">
+            <h4>On-site inspection</h4>
+            <p>Licensed electrician on site ~60 min. You don't need to be present.</p>
+          </div>
+          <div class="step">
+            <h4>Report delivered</h4>
+            <p>Full HTML report with risk rating, findings, and cost estimate within 24 hours.</p>
+          </div>
+          <div class="step">
+            <h4>Optional debrief</h4>
+            <p>15-minute call with our electrician to walk through findings if you need it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- Pricing -->
+    <section style="padding: 4rem 0; background: var(--section-alt);">
+      <div class="container" style="max-width: 900px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem;">Pricing</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start;">
+          <div class="pricing-box">
+            <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.75rem;">Pre-Purchase Inspection</div>
+            <div class="price-main">$495</div>
+            <div class="price-note">+ GST · single property</div>
+            <ul class="check-list" style="margin-top: 1.5rem;">
+              <li>On-site inspection (~60 min)</li>
+              <li>Full risk assessment report</li>
+              <li>A / B / C verdict + cost estimate</li>
+              <li>Delivered within 24 hours</li>
+              <li>Optional 15-min debrief call</li>
+            </ul>
+            <a href="#book" class="header-cta" style="display: block; text-align: center; margin-top: 1.5rem; font-size: 0.9375rem;">Book Now</a>
+          </div>
+          <div>
+            <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 0.75rem;">Why $495?</h3>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.7; margin: 0 0 1rem;">
+              A standard building inspection costs $500–700 and barely touches the electrical system. Our inspection is focused exclusively on electrical — which is where the expensive surprises hide.
+            </p>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.7; margin: 0 0 1rem;">
+              If we find an Option C situation and you use our report to negotiate the price down, it typically pays for itself 20 to 30 times over.
+            </p>
+            <p style="color: var(--muted); font-size: 0.875rem; line-height: 1.7; margin: 0;">
+              Invoice issued on report delivery. Payment by bank transfer or card.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section style="padding: 4rem 0;">
+      <div class="container" style="max-width: 720px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem;">Common questions</h2>
+        <div style="border-top: 1px solid var(--border-soft);">
+          <div style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-soft);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Can I book this alongside a building inspection?</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0;">Yes — and we recommend it. Both inspections can run simultaneously, meaning no additional access trip for the agent. Just give us the same date and time window.</p>
+          </div>
+          <div style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-soft);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Do I need to be at the property?</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0;">No. We just need access arranged — usually through the selling agent. We'll co-ordinate directly with them if you prefer.</p>
+          </div>
+          <div style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-soft);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Can I use your report to negotiate the price?</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0;">Absolutely. Our cost estimates are conservative and based on real Adelaide market rates. Many buyers use the remediation figure directly in their offer negotiation.</p>
+          </div>
+          <div style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-soft);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">How quickly can you schedule?</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0;">We typically have availability within 1–2 business days. For urgent settlements, call us directly and we'll do our best to accommodate same-day or next-morning.</p>
+          </div>
+          <div style="padding: 1.25rem 0; border-bottom: 1px solid var(--border-soft);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Are you independent? Do you also do repairs?</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0;">We are a pure inspection and advisory business. We do not quote for or carry out remediation work on properties we inspect. This keeps our reports completely independent.</p>
+          </div>
+          <div style="padding: 1.25rem 0;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Are your electricians licensed in SA?</div>
+            <p style="color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0;">Yes. SA Electrical Contractor Licence No. PGE275430. Better Home Technology Pty Ltd ABN 56 613 514 640.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="border-top: 1px solid var(--border);"></div>
+
+    <!-- Booking form -->
+    <section style="padding: 4rem 0;" id="book">
+      <div class="container" style="max-width: 620px;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem;">Book your inspection</h2>
+        <p style="color: var(--muted); margin: 0 0 2rem;">We'll confirm within 2 hours during business hours.</p>
+
+        <div class="success-banner" id="success-banner">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">✓</div>
+          <div style="font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem;">Booking request received</div>
+          <p style="color: var(--muted); margin: 0;">We'll call or text you within 2 hours (Mon–Fri 8am–5pm ACST) to confirm access and timing. Your report will be delivered within 24 hours of the inspection.</p>
+        </div>
+
+        <form id="booking-form" novalidate>
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="name">Your name *</label>
+              <input class="field-input" id="name" name="name" type="text" placeholder="First and last name" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="phone">Mobile *</label>
+              <input class="field-input" id="phone" name="phone" type="tel" placeholder="0412 345 678" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="email">Email *</label>
+            <input class="field-input" id="email" name="email" type="email" placeholder="you@email.com" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="property_address">Property address being purchased *</label>
+            <input class="field-input" id="property_address" name="property_address" type="text" placeholder="e.g. 24 Prospect Rd, Prospect SA 5082" required>
+          </div>
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label" for="inspection_date">Preferred inspection date *</label>
+              <input class="field-input" id="inspection_date" name="inspection_date" type="date" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="settlement_date">Settlement / finance deadline</label>
+              <input class="field-input" id="settlement_date" name="settlement_date" type="date">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="access_contact">Agent name &amp; number (for access)</label>
+            <input class="field-input" id="access_contact" name="access_contact" type="text" placeholder="e.g. James Smith 0400 000 000 — Ray White Norwood">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="property_type">Property type</label>
+            <select class="field-input" id="property_type" name="property_type">
+              <option value="">Select…</option>
+              <option value="House">House</option>
+              <option value="Townhouse">Townhouse / Semi</option>
+              <option value="Unit">Unit / Apartment</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="notes">Anything else we should know</label>
+            <textarea class="field-input" id="notes" name="notes" rows="2" style="resize:vertical;" placeholder="e.g. older home, visible knob-and-tube wiring, solar on roof…"></textarea>
+          </div>
+
+          <div id="form-error" style="display:none; color: var(--error); font-size: 0.875rem; margin-bottom: 1rem; padding: 0.75rem; background: #fff0f0; border-radius: var(--radius-sm);"></div>
+
+          <button type="submit" id="submit-btn" class="header-cta" style="width:100%; text-align:center; font-size:1rem; padding:0.85rem; border:none; cursor:pointer;">
+            Request Inspection — $495 + GST
+          </button>
+          <p style="color:var(--muted); font-size:0.8rem; text-align:center; margin-top:0.75rem;">
+            No payment required now. Invoice issued on report delivery.
+          </p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="border-top: 1px solid var(--border); padding: 2rem 0; background: var(--card);">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <div style="font-weight:600; margin-bottom:0.25rem;">Better Home Technology Pty Ltd</div>
+        <div style="color:var(--muted); font-size:0.875rem;">ABN 56 613 514 640 · Electrical Contractor Licence PGE275430</div>
+        <div style="color:var(--muted); font-size:0.875rem;">Serving Adelaide Metropolitan Area</div>
+      </div>
+      <div style="text-align:right; color:var(--muted); font-size:0.875rem;">
+        <div><a href="tel:0493208540" style="color:var(--muted);">0493 208 540</a></div>
+        <div><a href="mailto:info@bhtechnology.com.au" style="color:var(--muted);">info@bhtechnology.com.au</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => header.classList.toggle('is-stuck', window.scrollY > 10));
+
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('inspection_date').min = today;
+    document.getElementById('settlement_date').min = today;
+
+    const form = document.getElementById('booking-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorDiv = document.getElementById('form-error');
+    const successBanner = document.getElementById('success-banner');
+
+    function showError(msg) {
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Request Inspection — $495 + GST';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const property_address = document.getElementById('property_address').value.trim();
+      const inspection_date = document.getElementById('inspection_date').value;
+
+      if (!name) return showError('Your name is required.');
+      if (!phone || phone.replace(/\D/g,'').length < 8) return showError('A valid mobile number is required.');
+      if (!email || !email.includes('@')) return showError('A valid email address is required.');
+      if (!property_address) return showError('Property address is required.');
+      if (!inspection_date) return showError('Preferred inspection date is required.');
+
+      const params = new URLSearchParams(window.location.search);
+      const payload = {
+        name,
+        phone,
+        email,
+        property_address,
+        inspection_date,
+        settlement_date: document.getElementById('settlement_date').value || null,
+        access_contact: document.getElementById('access_contact').value.trim() || null,
+        property_type: document.getElementById('property_type').value || null,
+        notes: document.getElementById('notes').value.trim() || null,
+        product_type: 'pre_purchase',
+        source: 'landing:pre_purchase',
+        utm_source: params.get('utm_source') || null,
+        utm_medium: params.get('utm_medium') || null,
+        utm_campaign: params.get('utm_campaign') || null,
+        page_url: window.location.href,
+      };
+
+      try {
+        const res = await fetch('/api/apply-pre-purchase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (!res.ok) return showError(json.error || 'Something went wrong. Please call us on 0493 208 540.');
+        form.style.display = 'none';
+        successBanner.classList.add('visible');
+        window.scrollTo({ top: document.getElementById('book').offsetTop - 80, behavior: 'smooth' });
+      } catch {
+        showError('Network error. Please try again or call 0493 208 540.');
+      }
+    });
+  </script>
+</body>
+</html>

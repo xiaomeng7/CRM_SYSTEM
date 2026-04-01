@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Pre-Purchase Inspection — BHT Electrical</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { background: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useCallback, useRef } = React;
+
+    // ---------------------------------------------------------------------------
+    // Constants
+    // ---------------------------------------------------------------------------
+    const TOTAL_STEPS = 7; // modules 1-7 (step 0 is job lookup, not counted in progress)
+
+    const PROPERTY_TYPES = ['House', 'Unit / Apartment', 'Townhouse', 'Duplex', 'Commercial', 'Other'];
+    const WIRING_TYPES   = ['TPS (flat twin)', 'Rubber sheathed', 'Conduit', 'Mixed / Unknown'];
+    const SB_AGES        = ['Modern (2000s+)', '1990s', 'Pre-1990s', 'Fuseboard'];
+    const LABELLING_OPTS = ['Good', 'Partial', 'Poor'];
+    const RCD_RESULTS    = ['Pass', 'Fail', 'None fitted'];
+    const SMOKE_COMPL    = ['Yes', 'No', 'Partial'];
+    const WIRING_AGES    = ['Modern (2000s+)', '1990s', 'Older (pre-1990s)', 'Mixed'];
+    const DIY_OPTS       = ['None', 'Minor', 'Significant'];
+    const DAMAGE_OPTS    = ['None', 'Minor', 'Significant'];
+    const OVERLOAD_OPTS  = ['None', 'Suspected', 'Confirmed'];
+    const DEDICATED_CIRCS = ['Stove / Cooktop', 'Air Conditioning', 'Hot Water System', 'EV Charger'];
+    const CONDITION_OPTS = ['Good', 'Fair', 'Poor'];
+    const VERDICT_OPTS   = ['A — No significant issues', 'B — Moderate concern, factor cost in', 'C — High risk, major works required'];
+
+    // ---------------------------------------------------------------------------
+    // Helper UI primitives
+    // ---------------------------------------------------------------------------
+
+    function Label({ children, required }) {
+      return (
+        <label className="block text-sm font-semibold text-slate-700 mb-1">
+          {children}{required && <span className="text-rose-500 ml-0.5">*</span>}
+        </label>
+      );
+    }
+
+    function TextInput({ label, value, onChange, placeholder, required, type = 'text', disabled }) {
+      return (
+        <div className="mb-4">
+          {label && <Label required={required}>{label}</Label>}
+          <input
+            type={type}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            disabled={disabled}
+            required={required}
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-500"
+          />
+        </div>
+      );
+    }
+
+    function SelectInput({ label, value, onChange, options, required, placeholder }) {
+      return (
+        <div className="mb-4">
+          {label && <Label required={required}>{label}</Label>}
+          <select
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            required={required}
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+          >
+            <option value="">{placeholder || 'Select…'}</option>
+            {options.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      );
+    }
+
+    function RadioGroup({ label, value, onChange, options, required }) {
+      return (
+        <div className="mb-4">
+          {label && <Label required={required}>{label}</Label>}
+          <div className="flex flex-col gap-2">
+            {options.map(o => (
+              <label key={o} className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${value === o ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'}`}>
+                <input
+                  type="radio"
+                  name={label}
+                  value={o}
+                  checked={value === o}
+                  onChange={() => onChange(o)}
+                  className="accent-blue-600 w-5 h-5 shrink-0"
+                />
+                <span className="text-base text-slate-800">{o}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function YesNoToggle({ label, value, onChange, required }) {
+      return (
+        <div className="mb-4">
+          {label && <Label required={required}>{label}</Label>}
+          <div className="flex gap-3">
+            {['Yes', 'No'].map(opt => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => onChange(opt)}
+                className={`flex-1 rounded-xl border px-4 py-3 text-base font-medium transition-colors ${value === opt ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-700'}`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function CheckboxGroup({ label, values, onChange, options }) {
+      function toggle(opt) {
+        if (values.includes(opt)) onChange(values.filter(v => v !== opt));
+        else onChange([...values, opt]);
+      }
+      return (
+        <div className="mb-4">
+          {label && <Label>{label}</Label>}
+          <div className="flex flex-col gap-2">
+            {options.map(o => (
+              <label key={o} className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${values.includes(o) ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'}`}>
+                <input
+                  type="checkbox"
+                  checked={values.includes(o)}
+                  onChange={() => toggle(o)}
+                  className="accent-blue-600 w-5 h-5 shrink-0"
+                />
+                <span className="text-base text-slate-800">{o}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function TextArea({ label, value, onChange, placeholder, rows = 4 }) {
+      return (
+        <div className="mb-4">
+          {label && <Label>{label}</Label>}
+          <textarea
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            rows={rows}
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+        </div>
+      );
+    }
+
+    function NumberInput({ label, value, onChange, placeholder, required, prefix }) {
+      return (
+        <div className="mb-4">
+          {label && <Label required={required}>{label}</Label>}
+          <div className="relative flex items-center">
+            {prefix && <span className="absolute left-4 text-slate-500 font-medium select-none">{prefix}</span>}
+            <input
+              type="number"
+              value={value}
+              onChange={e => onChange(e.target.value)}
+              placeholder={placeholder}
+              required={required}
+              min="0"
+              className={`w-full rounded-xl border border-slate-200 bg-white py-3 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${prefix ? 'pl-8 pr-4' : 'px-4'}`}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Progress bar
+    // ---------------------------------------------------------------------------
+
+    function ProgressBar({ step }) {
+      // step is 1-7 for modules
+      return (
+        <div className="flex items-center gap-1.5 justify-center py-4">
+          {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map(n => (
+            <div
+              key={n}
+              className={`rounded-full transition-all ${
+                n < step  ? 'w-3 h-3 bg-blue-600' :
+                n === step ? 'w-4 h-4 bg-blue-600 ring-2 ring-blue-300' :
+                             'w-3 h-3 bg-slate-300'
+              }`}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Card wrapper
+    // ---------------------------------------------------------------------------
+
+    function Card({ children, className = '' }) {
+      return (
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 p-5 ${className}`}>
+          {children}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Navigation buttons
+    // ---------------------------------------------------------------------------
+
+    function NavButtons({ onBack, onNext, nextLabel = 'Next', onSubmit, submitting }) {
+      return (
+        <div className={`flex gap-3 pt-2 ${onBack ? 'justify-between' : 'justify-end'}`}>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex-1 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-base font-semibold text-slate-700 active:bg-slate-50"
+            >
+              Back
+            </button>
+          )}
+          {onSubmit ? (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={submitting}
+              className="flex-1 rounded-xl bg-emerald-600 px-6 py-3.5 text-base font-semibold text-white active:bg-emerald-700 disabled:opacity-60"
+            >
+              {submitting ? 'Submitting…' : 'Submit Report'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onNext}
+              className="flex-1 rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white active:bg-blue-700"
+            >
+              {nextLabel}
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Header
+    // ---------------------------------------------------------------------------
+
+    function AppHeader({ jobNumber, clientName, step }) {
+      return (
+        <header className="sticky top-0 z-10 bg-white border-b border-slate-100 px-4 pt-safe">
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <div className="text-base font-bold text-slate-900 leading-tight">BHT Electrical</div>
+              <div className="text-xs text-slate-500">Pre-Purchase Inspection</div>
+            </div>
+            {jobNumber && (
+              <div className="text-right">
+                <div className="text-xs font-semibold text-blue-600">#{jobNumber}</div>
+                {clientName && <div className="text-xs text-slate-500 truncate max-w-[140px]">{clientName}</div>}
+              </div>
+            )}
+          </div>
+          {step >= 1 && step <= TOTAL_STEPS && <ProgressBar step={step} />}
+        </header>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 0: Job Lookup
+    // ---------------------------------------------------------------------------
+
+    function StepJobLookup({ onFound }) {
+      const [jobNumber, setJobNumber] = useState('');
+      const [loading, setLoading]     = useState(false);
+      const [error, setError]         = useState('');
+
+      async function handleLookup() {
+        const jn = jobNumber.trim();
+        if (!jn) { setError('Please enter a job number.'); return; }
+        setError('');
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/inspections/job-lookup?job_number=${encodeURIComponent(jn)}`);
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.error || `Server error ${res.status}`);
+          }
+          const data = await res.json();
+          onFound({
+            job_number:  jn,
+            client_name: data.client_name || '',
+            address:     data.address     || '',
+            phone:       data.phone       || '',
+          });
+        } catch (err) {
+          setError(err.message || 'Could not find job. Check the number and try again.');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div className="px-4 py-6 max-w-lg mx-auto">
+          <div className="mb-6 text-center">
+            <div className="text-2xl font-bold text-slate-900 mb-1">Start Inspection</div>
+            <div className="text-slate-500 text-sm">Enter the ServiceM8 job number to begin</div>
+          </div>
+          <Card>
+            <TextInput
+              label="Job Number"
+              value={jobNumber}
+              onChange={setJobNumber}
+              placeholder="e.g. J-12345"
+              required
+            />
+            {error && (
+              <div className="mb-3 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700">
+                {error}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={handleLookup}
+              disabled={loading}
+              className="w-full rounded-xl bg-blue-600 px-6 py-3.5 text-base font-semibold text-white active:bg-blue-700 disabled:opacity-60"
+            >
+              {loading ? 'Looking up…' : 'Look Up Job'}
+            </button>
+          </Card>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 1: Property Info
+    // ---------------------------------------------------------------------------
+
+    function Step1PropertyInfo({ data, onChange, onBack, onNext, jobData }) {
+      function field(key) { return data[key] || ''; }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      function handleNext() {
+        if (!field('address')) { alert('Please confirm the property address.'); return; }
+        onNext();
+      }
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 1 — Property Info</div>
+            <div className="text-sm text-slate-500">Confirm property details</div>
+          </div>
+          <Card>
+            <TextInput label="Property Address" value={field('address')} onChange={set('address')} placeholder="123 Example St, Suburb" required />
+            <NumberInput label="Year Built" value={field('year_built')} onChange={set('year_built')} placeholder="e.g. 1985" />
+            <SelectInput label="Property Type" value={field('property_type')} onChange={set('property_type')} options={PROPERTY_TYPES} required />
+            <SelectInput label="Visible Wiring Type" value={field('wiring_type')} onChange={set('wiring_type')} options={WIRING_TYPES} />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onNext={handleNext} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 2: Switchboard & Supply
+    // ---------------------------------------------------------------------------
+
+    function Step2Switchboard({ data, onChange, onBack, onNext }) {
+      function field(key) { return data[key] !== undefined ? data[key] : ''; }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 2 — Switchboard & Supply</div>
+            <div className="text-sm text-slate-500">Assess the main switchboard condition</div>
+          </div>
+          <Card>
+            <RadioGroup label="Switchboard Age / Type" value={field('sb_age')} onChange={set('sb_age')} options={SB_AGES} required />
+            <YesNoToggle label="Main Isolator Operational" value={field('main_isolator_ok')} onChange={set('main_isolator_ok')} />
+            <RadioGroup label="Circuit Labelling" value={field('labelling')} onChange={set('labelling')} options={LABELLING_OPTS} />
+            <YesNoToggle label="Signs of Overheating / Burning" value={field('overheating')} onChange={set('overheating')} />
+            <YesNoToggle label="Spare Capacity Available" value={field('spare_capacity')} onChange={set('spare_capacity')} />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onNext={onNext} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 3: Safety Devices
+    // ---------------------------------------------------------------------------
+
+    function Step3SafetyDevices({ data, onChange, onBack, onNext }) {
+      function field(key) { return data[key] !== undefined ? data[key] : ''; }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 3 — Safety Devices</div>
+            <div className="text-sm text-slate-500">RCDs and smoke alarms</div>
+          </div>
+          <Card>
+            <NumberInput label="Number of RCDs Installed" value={field('rcd_count')} onChange={set('rcd_count')} placeholder="0" />
+            <RadioGroup label="RCD Test Result" value={field('rcd_test')} onChange={set('rcd_test')} options={RCD_RESULTS} />
+            <NumberInput label="Number of Smoke Alarms" value={field('smoke_alarm_count')} onChange={set('smoke_alarm_count')} placeholder="0" />
+            <RadioGroup label="Smoke Alarms Compliant" value={field('smoke_alarm_compliant')} onChange={set('smoke_alarm_compliant')} options={SMOKE_COMPL} />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onNext={onNext} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 4: Wiring Condition
+    // ---------------------------------------------------------------------------
+
+    function Step4WiringCondition({ data, onChange, onBack, onNext }) {
+      function field(key) { return data[key] !== undefined ? data[key] : ''; }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 4 — Wiring Condition</div>
+            <div className="text-sm text-slate-500">Inspect accessible wiring throughout the property</div>
+          </div>
+          <Card>
+            <RadioGroup label="Wiring Age / Era" value={field('wiring_age')} onChange={set('wiring_age')} options={WIRING_AGES} />
+            <RadioGroup label="DIY Modifications" value={field('diy_mods')} onChange={set('diy_mods')} options={DIY_OPTS} />
+            <RadioGroup label="Visible Damage" value={field('damage_visible')} onChange={set('damage_visible')} options={DAMAGE_OPTS} />
+            <YesNoToggle label="Junction Boxes Accessible" value={field('jb_accessible')} onChange={set('jb_accessible')} />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onNext={onNext} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 5: Circuits & Load Capacity
+    // ---------------------------------------------------------------------------
+
+    function Step5Circuits({ data, onChange, onBack, onNext }) {
+      function field(key) { return data[key] !== undefined ? data[key] : (key === 'dedicated_circuits' ? [] : ''); }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 5 — Circuits & Load Capacity</div>
+            <div className="text-sm text-slate-500">Dedicated circuits and load assessment</div>
+          </div>
+          <Card>
+            <CheckboxGroup
+              label="Dedicated Circuits Present"
+              values={field('dedicated_circuits')}
+              onChange={set('dedicated_circuits')}
+              options={DEDICATED_CIRCS}
+            />
+            <RadioGroup label="Overloaded Circuits" value={field('overloaded_circuits')} onChange={set('overloaded_circuits')} options={OVERLOAD_OPTS} />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onNext={onNext} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 6: Solar & Battery
+    // ---------------------------------------------------------------------------
+
+    function Step6Solar({ data, onChange, onBack, onNext }) {
+      function field(key) { return data[key] !== undefined ? data[key] : ''; }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      const solarPresent   = field('solar_present')   === 'Yes';
+      const batteryPresent = field('battery_present') === 'Yes';
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 6 — Solar & Battery</div>
+            <div className="text-sm text-slate-500">Renewable energy systems on site</div>
+          </div>
+          <Card>
+            <YesNoToggle label="Solar PV Present" value={field('solar_present')} onChange={set('solar_present')} />
+            {solarPresent && (
+              <div className="pl-4 border-l-2 border-blue-200 mb-2">
+                <TextInput label="Inverter Brand" value={field('solar_inverter_brand')} onChange={set('solar_inverter_brand')} placeholder="e.g. Fronius, SolarEdge" />
+                <NumberInput label="System Size (kW)" value={field('solar_kw')} onChange={set('solar_kw')} placeholder="e.g. 6.6" />
+                <RadioGroup label="Inverter Condition" value={field('solar_condition')} onChange={set('solar_condition')} options={CONDITION_OPTS} />
+              </div>
+            )}
+            <YesNoToggle label="Battery Storage Present" value={field('battery_present')} onChange={set('battery_present')} />
+            {batteryPresent && (
+              <div className="pl-4 border-l-2 border-blue-200 mb-2">
+                <TextInput label="Battery Brand / Model" value={field('battery_brand')} onChange={set('battery_brand')} placeholder="e.g. Tesla Powerwall" />
+                <RadioGroup label="Battery Condition" value={field('battery_condition')} onChange={set('battery_condition')} options={CONDITION_OPTS} />
+              </div>
+            )}
+            <YesNoToggle label="EV Charger Installed" value={field('ev_charger')} onChange={set('ev_charger')} />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onNext={onNext} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 7: Overall Assessment
+    // ---------------------------------------------------------------------------
+
+    function Step7Assessment({ data, onChange, onBack, onSubmit, submitting }) {
+      function field(key) { return data[key] !== undefined ? data[key] : ''; }
+      function set(key) { return val => onChange({ ...data, [key]: val }); }
+
+      function handleSubmit() {
+        if (!field('recommended_verdict')) {
+          alert('Please select a recommended verdict before submitting.');
+          return;
+        }
+        onSubmit();
+      }
+
+      return (
+        <div className="px-4 py-4 max-w-lg mx-auto">
+          <div className="mb-4">
+            <div className="text-lg font-bold text-slate-900">Module 7 — Overall Assessment</div>
+            <div className="text-sm text-slate-500">Final technician findings and verdict</div>
+          </div>
+          <Card>
+            <TextArea
+              label="Priority Findings"
+              value={field('priority_findings')}
+              onChange={set('priority_findings')}
+              placeholder="List any immediate or priority-action items here…"
+              rows={4}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <NumberInput
+                label="Cost Estimate — Low ($)"
+                value={field('cost_estimate_low')}
+                onChange={set('cost_estimate_low')}
+                placeholder="0"
+                prefix="$"
+              />
+              <NumberInput
+                label="Cost Estimate — High ($)"
+                value={field('cost_estimate_high')}
+                onChange={set('cost_estimate_high')}
+                placeholder="0"
+                prefix="$"
+              />
+            </div>
+            <TextArea
+              label="Technician Notes"
+              value={field('technician_notes')}
+              onChange={set('technician_notes')}
+              placeholder="Additional observations, access limitations, items not inspected…"
+              rows={4}
+            />
+            <RadioGroup
+              label="Recommended Verdict"
+              value={field('recommended_verdict')}
+              onChange={set('recommended_verdict')}
+              options={VERDICT_OPTS}
+              required
+            />
+          </Card>
+          <div className="mt-4">
+            <NavButtons onBack={onBack} onSubmit={handleSubmit} submitting={submitting} />
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Success screen
+    // ---------------------------------------------------------------------------
+
+    function SuccessScreen({ jobNumber }) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-6">
+            <svg className="w-10 h-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold text-slate-900 mb-2">Report Submitted</div>
+          <div className="text-slate-500 text-base max-w-xs">
+            Report will be generated within 24 hours.
+          </div>
+          {jobNumber && (
+            <div className="mt-3 text-sm text-slate-400">Job #{jobNumber}</div>
+          )}
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-10 rounded-xl border border-slate-200 bg-white px-8 py-3 text-base font-semibold text-slate-700 active:bg-slate-50"
+          >
+            Start New Inspection
+          </button>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Root App
+    // ---------------------------------------------------------------------------
+
+    function App() {
+      // step: 0 = job lookup, 1-7 = modules, 8 = success
+      const [step, setStep] = useState(0);
+
+      // Job meta
+      const [jobData, setJobData] = useState({
+        job_number:  '',
+        client_name: '',
+        address:     '',
+        phone:       '',
+      });
+
+      // Module form data (keyed by module number string for clarity)
+      const [m1, setM1] = useState({});
+      const [m2, setM2] = useState({});
+      const [m3, setM3] = useState({});
+      const [m4, setM4] = useState({});
+      const [m5, setM5] = useState({ dedicated_circuits: [] });
+      const [m6, setM6] = useState({});
+      const [m7, setM7] = useState({});
+
+      const [submitting, setSubmitting] = useState(false);
+      const [submitError, setSubmitError] = useState('');
+
+      function handleJobFound(data) {
+        setJobData(data);
+        // Pre-fill address into module 1
+        setM1(prev => ({ ...prev, address: data.address }));
+        setStep(1);
+      }
+
+      async function handleSubmit() {
+        setSubmitting(true);
+        setSubmitError('');
+        const payload = {
+          job_number:  jobData.job_number,
+          client_name: jobData.client_name,
+          phone:       jobData.phone,
+          property_info:    m1,
+          switchboard:      m2,
+          safety_devices:   m3,
+          wiring_condition: m4,
+          circuits:         m5,
+          solar_battery:    m6,
+          assessment:       m7,
+          submitted_at:     new Date().toISOString(),
+        };
+        try {
+          const res = await fetch('/api/inspections/pre-purchase', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.error || `Server error ${res.status}`);
+          }
+          setStep(8);
+        } catch (err) {
+          setSubmitError(err.message || 'Submission failed. Please try again.');
+        } finally {
+          setSubmitting(false);
+        }
+      }
+
+      // Success screen — no header
+      if (step === 8) return <SuccessScreen jobNumber={jobData.job_number} />;
+
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <AppHeader jobNumber={jobData.job_number} clientName={jobData.client_name} step={step} />
+
+          <div className="pb-8">
+            {step === 0 && <StepJobLookup onFound={handleJobFound} />}
+            {step === 1 && (
+              <Step1PropertyInfo
+                data={m1} onChange={setM1}
+                jobData={jobData}
+                onBack={() => setStep(0)}
+                onNext={() => setStep(2)}
+              />
+            )}
+            {step === 2 && (
+              <Step2Switchboard
+                data={m2} onChange={setM2}
+                onBack={() => setStep(1)}
+                onNext={() => setStep(3)}
+              />
+            )}
+            {step === 3 && (
+              <Step3SafetyDevices
+                data={m3} onChange={setM3}
+                onBack={() => setStep(2)}
+                onNext={() => setStep(4)}
+              />
+            )}
+            {step === 4 && (
+              <Step4WiringCondition
+                data={m4} onChange={setM4}
+                onBack={() => setStep(3)}
+                onNext={() => setStep(5)}
+              />
+            )}
+            {step === 5 && (
+              <Step5Circuits
+                data={m5} onChange={setM5}
+                onBack={() => setStep(4)}
+                onNext={() => setStep(6)}
+              />
+            )}
+            {step === 6 && (
+              <Step6Solar
+                data={m6} onChange={setM6}
+                onBack={() => setStep(5)}
+                onNext={() => setStep(7)}
+              />
+            )}
+            {step === 7 && (
+              <Step7Assessment
+                data={m7} onChange={setM7}
+                onBack={() => setStep(6)}
+                onSubmit={handleSubmit}
+                submitting={submitting}
+              />
+            )}
+            {submitError && (
+              <div className="fixed bottom-4 left-4 right-4 max-w-lg mx-auto rounded-xl bg-rose-600 px-4 py-3 text-white text-sm font-medium shadow-lg z-50">
+                {submitError}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Mount
+    // ---------------------------------------------------------------------------
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/apply-pre-purchase"
+  to = "/.netlify/functions/apply-pre-purchase"
+  status = 200
+  force = true
