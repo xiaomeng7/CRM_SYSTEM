@@ -9,7 +9,7 @@
 const router = require('express').Router();
 const { pool } = require('../../lib/db');
 const { runDecisionEngine } = require('../../services/pre-purchase-decision-engine');
-const { sendSMS } = require('../../services/sms');
+const { sendSMS } = require('@bht/integrations');
 
 // GET /api/inspections/job-lookup?job_number=XXX
 router.get('/job-lookup', async (req, res) => {

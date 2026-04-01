@@ -9,7 +9,7 @@
 
 const router = require('express').Router();
 const { pool } = require('../../lib/db');
-const { sendSMS } = require('../../services/sms');
+const { sendSMS } = require('@bht/integrations');
 
 // GET list
 router.get('/', async (req, res) => {
