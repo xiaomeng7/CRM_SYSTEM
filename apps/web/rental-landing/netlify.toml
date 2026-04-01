@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/apply-rental"
+  to = "/.netlify/functions/apply-rental"
+  status = 200
+  force = true
