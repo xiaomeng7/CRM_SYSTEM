@@ -96,9 +96,10 @@ async function createFromPublic(body = {}) {
   const landingPageUrl = (body.landing_page_url || '').trim() || null;
   const referrerUrl = (body.referrer_url || body._request_referrer || '').trim() || null;
   const productInterest = (body.product_interest || '').trim() || null;
+  const productType = (body.product_type || '').trim() || null;
   const budgetSignal = (body.budget_signal || '').trim() || null;
   const urgencyLevel = (body.urgency_level || '').trim() || null;
-  const serviceType = (body.service_type || '').trim();
+  const serviceType = (body.service_type || body.product_type || '').trim();
   const message = (body.message || '').trim() || null;
   const rawPayload = body.raw_payload && typeof body.raw_payload === 'object'
     ? body.raw_payload
@@ -242,6 +243,7 @@ async function createFromPublic(body = {}) {
       landing_page_url: landingPageUrl,
       referrer_url: referrerUrl,
       product_interest: productInterest,
+      product_type: productType,
       budget_signal: budgetSignal,
       urgency_level: urgencyLevel,
       status: 'new',
