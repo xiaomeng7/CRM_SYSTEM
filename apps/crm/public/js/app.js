@@ -340,6 +340,7 @@
         '<a href="/lead-detail.html?id=' + encodeURIComponent(lead.id) + '" class="btn btn-sm">Details</a>' +
         (isConverted ? '' : '<button type="button" class="btn btn-sm btn-primary js-lead-convert">Convert</button>') +
         '<button type="button" class="btn btn-sm js-lead-task">Task</button>' +
+        '<button type="button" class="btn btn-sm btn-danger js-lead-delete" style="background:#dc2626;color:#fff;border-color:#dc2626;">Delete</button>' +
         '</td>';
 
       var selectEl = tr.querySelector('.js-lead-status-select');
@@ -386,6 +387,30 @@
       if (taskBtn) {
         taskBtn.addEventListener('click', function () {
           window.alert('Task creation UI coming soon.');
+        });
+      }
+
+      var deleteBtn = tr.querySelector('.js-lead-delete');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function () {
+          var label = displayName + (displayPhone !== '—' ? ' (' + displayPhone + ')' : '');
+          if (!window.confirm('Delete lead "' + label + '"?\n\nThis will also delete linked activities and tasks. This cannot be undone.')) return;
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = '…';
+          fetch('/api/leads/' + encodeURIComponent(lead.id), { method: 'DELETE' })
+            .then(function (res) {
+              if (!res.ok) throw new Error('Delete failed (' + res.status + ')');
+              return res.json();
+            })
+            .then(function () {
+              tr.remove();
+            })
+            .catch(function (err) {
+              console.error(err);
+              deleteBtn.disabled = false;
+              deleteBtn.textContent = 'Delete';
+              window.alert('Failed to delete lead: ' + err.message);
+            });
         });
       }
 

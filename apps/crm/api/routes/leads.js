@@ -111,4 +111,20 @@ router.post('/:id/convert', async (req, res) => {
   }
 });
 
+// DELETE /api/leads/:id — hard delete (removes lead + linked activities)
+router.delete('/:id', async (req, res) => {
+  const { pool } = require('../../lib/db');
+  try {
+    const check = await pool.query(`SELECT id, name FROM leads WHERE id = $1`, [req.params.id]);
+    if (!check.rows[0]) return res.status(404).json({ error: 'Lead not found' });
+    await pool.query(`DELETE FROM activities WHERE lead_id = $1`, [req.params.id]);
+    await pool.query(`DELETE FROM tasks WHERE lead_id = $1`, [req.params.id]);
+    await pool.query(`UPDATE opportunities SET lead_id = NULL WHERE lead_id = $1`, [req.params.id]);
+    await pool.query(`DELETE FROM leads WHERE id = $1`, [req.params.id]);
+    res.json({ ok: true, deleted: check.rows[0].name });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
