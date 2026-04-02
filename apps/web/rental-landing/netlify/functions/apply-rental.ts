@@ -85,34 +85,22 @@ function validate(body: unknown): { ok: true; data: RentalBody } | { ok: false; 
 }
 
 async function sendEmail(params: { to: string; subject: string; text: string }): Promise<void> {
-  const apiKey = process.env.POSTMARK_API_KEY;
-  const mailgunKey = process.env.MAILGUN_API_KEY;
-  const mailgunDomain = process.env.MAILGUN_DOMAIN;
+  const apiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.BHT_ADVISORY_FROM_EMAIL || "noreply@bhtechnology.com.au";
-  const fromName = "BHT Rental Inspections";
-
-  if (apiKey) {
-    await fetch("https://api.postmarkapp.com/email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Postmark-Server-Token": apiKey },
-      body: JSON.stringify({ From: `${fromName} <${fromEmail}>`, To: params.to, Subject: params.subject, TextBody: params.text, HtmlBody: params.text.replace(/\n/g, "<br>") }),
-    });
-    return;
-  }
-  if (mailgunKey && mailgunDomain) {
-    const form = new FormData();
-    form.append("from", `${fromName} <${fromEmail}>`);
-    form.append("to", params.to);
-    form.append("subject", params.subject);
-    form.append("text", params.text);
-    await fetch(`https://api.mailgun.net/v3/${mailgunDomain}/messages`, {
-      method: "POST",
-      headers: { Authorization: `Basic ${Buffer.from(`api:${mailgunKey}`).toString("base64")}` },
-      body: form,
-    });
-    return;
-  }
-  console.warn("No email provider configured — skipping notification.");
+  const from = `BHT Rental Inspections <${fromEmail}>`;
+  if (!apiKey) { console.warn("RESEND_API_KEY not set, skipping email"); return; }
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      from,
+      to: [params.to],
+      subject: params.subject,
+      text: params.text,
+      html: params.text.replace(/\n/g, "<br>"),
+    }),
+  });
+  if (!res.ok) console.error("Resend error:", await res.text());
 }
 
 export const handler: Handler = async (event: HandlerEvent) => {

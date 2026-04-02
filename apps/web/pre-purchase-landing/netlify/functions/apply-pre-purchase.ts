@@ -59,15 +59,21 @@ function validate(body: unknown): { ok: true; data: Body } | { ok: false; error:
 }
 
 async function sendEmail(params: { to: string; subject: string; text: string }): Promise<void> {
-  const apiKey = process.env.POSTMARK_API_KEY;
-  const from = process.env.BHT_ADVISORY_FROM_EMAIL || "noreply@bhtechnology.com.au";
-  if (apiKey) {
-    await fetch("https://api.postmarkapp.com/email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Postmark-Server-Token": apiKey },
-      body: JSON.stringify({ From: `BHT Inspections <${from}>`, To: params.to, Subject: params.subject, TextBody: params.text, HtmlBody: params.text.replace(/\n/g, "<br>") }),
-    });
-  }
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.BHT_ADVISORY_FROM_EMAIL || "BHT Inspections <noreply@bhtechnology.com.au>";
+  if (!apiKey) { console.log("RESEND_API_KEY not set, skipping email"); return; }
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      from,
+      to: [params.to],
+      subject: params.subject,
+      text: params.text,
+      html: params.text.replace(/\n/g, "<br>"),
+    }),
+  });
+  if (!res.ok) console.error("Resend error:", await res.text());
 }
 
 export const handler: Handler = async (event: HandlerEvent) => {
