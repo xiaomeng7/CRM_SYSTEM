@@ -115,7 +115,12 @@ router.post('/:id/convert', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { pool } = require('../../lib/db');
   try {
-    const check = await pool.query(`SELECT id, name FROM leads WHERE id = $1`, [req.params.id]);
+    const check = await pool.query(
+      `SELECT l.id, COALESCE(c.name, l.id::text) AS name
+       FROM leads l LEFT JOIN contacts c ON l.contact_id = c.id
+       WHERE l.id = $1`,
+      [req.params.id]
+    );
     if (!check.rows[0]) return res.status(404).json({ error: 'Lead not found' });
     await pool.query(`DELETE FROM activities WHERE lead_id = $1`, [req.params.id]);
     await pool.query(`DELETE FROM tasks WHERE lead_id = $1`, [req.params.id]);

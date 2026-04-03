@@ -41,6 +41,7 @@
     "invoice-overdue": "node scripts/run-invoice-overdue.js",
     "invoice-overdue:dry": "node scripts/run-invoice-overdue.js --dry-run",
     "test:invoice-overdue": "node scripts/test-invoice-overdue.js",
+    "test:lead-delete": "node scripts/test-lead-delete.js",
     "customer-scoring": "node scripts/run-customer-scoring.js",
     "test:task-complete-stage-p0": "node scripts/test-task-complete-stage-p0.js",
     "test:servicem8-create-job": "node scripts/test-servicem8-create-job.js",
