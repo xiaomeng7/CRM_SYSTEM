@@ -51,5 +51,27 @@ export const handler: Handler = async (event: HandlerEvent) => {
   const session = await stripe.checkout.sessions.create(sessionParams);
   const sql = neon(dbUrl);
   await sql`INSERT INTO advisory_applications (name, mobile, email, suburb, property_type, solar_battery_status, bill_range, contact_time, source, payment_status, lite_snapshot, stripe_checkout_session_id, credit_amount) VALUES (${name || ""}, ${phone || ""}, ${hasValidEmail ? email : ""}, NULL, NULL, NULL, NULL, NULL, 'lite_paid', 'pending', ${liteSnapshot}, ${session.id}, ${LITE_AMOUNT_CENTS})`;
+
+  // Push lead to main CRM so it appears in Leads page and triggers scoring/follow-up
+  const crmUrl = process.env.CRM_API_URL || "https://crmsystem-production-70c2.up.railway.app";
+  try {
+    await fetch(`${crmUrl}/api/public/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name || "Energy Enquiry",
+        phone: phone || null,
+        email: hasValidEmail ? email : null,
+        source: "landing:energy_lite",
+        product_type: "energy_lite",
+        service_type: "Energy Monitoring",
+        notes: `Energy quiz started — awaiting payment. Snapshot: ${liteSnapshot.slice(0, 200)}`,
+        status: "new",
+      }),
+    });
+  } catch (crmErr) {
+    console.warn("[energy] CRM lead push failed:", crmErr);
+  }
+
   return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: session.url }) };
 };

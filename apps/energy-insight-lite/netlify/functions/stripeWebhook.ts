@@ -63,5 +63,30 @@ export const handler: Handler = async (event: HandlerEvent) => {
     WHERE stripe_checkout_session_id = ${sessionId}
   `;
 
+  // Update CRM lead status to 'qualified' and log payment conversion
+  const crmUrl = process.env.CRM_API_URL || "https://crmsystem-production-70c2.up.railway.app";
+  const customerEmail = session.customer_details?.email || session.customer_email || null;
+  const customerName  = session.customer_details?.name  || null;
+  const customerPhone = session.customer_details?.phone || null;
+  try {
+    // Push a fresh paid lead (will deduplicate on contact if same phone/email)
+    await fetch(`${crmUrl}/api/public/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: customerName || customerEmail || "Energy Customer",
+        phone: customerPhone || null,
+        email: customerEmail || null,
+        source: "landing:energy_lite",
+        product_type: "energy_lite",
+        service_type: "Energy Monitoring",
+        notes: `Energy report purchased — $199. Stripe session: ${sessionId}`,
+        status: "qualified",
+      }),
+    });
+  } catch (crmErr) {
+    console.warn("[energy webhook] CRM update failed:", crmErr);
+  }
+
   return { statusCode: 200, body: "" };
 };

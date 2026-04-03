@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>BHT — Rental Electrical Safety Inspection</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; display: inline-block; margin: 0 3px; }
+    .step-dot.active { background: #2563eb; }
+    .step-dot.done { background: #22c55e; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const API_BASE = '';
+const STEPS = ['Job Lookup','Property Info','Safety Switches','Smoke Alarms','Switchboard','Outlets & Lighting','Hot Water','Findings & Submit'];
+
+function StepIndicator({ current }) {
+  return (
+    <div className="flex justify-center items-center gap-1 py-3">
+      {STEPS.map((s, i) => (
+        <span key={i} className={`step-dot ${i < current ? 'done' : i === current ? 'active' : ''}`} title={s}/>
+      ))}
+      <span className="ml-2 text-xs text-slate-500">{STEPS[current]}</span>
+    </div>
+  );
+}
+
+function Card({ title, children }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-4">
+      {title && <h3 className="font-semibold text-slate-700 mb-4 text-base">{title}</h3>}
+      {children}
+    </div>
+  );
+}
+
+function RadioGroup({ label, name, value, onChange, options }) {
+  return (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-slate-700 mb-2">{label}</label>
+      <div className="flex flex-wrap gap-2">
+        {options.map(opt => (
+          <button key={opt.value} type="button"
+            onClick={() => onChange(opt.value)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+              value === opt.value
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300'
+            }`}
+          >{opt.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TextArea({ label, value, onChange, placeholder }) {
+  return (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+      <textarea rows={3} value={value} onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+    </div>
+  );
+}
+
+function Input({ label, value, onChange, placeholder, type = 'text' }) {
+  return (
+    <div className="mb-3">
+      <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+      <input type={type} value={value} onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+    </div>
+  );
+}
+
+// ── Step 0: Job Lookup ─────────────────────────────────────────────────────
+function StepJobLookup({ onFound }) {
+  const [jobNumber, setJobNumber] = React.useState('');
+  const [result, setResult] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  async function handleLookup() {
+    if (!jobNumber.trim()) return;
+    setLoading(true);
+    try {
+      const r = await fetch(`${API_BASE}/api/inspections/job-lookup?job_number=${encodeURIComponent(jobNumber.trim())}&product=rental`);
+      const d = await r.json();
+      setResult(d);
+    } catch { setResult({ ok: false, found: false }); }
+    setLoading(false);
+  }
+
+  function handleUse() {
+    const job = result?.job || {};
+    onFound({ job_number: jobNumber.trim(), ...job });
+  }
+
+  function handleSkip() {
+    onFound({ job_number: jobNumber.trim() || '' });
+  }
+
+  return (
+    <Card title="Job Lookup">
+      <p className="text-sm text-slate-500 mb-4">Enter job number to pre-fill client details, or skip to enter manually.</p>
+      <Input label="Job Number (optional)" value={jobNumber} onChange={setJobNumber} placeholder="e.g. 1234"/>
+      <button onClick={handleLookup} disabled={loading || !jobNumber.trim()}
+        className="w-full bg-blue-600 text-white rounded-xl py-3 font-medium mb-3 disabled:opacity-50">
+        {loading ? 'Looking up…' : 'Look Up Job'}
+      </button>
+
+      {result && result.found && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-3">
+          <p className="font-semibold text-green-800 text-sm mb-1">Job found!</p>
+          <p className="text-sm text-green-700">{result.job?.contact_name} · {result.job?.contact_phone}</p>
+          <p className="text-sm text-green-700">{result.job?.address}</p>
+          <button onClick={handleUse} className="mt-3 w-full bg-green-600 text-white rounded-xl py-2 text-sm font-medium">
+            Use These Details →
+          </button>
+        </div>
+      )}
+      {result && !result.found && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 text-sm text-amber-700">
+          Job not found in CRM. Enter details manually on the next screen.
+        </div>
+      )}
+
+      <button onClick={handleSkip} className="w-full border border-slate-200 text-slate-600 rounded-xl py-3 text-sm font-medium">
+        Start Without Job Number →
+      </button>
+    </Card>
+  );
+}
+
+// ── Step 1: Property Info ──────────────────────────────────────────────────
+function StepPropertyInfo({ data, setData, onNext }) {
+  const ok = data.address && data.contact_name;
+  return (
+    <Card title="Property Information">
+      <Input label="Property Address *" value={data.address || ''} onChange={v => setData({...data, address: v})} placeholder="123 Main St, Suburb SA 5000"/>
+      <Input label="Tenant / Owner Name *" value={data.contact_name || ''} onChange={v => setData({...data, contact_name: v})} placeholder="Full name"/>
+      <Input label="Contact Phone" value={data.contact_phone || ''} onChange={v => setData({...data, contact_phone: v})} placeholder="04xx xxx xxx"/>
+      <Input label="Contact Email" value={data.contact_email || ''} onChange={v => setData({...data, contact_email: v})} placeholder="email@example.com" type="email"/>
+      <Input label="Agency Name (if applicable)" value={data.agency_name || ''} onChange={v => setData({...data, agency_name: v})} placeholder="Property Management Agency"/>
+      <RadioGroup label="Property Type" name="prop_type" value={data.property_type || ''}
+        onChange={v => setData({...data, property_type: v})}
+        options={[{value:'house',label:'House'},{value:'unit',label:'Unit/Apartment'},{value:'townhouse',label:'Townhouse'},{value:'commercial',label:'Commercial'}]}/>
+      <RadioGroup label="Approximate Year Built" name="year_built" value={data.year_built || ''}
+        onChange={v => setData({...data, year_built: v})}
+        options={[{value:'pre-1980',label:'Before 1980'},{value:'1980-2000',label:'1980–2000'},{value:'2000-2015',label:'2000–2015'},{value:'post-2015',label:'After 2015'}]}/>
+      <button onClick={onNext} disabled={!ok}
+        className="w-full bg-blue-600 text-white rounded-xl py-3 font-medium mt-2 disabled:opacity-50">
+        Next →
+      </button>
+    </Card>
+  );
+}
+
+// ── Step 2: Safety Switches ────────────────────────────────────────────────
+function StepSafetySwitches({ data, setData, onNext, onBack }) {
+  const ok = data.installed && data.test_result;
+  return (
+    <Card title="Safety Switches (RCDs)">
+      <p className="text-sm text-slate-500 mb-4">RCDs are mandatory for all circuits in rental properties in most Australian states.</p>
+      <RadioGroup label="RCDs Installed" name="rcd_installed" value={data.installed || ''}
+        onChange={v => setData({...data, installed: v})}
+        options={[
+          {value:'all',label:'All circuits protected'},
+          {value:'partial',label:'Partial coverage'},
+          {value:'none',label:'None installed'},
+        ]}/>
+      <Input label="Number of RCDs Found" value={data.count || ''} onChange={v => setData({...data, count: v})} placeholder="e.g. 2" type="number"/>
+      <RadioGroup label="RCD Test Result" name="rcd_test" value={data.test_result || ''}
+        onChange={v => setData({...data, test_result: v})}
+        options={[
+          {value:'pass',label:'All Pass'},
+          {value:'fail',label:'One or More Fail'},
+          {value:'not_tested',label:'Could Not Test'},
+        ]}/>
+      <TextArea label="Notes" value={data.notes || ''} onChange={v => setData({...data, notes: v})} placeholder="Any additional observations…"/>
+      <div className="flex gap-3">
+        <button onClick={onBack} className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">← Back</button>
+        <button onClick={onNext} disabled={!ok} className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-medium disabled:opacity-50">Next →</button>
+      </div>
+    </Card>
+  );
+}
+
+// ── Step 3: Smoke Alarms ───────────────────────────────────────────────────
+function StepSmokeAlarms({ data, setData, onNext, onBack }) {
+  const ok = data.compliant;
+  return (
+    <Card title="Smoke Alarms">
+      <RadioGroup label="Smoke Alarm Compliance" name="sa_compliant" value={data.compliant || ''}
+        onChange={v => setData({...data, compliant: v})}
+        options={[
+          {value:'yes',label:'Fully Compliant'},
+          {value:'partial',label:'Partially Compliant'},
+          {value:'no',label:'Non-Compliant'},
+        ]}/>
+      <Input label="Number of Alarms Found" value={data.count || ''} onChange={v => setData({...data, count: v})} placeholder="e.g. 3" type="number"/>
+      <RadioGroup label="Type" name="sa_type" value={data.type || ''}
+        onChange={v => setData({...data, type: v})}
+        options={[{value:'hardwired',label:'Hardwired'},{value:'battery',label:'Battery'},{value:'mixed',label:'Mixed'}]}/>
+      <RadioGroup label="Interconnected" name="sa_interconnected" value={data.interconnected || ''}
+        onChange={v => setData({...data, interconnected: v})}
+        options={[{value:'yes',label:'Yes'},{value:'no',label:'No'},{value:'unknown',label:'Unknown'}]}/>
+      <TextArea label="Notes" value={data.notes || ''} onChange={v => setData({...data, notes: v})} placeholder="Location of alarms, any faults…"/>
+      <div className="flex gap-3">
+        <button onClick={onBack} className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">← Back</button>
+        <button onClick={onNext} disabled={!ok} className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-medium disabled:opacity-50">Next →</button>
+      </div>
+    </Card>
+  );
+}
+
+// ── Step 4: Switchboard ────────────────────────────────────────────────────
+function StepSwitchboard({ data, setData, onNext, onBack }) {
+  const ok = data.type && data.condition;
+  return (
+    <Card title="Switchboard">
+      <RadioGroup label="Switchboard Type" name="sb_type" value={data.type || ''}
+        onChange={v => setData({...data, type: v})}
+        options={[
+          {value:'modern_rcbo',label:'Modern (RCBO)'},
+          {value:'modern_mcb',label:'Modern (MCB)'},
+          {value:'fuseboard',label:'Old Fuseboard'},
+          {value:'mixed',label:'Mixed'},
+        ]}/>
+      <RadioGroup label="Overall Condition" name="sb_condition" value={data.condition || ''}
+        onChange={v => setData({...data, condition: v})}
+        options={[
+          {value:'good',label:'Good'},
+          {value:'fair',label:'Fair'},
+          {value:'poor',label:'Poor'},
+          {value:'dangerous',label:'Dangerous'},
+        ]}/>
+      <RadioGroup label="Circuits Labelled" name="sb_labelled" value={data.labelled || ''}
+        onChange={v => setData({...data, labelled: v})}
+        options={[{value:'yes',label:'Yes'},{value:'partial',label:'Partial'},{value:'no',label:'No'}]}/>
+      <RadioGroup label="Main Switch Present" name="sb_main" value={data.main_switch || ''}
+        onChange={v => setData({...data, main_switch: v})}
+        options={[{value:'yes',label:'Yes'},{value:'no',label:'No'}]}/>
+      <TextArea label="Notes" value={data.notes || ''} onChange={v => setData({...data, notes: v})} placeholder="Any corrosion, overheating, damage…"/>
+      <div className="flex gap-3">
+        <button onClick={onBack} className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">← Back</button>
+        <button onClick={onNext} disabled={!ok} className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-medium disabled:opacity-50">Next →</button>
+      </div>
+    </Card>
+  );
+}
+
+// ── Step 5: Outlets & Lighting ─────────────────────────────────────────────
+function StepOutlets({ data, setData, onNext, onBack }) {
+  return (
+    <Card title="Outlets & Lighting">
+      <RadioGroup label="Damaged Power Points" name="dmg_outlets" value={data.damaged_outlets || ''}
+        onChange={v => setData({...data, damaged_outlets: v})}
+        options={[{value:'none',label:'None'},{value:'yes',label:'Some Found'}]}/>
+      <RadioGroup label="Flickering / Faulty Lights" name="flicker" value={data.flickering_lights || ''}
+        onChange={v => setData({...data, flickering_lights: v})}
+        options={[{value:'no',label:'No'},{value:'yes',label:'Yes'}]}/>
+      <RadioGroup label="Exposed Wiring Visible" name="exposed" value={data.exposed_wiring || ''}
+        onChange={v => setData({...data, exposed_wiring: v})}
+        options={[{value:'no',label:'No'},{value:'yes',label:'Yes'}]}/>
+      <RadioGroup label="Outdoor/Bathroom Outlets Appropriate" name="wet_area" value={data.wet_area_compliant || ''}
+        onChange={v => setData({...data, wet_area_compliant: v})}
+        options={[{value:'yes',label:'Compliant'},{value:'no',label:'Issues Found'},{value:'na',label:'N/A'}]}/>
+      <TextArea label="Notes" value={data.notes || ''} onChange={v => setData({...data, notes: v})} placeholder="Details of any issues found…"/>
+      <div className="flex gap-3">
+        <button onClick={onBack} className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">← Back</button>
+        <button onClick={onNext} className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-medium">Next →</button>
+      </div>
+    </Card>
+  );
+}
+
+// ── Step 6: Hot Water ──────────────────────────────────────────────────────
+function StepHotWater({ data, setData, onNext, onBack }) {
+  return (
+    <Card title="Hot Water & Appliances">
+      <RadioGroup label="Hot Water System Type" name="hw_type" value={data.hws_type || ''}
+        onChange={v => setData({...data, hws_type: v})}
+        options={[{value:'electric',label:'Electric'},{value:'gas',label:'Gas'},{value:'solar',label:'Solar'},{value:'heat_pump',label:'Heat Pump'},{value:'na',label:'N/A'}]}/>
+      <RadioGroup label="Hot Water System Condition" name="hw_cond" value={data.condition || ''}
+        onChange={v => setData({...data, condition: v})}
+        options={[{value:'good',label:'Good'},{value:'fair',label:'Fair'},{value:'fault',label:'Fault/Aging'},{value:'na',label:'N/A'}]}/>
+      <RadioGroup label="Fixed Appliances (stove, oven, AC)" name="appliance_cond" value={data.appliances_condition || ''}
+        onChange={v => setData({...data, appliances_condition: v})}
+        options={[{value:'good',label:'Good'},{value:'issues',label:'Issues Found'},{value:'na',label:'N/A'}]}/>
+      <TextArea label="Notes" value={data.notes || ''} onChange={v => setData({...data, notes: v})} placeholder="Age, faults, brands if relevant…"/>
+      <div className="flex gap-3">
+        <button onClick={onBack} className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">← Back</button>
+        <button onClick={onNext} className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-medium">Next →</button>
+      </div>
+    </Card>
+  );
+}
+
+// ── Step 7: General Findings & Submit ─────────────────────────────────────
+function StepFindings({ data, setData, onSubmit, onBack, loading }) {
+  return (
+    <Card title="General Findings & Technician Notes">
+      <RadioGroup label="Overall Assessment (override)" name="verdict" value={data.technician_verdict || ''}
+        onChange={v => setData({...data, technician_verdict: v})}
+        options={[
+          {value:'PASS',label:'✅ PASS'},
+          {value:'ADVISORY',label:'⚠️ ADVISORY'},
+          {value:'FAIL',label:'❌ FAIL'},
+        ]}/>
+      <TextArea label="Technician Notes (visible to client)" value={data.notes || ''} onChange={v => setData({...data, notes: v})}
+        placeholder="Summary of findings, recommendations, next steps…"/>
+      <TextArea label="Internal Notes (engineer only)" value={data.internal_notes || ''} onChange={v => setData({...data, internal_notes: v})}
+        placeholder="Any concerns to flag for engineer review…"/>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4 text-sm text-blue-700">
+        Submitting will notify the engineer team and send a confirmation SMS to the client.
+      </div>
+
+      <div className="flex gap-3">
+        <button onClick={onBack} disabled={loading} className="flex-1 border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">← Back</button>
+        <button onClick={onSubmit} disabled={loading}
+          className="flex-1 bg-green-600 text-white rounded-xl py-3 font-semibold disabled:opacity-50">
+          {loading ? 'Submitting…' : 'Submit Inspection ✓'}
+        </button>
+      </div>
+    </Card>
+  );
+}
+
+// ── Main App ───────────────────────────────────────────────────────────────
+function App() {
+  const [step, setStep] = React.useState(0);
+  const [jobInfo, setJobInfo] = React.useState({});
+  const [propertyInfo, setPropertyInfo] = React.useState({});
+  const [safetySwitches, setSafetySwitches] = React.useState({});
+  const [smokeAlarms, setSmokeAlarms] = React.useState({});
+  const [switchboard, setSwitchboard] = React.useState({});
+  const [outletsLighting, setOutletsLighting] = React.useState({});
+  const [hotWater, setHotWater] = React.useState({});
+  const [generalFindings, setGeneralFindings] = React.useState({});
+  const [loading, setLoading] = React.useState(false);
+  const [done, setDone] = React.useState(null);
+  const [error, setError] = React.useState('');
+
+  function next() { setStep(s => s + 1); window.scrollTo(0, 0); }
+  function back() { setStep(s => s - 1); window.scrollTo(0, 0); }
+
+  function handleJobFound(info) {
+    setJobInfo(info);
+    // Pre-fill property info from job lookup
+    if (info.address) setPropertyInfo(p => ({...p, address: info.address}));
+    if (info.contact_name) setPropertyInfo(p => ({...p, contact_name: info.contact_name}));
+    if (info.contact_phone) setPropertyInfo(p => ({...p, contact_phone: info.contact_phone}));
+    if (info.contact_email) setPropertyInfo(p => ({...p, contact_email: info.contact_email}));
+    next();
+  }
+
+  async function handleSubmit() {
+    setLoading(true);
+    setError('');
+    try {
+      const payload = {
+        job_number: jobInfo.job_number || null,
+        job_uuid: jobInfo.job_uuid || null,
+        contact_phone: propertyInfo.contact_phone || null,
+        contact_email: propertyInfo.contact_email || null,
+        contact_name: propertyInfo.contact_name || null,
+        agency_name: propertyInfo.agency_name || null,
+        property_info: { ...propertyInfo },
+        safety_switches: { ...safetySwitches },
+        smoke_alarms: { ...smokeAlarms },
+        switchboard: { ...switchboard },
+        outlets_lighting: { ...outletsLighting },
+        hot_water: { ...hotWater },
+        general_findings: { ...generalFindings },
+      };
+      const r = await fetch(`${API_BASE}/api/inspections/rental`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const d = await r.json();
+      if (!d.ok) throw new Error(d.error || 'Submission failed');
+      setDone(d);
+    } catch (e) {
+      setError(e.message);
+    }
+    setLoading(false);
+  }
+
+  if (done) {
+    const verdictColor = { PASS: 'green', ADVISORY: 'amber', FAIL: 'red' }[done.verdict] || 'blue';
+    const verdictLabel = { PASS: '✅ PASS — Property compliant', ADVISORY: '⚠️ ADVISORY — Minor issues noted', FAIL: '❌ FAIL — Safety issues require rectification' }[done.verdict] || done.verdict;
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 max-w-sm w-full text-center">
+          <div className="text-5xl mb-4">{done.verdict === 'PASS' ? '✅' : done.verdict === 'ADVISORY' ? '⚠️' : '❌'}</div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Inspection Submitted</h2>
+          <div className={`bg-${verdictColor}-50 border border-${verdictColor}-200 rounded-xl p-3 mb-4 text-sm font-semibold text-${verdictColor}-700`}>
+            {verdictLabel}
+          </div>
+          <p className="text-slate-500 text-sm mb-1">Inspection ID: <span className="font-mono text-xs">{done.inspection_id?.slice(0,8)}</span></p>
+          <p className="text-slate-500 text-sm">The engineer team has been notified. A client SMS has been sent.</p>
+          <button onClick={() => { setStep(0); setDone(null); setJobInfo({}); setPropertyInfo({}); setSafetySwitches({}); setSmokeAlarms({}); setSwitchboard({}); setOutletsLighting({}); setHotWater({}); setGeneralFindings({}); }}
+            className="mt-6 w-full border border-slate-200 text-slate-600 rounded-xl py-3 text-sm">
+            New Inspection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen p-4 max-w-lg mx-auto">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-lg font-bold text-slate-800">Rental Inspection</h1>
+        <span className="text-xs text-slate-400">BHT</span>
+      </div>
+      <StepIndicator current={step}/>
+
+      {error && <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-3 text-sm text-red-700">{error}</div>}
+
+      {step === 0 && <StepJobLookup onFound={handleJobFound}/>}
+      {step === 1 && <StepPropertyInfo data={propertyInfo} setData={setPropertyInfo} onNext={next} onBack={back}/>}
+      {step === 2 && <StepSafetySwitches data={safetySwitches} setData={setSafetySwitches} onNext={next} onBack={back}/>}
+      {step === 3 && <StepSmokeAlarms data={smokeAlarms} setData={setSmokeAlarms} onNext={next} onBack={back}/>}
+      {step === 4 && <StepSwitchboard data={switchboard} setData={setSwitchboard} onNext={next} onBack={back}/>}
+      {step === 5 && <StepOutlets data={outletsLighting} setData={setOutletsLighting} onNext={next} onBack={back}/>}
+      {step === 6 && <StepHotWater data={hotWater} setData={setHotWater} onNext={next} onBack={back}/>}
+      {step === 7 && <StepFindings data={generalFindings} setData={setGeneralFindings} onSubmit={handleSubmit} onBack={back} loading={loading}/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
