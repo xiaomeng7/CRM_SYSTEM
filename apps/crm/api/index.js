@@ -20,6 +20,7 @@ const reactivationRepliesRouter = require('./routes/reactivation-replies');
 const reactivationQueueRouter = require('./routes/reactivation-queue');
 const dataMaintenanceRouter = require('./routes/data-maintenance');
 const adminRouter = require('./routes/admin');
+const analyticsRouter = require('./routes/analytics');
 const tasksRouter = require('./routes/tasks');
 const priorityRouter = require('./routes/priority');
 const cashflowRouter = require('./routes/cashflow');
@@ -36,6 +37,8 @@ const adExecutionRouter = require('./routes/ad-execution');
 const adVariantReviewRouter = require('./routes/ad-variant-review');
 const landingVariantReviewRouter = require('./routes/landing-variant-review');
 const adPublishRouter = require('./routes/ad-publish');
+const adsCreativesRouter = require('./routes/ads-creatives');
+const adsLandingPagesRouter = require('./routes/ads-landing-pages');
 const b2bProspectsRouter = require('./routes/b2b-prospects');
 const inspectionsRouter = require('./routes/inspections');
 const customers = require('./customers');
@@ -48,6 +51,10 @@ app.use(express.urlencoded({ extended: false }));
 // Internal CRM UI (static; dashboard at /)
 app.use(express.static(path.join(__dirname, '../public')));
 
+app.get('/dashboard/growth', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/growth.html'));
+});
+
 app.use('/api/leads', leadsRouter);
 app.use('/api/opportunities', opportunitiesRouter);
 app.use('/api/public/leads', publicLeadsRouter);
@@ -59,6 +66,7 @@ app.use('/api/reactivation/replies', reactivationRepliesRouter);
 app.use('/api/reactivation/queue', reactivationQueueRouter);
 app.use('/api/data-maintenance', dataMaintenanceRouter);
 app.use('/api', adminRouter);
+app.use('/api/analytics', analyticsRouter);
 app.use('/api/tasks', tasksRouter);
 app.use('/api/priority', priorityRouter);
 app.use('/api/cashflow', cashflowRouter);
@@ -75,6 +83,8 @@ app.use('/api/ad-execution', adExecutionRouter);
 app.use('/api/ad-variants', adVariantReviewRouter);
 app.use('/api/landing-variants', landingVariantReviewRouter);
 app.use('/api/ad-publish', adPublishRouter);
+app.use('/api/ads', adsCreativesRouter);
+app.use('/api/ads', adsLandingPagesRouter);
 app.use('/api/b2b-prospects', b2bProspectsRouter);
 app.use('/api/inspections', inspectionsRouter);
 

@@ -39,7 +39,16 @@ async function create(data = {}) {
 }
 
 async function list(filters = {}) {
-  const { status, limit = 100, offset = 0 } = filters;
+  const {
+    status,
+    creative_version: cvFilter,
+    landing_page_version: lpvFilter,
+    utm_campaign: utmFilter,
+    date_from: dateFrom,
+    date_to: dateTo,
+    limit = 100,
+    offset = 0,
+  } = filters;
   const params = [];
   let paramIndex = 1;
   const conditions = [];
@@ -47,6 +56,40 @@ async function list(filters = {}) {
   if (status && isValidStatus(status)) {
     conditions.push(`l.status = $${paramIndex}`);
     params.push(status);
+    paramIndex++;
+  }
+
+  function addNullableDimensionColumn(columnSql, raw) {
+    const s = raw == null ? '' : String(raw).trim();
+    if (s === '') {
+      conditions.push(`(${columnSql} IS NULL OR TRIM(COALESCE(${columnSql},'')) = '')`);
+    } else {
+      conditions.push(`TRIM(COALESCE(${columnSql},'')) = $${paramIndex}`);
+      params.push(s);
+      paramIndex++;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(filters, 'creative_version')) {
+    addNullableDimensionColumn('l.creative_version', cvFilter);
+  }
+  if (Object.prototype.hasOwnProperty.call(filters, 'landing_page_version')) {
+    addNullableDimensionColumn('l.landing_page_version', lpvFilter);
+  }
+  if (Object.prototype.hasOwnProperty.call(filters, 'utm_campaign')) {
+    addNullableDimensionColumn('l.utm_campaign', utmFilter);
+  }
+
+  const df = dateFrom != null ? String(dateFrom).trim() : '';
+  const dt = dateTo != null ? String(dateTo).trim() : '';
+  if (df) {
+    conditions.push(`l.created_at >= $${paramIndex}::date`);
+    params.push(df);
+    paramIndex++;
+  }
+  if (dt) {
+    conditions.push(`l.created_at < ($${paramIndex}::date + INTERVAL '1 day')`);
+    params.push(dt);
     paramIndex++;
   }
 
@@ -61,6 +104,9 @@ async function list(filters = {}) {
        l.source_id,
        l.campaign_id,
        l.created_at,
+       l.creative_version,
+       l.landing_page_version,
+       l.utm_campaign,
        ls.name AS source_name,
        cp.name AS campaign_name,
        (sc.j->>'score')::numeric AS latest_score,

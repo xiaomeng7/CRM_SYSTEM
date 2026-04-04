@@ -278,7 +278,24 @@
     (function() {
       function getUtm() {
         var p = new URLSearchParams(window.location.search);
-        return { utm_source: p.get('utm_source') || '', utm_medium: p.get('utm_medium') || '', utm_campaign: p.get('utm_campaign') || '', page_url: window.location.href };
+        var gclid = (p.get('gclid') || '').trim();
+        var clickId = (p.get('click_id') || p.get('clid') || p.get('fbclid') || p.get('msclkid') || '').trim();
+        var landingVariantId = (p.get('landing_variant_id') || p.get('lv') || '').trim();
+        var utmContent = (p.get('utm_content') || '').trim();
+        var lpv = (p.get('lpv') || '').trim();
+        var cv = (p.get('cv') || '').trim();
+        return {
+          utm_source: p.get('utm_source') || '',
+          utm_medium: p.get('utm_medium') || '',
+          utm_campaign: p.get('utm_campaign') || '',
+          utm_content: utmContent || undefined,
+          page_url: window.location.href,
+          click_id: clickId || undefined,
+          gclid: gclid || undefined,
+          landing_variant_id: landingVariantId || undefined,
+          landing_page_version: lpv || undefined,
+          creative_version: cv || undefined
+        };
       }
       function decodeBase64url(str) {
         if (!str) return null;

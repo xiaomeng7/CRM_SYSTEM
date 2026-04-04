@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth 仪表盘 — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .gd-page-intro { margin: -0.25rem 0 1rem 0; color: var(--muted); font-size: 0.95rem; max-width: 40rem; }
+    .gd-toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; margin-bottom: 1.25rem; padding: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+    .gd-toolbar label { font-size: 0.85rem; color: var(--muted); }
+    .gd-toolbar .gd-range-group label { margin-right: 0.75rem; cursor: pointer; color: var(--text); }
+    .gd-secret { max-width: 12rem; font-size: 0.85rem; }
+    .gd-msg { padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; display: none; }
+    .gd-msg.err { display: block; background: #fde8e8; color: #842029; }
+    .gd-msg.ok { display: block; background: #d1e7dd; color: #0f5132; }
+    .gd-section { margin-bottom: 2rem; }
+    .gd-section-h { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.35rem 0; }
+    .gd-section-note { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem 0; }
+    .gd-loading { opacity: 0.55; pointer-events: none; }
+    .gd-state-line { font-size: 0.8rem; color: var(--muted); min-height: 1.25rem; margin-bottom: 0.5rem; }
+    .gd-cards-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .gd-card-big { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+    .gd-card-big .num { font-size: 1.75rem; font-weight: 700; margin: 0; line-height: 1.2; }
+    .gd-card-big .lbl { margin: 0.35rem 0 0 0; font-size: 0.85rem; color: var(--muted); }
+    .gd-drawer-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,0.35);
+    }
+    .gd-drawer-backdrop.open { display: block; }
+    .gd-drawer {
+      position: absolute; top: 0; right: 0; width: min(26rem, 92vw); height: 100%; background: var(--card);
+      box-shadow: -4px 0 24px rgba(0,0,0,0.12); overflow: auto; padding: 1.25rem; border-left: 1px solid var(--border);
+    }
+    .gd-drawer h2 { margin: 0 0 1rem 0; font-size: 1.1rem; }
+    .gd-dl { margin: 0; }
+    .gd-dl dt { font-size: 0.75rem; color: var(--muted); margin-top: 0.65rem; }
+    .gd-dl dd { margin: 0.15rem 0 0 0; font-weight: 500; }
+    .gd-drawer-close { float: right; margin: -0.25rem 0 0 0; }
+    .gd-modal-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1200;
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .gd-modal-backdrop.open { display: flex; }
+    .gd-modal {
+      background: var(--card); border-radius: 8px; max-width: 26rem; width: 100%; max-height: 90vh; overflow: auto;
+      border: 1px solid var(--border); padding: 1.25rem; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .gd-modal.wide { max-width: 34rem; }
+    .gd-modal h2 { margin: 0 0 0.75rem 0; font-size: 1.05rem; }
+    .gd-modal .field { margin-bottom: 0.75rem; }
+    .gd-modal label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .gd-modal input[type="text"], .gd-modal textarea, .gd-modal select {
+      width: 100%; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem;
+    }
+    .gd-modal textarea { min-height: 3.5rem; resize: vertical; }
+    .gd-modal-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .gd-link-preview { font-family: ui-monospace, monospace; font-size: 0.72rem; word-break: break-all; background: var(--bg); padding: 0.6rem; border-radius: 4px; border: 1px solid var(--border); }
+    .gd-table-actions { white-space: normal; }
+    .gd-table-actions .btn { margin: 0.15rem 0.15rem 0 0; }
+    .gd-rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0.75rem; }
+    .gd-rec-card {
+      border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem; background: var(--card);
+      border-left-width: 4px;
+    }
+    .gd-rec-card.sev-high { border-left-color: #dc3545; }
+    .gd-rec-card.sev-medium { border-left-color: #fd7e14; }
+    .gd-rec-card.sev-low { border-left-color: #6c757d; }
+    .gd-rec-card .tag { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+    .gd-rec-card .reason { font-size: 0.88rem; margin: 0.5rem 0; line-height: 1.45; }
+    .gd-rec-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem; line-height: 1.4; }
+    .gd-help { cursor: help; border-bottom: 1px dotted var(--muted); }
+    .gd-badge { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 999px; line-height: 1.2; white-space: nowrap; }
+    .gd-badge-muted { background: #e9ecef; color: #495057; }
+    .gd-badge-weak { background: #e7f1ff; color: #0a58ca; }
+    .gd-badge-observe { background: #e9ecef; color: #495057; }
+    .gd-badge-pause { background: #f8d7da; color: #842029; }
+    .gd-badge-scale { background: #d1e7dd; color: #0f5132; }
+    .gd-badge-fork { background: #cfe2ff; color: #084298; }
+    .gd-badge-track { background: #fff3cd; color: #664d03; }
+    .gd-badge-sales { background: #f8d7da; color: #58151c; }
+    .gd-badge-warn { background: #ffe5d0; color: #9a3412; }
+    tr.gd-row-flash td { background: #fff8e6 !important; transition: background 0.3s ease; }
+    .gd-rec-card[data-rec-idx] { cursor: pointer; }
+    .gd-rec-card[data-rec-idx] button { cursor: pointer; }
+    .gd-op-hint { margin-top: 0.35rem; font-size: 0.78rem; color: var(--muted); line-height: 1.4; max-width: 14rem; }
+    .gd-op-hint a { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/growth-console.html">Growth Ops</a>
+        <a href="/dashboard/growth" class="active">Growth 仪表盘</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Growth 仪表盘</header>
+      <div class="content" data-page="growth-dashboard">
+        <h1 class="page-title">Growth 仪表盘</h1>
+        <p class="gd-page-intro">看数据 → 看系统建议 → 点按钮执行。创意「暂停 / 复制」需创意库中<strong>仅有一条</strong>与版本标签完全一致的记录，否则会禁用并提示原因。</p>
+
+        <div id="gd-msg" class="gd-msg"></div>
+
+        <div class="gd-toolbar">
+          <span class="gd-range-group">
+            <span style="font-size:0.85rem;color:var(--muted);margin-right:0.5rem;">时间范围</span>
+            <label><input type="radio" name="gd-range" value="7d" checked /> 近 7 天</label>
+            <label><input type="radio" name="gd-range" value="14d" /> 近 14 天</label>
+            <label><input type="radio" name="gd-range" value="month" /> 本月至今</label>
+          </span>
+          <label>产品线</label>
+          <select id="gd-product-line">
+            <option value="" selected>全部</option>
+            <option value="energy">energy</option>
+            <option value="rental">rental</option>
+            <option value="pre_purchase">pre_purchase</option>
+          </select>
+          <label>登录密钥 <span class="gd-help" title="与服务器配置一致，仅保存在本浏览器">?</span></label>
+          <input type="password" id="gd-secret" class="gd-secret" placeholder="填写后保存" autocomplete="off" />
+          <button type="button" class="btn btn-sm" id="gd-save-secret">保存密钥</button>
+          <button type="button" class="btn btn-primary" id="gd-refresh">刷新数据</button>
+        </div>
+
+        <section class="gd-section" id="gd-funnel-section">
+          <h2 class="gd-section-h">一、整体概览</h2>
+          <p class="gd-section-note">与所选时间范围一致（全站漏斗，非仅某一广告版本）。</p>
+          <p class="gd-state-line" id="gd-funnel-state"></p>
+          <div class="gd-cards-row" id="gd-funnel-cards">
+            <div class="gd-card-big"><p class="num" id="gd-funnel-leads">—</p><p class="lbl">新线索</p></div>
+            <div class="gd-card-big"><p class="num" id="gd-funnel-won">—</p><p class="lbl">赢单机会</p></div>
+            <div class="gd-card-big"><p class="num" id="gd-funnel-paid">—</p><p class="lbl">已付发票</p></div>
+          </div>
+          <a class="btn btn-primary" href="/leads.html">查看客户列表</a>
+        </section>
+
+        <section class="gd-section" id="gd-ad-section">
+          <h2 class="gd-section-h">二、广告版本表现</h2>
+          <p class="gd-section-note">按付费金额优先排序。列表中的「创意版本」需与创意库里的版本标签<strong>唯一对应</strong>才能暂停或复制。</p>
+          <p class="gd-state-line" id="gd-ad-state"></p>
+          <div class="field" style="margin-bottom:0.75rem;">
+            <label for="gd-base-url">落地页网址（生成链接时用）</label>
+            <input type="text" id="gd-base-url" style="width:100%;max-width:28rem;padding:0.45rem 0.5rem;border:1px solid var(--border);border-radius:4px;font-size:0.9rem;" placeholder="https://你的域名/index.html" />
+            <p class="gd-section-note" style="margin:0.35rem 0 0 0;">填写后会自动记住，下次打开会回填；留空时也会尽量使用上次保存的网址。</p>
+          </div>
+          <div class="table-wrap" id="gd-ad-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>建议状态</th>
+                  <th>创意版本</th>
+                  <th>落地页版本</th>
+                  <th>活动名称</th>
+                  <th>线索</th>
+                  <th>赢单</th>
+                  <th>已付发票</th>
+                  <th>线索→赢单</th>
+                  <th>付费合计</th>
+                  <th>客单价</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="gd-ad-tbody">
+                <tr><td colspan="11" class="muted">保存密钥后点击「刷新数据」</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="gd-section" id="gd-rec-section">
+          <h2 class="gd-section-h">三、系统建议</h2>
+          <p class="gd-section-note">下一步该做什么，点卡片上的按钮即可。点击卡片空白处可定位到上表对应行并短暂高亮。</p>
+          <p class="gd-state-line" id="gd-rec-state"></p>
+          <div class="gd-rec-grid" id="gd-rec-grid">
+            <div class="muted" style="grid-column:1/-1;">刷新后显示建议卡片</div>
+          </div>
+        </section>
+
+        <!-- 右侧抽屉：版本详情 + 客户 -->
+        <div id="gd-drawer-backdrop" class="gd-drawer-backdrop" aria-hidden="true">
+          <div class="gd-drawer" role="dialog">
+            <button type="button" class="btn btn-sm gd-drawer-close" id="gd-drawer-close">关闭</button>
+            <h2>版本组合详情</h2>
+            <dl class="gd-dl" id="gd-drawer-metrics"></dl>
+            <h3 class="gd-section-h" style="font-size:0.95rem;margin-top:1.25rem;">相关客户</h3>
+            <p class="gd-section-note" style="margin-bottom:0.5rem;">以下为所选时间范围内、与此版本组合匹配的线索。</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>姓名</th><th>电话</th><th>状态</th><th></th></tr>
+                </thead>
+                <tbody id="gd-drawer-leads-tbody">
+                  <tr><td colspan="4" class="muted">加载中…</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin-top:1rem;">
+              <a class="btn btn-primary" href="/leads.html" id="gd-drawer-leads-link">打开完整客户列表</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- 确认暂停 -->
+        <div id="gd-modal-pause" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal" role="dialog">
+            <h2>确定暂停这个创意版本？</h2>
+            <p id="gd-pause-summary" style="font-size:0.9rem;line-height:1.5;"></p>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn btn-primary" id="gd-pause-confirm">确认暂停</button>
+              <button type="button" class="btn" data-close="pause">取消</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 复制新版本 -->
+        <div id="gd-modal-fork" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal wide" role="dialog">
+            <div id="gd-fork-form-wrap">
+              <h2>复制新版本</h2>
+              <p class="gd-section-note">保存为草稿后，可在后台改为「投放中」并更新广告里的版本标签。</p>
+              <div class="field">
+                <label for="gd-fork-headline">新标题</label>
+                <input type="text" id="gd-fork-headline" />
+              </div>
+              <div class="field">
+                <label for="gd-fork-description">新描述</label>
+                <textarea id="gd-fork-description"></textarea>
+              </div>
+              <div class="field">
+                <label for="gd-fork-cta">新按钮文案</label>
+                <input type="text" id="gd-fork-cta" />
+              </div>
+              <div class="field">
+                <label for="gd-fork-initial-status">新版本状态</label>
+                <select id="gd-fork-initial-status">
+                  <option value="draft" selected>草稿（推荐）</option>
+                  <option value="active">直接投放中</option>
+                </select>
+              </div>
+              <div class="field">
+                <label><input type="checkbox" id="gd-fork-deactivate" /> 同时暂停当前正在投放的同一创意</label>
+              </div>
+              <div class="gd-modal-actions">
+                <button type="button" class="btn btn-primary" id="gd-fork-submit">创建新版本</button>
+                <button type="button" class="btn" data-close="fork">取消</button>
+              </div>
+            </div>
+            <div id="gd-fork-result-wrap" style="display:none;">
+              <h2>已创建新版本</h2>
+              <p>新版本标签（请用于广告链接）：<strong id="gd-fork-result-version">—</strong></p>
+              <p class="gd-section-note">推荐链接（请确认上方已填写落地页网址）：</p>
+              <div class="gd-link-preview" id="gd-fork-result-link">—</div>
+              <div class="gd-modal-actions">
+                <button type="button" class="btn btn-primary" id="gd-fork-result-copy">复制链接</button>
+                <button type="button" class="btn" id="gd-fork-result-done">关闭并刷新</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 生成链接 -->
+        <div id="gd-modal-link" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal" role="dialog">
+            <h2>广告追踪链接</h2>
+            <p class="gd-section-note">复制后粘贴到广告最终到达网址（参数顺序：活动 → 创意版本 → 落地页版本）。</p>
+            <div class="gd-link-preview" id="gd-link-preview">—</div>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn btn-primary" id="gd-link-copy-btn">复制链接</button>
+              <button type="button" class="btn" data-close="link">关闭</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 追踪问题说明 -->
+        <div id="gd-modal-tracking" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal" role="dialog">
+            <h2>检查追踪与数据</h2>
+            <div id="gd-tracking-body" style="font-size:0.9rem;line-height:1.55;"></div>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn" data-close="tracking">关闭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/growth-dashboard.js"></script>
+</body>
+</html>

@@ -31,11 +31,23 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const rows = await leads.list({
+    const listOpts = {
       status: req.query.status,
       limit: parseInt(req.query.limit, 10) || 100,
       offset: parseInt(req.query.offset, 10) || 0,
-    });
+    };
+    if (Object.prototype.hasOwnProperty.call(req.query, 'creative_version')) {
+      listOpts.creative_version = req.query.creative_version;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.query, 'landing_page_version')) {
+      listOpts.landing_page_version = req.query.landing_page_version;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.query, 'utm_campaign')) {
+      listOpts.utm_campaign = req.query.utm_campaign;
+    }
+    if (req.query.date_from) listOpts.date_from = req.query.date_from;
+    if (req.query.date_to) listOpts.date_to = req.query.date_to;
+    const rows = await leads.list(listOpts);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -46,7 +46,13 @@ type ApplicationBody = {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  utm_content?: string;
   page_url?: string;
+  click_id?: string;
+  gclid?: string;
+  landing_variant_id?: string;
+  landing_page_version?: string;
+  creative_version?: string;
   source?: "pro_direct" | "lite_upgrade";
   lite_snapshot?: string | null;
 };
@@ -95,7 +101,13 @@ function validate(body: unknown): { ok: true; data: ApplicationBody } | { ok: fa
       utm_source: typeof b.utm_source === "string" ? b.utm_source.trim() : undefined,
       utm_medium: typeof b.utm_medium === "string" ? b.utm_medium.trim() : undefined,
       utm_campaign: typeof b.utm_campaign === "string" ? b.utm_campaign.trim() : undefined,
+      utm_content: typeof b.utm_content === "string" ? b.utm_content.trim() : undefined,
       page_url: typeof b.page_url === "string" ? b.page_url.trim() : undefined,
+      click_id: typeof b.click_id === "string" ? b.click_id.trim() : undefined,
+      gclid: typeof b.gclid === "string" ? b.gclid.trim() : undefined,
+      landing_variant_id: typeof b.landing_variant_id === "string" ? b.landing_variant_id.trim() : undefined,
+      landing_page_version: typeof b.landing_page_version === "string" ? b.landing_page_version.trim() : undefined,
+      creative_version: typeof b.creative_version === "string" ? b.creative_version.trim() : undefined,
       source: sourceVal,
       lite_snapshot: liteSnapshot === undefined ? null : liteSnapshot,
     },
@@ -187,13 +199,29 @@ export const handler: Handler = async (event: HandlerEvent) => {
         source: data.source === "lite_upgrade" ? "landing:advisory:lite_upgrade" : "landing:advisory",
         service_type: "energy_advisory",
         message: messageLines.join(" | "),
+        utm_source: data.utm_source || null,
+        utm_medium: data.utm_medium || null,
+        utm_campaign: data.utm_campaign || null,
+        utm_content: data.utm_content || null,
+        landing_page_url: data.page_url || null,
+        landing_page_version: data.landing_page_version || null,
+        creative_version: data.creative_version || null,
         raw_payload: {
           application_id: row.id,
           utm_source: data.utm_source,
           utm_medium: data.utm_medium,
           utm_campaign: data.utm_campaign,
+          utm_content: data.utm_content,
           page_url: data.page_url,
+          click_id: data.click_id || null,
+          gclid: data.gclid || null,
+          landing_variant_id: data.landing_variant_id || null,
+          landing_page_version: data.landing_page_version || null,
+          creative_version: data.creative_version || null,
         },
+        click_id: data.click_id || null,
+        gclid: data.gclid || null,
+        landing_variant_id: data.landing_variant_id || null,
       };
       try {
         await fetch(crmUrl, {
@@ -221,7 +249,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
       `Contact time: ${data.contact_time}`,
       data.notes ? `Notes: ${data.notes}` : null,
       ``,
-      `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"}`,
+      `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"} content=${data.utm_content || "-"}`,
+      data.landing_page_version ? `LP version (lpv): ${data.landing_page_version}` : null,
+      data.creative_version ? `Creative version (cv): ${data.creative_version}` : null,
       `Page URL: ${data.page_url || "-"}`,
       ``,
       `Application ID: ${row.id}`,

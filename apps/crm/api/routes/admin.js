@@ -326,4 +326,203 @@ router.post('/admin/overdue-send', async (req, res) => {
   }
 });
 
+// GET /api/admin/ad-performance-summary — unified CPL / ROAS (minimal v1; optional auth)
+router.get('/admin/ad-performance-summary', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { getAdPerformanceSummary } = require('../../services/adPerformanceSummary');
+    const out = await getAdPerformanceSummary({
+      by: req.query.by,
+      date_from: req.query.date_from,
+      date_to: req.query.date_to,
+      platform: req.query.platform,
+      campaign_id: req.query.campaign_id,
+    });
+    res.json({ ok: true, ...out });
+  } catch (e) {
+    if (e.code === 'VALIDATION') {
+      return res.status(400).json({ ok: false, error: e.message });
+    }
+    console.error('[ad-performance-summary]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// POST /api/admin/google-offline-conversions/enqueue-opportunity-won — manual enqueue (won stage + gclid + action)
+router.post('/admin/google-offline-conversions/enqueue-opportunity-won', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret || req.body?.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { enqueueOpportunityWonConversionEvent } = require('../../services/googleOfflineConversions');
+    const opportunityId = req.body?.opportunity_id || req.query?.opportunity_id;
+    if (!opportunityId || typeof opportunityId !== 'string') {
+      return res.status(400).json({ ok: false, error: 'opportunity_id required' });
+    }
+    const out = await enqueueOpportunityWonConversionEvent(opportunityId.trim(), {
+      source: 'admin.enqueue_opportunity_won',
+      sourcePayload: { via: 'POST /admin/google-offline-conversions/enqueue-opportunity-won' },
+    });
+    res.json({ ok: true, ...out });
+  } catch (e) {
+    console.error('[google-offline-conversions.enqueue-opportunity-won]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// POST /api/admin/google-offline-conversions/upload — manual upload pending events
+router.post('/admin/google-offline-conversions/upload', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret || req.body?.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { uploadPendingGoogleOfflineConversions } = require('../../services/googleOfflineConversions');
+    const dry =
+      req.query?.dry_run === '1' ||
+      req.query?.dry === '1' ||
+      req.body?.dry_run === true ||
+      req.body?.dry === true;
+    const out = await uploadPendingGoogleOfflineConversions({
+      limit: req.body?.limit || req.query?.limit,
+      dryRun: dry,
+    });
+    res.json({ ok: true, ...out });
+  } catch (e) {
+    console.error('[google-offline-conversions.upload]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// GET /api/admin/google-offline-conversions — list recent queue events with filters
+router.get('/admin/google-offline-conversions', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { listGoogleOfflineConversionEvents } = require('../../services/googleOfflineConversions');
+    const rows = await listGoogleOfflineConversionEvents({
+      status: req.query.status,
+      event_type: req.query.event_type,
+      date_from: req.query.date_from,
+      date_to: req.query.date_to,
+      limit: req.query.limit,
+      ready_for_retry: req.query.ready_for_retry,
+      retry_scheduled: req.query.retry_scheduled,
+    });
+    res.json({ ok: true, count: rows.length, rows });
+  } catch (e) {
+    console.error('[google-offline-conversions.list]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// GET /api/admin/google-offline-conversions/:opportunityId/timeline — end-to-end debug for one deal
+router.get('/admin/google-offline-conversions/:opportunityId/timeline', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { getGoogleOfflineConversionTimeline } = require('../../services/googleOfflineConversions');
+    const out = await getGoogleOfflineConversionTimeline(req.params.opportunityId);
+    res.json({ ok: true, ...out });
+  } catch (e) {
+    if (e.code === 'VALIDATION') {
+      return res.status(400).json({ ok: false, error: e.message });
+    }
+    console.error('[google-offline-conversions.timeline]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// GET /api/admin/google-offline-conversions/summary — aggregate counts
+router.get('/admin/google-offline-conversions/summary', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { summarizeGoogleOfflineConversionEvents } = require('../../services/googleOfflineConversions');
+    const out = await summarizeGoogleOfflineConversionEvents({
+      date_from: req.query.date_from,
+      date_to: req.query.date_to,
+      event_type: req.query.event_type,
+    });
+    res.json({ ok: true, ...out });
+  } catch (e) {
+    console.error('[google-offline-conversions.summary]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// GET /api/admin/google-offline-conversions/runs — recent uploader runs (sync_runs)
+router.get('/admin/google-offline-conversions/runs', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { listOfflineUploadRuns } = require('../../services/googleOfflineConversions');
+    const rows = await listOfflineUploadRuns({ limit: req.query.limit });
+    res.json({ ok: true, count: rows.length, rows });
+  } catch (e) {
+    console.error('[google-offline-conversions.runs]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// GET /api/admin/landing-attribution-summary — landing_variant lead/revenue visibility
+router.get('/admin/landing-attribution-summary', async (req, res) => {
+  const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
+  if (secret) {
+    const provided = req.headers['x-sync-secret'] || req.query.sync_secret;
+    if (provided !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+  try {
+    const { getLandingAttributionSummary } = require('../../services/landingAttributionSummary');
+    const out = await getLandingAttributionSummary({
+      date_from: req.query.date_from,
+      date_to: req.query.date_to,
+      landing_variant_id: req.query.landing_variant_id,
+      platform: req.query.platform,
+    });
+    res.json({ ok: true, ...out });
+  } catch (e) {
+    if (e.code === 'VALIDATION') {
+      return res.status(400).json({ ok: false, error: e.message });
+    }
+    console.error('[landing-attribution-summary]', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
 module.exports = router;

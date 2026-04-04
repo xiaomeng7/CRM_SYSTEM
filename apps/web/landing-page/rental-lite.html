@@ -367,6 +367,11 @@
       if (!property_address) return showError('Property address is required.');
 
       const params = new URLSearchParams(window.location.search);
+      const gclid = (params.get('gclid') || '').trim();
+      const clickId = (params.get('click_id') || params.get('clid') || params.get('fbclid') || params.get('msclkid') || '').trim();
+      const utmContent = (params.get('utm_content') || '').trim();
+      const lpv = (params.get('lpv') || '').trim();
+      const cv = (params.get('cv') || '').trim();
       const payload = {
         agency_name,
         contact_name,
@@ -381,7 +386,12 @@
         utm_source: params.get('utm_source') || null,
         utm_medium: params.get('utm_medium') || null,
         utm_campaign: params.get('utm_campaign') || null,
+        utm_content: utmContent || null,
         page_url: window.location.href,
+        gclid: gclid || null,
+        click_id: clickId || null,
+        landing_page_version: lpv || null,
+        creative_version: cv || null,
       };
 
       try {

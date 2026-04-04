@@ -33,6 +33,9 @@ Initial wiring for Energy Decision Advisory landing page into the CRM.
   - `contact_time`
   - `notes` (optional)
   - `utm_source`, `utm_medium`, `utm_campaign`, `page_url` (optional)
+  - `click_id` (optional; generic click identifier)
+  - `gclid` (optional; Google click identifier, separate from click_id)
+  - `landing_variant_id` (optional; from `landing_variant_id`/`lv` query param)
   - `source` (`pro_direct` \| `lite_upgrade`)
   - `lite_snapshot` (optional JSON string)
 
@@ -61,6 +64,9 @@ Initial wiring for Energy Decision Advisory landing page into the CRM.
       - `application_id`
       - `utm_source`, `utm_medium`, `utm_campaign`
       - `page_url`
+      - `click_id`, `gclid`, `landing_variant_id`
+    - top-level passthrough:
+      - `click_id`, `gclid`, `landing_variant_id`
 
 - **CRM base URL:** `CRM_API_BASE_URL` environment variable in Netlify.
   - Example: `https://<your-railway-domain>.up.railway.app`.
@@ -127,6 +133,37 @@ Initial wiring for Energy Decision Advisory landing page into the CRM.
   - Name/phone/suburb will come from the associated `contacts`/`accounts` (via future view/join).
 - **Lead detail:** `lead-detail.html?id=<lead_id>` calls `GET /api/leads/:id`.
   - The `lead_id` returned from `/api/public/leads` can be used to deep-link from future confirmations, if needed.
+
+## Google offline conversions (dual signals, v1)
+
+Full operations guide: [google-offline-conversions.md](./google-offline-conversions.md).
+
+Two queued event types in `google_offline_conversion_events` (Google Ads click conversions upload):
+
+| `event_type`       | Meaning | Typical conversion value |
+|--------------------|---------|---------------------------|
+| `opportunity_won`  | CRM `opportunities.stage` is **`won`** (earlier pipeline signal). | `opportunities.value_estimate` if set, else **0** (not paid revenue). |
+| `invoice_paid`     | Invoice paid / complete (stronger revenue signal). | Invoice amount. |
+
+**Won rule (auditable):** a row is enqueued when stage becomes `won` via `opportunities.updateStage` or `advanceOpportunityStage` (e.g. quote accepted). Re-enqueue is deduped by `dedupe_key = opportunity_won:<opportunity_id>`; `sent` rows are not overwritten.
+
+**Conversion actions (env):** per-type override, then legacy global fallback:
+
+1. `GOOGLE_ADS_OFFLINE_CONVERSION_ACTION_OPPORTUNITY_WON` → `opportunity_won`
+2. `GOOGLE_ADS_OFFLINE_CONVERSION_ACTION_INVOICE_PAID` → `invoice_paid`
+3. `GOOGLE_ADS_OFFLINE_CONVERSION_ACTION` → fallback for either type if the specific key is unset
+
+If the won-specific action is missing, `opportunity_won` rows are still inserted with `status = skipped` and `error_message = missing_conversion_action_resource_name` (same pattern as missing gclid).
+
+**gclid (trusted):** `pickTrustedGclid` — prefer `lead_attribution_events.gclid`, then `leads.gclid`, then conservative Google-like `click_id` fallback. No fabrication.
+
+**Manual checks:**
+
+- Enqueue: `POST /api/admin/google-offline-conversions/enqueue-opportunity-won` with `opportunity_id` + `sync_secret` (or header `x-sync-secret`).
+- List: `GET /api/admin/google-offline-conversions?event_type=opportunity_won`
+- Summary: `GET /api/admin/google-offline-conversions/summary` (optional `event_type=opportunity_won`)
+- Upload dry run: `npm run google-offline-conversions:upload:dry` (see `summary.by_event_type` on the response)
+- CLI: `npm run google-offline-conversions:test-opportunity-won -- <opportunity_uuid>`
 
 ## Notes / next steps
 

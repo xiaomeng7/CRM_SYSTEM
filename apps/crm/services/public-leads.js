@@ -7,6 +7,8 @@ const { pool } = require('../lib/db');
 const { emit } = require('../lib/domain-events');
 const { cleanContact, cleanAccount } = require('../lib/crm/cleaning');
 const { scheduleLeadScoring } = require('./lead-scoring');
+const { scheduleLeadCreatedAttribution } = require('./leadAttribution');
+const { syncIntakeAttributionFromLead } = require('./opportunities');
 
 function isUuid(v) {
   return typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim());
@@ -72,6 +74,7 @@ async function getTableColumns(client, tableName) {
  * - service_type
  * - message
  * - raw_payload (optional) — full original body for future analysis
+ * - landing_page_version / creative_version (optional) — from URL lpv / cv; also merged into attribution raw_payload_json
  *
  * Ad ROI (reliable path): pass `campaign_id` (UUID from `campaigns.id`, e.g. hidden field set per landing).
  * Fallback: `utm_campaign` exact match to `campaigns.code` or `campaigns.name` (see seeds in 034 migration).
@@ -87,12 +90,16 @@ async function createFromPublic(body = {}) {
   const sourceId = typeof body.source_id === 'string' ? body.source_id.trim() : null;
   const campaignId = typeof body.campaign_id === 'string' ? body.campaign_id.trim() : null;
   const creativeId = typeof body.creative_id === 'string' ? body.creative_id.trim() : null;
+  const landingVariantId = typeof body.landing_variant_id === 'string' ? body.landing_variant_id.trim() : null;
   const utmSource = (body.utm_source || '').trim() || null;
   const utmMedium = (body.utm_medium || '').trim() || null;
   const utmCampaign = (body.utm_campaign || '').trim() || null;
   const utmTerm = (body.utm_term || '').trim() || null;
   const utmContent = (body.utm_content || '').trim() || null;
+  const landingPageVersion = (body.landing_page_version || '').trim() || null;
+  const creativeVersion = (body.creative_version || '').trim() || null;
   const clickId = (body.click_id || '').trim() || null;
+  const gclid = (body.gclid || '').trim() || null;
   const landingPageUrl = (body.landing_page_url || '').trim() || null;
   const referrerUrl = (body.referrer_url || body._request_referrer || '').trim() || null;
   const productInterest = (body.product_interest || '').trim() || null;
@@ -101,9 +108,12 @@ async function createFromPublic(body = {}) {
   const urgencyLevel = (body.urgency_level || '').trim() || null;
   const serviceType = (body.service_type || body.product_type || '').trim();
   const message = (body.message || '').trim() || null;
-  const rawPayload = body.raw_payload && typeof body.raw_payload === 'object'
-    ? body.raw_payload
-    : body;
+  const rawPayload =
+    body.raw_payload && typeof body.raw_payload === 'object' && !Array.isArray(body.raw_payload)
+      ? { ...body.raw_payload }
+      : { ...body };
+  if (landingPageVersion) rawPayload.landing_page_version = landingPageVersion;
+  if (creativeVersion) rawPayload.creative_version = creativeVersion;
 
   const cleanedContact = cleanContact({
     name: rawName,
@@ -201,9 +211,30 @@ async function createFromPublic(body = {}) {
       }
     }
 
+    async function resolveLandingVariantId() {
+      const cleanId = sanitizeUuid('landing_variant_id', landingVariantId);
+      if (!cleanId) return null;
+      try {
+        const hit = await client.query(
+          `SELECT id FROM landing_page_variants WHERE id = $1::uuid LIMIT 1`,
+          [cleanId]
+        );
+        if (hit.rows[0]?.id) return hit.rows[0].id;
+        console.warn('[public-leads] landing_variant_id not found, ignored:', cleanId);
+        return null;
+      } catch (e) {
+        if (/relation .*landing_page_variants.* does not exist/i.test(e.message || '')) {
+          console.warn('[public-leads] landing_page_variants table missing, skip landing_variant_id mapping');
+          return null;
+        }
+        throw e;
+      }
+    }
+
     const safeCreativeId = sanitizeUuid('creative_id', creativeId);
     const mappedSourceId = await resolveSourceId();
     const mappedCampaignId = await resolveCampaignId();
+    const mappedLandingVariantId = await resolveLandingVariantId();
 
     await client.query('BEGIN');
 
@@ -239,7 +270,11 @@ async function createFromPublic(body = {}) {
       utm_campaign: utmCampaign,
       utm_term: utmTerm,
       utm_content: utmContent,
+      landing_page_version: landingPageVersion,
+      creative_version: creativeVersion,
       click_id: clickId,
+      gclid,
+      landing_variant_id: mappedLandingVariantId,
       landing_page_url: landingPageUrl,
       referrer_url: referrerUrl,
       product_interest: productInterest,
@@ -272,6 +307,26 @@ async function createFromPublic(body = {}) {
 
     await client.query('COMMIT');
 
+    scheduleLeadCreatedAttribution(pool, {
+      leadId: lead.id,
+      contactId,
+      accountId,
+      campaignId: lead.campaign_id || null,
+      creativeId: lead.creative_id || null,
+      landingVariantId: lead.landing_variant_id || mappedLandingVariantId || null,
+      clickId: lead.click_id || clickId || null,
+      gclid: lead.gclid || gclid || null,
+      landingPageUrl: lead.landing_page_url || landingPageUrl || null,
+      referrerUrl: lead.referrer_url || referrerUrl || null,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmTerm,
+      utmContent,
+      sourceLabel: source,
+      rawPayload,
+    });
+
     // Fire-and-forget: auto Opportunity + Task + Confirmation SMS (never blocks intake)
     setImmediate(async () => {
       try {
@@ -282,6 +337,7 @@ async function createFromPublic(body = {}) {
           [accountId, contactId, lead.id, productType || serviceType || null]
         );
         const oppId = oppResult.rows[0].id;
+        await syncIntakeAttributionFromLead(pool, oppId, lead.id);
 
         // 2. Create follow-up task due in 4 hours
         await pool.query(

@@ -46,7 +46,12 @@ type RentalBody = {
   utm_source?: string | null;
   utm_medium?: string | null;
   utm_campaign?: string | null;
+  utm_content?: string | null;
   page_url?: string | null;
+  gclid?: string | null;
+  click_id?: string | null;
+  landing_page_version?: string | null;
+  creative_version?: string | null;
 };
 
 function validate(body: unknown): { ok: true; data: RentalBody } | { ok: false; error: string } {
@@ -76,10 +81,15 @@ function validate(body: unknown): { ok: true; data: RentalBody } | { ok: false; 
       preferred_date: typeof b.preferred_date === "string" && b.preferred_date ? b.preferred_date : null,
       portfolio_size: typeof b.portfolio_size === "string" && b.portfolio_size ? b.portfolio_size : null,
       notes: typeof b.notes === "string" && b.notes ? b.notes.trim() : null,
-      utm_source: typeof b.utm_source === "string" ? b.utm_source : null,
-      utm_medium: typeof b.utm_medium === "string" ? b.utm_medium : null,
-      utm_campaign: typeof b.utm_campaign === "string" ? b.utm_campaign : null,
-      page_url: typeof b.page_url === "string" ? b.page_url : null,
+      utm_source: typeof b.utm_source === "string" ? b.utm_source.trim() || null : null,
+      utm_medium: typeof b.utm_medium === "string" ? b.utm_medium.trim() || null : null,
+      utm_campaign: typeof b.utm_campaign === "string" ? b.utm_campaign.trim() || null : null,
+      utm_content: typeof b.utm_content === "string" ? b.utm_content.trim() || null : null,
+      page_url: typeof b.page_url === "string" ? b.page_url.trim() || null : null,
+      gclid: typeof b.gclid === "string" ? b.gclid.trim() || null : null,
+      click_id: typeof b.click_id === "string" ? b.click_id.trim() || null : null,
+      landing_page_version: typeof b.landing_page_version === "string" ? b.landing_page_version.trim() || null : null,
+      creative_version: typeof b.creative_version === "string" ? b.creative_version.trim() || null : null,
     },
   };
 }
@@ -198,6 +208,15 @@ export const handler: Handler = async (event: HandlerEvent) => {
       service_type: "rental_lite",
       product_type: "rental_lite",
       message: messageLines.join(" | "),
+      utm_source: data.utm_source,
+      utm_medium: data.utm_medium,
+      utm_campaign: data.utm_campaign,
+      utm_content: data.utm_content,
+      landing_page_url: data.page_url,
+      landing_page_version: data.landing_page_version,
+      creative_version: data.creative_version,
+      gclid: data.gclid,
+      click_id: data.click_id,
       raw_payload: {
         agency_name: data.agency_name,
         property_address: data.property_address,
@@ -207,6 +226,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
         utm_source: data.utm_source,
         utm_medium: data.utm_medium,
         utm_campaign: data.utm_campaign,
+        utm_content: data.utm_content,
+        page_url: data.page_url,
+        gclid: data.gclid,
+        click_id: data.click_id,
+        landing_page_version: data.landing_page_version,
+        creative_version: data.creative_version,
       },
     };
     try {
@@ -236,7 +261,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
       data.portfolio_size ? `Portfolio size: ${data.portfolio_size}` : null,
       data.notes ? `Notes: ${data.notes}` : null,
       ``,
-      `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"}`,
+      `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"} content=${data.utm_content || "-"}`,
+      data.landing_page_version ? `LP version (lpv): ${data.landing_page_version}` : null,
+      data.creative_version ? `Creative version (cv): ${data.creative_version}` : null,
       appId ? `Application ID: ${appId}` : null,
     ].filter(Boolean).join("\n");
     try { await sendEmail({ to: toEmail, subject, text }); } catch (e) { console.error("Email error:", e); }
