@@ -466,6 +466,13 @@
       if (!inspection_date) return showError('Preferred inspection date is required.');
 
       const params = new URLSearchParams(window.location.search);
+      function paramTrim(key) {
+        var v = params.get(key);
+        if (v == null || String(v).trim() === '') return null;
+        return String(v).trim();
+      }
+      var lpv = paramTrim('lpv') || paramTrim('landing_page_version');
+      var cv = paramTrim('cv') || paramTrim('creative_version');
       const urlInspectorSub = (function () {
         if (params.get('source') !== 'inspector') return null;
         var sub = (params.get('sub') || params.get('sub_source') || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/^_+|_+$/g, '');
@@ -483,13 +490,20 @@
         property_type: document.getElementById('property_type').value || null,
         notes: document.getElementById('notes').value.trim() || null,
         product_type: 'pre_purchase',
-        source: urlInspectorSub ? 'inspector' : 'landing:pre_purchase',
-        ...(urlInspectorSub ? { sub: urlInspectorSub } : {}),
-        utm_source: params.get('utm_source') || null,
-        utm_medium: params.get('utm_medium') || null,
-        utm_campaign: params.get('utm_campaign') || null,
+        utm_source: paramTrim('utm_source'),
+        utm_medium: paramTrim('utm_medium'),
+        utm_campaign: paramTrim('utm_campaign'),
+        utm_content: paramTrim('utm_content'),
+        gclid: paramTrim('gclid'),
+        click_id: paramTrim('click_id'),
+        landing_page_version: lpv,
+        creative_version: cv,
         page_url: window.location.href,
       };
+      if (urlInspectorSub) {
+        payload.source = 'inspector';
+        payload.sub = urlInspectorSub;
+      }
 
       try {
         const res = await fetch('/api/apply-pre-purchase', {

@@ -134,6 +134,23 @@ Initial wiring for Energy Decision Advisory landing page into the CRM.
 - **Lead detail:** `lead-detail.html?id=<lead_id>` calls `GET /api/leads/:id`.
   - The `lead_id` returned from `/api/public/leads` can be used to deep-link from future confirmations, if needed.
 
+## Pre-purchase electrical inspection (`apps/web/pre-purchase-landing`)
+
+- **Form:** `apps/web/pre-purchase-landing/index.html` → `POST /api/apply-pre-purchase` (Netlify function `netlify/functions/apply-pre-purchase.ts`).
+- **CRM:** `POST {CRM_API_BASE_URL}/api/public/leads` with `product_type` / `service_type` = `pre_purchase`, `source` = `landing:pre_purchase` (or `inspector` + required `sub_source` when the URL is an inspector referral).
+
+**Query / body attribution (optional; all omitted when not present):**
+
+| Incoming (URL or JSON) | CRM / meaning |
+|------------------------|----------------|
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` | Top-level UTM fields + echoed in `raw_payload` |
+| `gclid`, `click_id` | Top-level + `raw_payload` (offline conversion / click correlation) |
+| `lpv` or `landing_page_version` | `landing_page_version` (lpv alias on the client) |
+| `cv` or `creative_version` | `creative_version` (cv alias on the client) |
+| `source=inspector` with `sub` or `sub_source` | CRM `source=inspector` and sanitized `sub_source` (same rules as advisory/rental) |
+
+Neon `advisory_applications` still stores only legacy columns (`utm_*` / `page_url`); extra attribution is appended into the combined notes string there and fully reflected on the CRM lead via `raw_payload` and top-level fields above.
+
 ## Google offline conversions (dual signals, v1)
 
 Full operations guide: [google-offline-conversions.md](./google-offline-conversions.md).
