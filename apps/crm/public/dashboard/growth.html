@@ -46,6 +46,29 @@
       border: 1px solid var(--border); padding: 1.25rem; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
     }
     .gd-modal.wide { max-width: 34rem; }
+    .gd-modal.wide.tall { max-width: 36rem; max-height: 92vh; }
+    .gd-fork-result-scroll { max-height: min(70vh, 32rem); overflow-y: auto; padding-right: 0.25rem; }
+    .gd-ad-copy-module { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .gd-ad-copy-module h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
+    .gd-ad-variant { border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.75rem; margin: 0.5rem 0; background: var(--bg); font-size: 0.88rem; line-height: 1.45; }
+    .gd-ad-variant .lbl { font-size: 0.72rem; color: var(--muted); margin-top: 0.35rem; }
+    .gd-ad-variant .lbl:first-child { margin-top: 0; }
+    .gd-ad-variant pre { margin: 0.2rem 0 0 0; white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 0.86rem; }
+    .gd-fork-launch-card {
+      margin: 1rem 0 1.25rem 0; padding: 1rem 1.1rem; border-radius: 10px;
+      border: 2px solid #34d399; background: linear-gradient(165deg, #ecfdf5 0%, #f0fdf4 55%, #fff 100%);
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.12);
+    }
+    .gd-fork-launch-card h3 { margin: 0 0 0.35rem 0; font-size: 1.05rem; }
+    .gd-fork-launch-lead { margin: 0 0 0.85rem 0; font-size: 0.88rem; color: var(--muted); line-height: 1.45; }
+    .gd-fork-launch-card .gd-fork-launch-block { margin: 0.75rem 0; }
+    .gd-fork-launch-card .lbl { font-size: 0.72rem; color: var(--muted); font-weight: 600; margin-bottom: 0.25rem; }
+    .gd-fork-launch-card ol { margin: 0.25rem 0 0 1.1rem; padding: 0; }
+    .gd-fork-launch-card ol li { margin: 0.35rem 0; }
+    .gd-fork-launch-pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 0.86rem; line-height: 1.4; }
+    .gd-fork-launch-url { margin-top: 0.5rem; }
+    .gd-fork-launch-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.85rem; }
+    .gd-fork-launch-param { font-size: 0.78rem; color: var(--muted); line-height: 1.45; margin: 0.5rem 0 0 0; }
     .gd-modal h2 { margin: 0 0 0.75rem 0; font-size: 1.05rem; }
     .gd-modal .field { margin-bottom: 0.75rem; }
     .gd-modal label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
@@ -80,10 +103,66 @@
     .gd-badge-sales { background: #f8d7da; color: #58151c; }
     .gd-badge-warn { background: #ffe5d0; color: #9a3412; }
     tr.gd-row-flash td { background: #fff8e6 !important; transition: background 0.3s ease; }
+    tbody tr.gd-row-pause td { background: #fff0f0 !important; }
+    tbody tr.gd-row-tracking td { background: #fff9e6 !important; }
+    tbody tr.gd-row-sales td { background: #fff4ed !important; }
     .gd-rec-card[data-rec-idx] { cursor: pointer; }
     .gd-rec-card[data-rec-idx] button { cursor: pointer; }
+    .gd-rec-sales-banner { font-size: 0.78rem; color: #9a3412; margin: 0 0 0.4rem 0; line-height: 1.4; padding: 0.35rem 0.45rem; background: #fff7ed; border-radius: 4px; border: 1px solid #fed7aa; }
     .gd-op-hint { margin-top: 0.35rem; font-size: 0.78rem; color: var(--muted); line-height: 1.4; max-width: 14rem; }
     .gd-op-hint a { white-space: nowrap; }
+    .gd-auto-actions-banner {
+      margin: 0 0 1rem 0; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem 1rem;
+    }
+    .gd-auto-actions-banner .gd-auto-actions-title { font-weight: 600; font-size: 0.95rem; }
+    .gd-auto-actions-banner .gd-auto-actions-hint { flex: 1 1 12rem; font-size: 0.82rem; color: var(--muted); line-height: 1.45; margin: 0; }
+    .gd-auto-actions-alert { background: #fff5f5; border-color: #f5c2c7; }
+    .gd-auto-actions-muted { background: var(--bg); }
+    .gd-auto-actions-err { background: #fde8e8; border-color: #f1aeb5; }
+    .gd-auto-actions-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .gd-auto-actions-table { width: 100%; font-size: 0.86rem; margin-top: 0.5rem; }
+    .gd-auto-actions-table th, .gd-auto-actions-table td { padding: 0.4rem 0.5rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .gd-auto-actions-table .reason-cell { font-size: 0.8rem; color: var(--muted); max-width: 16rem; }
+    .gd-scale-actions-banner {
+      margin: 0 0 1rem 0; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem 1rem;
+    }
+    .gd-scale-actions-banner .gd-scale-actions-title { font-weight: 600; font-size: 0.95rem; }
+    .gd-scale-actions-banner .gd-scale-actions-hint { flex: 1 1 12rem; font-size: 0.82rem; color: var(--muted); line-height: 1.45; margin: 0; }
+    .gd-scale-actions-good { background: #ecfdf5; border-color: #6ee7b7; }
+    .gd-scale-actions-muted { background: var(--bg); }
+    .gd-scale-actions-err { background: #fde8e8; border-color: #f1aeb5; }
+    .gd-scale-actions-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .gd-lp-opt-banner {
+      margin: 0 0 1rem 0; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #f5d08c;
+      background: #fffbeb;
+    }
+    .gd-lp-opt-banner .gd-lp-opt-title { font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.35rem; }
+    .gd-lp-opt-banner .gd-lp-opt-hint { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.5rem 0; line-height: 1.45; }
+    .gd-lp-opt-banner.gd-lp-opt-err { background: #fde8e8; border-color: #f1aeb5; }
+    .gd-lp-opt-banner.gd-lp-opt-muted { background: var(--bg); border-color: var(--border); }
+    .gd-op-strip {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem 1.25rem; margin-bottom: 0.75rem;
+      padding: 0.65rem 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    }
+    .gd-op-strip-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .gd-op-strip label { font-size: 0.85rem; margin-right: 0.75rem; cursor: pointer; color: var(--text); }
+    .gd-op-banner {
+      font-size: 0.82rem; color: var(--muted); margin: 0 0 0.85rem 0; padding: 0.5rem 0.75rem;
+      background: var(--bg); border-radius: 6px; border: 1px solid var(--border); line-height: 1.45;
+    }
+    .gd-op-banner.warn { background: #fff8e6; border-color: #f5d08c; color: #664d03; }
+    .gd-op-banner.muted { color: var(--muted); }
+    .gd-queue-section { margin-bottom: 1.75rem; }
+    .gd-queue-table { width: 100%; font-size: 0.86rem; border-collapse: collapse; }
+    .gd-queue-table th, .gd-queue-table td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    .gd-queue-table th { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; }
+    .gd-why-btn { font-size: 0.72rem; padding: 0.15rem 0.4rem; margin-left: 0.35rem; vertical-align: middle; }
+    .gd-modal-why .gd-why-block { margin: 0.65rem 0; font-size: 0.88rem; line-height: 1.45; }
+    .gd-modal-why .gd-why-block strong { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    .gd-walk-list { margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.55; color: var(--text); }
+    .gd-walk-list li { margin: 0.5rem 0; }
   </style>
 </head>
 <body>
@@ -108,7 +187,99 @@
         <h1 class="page-title">Growth 仪表盘</h1>
         <p class="gd-page-intro">看数据 → 看系统建议 → 点按钮执行。创意「暂停 / 复制」需创意库中<strong>仅有一条</strong>与版本标签完全一致的记录，否则会禁用并提示原因。</p>
 
+        <div class="gd-op-strip" id="gd-op-strip">
+          <span class="gd-op-strip-label">系统模式</span>
+          <label><input type="radio" name="gd-op-mode" value="manual" checked /> 人工驾驶</label>
+          <label><input type="radio" name="gd-op-mode" value="semi" /> 半自动</label>
+          <label><input type="radio" name="gd-op-mode" value="full" /> 全自动</label>
+          <button type="button" class="btn btn-sm" id="gd-walkthrough-btn">手动演练说明</button>
+        </div>
+        <div class="gd-op-banner muted" id="gd-op-banner"></div>
+
         <div id="gd-msg" class="gd-msg"></div>
+
+        <section class="gd-section gd-queue-section" id="gd-queue-section" style="display:none;">
+          <h2 class="gd-section-h">待执行动作队列</h2>
+          <p class="gd-section-note" id="gd-queue-note">仅在「半自动」下可将动作放入此队列；批准后才会真正提交到服务器。队列保存在本浏览器本次会话中。</p>
+          <div class="table-wrap" style="border:1px solid var(--border);border-radius:8px;">
+            <table class="gd-queue-table">
+              <thead>
+                <tr>
+                  <th>动作</th>
+                  <th>对象</th>
+                  <th>原因摘要</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="gd-queue-tbody">
+                <tr><td colspan="4" class="muted">队列为空</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div id="gd-auto-actions-banner" class="gd-auto-actions-banner gd-auto-actions-muted" style="display:none;">
+          <span class="gd-auto-actions-title">🚨 今日待处理广告（<span id="gd-auto-actions-n">0</span>条）</span>
+          <p class="gd-auto-actions-hint" id="gd-auto-actions-hint"></p>
+          <div class="gd-auto-actions-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="gd-auto-pause-all">一键暂停全部</button>
+            <button type="button" class="btn btn-sm" id="gd-auto-actions-detail-btn">查看详情</button>
+          </div>
+        </div>
+
+        <div id="gd-scale-actions-banner" class="gd-scale-actions-banner gd-scale-actions-muted" style="display:none;">
+          <span class="gd-scale-actions-title">✅ 今日值得放大的广告（<span id="gd-scale-actions-n">0</span>条）</span>
+          <p class="gd-scale-actions-hint" id="gd-scale-actions-hint"></p>
+          <div class="gd-scale-actions-actions">
+            <button type="button" class="btn btn-sm" id="gd-scale-detail-btn">查看详情</button>
+            <button type="button" class="btn btn-sm btn-primary" id="gd-scale-fork-btn">复制新版本</button>
+            <button type="button" class="btn btn-sm" id="gd-scale-link-btn">生成广告链接</button>
+          </div>
+        </div>
+
+        <div id="gd-lp-opt-banner" class="gd-lp-opt-banner gd-lp-opt-muted" style="display:none;">
+          <span class="gd-lp-opt-title">⚠️ Landing page 需要优化（<span id="gd-lp-opt-n">0</span>条）</span>
+          <p class="gd-lp-opt-hint" id="gd-lp-opt-hint"></p>
+          <div class="table-wrap" style="max-height:15rem;overflow:auto;">
+            <table class="gd-auto-actions-table" style="width:100%;">
+              <thead>
+                <tr>
+                  <th>当前版本</th>
+                  <th>线索→赢单</th>
+                  <th>推荐版本</th>
+                  <th>推荐转化率</th>
+                  <th>活动</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="gd-lp-opt-tbody">
+                <tr><td colspan="6" class="muted">刷新后显示</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="gd-lp-behavior-block" style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);">
+            <span class="gd-lp-opt-title" style="font-size:0.9rem;">用户行为（V1）</span>
+            <p class="gd-lp-opt-hint" id="gd-lp-behavior-hint" style="margin-bottom:0.4rem;">按 lpv 汇总的匿名会话漏斗（落地页需加载 lp-tracking.js）。</p>
+            <div class="table-wrap" style="max-height:12rem;overflow:auto;">
+              <table class="gd-auto-actions-table" style="width:100%;font-size:0.85rem;">
+                <thead>
+                  <tr>
+                    <th>lpv</th>
+                    <th>浏览数</th>
+                    <th>滚动率</th>
+                    <th>表单启动率</th>
+                    <th>提交率</th>
+                    <th>问题类型</th>
+                    <th>👉 优化建议</th>
+                  </tr>
+                </thead>
+                <tbody id="gd-lp-behavior-tbody">
+                  <tr><td colspan="7" class="muted">刷新后显示</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
         <div class="gd-toolbar">
           <span class="gd-range-group">
@@ -155,7 +326,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>建议状态</th>
+                  <th>状态</th>
                   <th>创意版本</th>
                   <th>落地页版本</th>
                   <th>活动名称</th>
@@ -170,6 +341,57 @@
               </thead>
               <tbody id="gd-ad-tbody">
                 <tr><td colspan="11" class="muted">保存密钥后点击「刷新数据」</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="gd-section" id="gd-ad-lp-section">
+          <h2 class="gd-section-h">广告 × 落地页自动匹配</h2>
+          <p class="gd-section-note">
+            与「广告版本表现」相同统计区间与产品线筛选；维度为创意版本 × 落地页版本 × 活动名称。
+          </p>
+          <p class="gd-state-line" id="gd-adlp-state"></p>
+
+          <h3 class="gd-section-h" style="font-size:1rem;margin-top:0.25rem;">🧠 最佳组合</h3>
+          <p class="gd-section-note" style="margin:0 0 0.5rem;">
+            已付发票 ≥ 2，按线索→赢单转化率（conversion_rate）降序。
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>创意版本</th>
+                  <th>落地页版本</th>
+                  <th>活动</th>
+                  <th>转化率</th>
+                  <th>已付</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="gd-adlp-best-tbody">
+                <tr><td colspan="6" class="muted">保存密钥后点击「刷新数据」</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="gd-section-h" style="font-size:1rem;margin-top:1.25rem;">⚠️ 不匹配组合</h3>
+          <p class="gd-section-note" style="margin:0 0 0.5rem;">
+            同一创意 + 同一活动下，不同 lpv 的转化率相差超过 10 个百分点（双方线索各 ≥
+            5）。推荐：将广告最终到达网址中的 lpv 换为表现更好的版本（cv、utm 不变）。
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>当前组合（较差 lpv）</th>
+                  <th>推荐组合（较好 lpv）</th>
+                  <th>转化率对比</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="gd-adlp-mismatch-tbody">
+                <tr><td colspan="4" class="muted">保存密钥后点击「刷新数据」</td></tr>
               </tbody>
             </table>
           </div>
@@ -208,6 +430,78 @@
           </div>
         </div>
 
+        <!-- 半自动：待暂停列表详情 -->
+        <div id="gd-modal-auto-actions" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal wide" role="dialog">
+            <h2>待暂停广告版本</h2>
+            <p class="gd-section-note" id="gd-auto-actions-modal-note">以下为当前时间范围内、符合半自动规则的活跃创意。</p>
+            <div class="table-wrap" style="max-height:min(55vh,22rem);overflow:auto;">
+              <table class="gd-auto-actions-table">
+                <thead>
+                  <tr>
+                    <th>版本 / 落地页</th>
+                    <th>线索</th>
+                    <th>线索→赢单</th>
+                    <th>已付</th>
+                    <th>说明</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="gd-auto-actions-modal-tbody">
+                  <tr><td colspan="6" class="muted">暂无</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="gd-section-note" style="margin-top:0.75rem;">单条暂停与批量均调用 <code>PATCH /api/ads/creatives/:id</code>，仅将状态设为 paused。</p>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn" data-close="auto-actions">关闭</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 半自动：放大候选详情 -->
+        <div id="gd-modal-scale-actions" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal wide" role="dialog">
+            <h2>值得放大的广告版本</h2>
+            <p class="gd-section-note" id="gd-scale-actions-modal-note">以下为当前时间范围内、符合放大规则的活跃创意。</p>
+            <div class="table-wrap" style="max-height:min(55vh,24rem);overflow:auto;">
+              <table class="gd-auto-actions-table">
+                <thead>
+                  <tr>
+                    <th>创意版本 / 落地页 / 活动</th>
+                    <th>线索</th>
+                    <th>赢单</th>
+                    <th>已付</th>
+                    <th>线索→赢单</th>
+                    <th>付费合计</th>
+                    <th>说明</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="gd-scale-actions-modal-tbody">
+                  <tr><td colspan="8" class="muted">暂无</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="gd-section-note" style="margin-top:0.75rem;">「复制新版本」走现有 publish-new-version；「生成广告链接」使用本页落地页网址与追踪参数逻辑。</p>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn" data-close="scale-actions">关闭</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 半自动：一键暂停确认 -->
+        <div id="gd-modal-auto-pause-batch" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal" role="dialog">
+            <h2>确认批量暂停</h2>
+            <p id="gd-auto-pause-batch-msg" style="font-size:0.95rem;line-height:1.5;"></p>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn btn-primary" id="gd-auto-pause-batch-confirm">确认暂停</button>
+              <button type="button" class="btn" data-close="auto-pause-batch">取消</button>
+            </div>
+          </div>
+        </div>
+
         <!-- 确认暂停 -->
         <div id="gd-modal-pause" class="gd-modal-backdrop" aria-hidden="true">
           <div class="gd-modal" role="dialog">
@@ -222,7 +516,7 @@
 
         <!-- 复制新版本 -->
         <div id="gd-modal-fork" class="gd-modal-backdrop" aria-hidden="true">
-          <div class="gd-modal wide" role="dialog">
+          <div class="gd-modal wide tall" role="dialog">
             <div id="gd-fork-form-wrap">
               <h2>复制新版本</h2>
               <p class="gd-section-note">保存为草稿后，可在后台改为「投放中」并更新广告里的版本标签。</p>
@@ -254,14 +548,86 @@
               </div>
             </div>
             <div id="gd-fork-result-wrap" style="display:none;">
-              <h2>已创建新版本</h2>
-              <p>新版本标签（请用于广告链接）：<strong id="gd-fork-result-version">—</strong></p>
-              <p class="gd-section-note">推荐链接（请确认上方已填写落地页网址）：</p>
-              <div class="gd-link-preview" id="gd-fork-result-link">—</div>
-              <div class="gd-modal-actions">
-                <button type="button" class="btn btn-primary" id="gd-fork-result-copy">复制链接</button>
+              <div class="gd-fork-result-scroll">
+                <h2>已创建新版本</h2>
+
+                <div class="gd-fork-launch-card" id="gd-fork-launch-card">
+                  <h3>🎯 新广告已准备好</h3>
+                  <p class="gd-fork-launch-lead">以下为投放包：复制后打开 Google Ads 粘贴标题/描述与最终到达网址即可，无需再切页生成链接。</p>
+                  <p style="margin:0 0 0.65rem 0;font-size:0.92rem;">新创意版本（cv）：<strong id="gd-fork-launch-cv">—</strong></p>
+                  <div class="gd-fork-launch-block">
+                    <div class="lbl">推荐广告标题（3 条）</div>
+                    <ol id="gd-fork-launch-headlines"></ol>
+                  </div>
+                  <div class="gd-fork-launch-block">
+                    <div class="lbl">推荐描述（2 条）</div>
+                    <ol id="gd-fork-launch-descs"></ol>
+                  </div>
+                  <div class="lbl">完整广告链接（utm / cv / lpv）</div>
+                  <div class="gd-link-preview gd-fork-launch-url" id="gd-fork-launch-url-preview">—</div>
+                  <p class="gd-fork-launch-param" id="gd-fork-launch-param-line"></p>
+                  <div class="gd-fork-launch-actions">
+                    <button type="button" class="btn btn-primary" id="gd-fork-copy-launch-content">复制广告内容</button>
+                    <button type="button" class="btn btn-primary" id="gd-fork-copy-launch-url">复制广告链接</button>
+                  </div>
+                </div>
+
+                <div class="gd-ad-copy-module" id="gd-fork-ad-copy-module">
+                  <h3>更多文案变体（可选）</h3>
+                  <p class="gd-section-note" style="margin-bottom:0.5rem;">与上方投放包同源规则；可切换条数与角度。默认 3 条为 2 条风险导向 + 1 条结果/时间型。</p>
+                  <div class="field" style="margin-bottom:0.65rem;">
+                    <label for="gd-fork-ad-count">生成多个广告版本</label>
+                    <select id="gd-fork-ad-count">
+                      <option value="1">1 条</option>
+                      <option value="3" selected>3 条（默认）</option>
+                      <option value="5">5 条</option>
+                    </select>
+                  </div>
+                  <div class="field" style="margin-bottom:0.65rem;">
+                    <label for="gd-fork-ad-angle">文案角度（可选）</label>
+                    <select id="gd-fork-ad-angle">
+                      <option value="">自动（按业务线）</option>
+                      <option value="risk">风险优先</option>
+                      <option value="cost">金额 / 损失</option>
+                      <option value="safety">安全 / 合规</option>
+                    </select>
+                  </div>
+                  <div id="gd-fork-ad-copy-blocks"></div>
+                </div>
+              </div>
+              <div class="gd-modal-actions" style="margin-top:1rem;">
+                <button type="button" class="btn btn-primary" id="gd-fork-ad-copy-all">复制全部广告（多版本）</button>
+                <a class="btn" href="https://ads.google.com/" target="_blank" rel="noopener noreferrer" id="gd-fork-open-ads">打开 Google Ads</a>
                 <button type="button" class="btn" id="gd-fork-result-done">关闭并刷新</button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LP 一键优化文案（可编辑 → 新建草稿版本） -->
+        <div id="gd-modal-lp-opt-gen" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal wide" role="dialog">
+            <h2>一键生成优化 Landing Page 文案</h2>
+            <p class="gd-section-note" id="gd-lp-opt-gen-hint" style="margin-top:0;"></p>
+            <div class="field">
+              <label for="gd-lp-opt-gen-headline">Headline（英文）</label>
+              <input type="text" id="gd-lp-opt-gen-headline" autocomplete="off" style="width:100%;" />
+            </div>
+            <div class="field">
+              <label for="gd-lp-opt-gen-sub">Subheadline（英文）</label>
+              <textarea id="gd-lp-opt-gen-sub"></textarea>
+            </div>
+            <div class="field">
+              <label for="gd-lp-opt-gen-cta">CTA 文案（英文）</label>
+              <input type="text" id="gd-lp-opt-gen-cta" autocomplete="off" style="width:100%;" />
+            </div>
+            <p class="gd-section-note" style="margin:0;">
+              将基于「更好版本」结构并结合行为阶段生成；你可直接修改后再创建。<strong>不会覆盖</strong>现有版本，新行默认为
+              draft。
+            </p>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn btn-primary" id="gd-lp-opt-gen-publish">创建新版本</button>
+              <button type="button" class="btn" data-close="lp-opt-gen">取消</button>
             </div>
           </div>
         </div>
@@ -286,6 +652,37 @@
             <div id="gd-tracking-body" style="font-size:0.9rem;line-height:1.55;"></div>
             <div class="gd-modal-actions">
               <button type="button" class="btn" data-close="tracking">关闭</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 建议「为什么」说明 -->
+        <div id="gd-modal-why" class="gd-modal-backdrop gd-modal-why" aria-hidden="true">
+          <div class="gd-modal wide" role="dialog">
+            <h2 id="gd-why-title">为什么这样建议</h2>
+            <div id="gd-why-body"></div>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn" data-close="why">关闭</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 手动演练（非技术说明） -->
+        <div id="gd-modal-walkthrough" class="gd-modal-backdrop" aria-hidden="true">
+          <div class="gd-modal wide" role="dialog">
+            <h2>手动演练整条链路</h2>
+            <p class="gd-section-note" style="margin-top:0;">面向销售/负责人：用浏览器一步步点，确认数据从广告到回款都能对上。不涉及接口或代码细节。</p>
+            <ol class="gd-walk-list">
+              <li><strong>从落地页开始：</strong>在本页「生成链接」或同事提供的带参数链接打开落地页（像真实访客一样浏览）。</li>
+              <li><strong>提交线索：</strong>在落地页填写并提交表单；记下你填的姓名或电话，便于在 CRM 里搜索。</li>
+              <li><strong>在 CRM 里核对：</strong>打开客户/线索列表，找到刚提交的记录，确认来源、活动、创意版本、落地页版本等标签是否与你使用的链接一致。</li>
+              <li><strong>推进商机：</strong>把该线索关联到商机，按内部流程更新阶段（例如洽谈、报价、赢单）。</li>
+              <li><strong>工单（如适用）：</strong>若你们用 ServiceM8 等现场工单，在 CRM 或集成入口为该客户/商机创建工单并完成服务闭环。</li>
+              <li><strong>模拟「已付款」：</strong>发票或收款在系统里标记为已付后，本页的漏斗「已付」与广告表现才会计入转化；请按财务/运营的实际录入方式操作。</li>
+              <li><strong>回到本页看结果：</strong>选好日期范围，点「刷新数据」；用「为什么」对照系统建议是否和你的业务判断一致。半自动模式下可先把动作放进队列，再逐条批准。</li>
+            </ol>
+            <div class="gd-modal-actions">
+              <button type="button" class="btn" data-close="walkthrough">关闭</button>
             </div>
           </div>
         </div>

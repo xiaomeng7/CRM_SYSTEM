@@ -125,6 +125,16 @@ async function sendEmail(params: { to: string; subject: string; text: string }):
   console.warn("No email provider configured — skipping notification.");
 }
 
+function sanitizeInspectorSub(v: unknown): string | null {
+  const s = String(v ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/^_+|_+$/g, "");
+  if (!s || s.length > 128 || !/^[a-z][a-z0-9_]*$/.test(s)) return null;
+  return s;
+}
+
 export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Method not allowed" }) };
@@ -193,18 +203,25 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (crmBase) {
     if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
     const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
+    const raw = body as Record<string, unknown>;
+    const urlSrc = String(raw.source ?? "").trim().toLowerCase();
+    const inspectorSub =
+      urlSrc === "inspector" ? sanitizeInspectorSub(raw.sub ?? raw.sub_source) : null;
+    const crmSource = inspectorSub != null ? "inspector" : "landing:rental_lite";
     const messageLines = [
       `Agency: ${data.agency_name}`,
       data.portfolio_size ? `Portfolio size: ${data.portfolio_size}` : null,
       data.preferred_date ? `Preferred date: ${data.preferred_date}` : null,
       data.notes ? `Notes: ${data.notes}` : null,
+      inspectorSub ? `Inspector ref: ${inspectorSub}` : null,
     ].filter(Boolean);
     const crmPayload = {
       name: data.contact_name,
       phone: data.phone,
       email: data.email,
       suburb: data.property_address,
-      source: "landing:rental_lite",
+      source: crmSource,
+      ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
       service_type: "rental_lite",
       product_type: "rental_lite",
       message: messageLines.join(" | "),

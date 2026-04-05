@@ -21,7 +21,10 @@ router.post('/', async (req, res) => {
     });
   } catch (err) {
     const msg = err && err.message ? err.message : 'Failed to create lead';
-    const status = msg.startsWith('Missing required fields') ? 400 : 500;
+    const status =
+      msg.startsWith('Missing required fields') || /sub_source.*inspector|inspector.*sub_source/i.test(msg)
+        ? 400
+        : 500;
     res.status(status).json({ ok: false, error: msg });
   }
 });

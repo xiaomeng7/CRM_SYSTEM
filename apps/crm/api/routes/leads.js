@@ -64,6 +64,9 @@ router.get('/:id', async (req, res) => {
          c.name AS contact_name,
          c.phone AS contact_phone,
          a.suburb AS account_suburb,
+         a.address_line AS account_address_line,
+         ox.service_m8_job_id AS opportunity_service_m8_job_id,
+         ox.id AS opportunity_id,
          (sc.j->>'score')::numeric AS latest_score,
          COALESCE(sc.j->>'tier', sc.j->>'score_grade') AS latest_tier,
          (sc.j->>'expected_value')::numeric AS latest_expected_value,
@@ -73,6 +76,13 @@ router.get('/:id', async (req, res) => {
        FROM leads l
        LEFT JOIN contacts c ON l.contact_id = c.id
        LEFT JOIN accounts a ON l.account_id = a.id
+       LEFT JOIN LATERAL (
+         SELECT o.id, o.service_m8_job_id
+         FROM opportunities o
+         WHERE o.lead_id = l.id
+         ORDER BY o.created_at DESC NULLS LAST
+         LIMIT 1
+       ) ox ON TRUE
        LEFT JOIN LATERAL (
          SELECT to_jsonb(ls) AS j
          FROM lead_scores ls

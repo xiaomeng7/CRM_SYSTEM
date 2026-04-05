@@ -427,6 +427,12 @@
       if (!inspection_date) return showError('Preferred inspection date is required.');
 
       const params = new URLSearchParams(window.location.search);
+      const urlInspectorSub = (function () {
+        if (params.get('source') !== 'inspector') return null;
+        var sub = (params.get('sub') || params.get('sub_source') || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/^_+|_+$/g, '');
+        if (!sub || !/^[a-z][a-z0-9_]*$/.test(sub)) return null;
+        return sub;
+      })();
       const payload = {
         name,
         phone,
@@ -438,7 +444,8 @@
         property_type: document.getElementById('property_type').value || null,
         notes: document.getElementById('notes').value.trim() || null,
         product_type: 'pre_purchase',
-        source: 'landing:pre_purchase',
+        source: urlInspectorSub ? 'inspector' : 'landing:pre_purchase',
+        ...(urlInspectorSub ? { sub: urlInspectorSub } : {}),
         utm_source: params.get('utm_source') || null,
         utm_medium: params.get('utm_medium') || null,
         utm_campaign: params.get('utm_campaign') || null,

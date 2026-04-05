@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>手动新增客户 — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .nl-wrap { max-width: 28rem; }
+    .nl-field { margin-bottom: 0.85rem; }
+    .nl-field label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem; font-weight: 600; }
+    .nl-field input, .nl-field select {
+      width: 100%; padding: 0.45rem 0.55rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; box-sizing: border-box;
+    }
+    .nl-secret-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem; }
+    .nl-secret-row .nl-field { flex: 1; min-width: 11rem; margin-bottom: 0; }
+    .nl-msg { font-size: 0.85rem; margin: 0 0 0.85rem 0; padding: 0.55rem 0.65rem; border-radius: 4px; display: none; }
+    .nl-msg.err { display: block; background: #fde8e8; border: 1px solid #f1aeb5; color: #842029; }
+    .nl-msg.ok { display: block; background: #d1e7dd; border: 1px solid #badbcc; color: #0f5132; }
+    .nl-actions { margin-top: 1rem; }
+    .btn.loading { opacity: 0.65; pointer-events: none; }
+    .nl-intro { font-size: 0.88rem; color: var(--muted); margin: -0.35rem 0 1rem 0; line-height: 1.45; max-width: 28rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/dashboard/new-lead" class="active">手动新增客户</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/dashboard/growth">Growth 仪表盘</a>
+        <a href="/dashboard/inspectors">Inspector 合作</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Internal CRM</header>
+      <div class="content">
+        <h1 class="page-title">手动新增客户</h1>
+        <p class="nl-intro">电话进线、转介绍、老客户复购等非广告渠道。提交后写入 Lead / Opportunity，并自动创建 ServiceM8 工单；预购线会尝试建 Quote，租房线会建 inspection 记录，能源线记活动备注。</p>
+
+        <div class="card nl-wrap">
+          <div class="nl-secret-row">
+            <div class="nl-field">
+              <label for="nl-secret">访问密钥（与 Growth / Inspector 相同，存 session）</label>
+              <input type="password" id="nl-secret" autocomplete="off" placeholder="x-sync-secret" />
+            </div>
+            <button type="button" class="btn btn-sm" id="nl-save-secret">保存</button>
+          </div>
+
+          <p id="nl-msg" class="nl-msg"></p>
+
+          <form id="nl-form">
+            <div class="nl-field">
+              <label for="nl-name">姓名 *</label>
+              <input type="text" id="nl-name" name="name" required autocomplete="name" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-phone">电话 *</label>
+              <input type="tel" id="nl-phone" name="phone" required autocomplete="tel" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-address">地址（可选）</label>
+              <input type="text" id="nl-address" name="address" autocomplete="street-address" placeholder="门牌 / 街道 / 区" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-product-line">产品线 *</label>
+              <select id="nl-product-line" name="product_line" required>
+                <option value="">请选择…</option>
+                <option value="pre_purchase">pre_purchase（预购验电）</option>
+                <option value="rental">rental（租房检查）</option>
+                <option value="energy">energy（能源咨询）</option>
+              </select>
+            </div>
+            <div class="nl-field">
+              <label for="nl-source">来源 *</label>
+              <select id="nl-source" name="source" required>
+                <option value="">请选择…</option>
+                <option value="phone">phone</option>
+                <option value="referral">referral</option>
+                <option value="repeat">repeat</option>
+                <option value="manual">manual</option>
+                <option value="other">other</option>
+              </select>
+            </div>
+            <div class="nl-field">
+              <label for="nl-sub-source">sub_source（可选）</label>
+              <input type="text" id="nl-sub-source" name="sub_source" placeholder="例如：某中介名、熟人姓名" />
+            </div>
+            <div class="nl-actions">
+              <button type="submit" class="btn btn-primary" id="nl-submit">创建客户并生成工单</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    (function () {
+      var SECRET_KEY = 'growth_dash_secret';
+      function $(id) { return document.getElementById(id); }
+      function getSecret() {
+        try { return sessionStorage.getItem(SECRET_KEY) || ''; } catch (e) { return ''; }
+      }
+      function setSecret(s) {
+        try {
+          if (s) sessionStorage.setItem(SECRET_KEY, s);
+          else sessionStorage.removeItem(SECRET_KEY);
+        } catch (e) {}
+      }
+      function showMsg(text, isErr) {
+        var el = $('nl-msg');
+        if (!el) return;
+        el.className = 'nl-msg ' + (isErr ? 'err' : 'ok');
+        el.textContent = text || '';
+        el.style.display = text ? 'block' : 'none';
+      }
+
+      var secInp = $('nl-secret');
+      if (secInp) secInp.value = getSecret();
+      $('nl-save-secret').addEventListener('click', function () {
+        setSecret(secInp && secInp.value ? secInp.value.trim() : '');
+        showMsg(getSecret() ? '密钥已保存（当前标签 session）。' : '已清除。', false);
+      });
+
+      $('nl-form').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var secret = getSecret().trim();
+        if (!secret) {
+          showMsg('请先填写并保存访问密钥。', true);
+          return;
+        }
+        var btn = $('nl-submit');
+        var body = {
+          name: $('nl-name').value.trim(),
+          phone: $('nl-phone').value.trim(),
+          address: $('nl-address').value.trim() || null,
+          product_line: $('nl-product-line').value,
+          source: $('nl-source').value,
+          sub_source: $('nl-sub-source').value.trim() || null,
+        };
+        showMsg('', false);
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.textContent = '创建中…';
+
+        fetch('/api/internal/create-lead-with-job', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-sync-secret': secret,
+          },
+          body: JSON.stringify(body),
+        })
+          .then(function (r) {
+            return r.json().then(function (j) {
+              if (!r.ok) throw { status: r.status, body: j };
+              return j;
+            });
+          })
+          .then(function (data) {
+            window.alert('客户已创建\n工单已生成（ServiceM8）');
+            window.location.href = '/dashboard/lead-detail.html?id=' + encodeURIComponent(data.lead_id);
+          })
+          .catch(function (err) {
+            var j = err.body || {};
+            var msg = j.error || err.message || '请求失败';
+            if (j.lead_id) {
+              msg += '\n（Lead 已创建，可打开详情核对）';
+              if (window.confirm(msg + '\n\n是否打开客户详情？')) {
+                window.location.href = '/dashboard/lead-detail.html?id=' + encodeURIComponent(j.lead_id);
+                return;
+              }
+            }
+            showMsg(msg, true);
+          })
+          .finally(function () {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+            btn.textContent = '创建客户并生成工单';
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

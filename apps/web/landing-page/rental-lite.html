@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="bht-lp-events-api" content="">
   <title>Rental Changeover Electrical Inspection | Better Home Technology – Adelaide</title>
   <meta name="description" content="Fast, professional electrical compliance checks for rental property changeovers. PDF report within 24 hours. Serving property managers across Adelaide metro.">
   <link rel="stylesheet" href="styles.css">
@@ -372,6 +373,12 @@
       const utmContent = (params.get('utm_content') || '').trim();
       const lpv = (params.get('lpv') || '').trim();
       const cv = (params.get('cv') || '').trim();
+      const urlInspectorSub = (function () {
+        if (params.get('source') !== 'inspector') return null;
+        var sub = (params.get('sub') || params.get('sub_source') || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/^_+|_+$/g, '');
+        if (!sub || !/^[a-z][a-z0-9_]*$/.test(sub)) return null;
+        return sub;
+      })();
       const payload = {
         agency_name,
         contact_name,
@@ -382,7 +389,8 @@
         portfolio_size: portfolio_size || null,
         notes: notes || null,
         product_type: 'rental_lite',
-        source: 'landing:rental_lite',
+        source: urlInspectorSub ? 'inspector' : 'landing:rental_lite',
+        ...(urlInspectorSub ? { sub: urlInspectorSub } : {}),
         utm_source: params.get('utm_source') || null,
         utm_medium: params.get('utm_medium') || null,
         utm_campaign: params.get('utm_campaign') || null,
@@ -402,6 +410,7 @@
         });
         const json = await res.json();
         if (!res.ok) return showError(json.error || 'Something went wrong. Please try again or call us directly.');
+        if (typeof BhtLpTracking !== 'undefined' && BhtLpTracking.send) BhtLpTracking.send('form_submit');
         form.style.display = 'none';
         successBanner.classList.add('visible');
         window.scrollTo({ top: document.getElementById('enquire').offsetTop - 80, behavior: 'smooth' });
@@ -409,6 +418,10 @@
         showError('Network error. Please try again or call 0493 208 540.');
       }
     });
+  </script>
+  <script src="lp-tracking.js"></script>
+  <script>
+    if (typeof BhtLpTracking !== 'undefined') BhtLpTracking.init({ formSelector: '#rental-form' });
   </script>
 </body>
 </html>

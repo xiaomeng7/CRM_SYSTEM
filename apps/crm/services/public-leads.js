@@ -14,6 +14,17 @@ function isUuid(v) {
   return typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim());
 }
 
+/** Aligns with inspectors.source_code: lowercase [a-z0-9_], max 128. */
+function sanitizeSubSource(v) {
+  const s = String(v || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '_')
+    .replace(/^_+|_+$/g, '');
+  if (!s || s.length > 128 || !/^[a-z][a-z0-9_]*$/.test(s)) return null;
+  return s;
+}
+
 /** Strict whitelist: only these codes may resolve to source_id (no auto-upsert of unknown codes). */
 const SOURCE_CODE_WHITELIST = new Set([
   'google_ads',
@@ -86,7 +97,15 @@ async function createFromPublic(body = {}) {
   const rawEmail = (body.email || '').trim();
   const rawSuburb = (body.suburb || '').trim();
   const rawAddress = (body.address || '').trim();
-  const source = (body.source || 'landing:advisory').trim();
+  let source = (body.source || 'landing:advisory').trim();
+  const subSourceRaw = sanitizeSubSource(body.sub_source ?? body.sub);
+  if (String(source).trim().toLowerCase() === 'inspector') {
+    source = 'inspector';
+    if (!subSourceRaw) {
+      throw new Error('sub_source (or sub) is required when source is inspector');
+    }
+  }
+  const subSource = source === 'inspector' ? subSourceRaw : null;
   const sourceId = typeof body.source_id === 'string' ? body.source_id.trim() : null;
   const campaignId = typeof body.campaign_id === 'string' ? body.campaign_id.trim() : null;
   const creativeId = typeof body.creative_id === 'string' ? body.creative_id.trim() : null;
@@ -262,6 +281,7 @@ async function createFromPublic(body = {}) {
       contact_id: contactId,
       account_id: accountId,
       source: source || null,
+      sub_source: subSource || null,
       source_id: mappedSourceId,
       campaign_id: mappedCampaignId,
       creative_id: safeCreativeId,

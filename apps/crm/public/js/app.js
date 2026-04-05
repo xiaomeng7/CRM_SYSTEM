@@ -501,8 +501,12 @@
     var stateEl = document.getElementById('lead-detail-state');
     var nameEl = document.getElementById('lead-name');
     var phoneEl = document.getElementById('lead-phone');
+    var addressEl = document.getElementById('lead-address');
     var suburbEl = document.getElementById('lead-suburb');
     var metaEl = document.getElementById('lead-meta');
+    var productLineEl = document.getElementById('lead-product-line');
+    var subSourceEl = document.getElementById('lead-sub-source');
+    var s8JobEl = document.getElementById('lead-s8-job');
     var scoreEl = document.getElementById('lead-score');
     var tierEl = document.getElementById('lead-tier');
     var expectedValueEl = document.getElementById('lead-expected-value');
@@ -532,12 +536,38 @@
         }
         nameEl.textContent = lead.name || '—';
         phoneEl.textContent = lead.phone || '—';
+        if (addressEl) {
+          addressEl.textContent =
+            lead.account_address_line != null && String(lead.account_address_line).trim() !== ''
+              ? String(lead.account_address_line)
+              : '—';
+        }
         suburbEl.textContent = lead.suburb || '—';
         var parts = [];
         if (lead.source) parts.push('Source: ' + lead.source);
+        if (lead.product_type) parts.push('Product type: ' + lead.product_type);
         if (lead.service_type) parts.push('Service: ' + lead.service_type);
         if (lead.status) parts.push('Status: ' + lead.status);
         metaEl.textContent = parts.join(' | ') || '—';
+        if (productLineEl) {
+          productLineEl.textContent =
+            lead.product_line != null && String(lead.product_line).trim() !== ''
+              ? String(lead.product_line)
+              : '—';
+        }
+        if (subSourceEl) {
+          subSourceEl.textContent =
+            lead.sub_source != null && String(lead.sub_source).trim() !== ''
+              ? String(lead.sub_source)
+              : '—';
+        }
+        if (s8JobEl) {
+          s8JobEl.textContent =
+            lead.opportunity_service_m8_job_id != null &&
+            String(lead.opportunity_service_m8_job_id).trim() !== ''
+              ? String(lead.opportunity_service_m8_job_id)
+              : '—';
+        }
         if (scoreEl) scoreEl.textContent = lead.latest_score != null ? String(lead.latest_score) : '—';
         if (tierEl) tierEl.textContent = lead.latest_tier || '—';
         if (expectedValueEl) {

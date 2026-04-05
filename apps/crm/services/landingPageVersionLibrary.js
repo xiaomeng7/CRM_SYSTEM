@@ -65,6 +65,12 @@ async function createVersion(body = {}) {
   return r.rows[0];
 }
 
+async function getVersionById(id, db = pool) {
+  if (!isUuid(id)) return null;
+  const r = await db.query(`SELECT * FROM landing_page_versions WHERE id = $1::uuid`, [id]);
+  return r.rows[0] || null;
+}
+
 async function listVersions(filters = {}) {
   const limit = Math.min(Math.max(parseInt(String(filters.limit || '100'), 10) || 100, 1), 500);
   const params = [];
@@ -95,6 +101,143 @@ async function listVersions(filters = {}) {
     params
   );
   return r.rows;
+}
+
+function normalizeProductLineForCopy(pl) {
+  const s = trim(pl).toLowerCase().replace(/-/g, '_');
+  if (PRODUCT_LINES.has(s)) return s;
+  return 'energy';
+}
+
+/**
+ * @param {object} row - landing_page_versions-shaped row or plain object
+ */
+function rowToCopySnapshot(row) {
+  if (!row || typeof row !== 'object') {
+    return { version: null, headline: null, subheadline: null, cta_text: null };
+  }
+  return {
+    version: row.version != null ? trim(row.version) || null : null,
+    headline: row.headline != null ? trim(row.headline) || null : null,
+    subheadline: row.subheadline != null ? trim(row.subheadline) || null : null,
+    cta_text: row.cta_text != null ? trim(row.cta_text) || null : null,
+  };
+}
+
+function shortenClause(s, max) {
+  const t = trim(s);
+  if (!t) return '';
+  if (t.length <= max) return t;
+  return `${t.slice(0, max - 1).replace(/\s+\S*$/, '')}…`;
+}
+
+function riskCoreFromBetterHeadline(betterHeadline) {
+  const t = trim(betterHeadline);
+  if (!t) return '';
+  return shortenClause(t.replace(/^(stronger offer:\s*|risk:\s*)/i, '').trim(), 52);
+}
+
+function productRiskAnchor(pl) {
+  if (pl === 'pre_purchase') {
+    return 'Avoid $5,000+ electrical surprises before settlement';
+  }
+  if (pl === 'rental') {
+    return "Don't risk undocumented electrical issues on rental changeovers";
+  }
+  return 'Avoid costly tariff and upgrade mistakes — independent read, no sales pitch';
+}
+
+function productSubFallback(pl) {
+  if (pl === 'pre_purchase') {
+    return 'Licensed review before you commit — clarity, not sales projections.';
+  }
+  if (pl === 'rental') {
+    return 'Documented safety and compliance clarity for landlords and agencies.';
+  }
+  return 'Independent on-site read of your bill, usage, and options.';
+}
+
+function ctaTodayForProductLine(pl, betterCta) {
+  const b = trim(betterCta);
+  if (pl === 'pre_purchase') return 'Book Your Pre-Purchase Electrical Review Today';
+  if (pl === 'rental') return 'Book Your Inspection Today';
+  if (pl === 'energy') return 'Book Your Advisory Review Today';
+  if (b) {
+    const core = shortenClause(b.replace(/\s*—.*$/, '').replace(/\.$/, ''), 36);
+    return `${core} Today`;
+  }
+  return 'Book Your Inspection Today';
+}
+
+/**
+ * One-click optimized English LP copy: start from better_version, tune by drop_off_stage, then product_line.
+ * @param {object} opts
+ * @param {string} [opts.product_line]
+ * @param {string} [opts.drop_off_stage] - headline | cta | form | ok | insufficient_data
+ * @param {object} [opts.better_version] - { headline?, subheadline?, cta_text?, version? }
+ * @param {object} [opts.current_version] - weaker LP snapshot (for optional contrast)
+ * @returns {{ headline: string, subheadline: string, cta_text: string }}
+ */
+function generateOptimizedLandingPageCopy(opts = {}) {
+  const pl = normalizeProductLineForCopy(opts.product_line || 'energy');
+  const stage = String(opts.drop_off_stage || 'ok').toLowerCase();
+  const better = rowToCopySnapshot(opts.better_version);
+  const current = rowToCopySnapshot(opts.current_version);
+
+  let headline = better.headline || productRiskAnchor(pl);
+  let subheadline = better.subheadline || productSubFallback(pl);
+  let cta_text = better.cta_text || 'Book now';
+
+  const coreFromBetter = riskCoreFromBetterHeadline(better.headline);
+
+  if (stage === 'headline' || stage === 'insufficient_data') {
+    if (pl === 'pre_purchase') {
+      headline = coreFromBetter
+        ? `Avoid Costly Electrical Issues Before You Buy — ${coreFromBetter}`
+        : 'Avoid $5,000 Electrical Issues Before You Buy';
+    } else if (pl === 'rental') {
+      headline = coreFromBetter
+        ? `Don't Risk Compliance Gaps on Changeovers — ${coreFromBetter}`
+        : "Don't Risk Undocumented Electrical Issues on Changeovers";
+    } else {
+      headline = coreFromBetter
+        ? `Avoid Costly Energy Mistakes — ${coreFromBetter}`
+        : "Don't Risk Bill Shock — Independent Read Before You Upgrade";
+    }
+    headline = shortenClause(headline, 140);
+    const trust = 'Independent, no installation sales.';
+    subheadline = subheadline ? `${subheadline} ${trust}` : `${productSubFallback(pl)} ${trust}`;
+    subheadline = shortenClause(subheadline, 220);
+  } else if (stage === 'cta') {
+    cta_text = ctaTodayForProductLine(pl, better.cta_text);
+    const nudge =
+      pl === 'rental'
+        ? 'Scroll to book — same-week slots across Adelaide metro.'
+        : pl === 'pre_purchase'
+          ? 'Ready when you are — book a licensed pre-purchase electrical review.'
+          : 'See availability — book your independent advisory visit.';
+    subheadline = subheadline ? `${subheadline} ${nudge}` : `${productSubFallback(pl)} ${nudge}`;
+    subheadline = shortenClause(subheadline, 240);
+  } else if (stage === 'form') {
+    const ease = 'No obligation. Takes 30 seconds.';
+    subheadline = subheadline.includes('30 seconds') ? subheadline : `${subheadline} ${ease}`;
+    subheadline = shortenClause(subheadline, 240);
+    cta_text = 'Get Started — No Obligation';
+  } else {
+    headline = better.headline
+      ? shortenClause(better.headline, 120)
+      : current.headline
+        ? shortenClause(current.headline, 120)
+        : shortenClause(productRiskAnchor(pl), 120);
+    subheadline = shortenClause(subheadline || productSubFallback(pl), 220);
+    cta_text = shortenClause(cta_text, 60);
+  }
+
+  return {
+    headline: trim(headline) || productRiskAnchor(pl),
+    subheadline: trim(subheadline) || productSubFallback(pl),
+    cta_text: trim(cta_text) || 'Book now',
+  };
 }
 
 async function patchVersion(id, patch = {}) {
@@ -313,8 +456,10 @@ async function publishNewLandingVersion(id, opts = {}) {
 module.exports = {
   createVersion,
   listVersions,
+  getVersionById,
   patchVersion,
   publishNewLandingVersion,
+  generateOptimizedLandingPageCopy,
   PRODUCT_LINES,
   STATUSES,
 };

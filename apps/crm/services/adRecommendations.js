@@ -84,31 +84,31 @@ function recommendForBucket(row) {
 
   const dims = baseDims(row);
 
+  /** 规则 C：缺追踪维度 — 高优先级提醒，不视为「广告质量淘汰」。 */
   if (isBlankDim(row.creative_version) || isBlankDim(row.landing_page_version)) {
     return {
       type: 'tracking_issue',
-      severity: 'medium',
+      severity: 'high',
       ...dims,
-      reason: '缺少 creative_version（cv）或 landing_page_version（lpv），归因分桶不完整，请检查投放链接与落地页传参。',
+      reason: '无法正确归因，建议检查广告链接参数。',
       action_label: '检查链接参数',
-      rule_id: 'F_missing_cv_lpv',
+      rule_id: 'C_tracking_missing_params',
     };
   }
 
+  /** 规则 B：有意向无付款 — 偏销售/收款，非广告质量淘汰。 */
   if (won >= THRESHOLDS.sales_issue_min_opportunities_won && paid === 0) {
     return {
       type: 'sales_issue',
-      severity: 'high',
+      severity: 'medium',
       ...dims,
-      reason:
-        '该组合已有 ' +
-        won +
-        ' 个赢单机会，但尚无已付发票，可能存在跟单或收款环节问题。',
-      action_label: '检查销售跟进与收款',
-      rule_id: 'G_won_no_paid',
+      reason: '有成交意向但没有付款，建议检查销售跟进。',
+      action_label: '检查销售跟进',
+      rule_id: 'B_sales_won_no_payment',
     };
   }
 
+  /** 规则 A：低转化淘汰（V1）— 建议暂停投放该创意版本。 */
   if (
     leads >= THRESHOLDS.pause_min_leads &&
     wonPct != null &&
@@ -119,14 +119,9 @@ function recommendForBucket(row) {
       type: 'pause',
       severity: 'high',
       ...dims,
-      reason:
-        '线索量已足（≥' +
-        THRESHOLDS.pause_min_leads +
-        '），但线索→赢单率低于 ' +
-        THRESHOLDS.pause_max_lead_to_won_pct +
-        '%，且尚无付费转化。',
+      reason: '已有足够线索，但没有付款，转化过低。',
       action_label: '暂停这个版本',
-      rule_id: 'B_pause_poor_funnel',
+      rule_id: 'A_pause_low_conversion',
     };
   }
 
@@ -245,6 +240,7 @@ async function getAdRecommendations(filters = {}, db) {
   const byVersion = perf.by_version || [];
   const recommendations = byVersion.map((row) => recommendForBucket(row));
   if (windowRec) recommendations.push(windowRec);
+  recommendations.sort(compareRecommendationsForDisplay);
 
   return {
     date_from: dateFrom,

@@ -62,6 +62,16 @@ const SOLAR_STATUS = ["None", "Considering", "Already have solar", "Already have
 const BILL_RANGES = ["under $2k", "$2–3k", "$3–4k", "$4k+"];
 const CONTACT_TIMES = ["Morning", "Afternoon", "Evening"];
 
+function sanitizeInspectorSub(v: unknown): string | null {
+  const s = String(v ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/^_+|_+$/g, "");
+  if (!s || s.length > 128 || !/^[a-z][a-z0-9_]*$/.test(s)) return null;
+  return s;
+}
+
 function validate(body: unknown): { ok: true; data: ApplicationBody } | { ok: false; error: string } {
   if (!body || typeof body !== "object") return { ok: false, error: "Invalid JSON body" };
   const b = body as Record<string, unknown>;
@@ -183,6 +193,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
     if (crmBase) {
       if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
       const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
+      const raw = body as Record<string, unknown>;
+      const urlSrc = String(raw.source ?? "").trim().toLowerCase();
+      const inspectorSub =
+        urlSrc === "inspector" ? sanitizeInspectorSub(raw.sub ?? raw.sub_source) : null;
+      const crmSource =
+        inspectorSub != null ? "inspector" : data.source === "lite_upgrade" ? "landing:advisory:lite_upgrade" : "landing:advisory";
       const messageLines = [
         `Property type: ${data.property_type}`,
         `Solar/battery status: ${data.solar_battery_status}`,
@@ -190,13 +206,15 @@ export const handler: Handler = async (event: HandlerEvent) => {
         `Contact time: ${data.contact_time}`,
         data.notes ? `Notes: ${data.notes}` : null,
         `Source: ${data.source || "pro_direct"}`,
+        inspectorSub ? `Inspector ref: ${inspectorSub}` : null,
       ].filter(Boolean);
       const crmPayload = {
         name: data.name,
         phone: data.mobile,
         email: data.email,
         suburb: data.suburb,
-        source: data.source === "lite_upgrade" ? "landing:advisory:lite_upgrade" : "landing:advisory",
+        source: crmSource,
+        ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
         service_type: "energy_advisory",
         message: messageLines.join(" | "),
         utm_source: data.utm_source || null,

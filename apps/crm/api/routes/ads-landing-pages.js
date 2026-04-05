@@ -10,9 +10,16 @@ const router = require('express').Router();
 const {
   createVersion,
   listVersions,
+  getVersionById,
   patchVersion,
   publishNewLandingVersion,
+  generateOptimizedLandingPageCopy,
 } = require('../../services/landingPageVersionLibrary');
+
+function trimBody(s) {
+  if (s == null) return '';
+  return String(s).trim();
+}
 
 function requireSyncSecret(req, res, next) {
   const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
@@ -36,6 +43,46 @@ router.post('/landing-pages', requireSyncSecret, async (req, res) => {
       return res.status(409).json({ ok: false, error: err.message });
     }
     console.error('[ads/landing-pages] POST', err);
+    res.status(500).json({ ok: false, error: err.message || String(err) });
+  }
+});
+
+// POST /api/ads/landing-pages/generate-optimized-copy — must be before /landing-pages/:id routes
+router.post('/landing-pages/generate-optimized-copy', requireSyncSecret, async (req, res) => {
+  try {
+    const b = req.body || {};
+    const refId = trimBody(b.reference_landing_page_id);
+    const srcId = trimBody(b.source_landing_page_id);
+    if (!refId || !srcId) {
+      return res.status(400).json({
+        ok: false,
+        error: 'reference_landing_page_id and source_landing_page_id are required',
+      });
+    }
+    const ref = await getVersionById(refId);
+    const src = await getVersionById(srcId);
+    if (!ref || !src) {
+      return res.status(404).json({ ok: false, error: 'Landing page version not found' });
+    }
+    const pl = trimBody(b.product_line || src.product_line || ref.product_line).toLowerCase();
+    const dropOff = trimBody(b.drop_off_stage || 'ok').toLowerCase() || 'ok';
+    const copy = generateOptimizedLandingPageCopy({
+      product_line: pl,
+      drop_off_stage: dropOff,
+      better_version: ref,
+      current_version: src,
+    });
+    res.json({
+      ok: true,
+      headline: copy.headline,
+      subheadline: copy.subheadline,
+      cta_text: copy.cta_text,
+      drop_off_stage: dropOff,
+      reference_version: ref.version,
+      source_version: src.version,
+    });
+  } catch (err) {
+    console.error('[ads/landing-pages] generate-optimized-copy', err);
     res.status(500).json({ ok: false, error: err.message || String(err) });
   }
 });

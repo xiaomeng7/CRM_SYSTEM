@@ -39,8 +39,10 @@ const landingVariantReviewRouter = require('./routes/landing-variant-review');
 const adPublishRouter = require('./routes/ad-publish');
 const adsCreativesRouter = require('./routes/ads-creatives');
 const adsLandingPagesRouter = require('./routes/ads-landing-pages');
+const internalLeadIntakeRouter = require('./routes/internal-lead-intake');
 const b2bProspectsRouter = require('./routes/b2b-prospects');
 const inspectionsRouter = require('./routes/inspections');
+const inspectorsRouter = require('./routes/inspectors');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -53,6 +55,36 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/dashboard/growth', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard/growth.html'));
+});
+
+app.get('/dashboard/inspectors', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/inspectors.html'));
+});
+
+app.get('/dashboard/inspectors.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/inspectors.html'));
+});
+
+app.get('/dashboard/inspector-detail', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/inspector-detail.html'));
+});
+
+app.get('/dashboard/inspector-detail.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/inspector-detail.html'));
+});
+
+app.get('/dashboard/lead-detail.html', (req, res) => {
+  const id = req.query.id ? String(req.query.id) : '';
+  const q = id ? '?id=' + encodeURIComponent(id) : '';
+  res.redirect(302, '/lead-detail.html' + q);
+});
+
+app.get('/dashboard/new-lead', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/new-lead.html'));
+});
+
+app.get('/dashboard/new-lead.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/new-lead.html'));
 });
 
 app.use('/api/leads', leadsRouter);
@@ -85,8 +117,10 @@ app.use('/api/landing-variants', landingVariantReviewRouter);
 app.use('/api/ad-publish', adPublishRouter);
 app.use('/api/ads', adsCreativesRouter);
 app.use('/api/ads', adsLandingPagesRouter);
+app.use('/api/internal', internalLeadIntakeRouter);
 app.use('/api/b2b-prospects', b2bProspectsRouter);
 app.use('/api/inspections', inspectionsRouter);
+app.use('/api/inspectors', inspectorsRouter);
 
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
