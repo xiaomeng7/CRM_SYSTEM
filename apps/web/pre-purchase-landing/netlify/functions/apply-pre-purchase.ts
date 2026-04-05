@@ -76,6 +76,16 @@ async function sendEmail(params: { to: string; subject: string; text: string }):
   if (!res.ok) console.error("Resend error:", await res.text());
 }
 
+function sanitizeInspectorSub(v: unknown): string | null {
+  const s = String(v ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/^_+|_+$/g, "");
+  if (!s || s.length > 128 || !/^[a-z][a-z0-9_]*$/.test(s)) return null;
+  return s;
+}
+
 export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
 
@@ -121,13 +131,19 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (crmBase) {
     if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
     try {
+      const raw = body as Record<string, unknown>;
+      const urlSrc = String(raw.source ?? "").trim().toLowerCase();
+      const inspectorSub =
+        urlSrc === "inspector" ? sanitizeInspectorSub(raw.sub ?? raw.sub_source) : null;
+      const crmSource = inspectorSub != null ? "inspector" : "landing:pre_purchase";
       await fetch(`${crmBase.replace(/\/$/, "")}/api/public/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name, phone: data.phone, email: data.email,
           suburb: data.property_address,
-          source: "landing:pre_purchase",
+          source: crmSource,
+          ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
           product_type: "pre_purchase",
           service_type: "pre_purchase",
           message: [
@@ -137,6 +153,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
             data.access_contact ? `Agent: ${data.access_contact}` : null,
             data.property_type ? `Type: ${data.property_type}` : null,
             data.notes ? `Notes: ${data.notes}` : null,
+            inspectorSub ? `Inspector ref: ${inspectorSub}` : null,
           ].filter(Boolean).join(" | "),
           raw_payload: {
             application_id: appId,

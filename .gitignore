@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+apps/crm/node_modules
 
 # Env (never commit secrets)
 .env

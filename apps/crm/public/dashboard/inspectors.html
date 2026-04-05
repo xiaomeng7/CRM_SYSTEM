@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspector 合作伙伴 — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .insp-toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: flex-end; margin-bottom: 1.25rem; padding: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+    .insp-toolbar label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 0.25rem; }
+    .insp-toolbar input[type="text"], .insp-toolbar input[type="password"] { padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; min-width: 12rem; }
+    .insp-msg { padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; display: none; }
+    .insp-msg.err { display: block; background: #fde8e8; color: #842029; }
+    .insp-msg.ok { display: block; background: #d1e7dd; color: #0f5132; }
+    .insp-intro { color: var(--muted); font-size: 0.95rem; max-width: 42rem; margin: -0.25rem 0 1rem 0; line-height: 1.5; }
+    .insp-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .insp-actions .btn { font-size: 0.8rem; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
+    table.insp-table { width: 100%; font-size: 0.88rem; border-collapse: collapse; }
+    table.insp-table th, table.insp-table td { padding: 0.5rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.insp-table th { font-weight: 600; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.02em; }
+    .insp-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1200; align-items: center; justify-content: center; padding: 1rem; }
+    .insp-modal-backdrop.open { display: flex; }
+    .insp-modal { background: var(--card); border-radius: 8px; max-width: 26rem; width: 100%; border: 1px solid var(--border); padding: 1.25rem; box-shadow: 0 8px 32px rgba(0,0,0,0.15); max-height: 90vh; overflow: auto; }
+    .insp-modal h2 { margin: 0 0 1rem 0; font-size: 1.05rem; }
+    .insp-modal .field { margin-bottom: 0.75rem; }
+    .insp-modal .field label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .insp-modal input, .insp-modal textarea, .insp-modal select { width: 100%; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; box-sizing: border-box; }
+    .insp-modal textarea { min-height: 3rem; resize: vertical; }
+    .insp-modal-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .badge { display: inline-block; padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .badge-active { background: #dcfce7; color: #166534; }
+    .badge-inactive { background: #f3f4f6; color: #4b5563; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/dashboard/growth">Growth 仪表盘</a>
+        <a href="/dashboard/inspectors" class="active">Inspector 合作</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Inspector 合作伙伴</header>
+      <div class="content">
+        <h1 class="page-title">Inspector 合作伙伴</h1>
+        <p class="insp-intro">每位合作伙伴有唯一 <code>source_code</code> 与三条落地链接（买房检查 / 租房 / 能源咨询）。客户通过链接提交表单后，线索在 CRM 中记录为 <code>source=inspector</code>，<code>sub_source</code> 为该代码。统计按南澳日历月（Australia/Adelaide）。</p>
+        <div id="insp-msg" class="insp-msg"></div>
+        <div class="insp-toolbar">
+          <div>
+            <label for="insp-secret">访问密钥（与 Growth 相同，可选）</label>
+            <input type="password" id="insp-secret" placeholder="x-sync-secret" autocomplete="off" />
+          </div>
+          <div>
+            <label for="insp-base">落地站点根 URL（复制完整链接用）</label>
+            <input type="text" id="insp-base" placeholder="https://www.example.com" />
+          </div>
+          <button type="button" class="btn btn-sm" id="insp-save-prefs">保存设置</button>
+          <button type="button" class="btn btn-primary" id="insp-refresh">刷新列表</button>
+          <button type="button" class="btn btn-primary" id="insp-open-create">新增合作伙伴</button>
+        </div>
+        <div class="table-wrap">
+          <table class="insp-table">
+            <thead>
+              <tr>
+                <th>姓名</th>
+                <th>公司</th>
+                <th>电话</th>
+                <th>邮箱</th>
+                <th>source_code</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="insp-tbody">
+              <tr><td colspan="7" class="muted">加载中…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="insp-modal-backdrop" class="insp-modal-backdrop" aria-hidden="true">
+    <div class="insp-modal" role="dialog" aria-labelledby="insp-modal-title">
+      <h2 id="insp-modal-title">新增合作伙伴</h2>
+      <div class="field"><label for="insp-f-name">姓名 *</label><input id="insp-f-name" type="text" /></div>
+      <div class="field"><label for="insp-f-company">公司</label><input id="insp-f-company" type="text" /></div>
+      <div class="field"><label for="insp-f-phone">电话</label><input id="insp-f-phone" type="text" /></div>
+      <div class="field"><label for="insp-f-email">邮箱</label><input id="insp-f-email" type="email" /></div>
+      <div class="field"><label for="insp-f-code">source_code（可空，自动生成）</label><input id="insp-f-code" type="text" placeholder="tom_inspector" /></div>
+      <div class="field"><label for="insp-f-notes">备注</label><textarea id="insp-f-notes"></textarea></div>
+      <div class="insp-modal-actions">
+        <button type="button" class="btn btn-primary" id="insp-submit-create">创建</button>
+        <button type="button" class="btn" id="insp-cancel-create">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+(function () {
+  var SECRET_KEY = 'growth_dash_secret';
+  var BASE_KEY = 'inspectors_marketing_base';
+
+  function $(id) { return document.getElementById(id); }
+
+  function showMsg(text, isErr) {
+    var el = $('insp-msg');
+    if (!text) { el.style.display = 'none'; el.textContent = ''; el.className = 'insp-msg'; return; }
+    el.style.display = 'block';
+    el.textContent = text;
+    el.className = 'insp-msg ' + (isErr ? 'err' : 'ok');
+  }
+
+  function getSecret() {
+    try { return (sessionStorage.getItem(SECRET_KEY) || $('insp-secret').value || '').trim(); } catch (e) { return ($('insp-secret').value || '').trim(); }
+  }
+
+  function secretHeaders() {
+    var s = getSecret();
+    return s ? { 'x-sync-secret': s } : {};
+  }
+
+  function fetchJson(url, opt) {
+    opt = opt || {};
+    var h = Object.assign({ Accept: 'application/json' }, opt.headers || {}, secretHeaders());
+    if (opt.body && typeof opt.body === 'string' && !h['Content-Type']) h['Content-Type'] = 'application/json';
+    return fetch(url, Object.assign({}, opt, { headers: h })).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error(j.error || j.message || String(r.status));
+        return j;
+      });
+    });
+  }
+
+  function getBase() {
+    var v = ($('insp-base').value || '').trim().replace(/\/$/, '');
+    if (v) return v;
+    try { return (localStorage.getItem(BASE_KEY) || '').trim().replace(/\/$/, ''); } catch (e) { return ''; }
+  }
+
+  function fullUrl(path) {
+    var b = getBase();
+    if (!b) return path;
+    return b + (path.indexOf('/') === 0 ? path : '/' + path);
+  }
+
+  function copyText(t) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(t).then(function () { showMsg('已复制到剪贴板', false); });
+    }
+    var ta = document.createElement('textarea');
+    ta.value = t;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showMsg('已复制', false); } catch (e) { showMsg('复制失败，请手动复制', true); }
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  var linkPaths = { pre_purchase: '/pre-purchase-landing/index.html', rental: '/rental-lite.html', energy: '/index.html' };
+  var queryTpl = 'source=inspector&sub=';
+
+  function linksForCode(code) {
+    var q = queryTpl + encodeURIComponent(code);
+    return {
+      pre_purchase: linkPaths.pre_purchase + '?' + q,
+      rental: linkPaths.rental + '?' + q,
+      energy: linkPaths.energy + '?' + q
+    };
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderRows(rows) {
+    var tb = $('insp-tbody');
+    if (!rows || !rows.length) {
+      tb.innerHTML = '<tr><td colspan="7" class="muted">暂无数据，点击「新增合作伙伴」。</td></tr>';
+      return;
+    }
+    tb.innerHTML = rows.map(function (r) {
+      var st = (r.status || 'active') === 'inactive' ? 'inactive' : 'active';
+      var badge = st === 'active' ? '<span class="badge badge-active">active</span>' : '<span class="badge badge-inactive">inactive</span>';
+      var id = encodeURIComponent(r.id);
+      var code = r.source_code || '';
+      var L = linksForCode(code);
+      return '<tr>' +
+        '<td>' + escapeHtml(r.name) + '</td>' +
+        '<td>' + escapeHtml(r.company_name || '—') + '</td>' +
+        '<td>' + escapeHtml(r.phone || '—') + '</td>' +
+        '<td>' + escapeHtml(r.email || '—') + '</td>' +
+        '<td><code>' + escapeHtml(code) + '</code></td>' +
+        '<td>' + badge + '</td>' +
+        '<td><div class="insp-actions">' +
+        '<a class="btn btn-sm btn-primary" href="/dashboard/inspector-detail.html?id=' + id + '">查看详情</a>' +
+        '<button type="button" class="btn btn-sm" data-copy="' + escapeHtml(fullUrl(L.pre_purchase)) + '">复制买房</button>' +
+        '<button type="button" class="btn btn-sm" data-copy="' + escapeHtml(fullUrl(L.rental)) + '">复制租房</button>' +
+        '<button type="button" class="btn btn-sm" data-copy="' + escapeHtml(fullUrl(L.energy)) + '">复制能源</button>' +
+        '</div></td></tr>';
+    }).join('');
+
+    tb.querySelectorAll('[data-copy]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        copyText(btn.getAttribute('data-copy'));
+      });
+    });
+  }
+
+  function loadMeta() {
+    return fetchJson('/api/inspectors/meta/link-config').then(function (m) {
+      if (m.paths) linkPaths = m.paths;
+      if (m.suggested_base_url && !$('insp-base').value.trim()) {
+        $('insp-base').placeholder = m.suggested_base_url;
+      }
+    }).catch(function () {});
+  }
+
+  function loadList() {
+    showMsg('', false);
+    return fetchJson('/api/inspectors').then(function (d) {
+      renderRows(d.inspectors || []);
+    }).catch(function (e) {
+      $('insp-tbody').innerHTML = '<tr><td colspan="7" class="muted">加载失败：' + escapeHtml(e.message) + '</td></tr>';
+      showMsg(e.message, true);
+    });
+  }
+
+  $('insp-save-prefs').addEventListener('click', function () {
+    try {
+      var sec = $('insp-secret').value.trim();
+      if (sec) sessionStorage.setItem(SECRET_KEY, sec);
+      var b = $('insp-base').value.trim().replace(/\/$/, '');
+      if (b) localStorage.setItem(BASE_KEY, b);
+    } catch (err) {}
+    showMsg('已保存', false);
+  });
+
+  $('insp-refresh').addEventListener('click', function () { loadList(); });
+
+  $('insp-open-create').addEventListener('click', function () {
+    $('insp-f-name').value = '';
+    $('insp-f-company').value = '';
+    $('insp-f-phone').value = '';
+    $('insp-f-email').value = '';
+    $('insp-f-code').value = '';
+    $('insp-f-notes').value = '';
+    $('insp-modal-backdrop').classList.add('open');
+    $('insp-modal-backdrop').setAttribute('aria-hidden', 'false');
+  });
+
+  function closeModal() {
+    $('insp-modal-backdrop').classList.remove('open');
+    $('insp-modal-backdrop').setAttribute('aria-hidden', 'true');
+  }
+
+  $('insp-cancel-create').addEventListener('click', closeModal);
+  $('insp-modal-backdrop').addEventListener('click', function (e) {
+    if (e.target === $('insp-modal-backdrop')) closeModal();
+  });
+
+  $('insp-submit-create').addEventListener('click', function () {
+    var payload = {
+      name: $('insp-f-name').value.trim(),
+      company_name: $('insp-f-company').value.trim() || undefined,
+      phone: $('insp-f-phone').value.trim() || undefined,
+      email: $('insp-f-email').value.trim() || undefined,
+      notes: $('insp-f-notes').value.trim() || undefined
+    };
+    var code = $('insp-f-code').value.trim();
+    if (code) payload.source_code = code;
+    if (!payload.name) { showMsg('请填写姓名', true); return; }
+    fetchJson('/api/inspectors', { method: 'POST', body: JSON.stringify(payload) })
+      .then(function () {
+        closeModal();
+        showMsg('已创建', false);
+        loadList();
+      })
+      .catch(function (e) { showMsg(e.message, true); });
+  });
+
+  try {
+    var s = sessionStorage.getItem(SECRET_KEY);
+    if (s) $('insp-secret').value = s;
+  } catch (e) {}
+  try {
+    var b = localStorage.getItem(BASE_KEY);
+    if (b) $('insp-base').value = b;
+  } catch (e) {}
+
+  loadMeta().then(loadList);
+})();
+  </script>
+</body>
+</html>

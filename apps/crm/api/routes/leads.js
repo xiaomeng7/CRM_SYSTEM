@@ -31,11 +31,23 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const rows = await leads.list({
+    const listOpts = {
       status: req.query.status,
       limit: parseInt(req.query.limit, 10) || 100,
       offset: parseInt(req.query.offset, 10) || 0,
-    });
+    };
+    if (Object.prototype.hasOwnProperty.call(req.query, 'creative_version')) {
+      listOpts.creative_version = req.query.creative_version;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.query, 'landing_page_version')) {
+      listOpts.landing_page_version = req.query.landing_page_version;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.query, 'utm_campaign')) {
+      listOpts.utm_campaign = req.query.utm_campaign;
+    }
+    if (req.query.date_from) listOpts.date_from = req.query.date_from;
+    if (req.query.date_to) listOpts.date_to = req.query.date_to;
+    const rows = await leads.list(listOpts);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -52,6 +64,9 @@ router.get('/:id', async (req, res) => {
          c.name AS contact_name,
          c.phone AS contact_phone,
          a.suburb AS account_suburb,
+         a.address_line AS account_address_line,
+         ox.service_m8_job_id AS opportunity_service_m8_job_id,
+         ox.id AS opportunity_id,
          (sc.j->>'score')::numeric AS latest_score,
          COALESCE(sc.j->>'tier', sc.j->>'score_grade') AS latest_tier,
          (sc.j->>'expected_value')::numeric AS latest_expected_value,
@@ -61,6 +76,13 @@ router.get('/:id', async (req, res) => {
        FROM leads l
        LEFT JOIN contacts c ON l.contact_id = c.id
        LEFT JOIN accounts a ON l.account_id = a.id
+       LEFT JOIN LATERAL (
+         SELECT o.id, o.service_m8_job_id
+         FROM opportunities o
+         WHERE o.lead_id = l.id
+         ORDER BY o.created_at DESC NULLS LAST
+         LIMIT 1
+       ) ox ON TRUE
        LEFT JOIN LATERAL (
          SELECT to_jsonb(ls) AS j
          FROM lead_scores ls

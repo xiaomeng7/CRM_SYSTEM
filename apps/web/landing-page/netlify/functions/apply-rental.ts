@@ -46,7 +46,12 @@ type RentalBody = {
   utm_source?: string | null;
   utm_medium?: string | null;
   utm_campaign?: string | null;
+  utm_content?: string | null;
   page_url?: string | null;
+  gclid?: string | null;
+  click_id?: string | null;
+  landing_page_version?: string | null;
+  creative_version?: string | null;
 };
 
 function validate(body: unknown): { ok: true; data: RentalBody } | { ok: false; error: string } {
@@ -76,10 +81,15 @@ function validate(body: unknown): { ok: true; data: RentalBody } | { ok: false; 
       preferred_date: typeof b.preferred_date === "string" && b.preferred_date ? b.preferred_date : null,
       portfolio_size: typeof b.portfolio_size === "string" && b.portfolio_size ? b.portfolio_size : null,
       notes: typeof b.notes === "string" && b.notes ? b.notes.trim() : null,
-      utm_source: typeof b.utm_source === "string" ? b.utm_source : null,
-      utm_medium: typeof b.utm_medium === "string" ? b.utm_medium : null,
-      utm_campaign: typeof b.utm_campaign === "string" ? b.utm_campaign : null,
-      page_url: typeof b.page_url === "string" ? b.page_url : null,
+      utm_source: typeof b.utm_source === "string" ? b.utm_source.trim() || null : null,
+      utm_medium: typeof b.utm_medium === "string" ? b.utm_medium.trim() || null : null,
+      utm_campaign: typeof b.utm_campaign === "string" ? b.utm_campaign.trim() || null : null,
+      utm_content: typeof b.utm_content === "string" ? b.utm_content.trim() || null : null,
+      page_url: typeof b.page_url === "string" ? b.page_url.trim() || null : null,
+      gclid: typeof b.gclid === "string" ? b.gclid.trim() || null : null,
+      click_id: typeof b.click_id === "string" ? b.click_id.trim() || null : null,
+      landing_page_version: typeof b.landing_page_version === "string" ? b.landing_page_version.trim() || null : null,
+      creative_version: typeof b.creative_version === "string" ? b.creative_version.trim() || null : null,
     },
   };
 }
@@ -113,6 +123,16 @@ async function sendEmail(params: { to: string; subject: string; text: string }):
     return;
   }
   console.warn("No email provider configured — skipping notification.");
+}
+
+function sanitizeInspectorSub(v: unknown): string | null {
+  const s = String(v ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/^_+|_+$/g, "");
+  if (!s || s.length > 128 || !/^[a-z][a-z0-9_]*$/.test(s)) return null;
+  return s;
 }
 
 export const handler: Handler = async (event: HandlerEvent) => {
@@ -183,21 +203,37 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (crmBase) {
     if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
     const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
+    const raw = body as Record<string, unknown>;
+    const urlSrc = String(raw.source ?? "").trim().toLowerCase();
+    const inspectorSub =
+      urlSrc === "inspector" ? sanitizeInspectorSub(raw.sub ?? raw.sub_source) : null;
+    const crmSource = inspectorSub != null ? "inspector" : "landing:rental_lite";
     const messageLines = [
       `Agency: ${data.agency_name}`,
       data.portfolio_size ? `Portfolio size: ${data.portfolio_size}` : null,
       data.preferred_date ? `Preferred date: ${data.preferred_date}` : null,
       data.notes ? `Notes: ${data.notes}` : null,
+      inspectorSub ? `Inspector ref: ${inspectorSub}` : null,
     ].filter(Boolean);
     const crmPayload = {
       name: data.contact_name,
       phone: data.phone,
       email: data.email,
       suburb: data.property_address,
-      source: "landing:rental_lite",
+      source: crmSource,
+      ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
       service_type: "rental_lite",
       product_type: "rental_lite",
       message: messageLines.join(" | "),
+      utm_source: data.utm_source,
+      utm_medium: data.utm_medium,
+      utm_campaign: data.utm_campaign,
+      utm_content: data.utm_content,
+      landing_page_url: data.page_url,
+      landing_page_version: data.landing_page_version,
+      creative_version: data.creative_version,
+      gclid: data.gclid,
+      click_id: data.click_id,
       raw_payload: {
         agency_name: data.agency_name,
         property_address: data.property_address,
@@ -207,6 +243,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
         utm_source: data.utm_source,
         utm_medium: data.utm_medium,
         utm_campaign: data.utm_campaign,
+        utm_content: data.utm_content,
+        page_url: data.page_url,
+        gclid: data.gclid,
+        click_id: data.click_id,
+        landing_page_version: data.landing_page_version,
+        creative_version: data.creative_version,
       },
     };
     try {
@@ -236,7 +278,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
       data.portfolio_size ? `Portfolio size: ${data.portfolio_size}` : null,
       data.notes ? `Notes: ${data.notes}` : null,
       ``,
-      `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"}`,
+      `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"} content=${data.utm_content || "-"}`,
+      data.landing_page_version ? `LP version (lpv): ${data.landing_page_version}` : null,
+      data.creative_version ? `Creative version (cv): ${data.creative_version}` : null,
       appId ? `Application ID: ${appId}` : null,
     ].filter(Boolean).join("\n");
     try { await sendEmail({ to: toEmail, subject, text }); } catch (e) { console.error("Email error:", e); }

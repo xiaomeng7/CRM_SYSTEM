@@ -6,6 +6,7 @@
 
 const { pool } = require('../lib/db');
 const { OPPORTUNITY_STAGES, CLOSED_STAGES, EVENT_TO_STAGE, AUDIT_SOURCE } = require('../lib/stage-constants');
+const { enqueueOpportunityWonConversionEvent } = require('./googleOfflineConversions');
 
 const SOURCE = AUDIT_SOURCE.STAGE_AUTOMATION;
 
@@ -104,6 +105,18 @@ async function advanceOpportunityStage(opportunityId, eventType, options = {}) {
     trigger_event: eventType,
     source: SOURCE,
   });
+
+  if (targetStage === OPPORTUNITY_STAGES.WON && row.stage !== OPPORTUNITY_STAGES.WON) {
+    try {
+      await enqueueOpportunityWonConversionEvent(opportunityId, {
+        db,
+        source: 'opportunityStageAutomation',
+        sourcePayload: { trigger_event: eventType },
+      });
+    } catch (e) {
+      console.error('[google-offline] enqueue opportunity_won failed:', e.message || e);
+    }
+  }
 
   return { applied: true, previous_stage: row.stage, new_stage: targetStage };
 }

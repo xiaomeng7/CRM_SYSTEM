@@ -8,10 +8,12 @@ const { ServiceM8Client } = require('@bht/integrations');
 const { pool } = require('../lib/db');
 const { cleanAccount, cleanContact, normalizePhoneDigits } = require('../lib/crm/cleaning');
 const { advanceOpportunityStage } = require('./opportunityStageAutomation');
+const { enqueueInvoicePaidConversionEvent } = require('./googleOfflineConversions');
 
 const SYSTEM = 'servicem8';
 const EXTERNAL_ENTITY_TYPE = 'company';
 const SYNC_ADVISORY_LOCK_ID = 8273647123; // fixed bigint for pg advisory lock (servicem8 sync)
+const PAID_INVOICE_STATUSES = new Set(['paid', 'complete', 'completed', 'closed']);
 
 function normalizePhone(phone) {
   if (!phone || typeof phone !== 'string') return null;
@@ -605,36 +607,141 @@ async function syncInvoicesFromServiceM8(options = {}) {
       const invoice_date = parseDate(inv.date || inv.invoice_date || inv.created_at);
       const due_date = parseDate(inv.due_date || inv.due_date_date || inv.payment_due_date) || null;
       const status = (inv.status || inv.status_name || '').trim() || null;
+      const statusNorm = String(status || '').trim().toLowerCase();
+      const paidAtFromSource = parseDate(inv.paid_at || inv.paidAt || inv.payment_date || inv.paymentDate) || null;
+      const shouldMarkPaidNow = !paidAtFromSource && PAID_INVOICE_STATUSES.has(statusNorm);
 
       try {
         const existingByInvUuid = await db.query(`SELECT id FROM invoices WHERE servicem8_invoice_uuid = $1`, [uuid]);
         const existingByJobUuid = jobUuid ? await db.query(`SELECT id FROM invoices WHERE servicem8_job_uuid = $1`, [jobUuid]) : { rows: [] };
+        let affectedInvoiceId = null;
+        let shouldEnqueueOfflineConversion = false;
 
         if (existingByInvUuid.rows.length > 0) {
           if (!dryRun) {
-            await db.query(
-              `UPDATE invoices SET account_id = $1, job_id = $2, opportunity_id = COALESCE($3, opportunity_id), servicem8_job_uuid = $4, invoice_number = $5, amount = $6, invoice_date = $7, due_date = $8, status = $9, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_invoice_uuid = $10`,
-              [accountId, jobId, opportunityId, jobUuid || null, invoice_number, amount, invoice_date, due_date, status, uuid]
+            const upd = await db.query(
+              `UPDATE invoices SET
+                 account_id = $1,
+                 job_id = $2,
+                 opportunity_id = COALESCE($3, opportunity_id),
+                 servicem8_job_uuid = $4,
+                 invoice_number = $5,
+                 amount = $6,
+                 invoice_date = $7,
+                 due_date = $8,
+                 status = $9,
+                 paid_at = COALESCE($10::timestamptz, paid_at, CASE WHEN $11 THEN NOW() ELSE NULL END),
+                 updated_at = NOW(),
+                 last_synced_at = NOW()
+               WHERE servicem8_invoice_uuid = $12
+               RETURNING id, paid_at, status`,
+              [
+                accountId,
+                jobId,
+                opportunityId,
+                jobUuid || null,
+                invoice_number,
+                amount,
+                invoice_date,
+                due_date,
+                status,
+                paidAtFromSource,
+                shouldMarkPaidNow,
+                uuid,
+              ]
+            );
+            affectedInvoiceId = upd.rows[0]?.id || null;
+            const updatedStatus = String(upd.rows[0]?.status || '').trim().toLowerCase();
+            shouldEnqueueOfflineConversion = Boolean(
+              upd.rows[0]?.paid_at || PAID_INVOICE_STATUSES.has(updatedStatus)
             );
           }
           stats.invoices_updated++;
         } else if (existingByJobUuid.rows.length > 0) {
           if (!dryRun) {
-            await db.query(
-              `UPDATE invoices SET servicem8_invoice_uuid = $1, account_id = $2, job_id = $3, opportunity_id = COALESCE($4, opportunity_id), invoice_number = $5, amount = $6, invoice_date = $7, due_date = $8, status = $9, updated_at = NOW(), last_synced_at = NOW() WHERE servicem8_job_uuid = $10`,
-              [uuid, accountId, jobId, opportunityId, invoice_number, amount, invoice_date, due_date, status, jobUuid]
+            const upd = await db.query(
+              `UPDATE invoices SET
+                 servicem8_invoice_uuid = $1,
+                 account_id = $2,
+                 job_id = $3,
+                 opportunity_id = COALESCE($4, opportunity_id),
+                 invoice_number = $5,
+                 amount = $6,
+                 invoice_date = $7,
+                 due_date = $8,
+                 status = $9,
+                 paid_at = COALESCE($10::timestamptz, paid_at, CASE WHEN $11 THEN NOW() ELSE NULL END),
+                 updated_at = NOW(),
+                 last_synced_at = NOW()
+               WHERE servicem8_job_uuid = $12
+               RETURNING id, paid_at, status`,
+              [
+                uuid,
+                accountId,
+                jobId,
+                opportunityId,
+                invoice_number,
+                amount,
+                invoice_date,
+                due_date,
+                status,
+                paidAtFromSource,
+                shouldMarkPaidNow,
+                jobUuid,
+              ]
+            );
+            affectedInvoiceId = upd.rows[0]?.id || null;
+            const updatedStatus = String(upd.rows[0]?.status || '').trim().toLowerCase();
+            shouldEnqueueOfflineConversion = Boolean(
+              upd.rows[0]?.paid_at || PAID_INVOICE_STATUSES.has(updatedStatus)
             );
           }
           stats.invoices_updated++;
         } else {
           if (!dryRun) {
-            await db.query(
-              `INSERT INTO invoices (account_id, job_id, opportunity_id, servicem8_invoice_uuid, servicem8_job_uuid, invoice_number, amount, invoice_date, due_date, status, last_synced_at)
-               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
-              [accountId, jobId, opportunityId, uuid, jobUuid || null, invoice_number, amount, invoice_date, due_date, status]
+            const ins = await db.query(
+              `INSERT INTO invoices (
+                 account_id, job_id, opportunity_id, servicem8_invoice_uuid, servicem8_job_uuid,
+                 invoice_number, amount, invoice_date, due_date, status, paid_at, last_synced_at
+               )
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, COALESCE($11::timestamptz, CASE WHEN $12 THEN NOW() ELSE NULL END), NOW())
+               RETURNING id, paid_at, status`,
+              [
+                accountId,
+                jobId,
+                opportunityId,
+                uuid,
+                jobUuid || null,
+                invoice_number,
+                amount,
+                invoice_date,
+                due_date,
+                status,
+                paidAtFromSource,
+                shouldMarkPaidNow,
+              ]
+            );
+            affectedInvoiceId = ins.rows[0]?.id || null;
+            const insertedStatus = String(ins.rows[0]?.status || '').trim().toLowerCase();
+            shouldEnqueueOfflineConversion = Boolean(
+              ins.rows[0]?.paid_at || PAID_INVOICE_STATUSES.has(insertedStatus)
             );
           }
           stats.invoices_created++;
+        }
+
+        if (!dryRun && shouldEnqueueOfflineConversion && affectedInvoiceId) {
+          try {
+            await enqueueInvoicePaidConversionEvent(affectedInvoiceId, {
+              db,
+              sourcePayload: {
+                servicem8_invoice_uuid: uuid,
+                servicem8_job_uuid: jobUuid || null,
+              },
+            });
+          } catch (enqueueErr) {
+            console.error('[servicem8-sync] enqueue invoice_paid offline conversion failed:', enqueueErr.message);
+          }
         }
       } catch (err) {
         stats.errors++;

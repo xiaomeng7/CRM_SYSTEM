@@ -8,6 +8,8 @@
   <meta property="og:title" content="Energy Decision Advisory | Better Home Technology">
   <meta property="og:description" content="Before you spend $20,000+ on solar or battery, get an independent written opinion. Adelaide Pilot Round.">
   <meta property="og:type" content="website">
+  <!-- CRM LP behavior API base (optional); empty = same origin, localhost → :8888 in lp-tracking.js -->
+  <meta name="bht-lp-events-api" content="">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VWQL6TH7KQ"></script>
   <script>
@@ -278,7 +280,24 @@
     (function() {
       function getUtm() {
         var p = new URLSearchParams(window.location.search);
-        return { utm_source: p.get('utm_source') || '', utm_medium: p.get('utm_medium') || '', utm_campaign: p.get('utm_campaign') || '', page_url: window.location.href };
+        var gclid = (p.get('gclid') || '').trim();
+        var clickId = (p.get('click_id') || p.get('clid') || p.get('fbclid') || p.get('msclkid') || '').trim();
+        var landingVariantId = (p.get('landing_variant_id') || p.get('lv') || '').trim();
+        var utmContent = (p.get('utm_content') || '').trim();
+        var lpv = (p.get('lpv') || '').trim();
+        var cv = (p.get('cv') || '').trim();
+        return {
+          utm_source: p.get('utm_source') || '',
+          utm_medium: p.get('utm_medium') || '',
+          utm_campaign: p.get('utm_campaign') || '',
+          utm_content: utmContent || undefined,
+          page_url: window.location.href,
+          click_id: clickId || undefined,
+          gclid: gclid || undefined,
+          landing_variant_id: landingVariantId || undefined,
+          landing_page_version: lpv || undefined,
+          creative_version: cv || undefined
+        };
       }
       function decodeBase64url(str) {
         if (!str) return null;
@@ -295,6 +314,13 @@
       var liteBadge = document.getElementById('lite-badge');
       var submitSource = 'pro_direct';
       var submitLiteSnapshot = null;
+      var inspectorFromUrl = (function () {
+        var p = new URLSearchParams(window.location.search);
+        if (p.get('source') !== 'inspector') return null;
+        var sub = (p.get('sub') || p.get('sub_source') || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/^_+|_+$/g, '');
+        if (!sub || !/^[a-z][a-z0-9_]*$/.test(sub)) return null;
+        return { sub: sub };
+      })();
       (function applyLiteParams() {
         var p = new URLSearchParams(window.location.search);
         if (p.get('src') !== 'lite') return;
@@ -331,7 +357,12 @@
         btn.textContent = 'Submitting…';
         var payload = { name: form.name.value.trim(), mobile: form.mobile.value.trim(), email: form.email.value.trim(), suburb: form.suburb.value.trim(), property_type: form.property_type.value, solar_battery_status: form.solar_battery_status.value, bill_range: form.bill_range.value, contact_time: form.contact_time.value, notes: form.notes.value.trim() || undefined };
         Object.assign(payload, getUtm());
-        payload.source = submitSource;
+        if (inspectorFromUrl) {
+          payload.source = 'inspector';
+          payload.sub = inspectorFromUrl.sub;
+        } else {
+          payload.source = submitSource;
+        }
         payload.lite_snapshot = submitLiteSnapshot != null ? JSON.stringify(submitLiteSnapshot) : null;
         var api = (window.location.origin.indexOf('localhost') !== -1) ? 'http://localhost:8888/api/apply-advisory' : '/api/apply-advisory';
         fetch(api, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
@@ -385,6 +416,10 @@
         if (phoneLink) phoneLink.addEventListener('click', function() { gtag('event', 'phone_click', { event_category: 'engagement' }); });
       })();
     })();
+  </script>
+  <script src="lp-tracking.js"></script>
+  <script>
+    if (typeof BhtLpTracking !== 'undefined') BhtLpTracking.init({ formSelector: '#apply-form' });
   </script>
 </body>
 </html>

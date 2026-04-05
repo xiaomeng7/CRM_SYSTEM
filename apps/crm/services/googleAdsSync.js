@@ -158,28 +158,22 @@ async function safeFinishGoogleAdsSyncRun(db, runId, payload) {
   }
 }
 
-/**
- * @param {string} dateStr YYYY-MM-DD
- * @returns {Promise<Array<{ google_campaign_id: string, google_campaign_name: string, date: string, spend: number }>>}
- */
-async function fetchGoogleAdsCampaignCosts(dateStr) {
-  assertGoogleAdsEnv();
+function parseMetricInt(v) {
+  const n = Number.parseInt(String(v ?? '').replace(/,/g, ''), 10);
+  return Number.isFinite(n) ? n : 0;
+}
 
+function parseMetricFloat(v) {
+  const n = Number.parseFloat(String(v ?? '').replace(/,/g, ''));
+  return Number.isFinite(n) ? n : null;
+}
+
+async function runGoogleAdsSearchQuery(query, dateStr) {
+  assertGoogleAdsEnv();
   const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
   const customerId = (process.env.GOOGLE_ADS_CUSTOMER_ID || '').replace(/-/g, '');
   const loginCid = (process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID || '').replace(/-/g, '');
   const ver = apiVersion();
-
-  const query = `
-    SELECT
-      campaign.id,
-      campaign.name,
-      metrics.cost_micros,
-      segments.date
-    FROM campaign
-    WHERE segments.date = '${dateStr}'
-      AND campaign.status IN ('ENABLED', 'PAUSED')
-  `.trim();
 
   const headers = {
     Authorization: `Bearer ${await getAdsAccessToken()}`,
@@ -200,7 +194,10 @@ async function fetchGoogleAdsCampaignCosts(dateStr) {
     const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
     const text = await res.text();
     if (!res.ok) {
-      throw new Error(`Google Ads API HTTP ${res.status}: ${text.slice(0, 800)}`);
+      const err = new Error(`Google Ads API HTTP ${res.status}: ${text.slice(0, 800)}`);
+      err.status = res.status;
+      err.body = text;
+      throw err;
     }
     let json;
     try {
@@ -219,8 +216,27 @@ async function fetchGoogleAdsCampaignCosts(dateStr) {
             ? String(row.metrics.cost_micros)
             : '0';
       const segDate = row.segments?.date || dateStr;
+      const impressions = parseMetricInt(row.metrics?.impressions);
+      const clicks = parseMetricInt(row.metrics?.clicks);
+      const conv = parseMetricFloat(row.metrics?.conversions);
+      const convVal = parseMetricFloat(
+        row.metrics?.conversionsValue != null
+          ? row.metrics.conversionsValue
+          : row.metrics?.conversions_value != null
+            ? row.metrics.conversions_value
+            : null
+      );
       if (name) {
-        raw.push({ google_campaign_id: id, google_campaign_name: name, date: segDate, spend: microsToSpend(micros) });
+        raw.push({
+          google_campaign_id: id,
+          google_campaign_name: name,
+          date: segDate,
+          spend: microsToSpend(micros),
+          impressions,
+          clicks,
+          conversions: conv,
+          conversion_value: convVal,
+        });
       }
     }
     pageToken = json.nextPageToken || null;
@@ -230,10 +246,72 @@ async function fetchGoogleAdsCampaignCosts(dateStr) {
   for (const r of raw) {
     const k = `${r.google_campaign_id}\t${r.google_campaign_name}\t${r.date}`;
     const prev = byKey.get(k);
-    if (prev) prev.spend = Math.round((prev.spend + r.spend) * 100) / 100;
-    else byKey.set(k, { ...r });
+    if (prev) {
+      prev.spend = Math.round((prev.spend + r.spend) * 100) / 100;
+      prev.impressions += r.impressions;
+      prev.clicks += r.clicks;
+      if (r.conversions != null) {
+        prev.conversions = (prev.conversions || 0) + r.conversions;
+      }
+      if (r.conversion_value != null) {
+        prev.conversion_value = (prev.conversion_value || 0) + r.conversion_value;
+      }
+    } else {
+      byKey.set(k, { ...r });
+    }
   }
   return [...byKey.values()];
+}
+
+/**
+ * Campaign-level daily row from Google Ads (v1 grain: one row per campaign per day).
+ * Tries full metrics first; falls back without metrics.conversions_value if API rejects field.
+ * @param {string} dateStr YYYY-MM-DD
+ * @returns {Promise<Array<{ google_campaign_id: string, google_campaign_name: string, date: string, spend: number, impressions: number, clicks: number, conversions: number|null, conversion_value: number|null }>>}
+ */
+async function fetchGoogleAdsCampaignDailyRows(dateStr) {
+  const base = `
+    SELECT
+      campaign.id,
+      campaign.name,
+      metrics.impressions,
+      metrics.clicks,
+      metrics.cost_micros,
+      metrics.conversions,
+      __CONV_COL__
+      segments.date
+    FROM campaign
+    WHERE segments.date = '${dateStr}'
+      AND campaign.status IN ('ENABLED', 'PAUSED')
+  `.trim();
+
+  const withConvVal = base.replace('__CONV_COL__', 'metrics.conversions_value,');
+  const withoutConvVal = base.replace('__CONV_COL__', '');
+
+  try {
+    return await runGoogleAdsSearchQuery(withConvVal, dateStr);
+  } catch (e) {
+    const msg = String(e.message || e);
+    if (/UNRECOGNIZED_FIELD|FieldError|invalid.*metrics/i.test(msg) || /conversions_value/i.test(msg)) {
+      console.warn('[google-ads-sync] retrying GAQL without metrics.conversions_value');
+      return await runGoogleAdsSearchQuery(withoutConvVal, dateStr);
+    }
+    throw e;
+  }
+}
+
+/**
+ * @param {string} dateStr YYYY-MM-DD
+ * @returns {Promise<Array<{ google_campaign_id: string, google_campaign_name: string, date: string, spend: number }>>}
+ */
+async function fetchGoogleAdsCampaignCosts(dateStr) {
+  const rows = await fetchGoogleAdsCampaignDailyRows(dateStr);
+  return rows.map((r) => ({
+    google_campaign_id: r.google_campaign_id,
+    google_campaign_name: r.google_campaign_name,
+    date: r.date,
+    spend: r.spend,
+  }));
 }
 
 function stableCampaignCode(googleCampaignId) {
@@ -549,6 +627,90 @@ async function upsertCampaignCosts(mappedRows, db = pool) {
   return { created_count, updated_count };
 }
 
+/**
+ * Upsert campaign-level daily rows into ad_platform_daily_metrics (Google).
+ * Unmapped Google campaigns still get a row (campaign_id NULL, campaign_external_id set).
+ * @param {Array<object>} fullRows from fetchGoogleAdsCampaignDailyRows
+ * @param {Awaited<ReturnType<typeof mapRowsToLocalCampaigns>>} mapResult
+ */
+async function upsertAdPlatformDailyMetricsFromGoogle(fullRows, mapResult, db = pool) {
+  if (!fullRows.length) return { processed: 0, skipped: false };
+
+  const customerId = (process.env.GOOGLE_ADS_CUSTOMER_ID || '').replace(/-/g, '');
+  if (!/^\d{10}$/.test(customerId)) {
+    console.warn('[google-ads-sync] skip ad_platform_daily_metrics: invalid GOOGLE_ADS_CUSTOMER_ID');
+    return { processed: 0, skipped: true };
+  }
+
+  const gclidToCampaignId = new Map();
+  for (const m of mapResult.mapped) {
+    gclidToCampaignId.set(String(m.google_campaign_id || '').trim(), m.campaign_id);
+  }
+
+  let processed = 0;
+  let tableMissing = false;
+
+  for (const r of fullRows) {
+    const gid = String(r.google_campaign_id || '').trim();
+    const campaignId = gclidToCampaignId.get(gid) || null;
+    const rawJson = JSON.stringify({
+      google_campaign_name: r.google_campaign_name,
+      google_campaign_id: gid,
+      date: r.date,
+      sync: 'google-ads-sync',
+      grain: 'campaign_daily',
+    });
+
+    try {
+      await db.query(
+        `INSERT INTO ad_platform_daily_metrics (
+           metric_date, platform, account_external_id, campaign_id, campaign_external_id,
+           ad_group_external_id, ad_external_id, creative_id, currency_code,
+           impressions, clicks, cost, conversions, conversion_value, raw_payload_json, created_by
+         ) VALUES (
+           $1::date, 'google', $2, $3, $4, '', '', NULL, 'AUD',
+           $5, $6, $7, $8, $9, $10::jsonb, 'google-ads-sync'
+         )
+         ON CONFLICT (metric_date, platform, account_external_id, campaign_external_id, ad_group_external_id, ad_external_id)
+         DO UPDATE SET
+           campaign_id = COALESCE(EXCLUDED.campaign_id, ad_platform_daily_metrics.campaign_id),
+           impressions = EXCLUDED.impressions,
+           clicks = EXCLUDED.clicks,
+           cost = EXCLUDED.cost,
+           conversions = EXCLUDED.conversions,
+           conversion_value = EXCLUDED.conversion_value,
+           raw_payload_json = EXCLUDED.raw_payload_json,
+           updated_at = NOW(),
+           created_by = EXCLUDED.created_by`,
+        [
+          r.date,
+          customerId,
+          campaignId,
+          gid,
+          r.impressions,
+          r.clicks,
+          r.spend,
+          r.conversions,
+          r.conversion_value,
+          rawJson,
+        ]
+      );
+      processed += 1;
+    } catch (e) {
+      if (/ad_platform_daily_metrics|does not exist/i.test(e.message || '')) {
+        if (!tableMissing) {
+          console.warn('[google-ads-sync] ad_platform_daily_metrics missing; run migration 045:', e.message);
+          tableMissing = true;
+        }
+        return { processed: 0, skipped: true };
+      }
+      throw e;
+    }
+  }
+
+  return { processed, skipped: false };
+}
+
 function buildSummaryBase({
   sample_skipped,
   api_version,
@@ -628,11 +790,19 @@ async function syncGoogleAdsCosts(opts = {}) {
   let backfill_google_id_count = 0;
   let created_count = 0;
   let updated_count = 0;
+  let metrics_processed = 0;
+  let metrics_skipped = false;
 
   try {
     assertGoogleAdsEnv();
-    rows = await fetchGoogleAdsCampaignCosts(date);
-    fetched_count = rows.length;
+    const fullRows = await fetchGoogleAdsCampaignDailyRows(date);
+    fetched_count = fullRows.length;
+    rows = fullRows.map((r) => ({
+      google_campaign_id: r.google_campaign_id,
+      google_campaign_name: r.google_campaign_name,
+      date: r.date,
+      spend: r.spend,
+    }));
 
     const mapResult = await mapRowsToLocalCampaigns(rows, db, { autoCreateCampaigns: autoCreate });
     skipped = mapResult.skipped;
@@ -659,6 +829,12 @@ async function syncGoogleAdsCosts(opts = {}) {
       updated_count = w.updated_count;
     }
 
+    if (!dryRun && fullRows.length > 0) {
+      const m = await upsertAdPlatformDailyMetricsFromGoogle(fullRows, mapResult, db);
+      metrics_processed = m.processed || 0;
+      metrics_skipped = Boolean(m.skipped);
+    }
+
     const sample_skipped = skipped.slice(0, 15);
     const summaryPayload = {
       ...buildSummaryBase({
@@ -669,6 +845,9 @@ async function syncGoogleAdsCosts(opts = {}) {
         backfill_google_id_count,
       }),
       dry_run: dryRun,
+      ad_platform_metrics_grain: 'campaign_daily',
+      ad_platform_metrics_processed: metrics_processed,
+      ad_platform_metrics_skipped: metrics_skipped,
     };
 
     const status =
@@ -698,6 +877,8 @@ async function syncGoogleAdsCosts(opts = {}) {
       backfill_google_id_count,
       created_count: dryRun ? 0 : created_count,
       updated_count: dryRun ? 0 : updated_count,
+      ad_platform_metrics_processed: dryRun ? 0 : metrics_processed,
+      ad_platform_metrics_skipped: metrics_skipped,
       dry_run: dryRun,
       sample_skipped,
       sync_run_id: runId,
@@ -717,6 +898,8 @@ async function syncGoogleAdsCostsToDb(opts) {
 module.exports = {
   getTargetDate,
   fetchGoogleAdsCampaignCosts,
+  fetchGoogleAdsCampaignDailyRows,
+  upsertAdPlatformDailyMetricsFromGoogle,
   mapRowsToLocalCampaigns,
   upsertCampaignCosts,
   syncGoogleAdsCosts,

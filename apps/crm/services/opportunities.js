@@ -4,6 +4,7 @@
 
 const { pool } = require('../lib/db');
 const { emit } = require('../lib/domain-events');
+const { scheduleOpportunityWonOfflineConversion } = require('./googleOfflineConversions');
 
 const OPPORTUNITY_STAGES = [
   'new_inquiry',
@@ -54,6 +55,34 @@ function isValidUuid(s) {
   return u.test(s);
 }
 
+/**
+ * Copy lead intake fields onto opportunity.intake_attribution (JSONB). No-op if no lead or column missing.
+ * @param {import('pg').Pool|import('pg').PoolClient} db
+ */
+async function syncIntakeAttributionFromLead(db, opportunityId, leadId) {
+  if (!opportunityId || !leadId || !isValidUuid(String(leadId))) return;
+  try {
+    const r = await db.query(`SELECT * FROM leads WHERE id = $1::uuid LIMIT 1`, [leadId]);
+    const l = r.rows[0];
+    if (!l) return;
+    const keys = ['gclid', 'utm_campaign', 'utm_content', 'landing_page_version', 'creative_version'];
+    const intake = {};
+    for (const k of keys) {
+      if (!Object.prototype.hasOwnProperty.call(l, k)) continue;
+      const v = l[k];
+      if (v != null && String(v).trim() !== '') intake[k] = String(v).trim();
+    }
+    await db.query(
+      `UPDATE opportunities SET intake_attribution = $2::jsonb, updated_at = NOW() WHERE id = $1::uuid`,
+      [opportunityId, JSON.stringify(intake)]
+    );
+  } catch (e) {
+    const msg = String(e.message || '');
+    if (/intake_attribution|column/i.test(msg)) return;
+    console.warn('[opportunities] syncIntakeAttributionFromLead skipped:', msg);
+  }
+}
+
 async function create(data = {}) {
   const { account_id, contact_id, lead_id, stage, value_estimate, created_by } = data;
   const s = stage && isValidStage(stage) ? stage : 'new_inquiry';
@@ -72,6 +101,11 @@ async function create(data = {}) {
     ]
   );
   const row = result.rows[0];
+  if (row.lead_id) {
+    await syncIntakeAttributionFromLead(pool, row.id, row.lead_id);
+    const again = await pool.query(`SELECT * FROM opportunities WHERE id = $1`, [row.id]);
+    if (again.rows[0]) Object.assign(row, again.rows[0]);
+  }
   await emit('opportunity.created', 'opportunity', row.id, {
     opportunity_id: row.id,
     lead_id: row.lead_id,
@@ -154,6 +188,12 @@ async function updateStage(id, newStage, createdBy = null, opts = {}) {
     previous_stage: existing.stage,
     new_stage: row.stage,
   });
+  if (newStage === 'won' && existing.stage !== 'won') {
+    scheduleOpportunityWonOfflineConversion(pool, row.id, {
+      source: 'opportunities.updateStage',
+      sourcePayload: { previous_stage: existing.stage },
+    });
+  }
   return row;
 }
 
@@ -162,6 +202,7 @@ module.exports = {
   list,
   getById,
   updateStage,
+  syncIntakeAttributionFromLead,
   OPPORTUNITY_STAGES,
   STAGE_LEGACY_TO_NEW,
   STAGE_FILTER_VALUES,
