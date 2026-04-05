@@ -6,12 +6,13 @@
   <title>手动新增客户 — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
   <style>
-    .nl-wrap { max-width: 28rem; }
+    .nl-wrap { max-width: 34rem; }
     .nl-field { margin-bottom: 0.85rem; }
     .nl-field label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem; font-weight: 600; }
-    .nl-field input, .nl-field select {
+    .nl-field input, .nl-field select, .nl-field textarea {
       width: 100%; padding: 0.45rem 0.55rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; box-sizing: border-box;
     }
+    .nl-field textarea { min-height: 4rem; resize: vertical; }
     .nl-secret-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem; }
     .nl-secret-row .nl-field { flex: 1; min-width: 11rem; margin-bottom: 0; }
     .nl-msg { font-size: 0.85rem; margin: 0 0 0.85rem 0; padding: 0.55rem 0.65rem; border-radius: 4px; display: none; }
@@ -43,7 +44,7 @@
       <header class="header">Internal CRM</header>
       <div class="content">
         <h1 class="page-title">手动新增客户</h1>
-        <p class="nl-intro">电话进线、转介绍、老客户复购等非广告渠道。提交后写入 Lead / Opportunity，并自动创建 ServiceM8 工单；预购线会尝试建 Quote，租房线会建 inspection 记录，能源线记活动备注。</p>
+        <p class="nl-intro">第三条入口：手动录入 → CRM。提交后创建 Lead、Opportunity（new_inquiry），并自动创建 ServiceM8 Job；预购线会尝试建 Quote，租房线会建 inspection，能源线记活动备注。可选填写 utm / cv / lpv 便于与投放数据对齐。</p>
 
         <div class="card nl-wrap">
           <div class="nl-secret-row">
@@ -66,35 +67,58 @@
               <input type="tel" id="nl-phone" name="phone" required autocomplete="tel" />
             </div>
             <div class="nl-field">
-              <label for="nl-address">地址（可选）</label>
-              <input type="text" id="nl-address" name="address" autocomplete="street-address" placeholder="门牌 / 街道 / 区" />
+              <label for="nl-email">邮箱（可选）</label>
+              <input type="email" id="nl-email" name="email" autocomplete="email" />
             </div>
             <div class="nl-field">
-              <label for="nl-product-line">产品线 *</label>
-              <select id="nl-product-line" name="product_line" required>
+              <label for="nl-suburb">Suburb（可选）</label>
+              <input type="text" id="nl-suburb" name="suburb" placeholder="例如：Norwood" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-address">物业地址（可选，租房检查建议填）</label>
+              <input type="text" id="nl-address" name="address" autocomplete="street-address" placeholder="门牌 / 街道" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-service-type">Service type *</label>
+              <select id="nl-service-type" name="service_type" required>
                 <option value="">请选择…</option>
-                <option value="pre_purchase">pre_purchase（预购验电）</option>
-                <option value="rental">rental（租房检查）</option>
-                <option value="energy">energy（能源咨询）</option>
+                <option value="pre_purchase">pre_purchase</option>
+                <option value="rental">rental</option>
+                <option value="energy">energy</option>
               </select>
             </div>
             <div class="nl-field">
-              <label for="nl-source">来源 *</label>
+              <label for="nl-source">Source *</label>
               <select id="nl-source" name="source" required>
                 <option value="">请选择…</option>
-                <option value="phone">phone</option>
-                <option value="referral">referral</option>
-                <option value="repeat">repeat</option>
                 <option value="manual">manual</option>
-                <option value="other">other</option>
+                <option value="inspector">inspector</option>
+                <option value="referral">referral</option>
               </select>
             </div>
             <div class="nl-field">
-              <label for="nl-sub-source">sub_source（可选）</label>
-              <input type="text" id="nl-sub-source" name="sub_source" placeholder="例如：某中介名、熟人姓名" />
+              <label for="nl-sub-source">sub_source（inspector 时建议填写）</label>
+              <input type="text" id="nl-sub-source" name="sub_source" placeholder="与 Inspector 合作代码一致，小写+下划线" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-notes">Notes（可选）</label>
+              <textarea id="nl-notes" name="notes" placeholder="进线摘要、客户诉求…"></textarea>
+            </div>
+            <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.5rem;">归因模拟（可选）</p>
+            <div class="nl-field">
+              <label for="nl-utm-campaign">utm_campaign</label>
+              <input type="text" id="nl-utm-campaign" name="utm_campaign" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-cv">creative_version（cv）</label>
+              <input type="text" id="nl-cv" name="creative_version" />
+            </div>
+            <div class="nl-field">
+              <label for="nl-lpv">landing_page_version（lpv）</label>
+              <input type="text" id="nl-lpv" name="landing_page_version" />
             </div>
             <div class="nl-actions">
-              <button type="submit" class="btn btn-primary" id="nl-submit">创建客户并生成工单</button>
+              <button type="submit" class="btn btn-primary" id="nl-submit">Create Lead &amp; Job</button>
             </div>
           </form>
         </div>
@@ -140,10 +164,16 @@
         var body = {
           name: $('nl-name').value.trim(),
           phone: $('nl-phone').value.trim(),
+          email: $('nl-email').value.trim() || null,
+          suburb: $('nl-suburb').value.trim() || null,
           address: $('nl-address').value.trim() || null,
-          product_line: $('nl-product-line').value,
+          service_type: $('nl-service-type').value,
           source: $('nl-source').value,
           sub_source: $('nl-sub-source').value.trim() || null,
+          notes: $('nl-notes').value.trim() || null,
+          utm_campaign: $('nl-utm-campaign').value.trim() || null,
+          creative_version: $('nl-cv').value.trim() || null,
+          landing_page_version: $('nl-lpv').value.trim() || null,
         };
         showMsg('', false);
         btn.disabled = true;
@@ -166,8 +196,10 @@
             });
           })
           .then(function (data) {
-            window.alert('客户已创建\n工单已生成（ServiceM8）');
-            window.location.href = '/dashboard/lead-detail.html?id=' + encodeURIComponent(data.lead_id);
+            var extra = data.job_id != null ? ' CRM Job #' + data.job_id : '';
+            if (data.servicem8_job_uuid) extra += '\nServiceM8: ' + data.servicem8_job_uuid;
+            window.alert('Lead + Job created.' + (extra ? '\n' + extra : ''));
+            window.location.href = '/lead-detail.html?id=' + encodeURIComponent(data.lead_id);
           })
           .catch(function (err) {
             var j = err.body || {};
@@ -175,7 +207,7 @@
             if (j.lead_id) {
               msg += '\n（Lead 已创建，可打开详情核对）';
               if (window.confirm(msg + '\n\n是否打开客户详情？')) {
-                window.location.href = '/dashboard/lead-detail.html?id=' + encodeURIComponent(j.lead_id);
+                window.location.href = '/lead-detail.html?id=' + encodeURIComponent(j.lead_id);
                 return;
               }
             }
@@ -184,7 +216,7 @@
           .finally(function () {
             btn.disabled = false;
             btn.classList.remove('loading');
-            btn.textContent = '创建客户并生成工单';
+            btn.textContent = 'Create Lead & Job';
           });
       });
     })();

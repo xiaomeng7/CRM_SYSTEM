@@ -45,6 +45,25 @@ function mapProductLine(line) {
   return { product_line: 'energy', product_type: 'energy_advisory' };
 }
 
+function serviceLineLabel(productLine) {
+  if (productLine === 'pre_purchase') return 'Pre-Purchase Inspection';
+  if (productLine === 'rental') return 'Rental Changeover Inspection';
+  return 'Energy Advisory';
+}
+
+function buildManualJobDescription(ctx) {
+  const lines = [
+    ctx.title,
+    '',
+    `Client: ${ctx.clientName}`,
+    `Phone: ${ctx.phone}`,
+  ];
+  if (ctx.email) lines.push(`Email: ${ctx.email}`);
+  lines.push('', `Source: ${ctx.source}${ctx.subSource ? ` (${ctx.subSource})` : ''}`);
+  if (ctx.notes) lines.push('', 'Notes:', ctx.notes);
+  return lines.join('\n').slice(0, 2000);
+}
+
 /**
  * @param {object} body
  * @returns {Promise<object>}
@@ -53,12 +72,26 @@ async function createLeadWithJobFromInternal(body = {}) {
   const name = String(body.name || '').trim();
   const phone = String(body.phone || '').trim();
   const address = String(body.address || '').trim() || null;
-  const productLineIn = String(body.product_line || '').trim().toLowerCase();
+  const emailRaw = String(body.email || '').trim() || null;
+  const suburbRaw = String(body.suburb || '').trim() || null;
+  const notes = String(body.notes || '').trim() || null;
+  const utmCampaign = String(body.utm_campaign || '').trim() || null;
+  const creativeVersion = String(body.creative_version || '').trim() || null;
+  const landingPageVersion = String(body.landing_page_version || '').trim() || null;
+
+  const lineKey = String(body.service_type || body.product_line || '')
+    .trim()
+    .toLowerCase();
   const source = String(body.source || '').trim().toLowerCase();
   const subSource = String(body.sub_source || '').trim() || null;
 
   if (!name || !phone) {
     const e = new Error('Missing required fields: name, phone');
+    e.code = 'VALIDATION';
+    throw e;
+  }
+  if (!lineKey) {
+    const e = new Error('Missing required field: service_type (or product_line)');
     e.code = 'VALIDATION';
     throw e;
   }
@@ -70,11 +103,13 @@ async function createLeadWithJobFromInternal(body = {}) {
     throw e;
   }
 
-  const mapped = mapProductLine(productLineIn);
-  const cleanedContact = cleanContact({ name, phone, email: '' });
-  const cleanedAccount = cleanAccount({ name, suburb: '' });
+  const mapped = mapProductLine(lineKey);
+  const cleanedContact = cleanContact({ name, phone, email: emailRaw || '' });
+  const cleanedAccount = cleanAccount({ name, suburb: suburbRaw || '' });
   const accName = cleanedContact.name || cleanedAccount.name || name;
   const accPhone = cleanedContact.phone || phone;
+  const accEmail = cleanedContact.email || emailRaw || null;
+  const accSuburb = cleanedAccount.suburb || suburbRaw || null;
 
   const client = await pool.connect();
   let leadId;
@@ -91,7 +126,7 @@ async function createLeadWithJobFromInternal(body = {}) {
       `INSERT INTO accounts (name, address_line, suburb, status, created_by)
        VALUES ($1, $2, $3, 'active', $4)
        RETURNING id`,
-      [accName, address, null, 'internal-quick-lead']
+      [accName, address, accSuburb || null, 'internal-quick-lead']
     );
     accountId = accRes.rows[0].id;
 
@@ -99,7 +134,7 @@ async function createLeadWithJobFromInternal(body = {}) {
       `INSERT INTO contacts (account_id, name, email, phone, status, created_by)
        VALUES ($1, $2, $3, $4, 'active', $5)
        RETURNING id`,
-      [accountId, accName, null, accPhone || null, 'internal-quick-lead']
+      [accountId, accName, accEmail, accPhone || null, 'internal-quick-lead']
     );
     contactId = conRes.rows[0].id;
 
@@ -113,6 +148,11 @@ async function createLeadWithJobFromInternal(body = {}) {
     };
     if (leadCols.has('sub_source')) leadData.sub_source = subSource;
     if (leadCols.has('product_line')) leadData.product_line = mapped.product_line;
+    if (leadCols.has('utm_campaign') && utmCampaign) leadData.utm_campaign = utmCampaign;
+    if (leadCols.has('creative_version') && creativeVersion) leadData.creative_version = creativeVersion;
+    if (leadCols.has('landing_page_version') && landingPageVersion) {
+      leadData.landing_page_version = landingPageVersion;
+    }
 
     const lCols = Object.keys(leadData).filter((k) => leadCols.has(k));
     const lVals = lCols.map((k) => leadData[k]);
@@ -146,15 +186,19 @@ async function createLeadWithJobFromInternal(body = {}) {
 
     await syncIntakeAttributionFromLead(client, opportunityId, lead.id);
 
+    const actSummary = [
+      `Manual intake — source: ${source}${subSource ? ` (${subSource})` : ''}, line: ${mapped.product_line}`,
+      utmCampaign ? `utm_campaign: ${utmCampaign}` : null,
+      creativeVersion ? `cv: ${creativeVersion}` : null,
+      landingPageVersion ? `lpv: ${landingPageVersion}` : null,
+      notes ? `Notes: ${notes.slice(0, 500)}` : null,
+    ]
+      .filter(Boolean)
+      .join(' | ');
     await client.query(
       `INSERT INTO activities (contact_id, lead_id, opportunity_id, activity_type, summary, created_by)
        VALUES ($1, $2, $3, 'note', $4, 'internal-quick-lead')`,
-      [
-        contactId,
-        lead.id,
-        opportunityId,
-        `Manual intake — source: ${source}${subSource ? ` (${subSource})` : ''}, line: ${mapped.product_line}`,
-      ]
+      [contactId, lead.id, opportunityId, actSummary]
     );
 
     await client.query('COMMIT');
@@ -180,8 +224,21 @@ async function createLeadWithJobFromInternal(body = {}) {
   scheduleLeadScoring(leadId);
 
   const createReason = `Manual CRM intake — ${source}${subSource ? ` / ${subSource}` : ''} — ${mapped.product_line}`;
+  const jobDescription = buildManualJobDescription({
+    title: serviceLineLabel(mapped.product_line),
+    clientName: accName,
+    phone: accPhone,
+    email: accEmail,
+    source,
+    subSource,
+    notes,
+  });
   const jobResult = await createServiceM8JobFromCRM(
-    { opportunity_id: opportunityId, create_reason: createReason },
+    {
+      opportunity_id: opportunityId,
+      create_reason: createReason,
+      description: jobDescription,
+    },
     { db: pool, log: () => {} }
   );
 
@@ -189,7 +246,9 @@ async function createLeadWithJobFromInternal(body = {}) {
     ok: true,
     lead_id: leadId,
     opportunity_id: opportunityId,
+    job_id: null,
     service_m8_job_id: null,
+    servicem8_job_uuid: null,
     job_create: jobResult,
     extras: {},
   };
@@ -198,11 +257,15 @@ async function createLeadWithJobFromInternal(body = {}) {
     out.ok = false;
     out.error = jobResult.error || 'ServiceM8 job creation failed';
     out.error_code = jobResult.error_code || 'SERVICEM8_JOB';
+    out.lead_id = leadId;
+    out.opportunity_id = opportunityId;
     return out;
   }
 
   const jobUuid = jobResult.job_uuid;
   out.service_m8_job_id = jobUuid;
+  out.servicem8_job_uuid = jobUuid;
+  out.job_id = jobResult.job_id != null ? jobResult.job_id : null;
 
   try {
     if (mapped.product_line === 'pre_purchase') {
@@ -213,7 +276,13 @@ async function createLeadWithJobFromInternal(body = {}) {
         `INSERT INTO inspections (opportunity_id, account_id, contact_id, inspection_type, status, address, notes, created_by)
          VALUES ($1, $2, $3, 'rental_changeover', 'scheduled', $4, $5, 'internal-quick-lead')
          RETURNING id`,
-        [opportunityId, accountId, contactId, address, subSource || 'Rental inspection (manual intake)']
+        [
+          opportunityId,
+          accountId,
+          contactId,
+          address || accSuburb || '',
+          subSource || notes || 'Rental inspection (manual intake)',
+        ]
       );
       out.extras.inspection_id = insp.rows[0].id;
     } else {
