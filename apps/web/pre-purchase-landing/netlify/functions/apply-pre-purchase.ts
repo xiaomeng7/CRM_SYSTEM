@@ -29,8 +29,18 @@ type Body = {
   settlement_date?: string | null; access_contact?: string | null;
   property_type?: string | null; notes?: string | null;
   utm_source?: string | null; utm_medium?: string | null;
-  utm_campaign?: string | null; page_url?: string | null;
+  utm_campaign?: string | null; utm_content?: string | null;
+  page_url?: string | null;
+  gclid?: string | null; click_id?: string | null;
+  landing_page_version?: string | null; creative_version?: string | null;
 };
+
+function optStr(b: Record<string, unknown>, key: string): string | null {
+  const v = b[key];
+  if (typeof v !== "string") return null;
+  const t = v.trim();
+  return t || null;
+}
 
 function validate(body: unknown): { ok: true; data: Body } | { ok: false; error: string } {
   if (!body || typeof body !== "object") return { ok: false, error: "Invalid body" };
@@ -51,10 +61,15 @@ function validate(body: unknown): { ok: true; data: Body } | { ok: false; error:
     access_contact: typeof b.access_contact === "string" ? b.access_contact.trim() || null : null,
     property_type: typeof b.property_type === "string" ? b.property_type || null : null,
     notes: typeof b.notes === "string" ? b.notes.trim() || null : null,
-    utm_source: typeof b.utm_source === "string" ? b.utm_source || null : null,
-    utm_medium: typeof b.utm_medium === "string" ? b.utm_medium || null : null,
-    utm_campaign: typeof b.utm_campaign === "string" ? b.utm_campaign || null : null,
-    page_url: typeof b.page_url === "string" ? b.page_url || null : null,
+    utm_source: optStr(b, "utm_source"),
+    utm_medium: optStr(b, "utm_medium"),
+    utm_campaign: optStr(b, "utm_campaign"),
+    utm_content: optStr(b, "utm_content"),
+    page_url: optStr(b, "page_url"),
+    gclid: optStr(b, "gclid"),
+    click_id: optStr(b, "click_id"),
+    landing_page_version: optStr(b, "landing_page_version"),
+    creative_version: optStr(b, "creative_version"),
   }};
 }
 
@@ -118,6 +133,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
             data.settlement_date ? `Settlement: ${data.settlement_date}` : null,
             `Inspection date: ${data.inspection_date}`,
             data.notes ? `Notes: ${data.notes}` : null,
+            data.landing_page_version ? `lpv: ${data.landing_page_version}` : null,
+            data.creative_version ? `cv: ${data.creative_version}` : null,
+            data.utm_content ? `utm_content: ${data.utm_content}` : null,
+            data.gclid ? `gclid: ${data.gclid}` : null,
+            data.click_id ? `click_id: ${data.click_id}` : null,
           ].filter(Boolean).join(' | ')},
           ${data.utm_source}, ${data.utm_medium}, ${data.utm_campaign},
           ${data.page_url}, ${hashIp(ip)}, ${event.headers["user-agent"] || ""}, ${'pre_purchase'}
@@ -136,6 +156,17 @@ export const handler: Handler = async (event: HandlerEvent) => {
       const inspectorSub =
         urlSrc === "inspector" ? sanitizeInspectorSub(raw.sub ?? raw.sub_source) : null;
       const crmSource = inspectorSub != null ? "inspector" : "landing:pre_purchase";
+      const messageLines = [
+        `Property: ${data.property_address}`,
+        `Inspection date: ${data.inspection_date}`,
+        data.settlement_date ? `Settlement: ${data.settlement_date}` : null,
+        data.access_contact ? `Agent: ${data.access_contact}` : null,
+        data.property_type ? `Type: ${data.property_type}` : null,
+        data.notes ? `Notes: ${data.notes}` : null,
+        inspectorSub ? `Inspector ref: ${inspectorSub}` : null,
+        data.landing_page_version ? `LP version (lpv): ${data.landing_page_version}` : null,
+        data.creative_version ? `Creative version (cv): ${data.creative_version}` : null,
+      ].filter(Boolean);
       await fetch(`${crmBase.replace(/\/$/, "")}/api/public/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -146,15 +177,16 @@ export const handler: Handler = async (event: HandlerEvent) => {
           ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
           product_type: "pre_purchase",
           service_type: "pre_purchase",
-          message: [
-            `Property: ${data.property_address}`,
-            `Inspection date: ${data.inspection_date}`,
-            data.settlement_date ? `Settlement: ${data.settlement_date}` : null,
-            data.access_contact ? `Agent: ${data.access_contact}` : null,
-            data.property_type ? `Type: ${data.property_type}` : null,
-            data.notes ? `Notes: ${data.notes}` : null,
-            inspectorSub ? `Inspector ref: ${inspectorSub}` : null,
-          ].filter(Boolean).join(" | "),
+          message: messageLines.join(" | "),
+          utm_source: data.utm_source,
+          utm_medium: data.utm_medium,
+          utm_campaign: data.utm_campaign,
+          utm_content: data.utm_content,
+          landing_page_url: data.page_url,
+          landing_page_version: data.landing_page_version,
+          creative_version: data.creative_version,
+          gclid: data.gclid,
+          click_id: data.click_id,
           raw_payload: {
             application_id: appId,
             property_address: data.property_address,
@@ -165,6 +197,14 @@ export const handler: Handler = async (event: HandlerEvent) => {
             utm_source: data.utm_source,
             utm_medium: data.utm_medium,
             utm_campaign: data.utm_campaign,
+            utm_content: data.utm_content,
+            page_url: data.page_url,
+            gclid: data.gclid,
+            click_id: data.click_id,
+            landing_page_version: data.landing_page_version,
+            creative_version: data.creative_version,
+            client_source: typeof raw.source === "string" ? raw.source : null,
+            ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
           },
         }),
       });
@@ -191,7 +231,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
           data.property_type ? `Property type: ${data.property_type}` : null,
           data.notes ? `Notes: ${data.notes}` : null,
           "",
-          `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"}`,
+          `UTM: source=${data.utm_source || "-"} medium=${data.utm_medium || "-"} campaign=${data.utm_campaign || "-"} content=${data.utm_content || "-"}`,
+          data.landing_page_version ? `lpv: ${data.landing_page_version}` : null,
+          data.creative_version ? `cv: ${data.creative_version}` : null,
+          data.gclid ? `gclid: ${data.gclid}` : null,
+          data.click_id ? `click_id: ${data.click_id}` : null,
           appId ? `App ID: ${appId}` : null,
         ].filter(Boolean).join("\n"),
       });
