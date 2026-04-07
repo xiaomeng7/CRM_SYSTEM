@@ -87,6 +87,14 @@ app.get('/dashboard/new-lead.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard/new-lead.html'));
 });
 
+app.get('/dashboard/revenue', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/revenue.html'));
+});
+
+app.get('/dashboard/revenue.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard/revenue.html'));
+});
+
 app.use('/api/leads', leadsRouter);
 app.use('/api/opportunities', opportunitiesRouter);
 app.use('/api/public/leads', publicLeadsRouter);

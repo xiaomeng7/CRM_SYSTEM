@@ -17,6 +17,16 @@ import { uploadInspectionPhoto } from "../lib/uploadInspectionPhotoApi";
 import { getFindingForField } from "../lib/fieldToFindingMap";
 import { computeHeuristicAlerts } from "../lib/reviewHeuristics";
 import type { SectionDef } from "../lib/fieldDictionary";
+import {
+  ADDON_FORCE_VISIBLE_STEPS,
+  DEFAULT_INSPECTION_PRODUCT,
+  FULL_SAFETY_CHECK_ADDON,
+  HIDDEN_STEPS_BY_PRODUCT,
+  INSPECTION_PRODUCT_OPTIONS,
+  THERMAL_IMAGING_ADDON,
+  normalizeInspectionProduct,
+  type InspectionProduct,
+} from "../config/inspectionProducts";
 
 const GATE_KEYS = new Set([
   "rcd_tests.performed",
@@ -27,6 +37,17 @@ const GATE_KEYS = new Set([
 ]);
 
 const S0_START_CONTEXT = "S0_START_CONTEXT";
+function resolveInspectionProduct(value: unknown): string {
+  return normalizeInspectionProduct(value);
+}
+
+function resolveSelectedAddons(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((x): x is string => typeof x === "string")
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
 
 /** Sections that have a photo evidence block below the form. */
 const SECTIONS_WITH_PHOTOS = new Set([
@@ -206,6 +227,37 @@ export function Wizard({ onSubmitted }: Props) {
   const energyCircuits = Array.isArray(getValue("energy_v2.circuits"))
     ? (getValue("energy_v2.circuits") as Array<Record<string, unknown>>)
     : DEFAULT_ENERGY_V2_CIRCUITS;
+  const inspectionProduct = resolveInspectionProduct(getValue("inspection_product"));
+  const selectedAddons = Array.isArray(getValue("selected_addons"))
+    ? (getValue("selected_addons") as string[]).filter((x) => typeof x === "string")
+    : [];
+  const thermalAddonSelected = selectedAddons.includes(THERMAL_IMAGING_ADDON);
+  const fullSafetyAddonSelected = selectedAddons.includes(FULL_SAFETY_CHECK_ADDON);
+  const forcedVisibleSteps = useMemo(() => {
+    const out = new Set<string>();
+    for (const addon of selectedAddons) {
+      const steps = ADDON_FORCE_VISIBLE_STEPS[addon];
+      if (!steps) continue;
+      for (const stepId of steps) out.add(stepId);
+    }
+    return out;
+  }, [selectedAddons]);
+
+  useEffect(() => {
+    if (getAnswer("inspection_product")) return;
+    setAnswer("inspection_product", {
+      value: DEFAULT_INSPECTION_PRODUCT,
+      status: "answered",
+    });
+  }, [getAnswer, setAnswer]);
+
+  useEffect(() => {
+    if (getAnswer("selected_addons")) return;
+    setAnswer("selected_addons", {
+      value: [],
+      status: "answered",
+    });
+  }, [getAnswer, setAnswer]);
 
   const toggleConcern = (value: string, checked: boolean) => {
     const next = checked
@@ -245,7 +297,12 @@ export function Wizard({ onSubmitted }: Props) {
   const visibleSteps = useMemo((): VisibleStep[] => {
     const pages = getWizardPages();
     const out: VisibleStep[] = [];
+    const hiddenSteps =
+      HIDDEN_STEPS_BY_PRODUCT[(inspectionProduct as InspectionProduct)] ?? new Set<string>();
     for (const page of pages) {
+      if (hiddenSteps.has(page.id)) {
+        if (!forcedVisibleSteps.has(page.id)) continue;
+      }
       const sectionIds = page.sectionIds.filter(
         (id) => !isSectionGatedOut(id, state) && !isSectionAutoSkipped(id, state)
       );
@@ -254,13 +311,27 @@ export function Wizard({ onSubmitted }: Props) {
       }
     }
     return out;
-  }, [state]);
+  }, [forcedVisibleSteps, inspectionProduct, state]);
+
+  useEffect(() => {
+    if (visibleSteps.length === 0) {
+      if (step !== 0) setStep(0);
+      return;
+    }
+    const maxIdx = visibleSteps.length - 1;
+    if (step > maxIdx) setStep(maxIdx);
+  }, [step, visibleSteps.length]);
 
   /** Step 0..N-1 = content pages; no separate start screen. */
-  const currentStep = visibleSteps[step] ?? null;
-  const isFirst = step === 0;
-  const isLast = visibleSteps.length > 0 && step === visibleSteps.length - 1;
-  const progress = visibleSteps.length ? ((step + 1) / visibleSteps.length) * 100 : 0;
+  const activeStepIndex =
+    visibleSteps.length > 0 ? Math.min(step, visibleSteps.length - 1) : 0;
+  const currentStep = visibleSteps[activeStepIndex] ?? null;
+  const isFirst = activeStepIndex === 0;
+  const isLast =
+    visibleSteps.length > 0 && activeStepIndex === visibleSteps.length - 1;
+  const progress = visibleSteps.length
+    ? ((activeStepIndex + 1) / visibleSteps.length) * 100
+    : 0;
   const isJobClient = currentStep?.pageId === "job_client";
   const isEnergyMainLoad = currentStep?.pageId === "energy_main_load";
   const isEnergyStress = currentStep?.pageId === "energy_stress";
@@ -304,7 +375,7 @@ export function Wizard({ onSubmitted }: Props) {
       submitInspection();
       return;
     }
-    setStep((s) => Math.min(s + 1, visibleSteps.length));
+    setStep((s) => Math.min(s + 1, Math.max(visibleSteps.length - 1, 0)));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -327,6 +398,8 @@ export function Wizard({ onSubmitted }: Props) {
     const payload = {
       created_at: new Date().toISOString(),
       ...rest,
+      inspection_product: resolveInspectionProduct(rest.inspection_product),
+      selected_addons: resolveSelectedAddons(rest.selected_addons),
       _issue_details_meta: issueDetailsForPayload,
     };
     try {
@@ -594,7 +667,7 @@ export function Wizard({ onSubmitted }: Props) {
         </div>
         <p className="progress-text">
           {visibleSteps.length > 0
-            ? `Step ${step + 1} of ${visibleSteps.length}: ${currentStep?.pageTitle ?? ""}`
+            ? `Step ${activeStepIndex + 1} of ${visibleSteps.length}: ${currentStep?.pageTitle ?? ""}`
             : "Loading…"}
         </p>
       </div>
@@ -602,6 +675,71 @@ export function Wizard({ onSubmitted }: Props) {
       {isJobClient && (
         <div className="start-screen">
           <h1 className="start-screen__title">Job & Client Context</h1>
+          <div className="start-screen__card" style={{ marginBottom: 12 }}>
+            <h2 className="start-screen__brief-heading">Inspection Product</h2>
+            <p className="start-screen__brief-text">
+              Current: <strong>{inspectionProduct}</strong>
+            </p>
+            <div style={{ marginTop: 10 }}>
+              <label style={{ display: "block", marginBottom: 4, fontWeight: 500 }}>
+                Select inspection product
+              </label>
+              <select
+                value={inspectionProduct}
+                onChange={(e) =>
+                  setAnswer("inspection_product", {
+                    value: e.target.value,
+                    status: "answered",
+                  })
+                }
+                style={{
+                  width: "100%",
+                  maxWidth: 320,
+                  padding: "8px 10px",
+                  fontSize: 14,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                }}
+              >
+                {INSPECTION_PRODUCT_OPTIONS.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <label style={{ display: "block", marginBottom: 4, fontWeight: 500 }}>
+                Add-ons
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input
+                  type="checkbox"
+                  checked={thermalAddonSelected}
+                  onChange={(e) => {
+                    const next = e.target.checked
+                      ? Array.from(new Set([...selectedAddons, THERMAL_IMAGING_ADDON]))
+                      : selectedAddons.filter((x) => x !== THERMAL_IMAGING_ADDON);
+                    setAnswer("selected_addons", { value: next, status: "answered" });
+                  }}
+                />
+                thermal_imaging
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+                <input
+                  type="checkbox"
+                  checked={fullSafetyAddonSelected}
+                  onChange={(e) => {
+                    const next = e.target.checked
+                      ? Array.from(new Set([...selectedAddons, FULL_SAFETY_CHECK_ADDON]))
+                      : selectedAddons.filter((x) => x !== FULL_SAFETY_CHECK_ADDON);
+                    setAnswer("selected_addons", { value: next, status: "answered" });
+                  }}
+                />
+                full_safety_check
+              </label>
+            </div>
+          </div>
           <div className="accordion" style={{ marginBottom: 16 }}>
             <div
               className="accordion-toggle"

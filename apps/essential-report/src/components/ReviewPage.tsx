@@ -6,6 +6,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { PhotoEvidenceSection } from "./PhotoEvidenceSection";
 import { CustomFindingsModal, type CustomFindingInput } from "./CustomFindingsModal";
 import { computeHeuristicAlerts } from "../lib/reviewHeuristics";
+import {
+  DEFAULT_INSPECTION_PRODUCT,
+  INSPECTION_PRODUCT_LABELS,
+  normalizeInspectionProduct,
+} from "../config/inspectionProducts";
 
 type Props = {
   inspectionId: string;
@@ -141,6 +146,16 @@ export function ReviewPage({ inspectionId, onBack }: Props) {
 
   // Derive 3-line summary from raw_data for quick review (display only, no data change)
   const raw = (data.raw_data ?? {}) as Record<string, unknown>;
+  const inspectionProductCode = normalizeInspectionProduct(raw.inspection_product);
+  const inspectionProductLabel =
+    INSPECTION_PRODUCT_LABELS[inspectionProductCode] ??
+    INSPECTION_PRODUCT_LABELS[DEFAULT_INSPECTION_PRODUCT];
+  const selectedAddons = Array.isArray(raw.selected_addons)
+    ? (raw.selected_addons as unknown[])
+        .filter((x): x is string => typeof x === "string")
+        .map((x) => x.trim())
+        .filter(Boolean)
+    : [];
   const energy = raw.energy_v2 as Record<string, unknown> | undefined;
   const supply = energy?.supply as Record<string, unknown> | undefined;
   const stress = energy?.stressTest as Record<string, unknown> | undefined;
@@ -204,6 +219,12 @@ export function ReviewPage({ inspectionId, onBack }: Props) {
         <div style={{ fontWeight: 600, marginBottom: 8 }}>Inspection Summary</div>
         <p style={{ fontSize: 12, color: "#666", marginTop: 0, marginBottom: 8 }}>Review key items before submission.</p>
         <ul style={{ margin: 0, paddingLeft: 20 }}>
+          <li>
+            Inspection Product: {inspectionProductLabel} ({inspectionProductCode})
+          </li>
+          <li>
+            Selected Add-ons: {selectedAddons.length ? selectedAddons.join(", ") : "none"}
+          </li>
           <li>Main Load &amp; Voltage {supply ? "measured." : "—"}</li>
           <li>Load Stress measurement {stress ? (Boolean(stress.performed) ? "completed." : "skipped.") : "—"}</li>
           <li>Optional circuit breakdown {circuits.length > 0 ? "provided." : (enhancedSkip?.code ? "skipped." : "—")}</li>

@@ -12,6 +12,7 @@ const { getAdScaleActions } = require('../../services/adScaleActions');
 const { getLpOptimizationActions } = require('../../services/lpOptimizationActions');
 const { recordLpEvent, getLpBehavior } = require('../../services/lpBehavior');
 const { getAdLpCombinations } = require('../../services/adLpCombinations');
+const { getRevenueBySource } = require('../../services/revenueBySource');
 
 function requireSyncSecret(req, res, next) {
   const secret = process.env.SYNC_SECRET || process.env.ADMIN_SECRET;
@@ -177,6 +178,23 @@ router.get('/ad-scale-actions', requireSyncSecret, async (req, res) => {
       return res.status(400).json({ ok: false, error: e.message });
     }
     console.error('[analytics] ad-scale-actions', e);
+    res.status(500).json({ ok: false, error: e.message || String(e) });
+  }
+});
+
+// GET /api/analytics/revenue-by-source?date_from=YYYY-MM-DD&date_to=YYYY-MM-DD
+router.get('/revenue-by-source', requireSyncSecret, async (req, res) => {
+  try {
+    const data = await getRevenueBySource({
+      date_from: req.query.date_from,
+      date_to: req.query.date_to,
+    });
+    res.json({ ok: true, ...data });
+  } catch (e) {
+    if (e.code === 'VALIDATION') {
+      return res.status(400).json({ ok: false, error: e.message });
+    }
+    console.error('[analytics] revenue-by-source', e);
     res.status(500).json({ ok: false, error: e.message || String(e) });
   }
 });

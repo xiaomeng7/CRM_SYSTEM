@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>来源 × 收入 — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .rev-intro { margin: -0.25rem 0 1rem 0; color: var(--muted); font-size: 0.95rem; max-width: 44rem; line-height: 1.45; }
+    .rev-toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: flex-end; margin-bottom: 1.25rem;
+      padding: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    }
+    .rev-toolbar label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 0.25rem; }
+    .rev-toolbar input[type="date"] { padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; }
+    .rev-secret { max-width: 12rem; font-size: 0.85rem; }
+    .rev-msg { padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; display: none; }
+    .rev-msg.err { display: block; background: #fde8e8; color: #842029; }
+    .rev-section-h { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.75rem 0; }
+    .rev-cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; margin-bottom: 1.75rem;
+    }
+    .rev-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem;
+    }
+    .rev-card h3 { margin: 0 0 0.85rem 0; font-size: 1rem; font-weight: 600; }
+    .rev-card dl { margin: 0; display: grid; gap: 0.5rem 0.75rem; grid-template-columns: 1fr 1fr; font-size: 0.86rem; }
+    .rev-card dt { color: var(--muted); font-weight: 500; }
+    .rev-card dd { margin: 0; font-weight: 600; text-align: right; }
+    .rev-card .rev-card-foot { margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+    .rev-loading .rev-cards, .rev-loading .table-wrap { opacity: 0.55; pointer-events: none; }
+    .table-wrap table { font-size: 0.88rem; }
+    .table-wrap th { font-size: 0.72rem; color: var(--muted); text-transform: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/dashboard/growth">Growth 仪表盘</a>
+        <a href="/dashboard/revenue" class="active">来源 × 收入</a>
+        <a href="/dashboard/new-lead">手动新增客户</a>
+        <a href="/dashboard/inspectors">Inspector 合作</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Analytics</header>
+      <div class="content" data-page="revenue-by-source">
+        <h1 class="page-title">来源 × 收入</h1>
+        <p class="rev-intro">
+          按<strong>线索创建时间</strong>落在所选区间内的线索，归到三类来源（落地页投放 / Inspector / 手动与转介绍），再看关联商机<strong>赢单</strong>后的<strong>已付发票</strong>金额。
+          用于对比：哪个渠道带来的收入更多、单线索产出与「线索→已付发票」比例。
+        </p>
+
+        <div id="rev-wrap">
+          <div class="rev-toolbar">
+            <div>
+              <label for="rev-from">开始日期</label>
+              <input type="date" id="rev-from" />
+            </div>
+            <div>
+              <label for="rev-to">结束日期</label>
+              <input type="date" id="rev-to" />
+            </div>
+            <div>
+              <label for="rev-secret">登录密钥 <span title="与 Growth 仪表盘相同，存 session" style="cursor:help">?</span></label>
+              <input type="password" id="rev-secret" class="rev-secret" placeholder="填写后保存" autocomplete="off" />
+            </div>
+            <button type="button" class="btn btn-sm" id="rev-save-secret">保存密钥</button>
+            <button type="button" class="btn btn-primary" id="rev-refresh">刷新数据</button>
+          </div>
+
+          <p id="rev-msg" class="rev-msg"></p>
+
+          <h2 class="rev-section-h">渠道对比</h2>
+          <div class="rev-cards" id="rev-cards">
+            <div class="rev-card" data-card="google_ads">
+              <h3>Google Ads</h3>
+              <p class="muted" style="font-size:0.8rem;margin:-0.5rem 0 0.5rem;">leads.source 形如 landing:…</p>
+              <dl>
+                <dt>Leads</dt><dd id="rev-ga-leads">—</dd>
+                <dt>Won</dt><dd id="rev-ga-won">—</dd>
+                <dt>Paid 发票</dt><dd id="rev-ga-paid">—</dd>
+                <dt>Revenue</dt><dd id="rev-ga-rev">—</dd>
+                <dt>线索→已付%</dt><dd id="rev-ga-pct">—</dd>
+                <dt>单客收入</dt><dd id="rev-ga-avg">—</dd>
+              </dl>
+            </div>
+            <div class="rev-card" data-card="inspector">
+              <h3>Inspector</h3>
+              <p class="muted" style="font-size:0.8rem;margin:-0.5rem 0 0.5rem;">source = inspector</p>
+              <dl>
+                <dt>Leads</dt><dd id="rev-insp-leads">—</dd>
+                <dt>Won</dt><dd id="rev-insp-won">—</dd>
+                <dt>Paid 发票</dt><dd id="rev-insp-paid">—</dd>
+                <dt>Revenue</dt><dd id="rev-insp-rev">—</dd>
+                <dt>线索→已付%</dt><dd id="rev-insp-pct">—</dd>
+                <dt>单客收入</dt><dd id="rev-insp-avg">—</dd>
+              </dl>
+            </div>
+            <div class="rev-card" data-card="manual">
+              <h3>Manual / Referral</h3>
+              <p class="muted" style="font-size:0.8rem;margin:-0.5rem 0 0.5rem;">manual、referral</p>
+              <dl>
+                <dt>Leads</dt><dd id="rev-man-leads">—</dd>
+                <dt>Won</dt><dd id="rev-man-won">—</dd>
+                <dt>Paid 发票</dt><dd id="rev-man-paid">—</dd>
+                <dt>Revenue</dt><dd id="rev-man-rev">—</dd>
+                <dt>线索→已付%</dt><dd id="rev-man-pct">—</dd>
+                <dt>单客收入</dt><dd id="rev-man-avg">—</dd>
+              </dl>
+            </div>
+          </div>
+
+          <h2 class="rev-section-h">明细表</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Leads</th>
+                  <th>Won</th>
+                  <th>Paid</th>
+                  <th>Revenue</th>
+                  <th>线索→已付%</th>
+                  <th>单客收入</th>
+                </tr>
+              </thead>
+              <tbody id="rev-tbody">
+                <tr><td colspan="7" class="muted">保存密钥后点击「刷新数据」</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    (function () {
+      var SECRET_KEY = 'growth_dash_secret';
+      function $(id) { return document.getElementById(id); }
+      function showMsg(text, isErr) {
+        var el = $('rev-msg');
+        if (!text) { el.style.display = 'none'; el.textContent = ''; el.className = 'rev-msg'; return; }
+        el.style.display = 'block';
+        el.textContent = text;
+        el.className = 'rev-msg' + (isErr ? ' err' : '');
+      }
+      function getSecret() {
+        try { return sessionStorage.getItem(SECRET_KEY) || ''; } catch (e) { return ''; }
+      }
+      function setSecret(s) {
+        try {
+          if (s) sessionStorage.setItem(SECRET_KEY, s);
+          else sessionStorage.removeItem(SECRET_KEY);
+        } catch (e) {}
+      }
+      function fmtMoney(n) {
+        if (n == null || n === '') return '—';
+        var x = Number(n);
+        if (!isFinite(x)) return '—';
+        return x.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      }
+      function fmtInt(n) {
+        if (n == null) return '—';
+        return String(Math.round(Number(n)));
+      }
+      function fmtPct(n) {
+        if (n == null || !isFinite(Number(n))) return '—';
+        return Number(n).toFixed(1) + '%';
+      }
+      var LABELS = {
+        google_ads: 'Google Ads（landing:…）',
+        inspector: 'Inspector',
+        manual: 'Manual / Referral',
+      };
+      var PREFIX = {
+        google_ads: 'rev-ga-',
+        inspector: 'rev-insp-',
+        manual: 'rev-man-',
+      };
+      function fillRow(prefix, row) {
+        $(prefix + 'leads').textContent = fmtInt(row.leads);
+        $(prefix + 'won').textContent = fmtInt(row.opportunities_won);
+        $(prefix + 'paid').textContent = fmtInt(row.invoices_paid);
+        $(prefix + 'rev').textContent = fmtMoney(row.total_revenue);
+        $(prefix + 'pct').textContent = fmtPct(row.lead_to_paid_pct);
+        $(prefix + 'avg').textContent = fmtMoney(row.avg_revenue_per_lead);
+      }
+      function defaultDates() {
+        var to = new Date();
+        var from = new Date(to.getTime() - 30 * 86400000);
+        var pad = function (d) { return String(d).padStart(2, '0'); };
+        var ymd = function (dt) {
+          return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate());
+        };
+        return { from: ymd(from), to: ymd(to) };
+      }
+      function load() {
+        var secret = getSecret().trim();
+        if (!secret) {
+          showMsg('请先填写并保存登录密钥（与 Growth 仪表盘相同）。', true);
+          return;
+        }
+        var df = $('rev-from').value;
+        var dt = $('rev-to').value;
+        if (!df || !dt) {
+          showMsg('请选择开始与结束日期。', true);
+          return;
+        }
+        if (df > dt) {
+          showMsg('开始日期不能晚于结束日期。', true);
+          return;
+        }
+        showMsg('', false);
+        $('rev-wrap').classList.add('rev-loading');
+        var q = new URLSearchParams({ date_from: df, date_to: dt });
+        fetch('/api/analytics/revenue-by-source?' + q.toString(), {
+          headers: { Accept: 'application/json', 'x-sync-secret': secret },
+        })
+          .then(function (r) {
+            return r.json().then(function (j) {
+              if (!r.ok) throw new Error(j.error || j.message || String(r.status));
+              return j;
+            });
+          })
+          .then(function (data) {
+            if (data.date_from) $('rev-from').value = data.date_from;
+            if (data.date_to) $('rev-to').value = data.date_to;
+            var tbody = $('rev-tbody');
+            tbody.innerHTML = '';
+            (data.by_source || []).forEach(function (row) {
+              var p = PREFIX[row.source_group];
+              if (p) fillRow(p, row);
+              var tr = document.createElement('tr');
+              tr.innerHTML =
+                '<td>' + (LABELS[row.source_group] || row.source_group) + '</td>' +
+                '<td>' + fmtInt(row.leads) + '</td>' +
+                '<td>' + fmtInt(row.opportunities_won) + '</td>' +
+                '<td>' + fmtInt(row.invoices_paid) + '</td>' +
+                '<td>' + fmtMoney(row.total_revenue) + '</td>' +
+                '<td>' + fmtPct(row.lead_to_paid_pct) + '</td>' +
+                '<td>' + fmtMoney(row.avg_revenue_per_lead) + '</td>';
+              tbody.appendChild(tr);
+            });
+          })
+          .catch(function (e) {
+            showMsg(e.message || String(e), true);
+            $('rev-tbody').innerHTML = '<tr><td colspan="7" class="muted">加载失败</td></tr>';
+          })
+          .finally(function () {
+            $('rev-wrap').classList.remove('rev-loading');
+          });
+      }
+      var d = defaultDates();
+      $('rev-from').value = d.from;
+      $('rev-to').value = d.to;
+      $('rev-secret').value = getSecret();
+      $('rev-save-secret').addEventListener('click', function () {
+        setSecret($('rev-secret').value.trim());
+        showMsg('已保存密钥（本会话有效）。', false);
+      });
+      $('rev-refresh').addEventListener('click', load);
+    })();
+  </script>
+</body>
+</html>
