@@ -226,6 +226,55 @@ class ServiceM8Client {
     if (!returnedUuid) throw new Error('ServiceM8 job creation did not return uuid');
     return { uuid: returnedUuid, job_number: jobNumber != null ? String(jobNumber) : undefined };
   }
+
+  /**
+   * Create an invoice in ServiceM8 for a given job.
+   * @param {string} jobUuid - ServiceM8 job UUID
+   * @param {Object} opts - { amount, description?, status? }
+   * @returns {{ uuid: string }}
+   */
+  async createInvoice(jobUuid, opts = {}) {
+    const url = `${BASE_URL}/invoice.json`;
+    const body = {
+      job_uuid: jobUuid,
+      amount: opts.amount != null ? Number(opts.amount) : 0,
+      note: (opts.description || opts.note || '').trim() || 'Inspection invoice',
+      status: opts.status || 'Draft',
+    };
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: this._headers(),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`ServiceM8 createInvoice error: ${res.status} ${text}`);
+    }
+    const uuid = res.headers.get('x-record-uuid') || res.headers.get('X-Record-UUID');
+    let data = {};
+    const text = await res.text();
+    if (text) { try { data = JSON.parse(text); } catch (_) {} }
+    const returnedUuid = data.uuid || data.UUID || uuid;
+    if (!returnedUuid) throw new Error('ServiceM8 invoice creation did not return uuid');
+    return { uuid: returnedUuid };
+  }
+
+  /**
+   * Get invoice by UUID.
+   */
+  async getInvoice(uuid) {
+    const url = `${BASE_URL}/invoice/${uuid}.json`;
+    const res = await fetch(url, { headers: this._headers() });
+    if (!res.ok) throw new Error(`ServiceM8 getInvoice error: ${res.status}`);
+    return res.json();
+  }
+
+  /**
+   * Get invoices for a specific job.
+   */
+  async getJobInvoices(jobUuid) {
+    return this.getInvoices(`job_uuid eq '${jobUuid}'`);
+  }
 }
 
 module.exports = { ServiceM8Client };
