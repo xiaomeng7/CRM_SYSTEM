@@ -73,6 +73,28 @@ const docOptions = {
 let responsesCache: any = null;
 
 const DOCX_BODY_MIN_LENGTH = 20000;
+const ALLOWED_INSPECTION_PRODUCTS = new Set([
+  "pre_purchase",
+  "rental_lite",
+  "energy_advisory",
+  "essential_full",
+]);
+const THERMAL_IMAGING_ADDON = "thermal_imaging";
+const ENHANCED_ENERGY_FINDING_IDS = new Set(["CIRCUIT_CONTRIBUTION_BREAKDOWN"]);
+
+function normalizeInspectionProductForReport(raw: Record<string, unknown>): string {
+  const v = typeof raw.inspection_product === "string" ? raw.inspection_product.trim() : "";
+  if (!v || !ALLOWED_INSPECTION_PRODUCTS.has(v)) return "essential_full";
+  return v;
+}
+
+function normalizeSelectedAddonsForReport(raw: Record<string, unknown>): string[] {
+  if (!Array.isArray(raw.selected_addons)) return [];
+  return raw.selected_addons
+    .filter((x): x is string => typeof x === "string")
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
 
 /** Detect if a placeholder tag (e.g. "REPORT_BODY_HTML") is split across Word XML w:t runs. */
 function detectSplitTag(documentXml: string, tagName: string): boolean {
@@ -2259,6 +2281,95 @@ export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext
       findings_count: inspection.findings.length,
       limitations_count: inspection.limitations.length
     });
+
+    if ((inspection.raw as Record<string, unknown> | undefined)?.inspection_product !== "essential_full") {
+      const raw = (inspection.raw || {}) as Record<string, unknown>;
+      const product = typeof raw.inspection_product === "string" ? raw.inspection_product : "essential_full";
+      const summaryFocus =
+        product === "pre_purchase"
+          ? "<p>Focus: Pre-purchase risk assessment</p>"
+          : product === "energy_advisory"
+            ? "<p>Focus: Energy usage & load analysis</p>"
+            : "";
+      const availableDataSection =
+        product === "rental_lite"
+          ? ""
+          : `<h2>Available Data</h2>
+<ul>
+  <li>switchboard: ${raw.switchboard ? "yes" : "no"}</li>
+  <li>assets: ${raw.assets ? "yes" : "no"}</li>
+  <li>measured: ${raw.measured ? "yes" : "no"}</li>
+</ul>`;
+      const findings: string[] = [];
+      if (raw.switchboard) findings.push("Switchboard data captured");
+      if (raw.assets) findings.push("Energy asset information recorded");
+      if (raw.measured) findings.push("Measured electrical data available");
+      if (raw.thermal) findings.push("Thermal inspection data available");
+      if (raw.exceptions) findings.push("Inspection exceptions or notes recorded");
+      const findingsHtml = findings.length > 0
+        ? `<ul>${findings.slice(0, 5).map((item) => `<li>${item}</li>`).join("")}</ul>`
+        : "<p>No major issues detected</p>";
+      const showDebug =
+        (query.get("debug") === "1") ||
+        (typeof (body as Record<string, unknown>).debug === "string" && (body as Record<string, unknown>).debug === "1");
+      const debugSection = showDebug
+        ? `<h2>Debug Raw JSON</h2>
+<pre>${JSON.stringify(raw, null, 2)}</pre>`
+        : "";
+      const productLabelMap: Record<string, string> = {
+        pre_purchase: "Pre-purchase",
+        rental_lite: "Rental Lite",
+        energy_advisory: "Energy Advisory",
+      };
+      const productLabelFromRaw = typeof raw.inspection_product_label === "string" ? raw.inspection_product_label.trim() : "";
+      const productLabel = productLabelFromRaw || productLabelMap[product] || product;
+      const addonLabelMap: Record<string, string> = {
+        thermal_imaging: "Thermal Imaging",
+      };
+      const addonsLabel = Array.isArray(raw.selected_addons) && raw.selected_addons.length > 0
+        ? raw.selected_addons
+            .map((addon) => (typeof addon === "string" ? addonLabelMap[addon] || addon.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : ""))
+            .filter(Boolean)
+            .join(", ")
+        : "None";
+      let rentalResultSection = "";
+      if (product === "rental_lite") {
+        const hasThermalAddon =
+          Array.isArray(raw.selected_addons) &&
+          raw.selected_addons.some((a) => typeof a === "string" && a === THERMAL_IMAGING_ADDON);
+        const needsReview = Boolean(raw.exceptions) || (Boolean(raw.thermal) && hasThermalAddon);
+        rentalResultSection = `<p>Result: ${needsReview ? "REVIEW REQUIRED" : "PASS"}</p>`;
+      }
+      let prePurchaseRiskSection = "";
+      if (product === "pre_purchase") {
+        const hasThermalAddon =
+          Array.isArray(raw.selected_addons) &&
+          raw.selected_addons.some((a) => typeof a === "string" && a === THERMAL_IMAGING_ADDON);
+        const elevatedRisk = Boolean(raw.exceptions) || (Boolean(raw.thermal) && hasThermalAddon);
+        prePurchaseRiskSection = `<p>Risk Level: ${elevatedRisk ? "MEDIUM" : "LOW"}</p>`;
+      }
+      let energyAdvisoryStatusSection = "";
+      if (product === "energy_advisory") {
+        const dataReady = Boolean(raw.assets) || Boolean(raw.measured) || Boolean(raw.switchboard);
+        energyAdvisoryStatusSection = `<p>Advisory Status: ${dataReady ? "DATA READY" : "FURTHER ANALYSIS RECOMMENDED"}</p>`;
+      }
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+        body: `<h1>Electrical Assessment</h1>
+<h2>Summary</h2>
+<p>Product: ${productLabel}</p>
+<p>Add-ons: ${addonsLabel}</p>
+${rentalResultSection}
+${prePurchaseRiskSection}
+${energyAdvisoryStatusSection}
+${summaryFocus}
+<h2>Key Findings</h2>
+${findingsHtml}
+${availableDataSection}
+${debugSection}`,
+      };
+    }
     
     // Load responses for Markdown generation
     const responses = await loadResponses(event);
@@ -2371,17 +2482,37 @@ export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext
     });
     const handlerEffectivePriority = (f: { priority_final?: string; priority?: string }) => f.priority_final ?? f.priority ?? "PLAN_MONITOR";
     const handlerFindingsWithPriority = enrichedFindings.map(f => ({ ...f, priority: handlerEffectivePriority(f) }));
+    const reportRaw = (inspection.raw || {}) as Record<string, unknown>;
+    const inspectionProductForReport = normalizeInspectionProductForReport(reportRaw);
+    const selectedAddonsForReport = normalizeSelectedAddonsForReport(reportRaw);
+    const thermalForcedByAddon = selectedAddonsForReport.includes(THERMAL_IMAGING_ADDON);
+    const includeThermalSection =
+      inspectionProductForReport !== "rental_lite" || thermalForcedByAddon;
+    const excludeEnhancedEnergySection =
+      inspectionProductForReport === "rental_lite" ||
+      inspectionProductForReport === "pre_purchase";
+    const reportFindingsWithPriority = excludeEnhancedEnergySection
+      ? handlerFindingsWithPriority.filter((f) => !ENHANCED_ENERGY_FINDING_IDS.has(f.id))
+      : handlerFindingsWithPriority;
+    const reportDataForOutput: Record<string, unknown> = { ...(reportData as Record<string, unknown>) };
+    if (excludeEnhancedEnergySection) {
+      // Force use freshly built observed-conditions from filtered findings.
+      delete reportDataForOutput.FINDING_PAGES_HTML;
+    }
+    if (!includeThermalSection) {
+      reportDataForOutput.THERMAL_SECTION = "";
+    }
 
     const riskRating = reportData.RISK_RATING;
     const overallStatus = reportData.OVERALL_STATUS;
 
     const findingsMap = responses.findings || {};
-    const findingsForScoring: FindingForScoring[] = handlerFindingsWithPriority.map(f => ({
+    const findingsForScoring: FindingForScoring[] = reportFindingsWithPriority.map(f => ({
       id: f.id,
       priority: f.priority || "PLAN_MONITOR",
     }));
     const profilesForScoring: Record<string, any> = {};
-    for (const finding of handlerFindingsWithPriority) {
+    for (const finding of reportFindingsWithPriority) {
       const profile = getFindingProfile(finding.id);
       const response = findingsMap[finding.id];
       const scoringProfile = convertProfileForScoring(profile);
@@ -2407,7 +2538,7 @@ export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext
     const executiveSummaryTemplates = await loadExecutiveSummaryTemplates(event);
     let executiveSummary: string;
 
-    const planCount = handlerFindingsWithPriority.filter(f => f.priority === "PLAN_MONITOR").length;
+    const planCount = reportFindingsWithPriority.filter(f => f.priority === "PLAN_MONITOR").length;
     
     if (riskRating === "HIGH") {
       executiveSummary = executiveSummaryTemplates.HIGH || "This property presents a high electrical risk profile.";
@@ -2476,14 +2607,14 @@ export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext
         billUploadWilling: snapshotSignals.billUploadWilling,
       };
       const structuredReport = await buildStructuredReport({
-        inspection: { ...inspection, findings: handlerFindingsWithPriority },
+        inspection: { ...inspection, findings: reportFindingsWithPriority },
         canonical,
-        findings: handlerFindingsWithPriority,
+        findings: reportFindingsWithPriority,
         responses,
         computed,
         event,
         coverData,
-        reportData: reportData as Record<string, unknown>,
+        reportData: reportDataForOutput,
         baseUrl: baseUrlForMerged,
         signingSecret: signingSecretForMerged,
         reportFocus,
