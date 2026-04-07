@@ -10,6 +10,7 @@
     "dev:report": "pnpm --filter @bht/essential-report dev",
     "dev:energy": "pnpm --filter @bht/energy-insight-lite dev",
     "dev:risk": "pnpm --filter @bht/risk-snapshot dev",
+    "dev:rental": "pnpm --filter @bht/rental-safety-check dev",
     "build:web": "pnpm --filter @bht/web build",
     "build:landing": "pnpm --filter @bht/landing-page build",
     "build:report": "pnpm --filter @bht/essential-report build",

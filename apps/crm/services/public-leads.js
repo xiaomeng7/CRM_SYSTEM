@@ -373,8 +373,8 @@ async function createFromPublic(body = {}) {
         let smsBody;
         if (productType === 'pre_purchase') {
           smsBody = `Hi ${firstName}, thanks for booking a pre-purchase electrical inspection with Better Home Technology. We'll be in touch within 2 hours to confirm your inspection time. Questions? Call 0410 323 034. – Meng`;
-        } else if (productType === 'rental_lite') {
-          smsBody = `Hi ${firstName}, thanks for your rental inspection enquiry with Better Home Technology. We'll contact you shortly to confirm details. Questions? Call 0410 323 034. – Meng`;
+        } else if (productType === 'rental' || productType === 'rental_lite') {
+          smsBody = `Hi ${firstName}, thanks for your rental electrical safety inspection enquiry with Better Home Technology. We'll be in touch within 2 hours to confirm your booking. Questions? Call 0410 323 034. – Meng`;
         } else if (productType === 'energy_audit' || serviceType === 'energy_audit') {
           smsBody = `Hi ${firstName}, thanks for your energy advisory enquiry with Better Home Technology. We'll be in touch shortly. Questions? Call 0410 323 034. – Meng`;
         } else {
