@@ -320,4 +320,11 @@ app.listen(PORT, () => {
     setInterval(runFollowup, FOLLOWUP_INTERVAL_MS);
     console.log('[inspection-followup] D+1/7/14 SMS scheduled daily');
   }
+
+  // Re-sale follow-up D+7/30/90 — pre_purchase, rental, energy_lite
+  const { runResaleSequence } = require('../services/resaleFollowupScheduler');
+  const runResale = () => runResaleSequence().catch(e => console.error('[resale]', e.message));
+  setTimeout(runResale, 10 * 60 * 1000);
+  setInterval(runResale, 24 * 60 * 60 * 1000);
+  console.log('[resale] D+7/30/90 re-sale SMS scheduled daily');
 });

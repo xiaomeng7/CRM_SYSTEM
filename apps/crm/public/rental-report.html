@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rental Electrical Safety Report — BHT</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
+    .page { max-width: 680px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .logo { font-weight: 800; font-size: 1.1rem; color: #1e293b; }
+    .logo span { color: #2563eb; }
+    .date { font-size: 0.8rem; color: #64748b; }
+
+    /* Verdict banner */
+    .verdict-banner { border-radius: 20px; padding: 28px 24px; margin-bottom: 24px; text-align: center; }
+    .verdict-banner.PASS    { background: #f0fdf4; border: 2px solid #22c55e; }
+    .verdict-banner.ADVISORY{ background: #fffbeb; border: 2px solid #f59e0b; }
+    .verdict-banner.FAIL    { background: #fef2f2; border: 2px solid #ef4444; }
+    .verdict-icon { font-size: 3rem; margin-bottom: 8px; }
+    .verdict-label { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
+    .verdict-label.PASS    { color: #16a34a; }
+    .verdict-label.ADVISORY{ color: #d97706; }
+    .verdict-label.FAIL    { color: #dc2626; }
+    .verdict-sub { font-size: 0.9rem; color: #475569; }
+
+    /* Cards */
+    .card { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 16px; }
+    .card-title { font-weight: 700; font-size: 0.95rem; color: #1e293b; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+    /* Detail rows */
+    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { color: #64748b; }
+    .detail-value { font-weight: 600; color: #1e293b; text-align: right; }
+
+    /* Finding items */
+    .finding-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }
+    .finding-item:last-child { border-bottom: none; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+    .badge.FAIL    { background: #fee2e2; color: #991b1b; }
+    .badge.ADVISORY{ background: #fef3c7; color: #92400e; }
+    .badge.PASS    { background: #dcfce7; color: #166534; }
+
+    /* Next steps */
+    .step-list { list-style: none; }
+    .step-list li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; align-items: flex-start; }
+    .step-list li:last-child { border-bottom: none; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: #fff; font-weight: 700; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* CTA */
+    .cta { background: #2563eb; border-radius: 16px; padding: 24px; text-align: center; margin-top: 24px; }
+    .cta h3 { color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .cta p { color: #bfdbfe; font-size: 0.85rem; margin-bottom: 16px; }
+    .cta a { display: inline-block; background: #fff; color: #2563eb; font-weight: 700; border-radius: 10px; padding: 12px 28px; text-decoration: none; font-size: 0.95rem; }
+
+    /* State */
+    .loading { text-align: center; padding: 60px 0; color: #64748b; }
+    .error-box { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 12px; padding: 20px; text-align: center; color: #991b1b; }
+    .section-empty { color: #94a3b8; font-size: 0.85rem; font-style: italic; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="logo">BHT <span>Technology</span></div>
+    <div class="date" id="report-date"></div>
+  </div>
+
+  <div id="loading" class="loading">Loading your report…</div>
+  <div id="error" class="error-box" style="display:none"></div>
+  <div id="content" style="display:none"></div>
+</div>
+
+<script>
+const API_BASE = 'https://crmsystem-production-70c2.up.railway.app';
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function verdictIcon(v)  { return v === 'PASS' ? '✅' : v === 'ADVISORY' ? '⚠️' : '❌'; }
+function verdictText(v)  { return v === 'PASS' ? 'PASS — Electrically Compliant' : v === 'ADVISORY' ? 'ADVISORY — Minor Issues Noted' : 'FAIL — Rectification Required'; }
+function verdictSub(v)   {
+  if (v === 'PASS') return 'This property meets electrical safety requirements for rental occupancy.';
+  if (v === 'ADVISORY') return 'Minor issues were found. We recommend addressing these within 30 days.';
+  return 'Safety issues were identified. These must be rectified before tenancy commences.';
+}
+
+async function load() {
+  const id = getParam('id');
+  if (!id) { showError('No report ID provided.'); return; }
+
+  document.getElementById('report-date').textContent = fmtDate(new Date().toISOString());
+
+  try {
+    const r = await fetch(`${API_BASE}/api/inspections/rental-public/${encodeURIComponent(id)}`);
+    const d = await r.json();
+    if (!d.ok) { showError(d.error || 'Report not available.'); return; }
+    render(d.report);
+  } catch(e) {
+    showError('Could not load report. Please try again or call 0410 323 034.');
+  }
+}
+
+function showError(msg) {
+  document.getElementById('loading').style.display = 'none';
+  const el = document.getElementById('error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function render(r) {
+  document.getElementById('loading').style.display = 'none';
+  const content = document.getElementById('content');
+  content.style.display = 'block';
+
+  const verdict = r.verdict || 'ADVISORY';
+  const prop = r.property_info || {};
+  const riskItems = r.risk_items || [];
+  const advisoryItems = r.advisory_items || [];
+  const findings = r.general_findings || {};
+
+  // Update page title
+  document.title = `Rental Report — ${prop.address || 'Property'} — BHT`;
+
+  const hasRisk = riskItems.length > 0;
+  const hasAdvisory = advisoryItems.length > 0;
+
+  const nextSteps = [];
+  if (verdict === 'PASS') {
+    nextSteps.push('Keep this report on file — valid for 12 months.');
+    nextSteps.push('Annual electrical safety checks are recommended for all rental properties.');
+    nextSteps.push('Consider smoke alarm servicing annually as best practice.');
+  } else if (verdict === 'ADVISORY') {
+    nextSteps.push('Schedule rectification of advisory items within 30 days.');
+    nextSteps.push('Contact BHT Technology to arrange repairs: 0410 323 034.');
+    nextSteps.push('Book a follow-up inspection once repairs are complete.');
+  } else {
+    nextSteps.push('Do not commence tenancy until all FAIL items are rectified.');
+    nextSteps.push('Contact BHT Technology immediately: 0410 323 034.');
+    nextSteps.push('Obtain a clearance certificate after rectification.');
+    nextSteps.push('Consider whether current tenants need to be temporarily relocated.');
+  }
+
+  content.innerHTML = `
+    <div class="verdict-banner ${verdict}">
+      <div class="verdict-icon">${verdictIcon(verdict)}</div>
+      <div class="verdict-label ${verdict}">${verdictText(verdict)}</div>
+      <div class="verdict-sub">${verdictSub(verdict)}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏠 Property Details</div>
+      <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">${prop.address || '—'}</span></div>
+      <div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${prop.property_type || '—'}</span></div>
+      <div class="detail-row"><span class="detail-label">Year Built</span><span class="detail-value">${prop.year_built || '—'}</span></div>
+      ${r.agency_name ? `<div class="detail-row"><span class="detail-label">Agency</span><span class="detail-value">${r.agency_name}</span></div>` : ''}
+      <div class="detail-row"><span class="detail-label">Inspection Date</span><span class="detail-value">${fmtDate(r.submitted_at)}</span></div>
+      <div class="detail-row"><span class="detail-label">Report Issued</span><span class="detail-value">${fmtDate(r.sent_at)}</span></div>
+      ${r.job_number ? `<div class="detail-row"><span class="detail-label">Job #</span><span class="detail-value">${r.job_number}</span></div>` : ''}
+    </div>
+
+    ${hasRisk ? `
+    <div class="card">
+      <div class="card-title">❌ Safety Issues — Must Rectify</div>
+      ${riskItems.map(item => `
+        <div class="finding-item">
+          <span class="badge FAIL">${item.priority || 'FAIL'}</span>
+          <span>${item.label}</span>
+        </div>`).join('')}
+    </div>` : ''}
+
+    ${hasAdvisory ? `
+    <div class="card">
+      <div class="card-title">⚠️ Advisory Items — Recommended Action</div>
+      ${advisoryItems.map(item => `
+        <div class="finding-item">
+          <span class="badge ADVISORY">ADVISORY</span>
+          <span>${item.label}</span>
+        </div>`).join('')}
+    </div>` : ''}
+
+    ${!hasRisk && !hasAdvisory ? `
+    <div class="card">
+      <div class="card-title">✅ No Issues Found</div>
+      <p class="section-empty">All inspected systems met safety requirements. No defects identified.</p>
+    </div>` : ''}
+
+    ${findings.notes ? `
+    <div class="card">
+      <div class="card-title">📋 Technician Notes</div>
+      <p style="font-size:0.88rem;color:#475569;line-height:1.6;">${findings.notes}</p>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-title">📌 Next Steps</div>
+      <ul class="step-list">
+        ${nextSteps.map((s, i) => `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="card" style="background:#f8fafc;">
+      <div class="card-title">ℹ️ About This Report</div>
+      <p style="font-size:0.82rem;color:#64748b;line-height:1.6;">
+        This report was prepared by a licensed electrician from Better Home Technology Pty Ltd.
+        It covers visible and accessible electrical systems at the time of inspection.
+        This report is valid for 12 months from the date of inspection.
+        ABN: [Your ABN] · Electrical Licence: [Your Licence No.]
+      </p>
+    </div>
+
+    <div class="cta">
+      <h3>Questions about this report?</h3>
+      <p>Our team is here to help with repairs, re-inspections, or compliance certificates.</p>
+      <a href="tel:0410323034">Call 0410 323 034</a>
+    </div>
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
