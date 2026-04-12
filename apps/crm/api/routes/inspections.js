@@ -304,6 +304,26 @@ router.patch('/:id/status', async (req, res) => {
   if (!allowed.includes(status)) return res.status(400).json({ ok: false, error: 'Invalid status' });
 
   try {
+    if (status === 'sent') {
+      const precheck = await pool.query(
+        `SELECT id, contact_phone, review_inspection_id
+         FROM pre_purchase_inspections
+         WHERE id = $1
+         LIMIT 1`,
+        [req.params.id]
+      );
+      if (!precheck.rows[0]) return res.status(404).json({ ok: false, error: 'Not found' });
+      const row = precheck.rows[0];
+      if (row.contact_phone && !row.review_inspection_id) {
+        return res.status(409).json({
+          ok: false,
+          error: 'Missing review_inspection_id',
+          message: 'Cannot send report SMS before essential review id is linked.',
+          inspection_id: row.id,
+        });
+      }
+    }
+
     const r = await pool.query(
       `UPDATE pre_purchase_inspections SET status = $1, engineer_notes = COALESCE($2, engineer_notes), updated_at = NOW()
        WHERE id = $3 RETURNING *`,
@@ -316,8 +336,25 @@ router.patch('/:id/status', async (req, res) => {
     // When approved → send D+0 report-ready SMS + update opportunity
     if (status === 'sent' && insp.contact_phone) {
       try {
+        if (!insp.review_inspection_id) {
+          console.error('[status patch] missing review_inspection_id, SMS skipped', { inspection_id: insp.id });
+          return res.status(409).json({
+            ok: false,
+            error: 'Missing review_inspection_id',
+            message: 'Cannot send report SMS before essential review id is linked.',
+            inspection_id: insp.id,
+          });
+        }
+        // Migration transition:
+        // Prefer canonical inspection app base URL; keep REPORT_BASE_URL as temporary fallback.
+        // Do not fallback to legacy pre-purchase domain.
+        const reviewBaseUrlRaw = process.env.INSPECTION_APP_BASE_URL || process.env.REPORT_BASE_URL || '';
+        const reviewBaseUrl = String(reviewBaseUrlRaw).replace(/\/$/, '');
+        const reportUrl = reviewBaseUrl
+          ? `${reviewBaseUrl}/review/${insp.review_inspection_id}`
+          : `/review/${insp.review_inspection_id}`;
         await sendSMS(insp.contact_phone,
-          `Your electrical inspection report is ready! View it here: ${(process.env.REPORT_BASE_URL || 'https://pre-purchase.bhtechnology.com.au').replace(/\/$/, '')}/inspection-report.html?id=${insp.id} ` +
+          `Your electrical inspection report is ready! View it here: ${reportUrl} ` +
           `Verdict: Option ${insp.verdict}. Questions? Call 0410 323 034.`
         );
       } catch (smsErr) {
@@ -544,6 +581,26 @@ router.patch('/rental/:id/status', async (req, res) => {
   const allowed = ['submitted', 'review', 'approved', 'sent'];
   if (!allowed.includes(status)) return res.status(400).json({ ok: false, error: 'Invalid status' });
   try {
+    if (status === 'sent') {
+      const precheck = await pool.query(
+        `SELECT id, contact_phone, review_inspection_id
+         FROM rental_inspections
+         WHERE id = $1
+         LIMIT 1`,
+        [req.params.id]
+      );
+      if (!precheck.rows[0]) return res.status(404).json({ ok: false, error: 'Not found' });
+      const row = precheck.rows[0];
+      if (row.contact_phone && !row.review_inspection_id) {
+        return res.status(409).json({
+          ok: false,
+          error: 'Missing review_inspection_id',
+          message: 'Cannot send report SMS before essential review id is linked.',
+          inspection_id: row.id,
+        });
+      }
+    }
+
     const upd = await pool.query(
       `UPDATE rental_inspections SET status=$1, engineer_notes=COALESCE($2, engineer_notes),
        sent_at=CASE WHEN $1='sent' AND sent_at IS NULL THEN NOW() ELSE sent_at END,
@@ -555,10 +612,26 @@ router.patch('/rental/:id/status', async (req, res) => {
 
     if (status === 'sent' && insp.contact_phone) {
       try {
-        const baseUrl = process.env.REPORT_BASE_URL || 'https://pre-purchase.bhtechnology.com.au';
+        if (!insp.review_inspection_id) {
+          console.error('[rental status] missing review_inspection_id, SMS skipped', { inspection_id: insp.id });
+          return res.status(409).json({
+            ok: false,
+            error: 'Missing review_inspection_id',
+            message: 'Cannot send report SMS before essential review id is linked.',
+            inspection_id: insp.id,
+          });
+        }
+        // Migration transition:
+        // Prefer canonical inspection app base URL; keep REPORT_BASE_URL as temporary fallback.
+        // Do not fallback to legacy pre-purchase domain.
+        const reviewBaseUrlRaw = process.env.INSPECTION_APP_BASE_URL || process.env.REPORT_BASE_URL || '';
+        const reviewBaseUrl = String(reviewBaseUrlRaw).replace(/\/$/, '');
+        const reportUrl = reviewBaseUrl
+          ? `${reviewBaseUrl}/review/${insp.review_inspection_id}`
+          : `/review/${insp.review_inspection_id}`;
         await sendSMS(insp.contact_phone,
           `Hi${insp.contact_name ? ' ' + insp.contact_name.split(' ')[0] : ''}, your rental inspection report is ready! ` +
-          `Result: ${insp.verdict}. View it here: ${baseUrl}/rental-report.html?id=${insp.id} ` +
+          `Result: ${insp.verdict}. View it here: ${reportUrl} ` +
           `Questions? Call 0410 323 034.`
         );
       } catch (smsErr) {

@@ -1,6 +1,7 @@
 import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 import { save, get, getNextInspectionNumber, saveWordDoc } from "./lib/store";
 import crypto from "crypto";
+import { Pool } from "pg";
 import { flattenFacts, evaluateFindings, collectLimitations, buildReportHtml } from "./lib/rules";
 import { sendEmailNotification } from "./lib/email";
 import { uploadPhotoToFinding } from "./lib/uploadPhotoToFinding";
@@ -24,6 +25,118 @@ async function genId(event: HandlerEvent): Promise<string> {
   // Ensure number is between 1-999, then pad to 3 digits
   const numberStr = String(Math.min(Math.max(number, 1), 999)).padStart(3, "0"); // 001-999
   return `EH-${year}-${month}-${numberStr}`;
+}
+
+type CrmInspectionTable = "pre_purchase_inspections" | "rental_inspections";
+let crmPool: Pool | null = null;
+
+function getCrmPool(): Pool | null {
+  const url = process.env.DATABASE_URL;
+  if (!url || !url.startsWith("postgres")) return null;
+  if (!crmPool) {
+    crmPool = new Pool({
+      connectionString: url,
+      ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : false,
+      max: 3,
+      idleTimeoutMillis: 15_000,
+    });
+  }
+  return crmPool;
+}
+
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+async function backfillCrmReviewInspectionId(
+  table: CrmInspectionTable,
+  reviewInspectionId: string,
+  lookup: { crmInspectionUuid?: string; jobNumber?: string; opportunityId?: string }
+): Promise<number> {
+  const pool = getCrmPool();
+  if (!pool) {
+    console.warn("[db-inspections] CRM backfill skipped: DATABASE_URL missing or invalid");
+    return 0;
+  }
+  const tableName = table === "rental_inspections" ? "rental_inspections" : "pre_purchase_inspections";
+  console.log("[db-inspections] CRM backfill start", {
+    table: tableName,
+    review_inspection_id: reviewInspectionId,
+    has_crm_inspection_id: !!lookup.crmInspectionUuid,
+    has_job_number: !!lookup.jobNumber,
+    has_opportunity_id: !!lookup.opportunityId,
+  });
+
+  if (lookup.crmInspectionUuid) {
+    if (!isUuid(lookup.crmInspectionUuid)) {
+      console.warn("[db-inspections] CRM backfill by crm_inspection_id skipped: invalid uuid", lookup.crmInspectionUuid);
+    } else {
+      const byId = await pool.query(
+        `update ${tableName}
+         set review_inspection_id = $1, updated_at = now()
+         where id = $2::uuid
+           and (review_inspection_id is null or review_inspection_id = '')
+         returning id`,
+        [reviewInspectionId, lookup.crmInspectionUuid]
+      );
+      console.log("[db-inspections] CRM backfill by crm_inspection_id", { updated_rows: byId.rowCount ?? 0 });
+      if ((byId.rowCount ?? 0) > 0) return byId.rowCount ?? 0;
+    }
+  }
+
+  if (lookup.jobNumber) {
+    const byJob = await pool.query(
+      `with target as (
+         select id
+         from ${tableName}
+         where job_number = $1
+           and (review_inspection_id is null or review_inspection_id = '')
+         order by submitted_at desc
+         limit 1
+       )
+       update ${tableName} t
+       set review_inspection_id = $2, updated_at = now()
+       from target
+       where t.id = target.id
+       returning t.id`,
+      [lookup.jobNumber, reviewInspectionId]
+    );
+    console.log("[db-inspections] CRM backfill by job_number", {
+      job_number: lookup.jobNumber,
+      updated_rows: byJob.rowCount ?? 0,
+    });
+    if ((byJob.rowCount ?? 0) > 0) return byJob.rowCount ?? 0;
+  }
+
+  if (lookup.opportunityId) {
+    if (!isUuid(lookup.opportunityId)) {
+      console.warn("[db-inspections] CRM backfill by opportunity_id skipped: invalid uuid", lookup.opportunityId);
+      return 0;
+    }
+    const byOpp = await pool.query(
+      `with target as (
+         select id
+         from ${tableName}
+         where opportunity_id = $1::uuid
+           and (review_inspection_id is null or review_inspection_id = '')
+         order by submitted_at desc
+         limit 1
+       )
+       update ${tableName} t
+       set review_inspection_id = $2, updated_at = now()
+       from target
+       where t.id = target.id
+       returning t.id`,
+      [lookup.opportunityId, reviewInspectionId]
+    );
+    console.log("[db-inspections] CRM backfill by opportunity_id", {
+      opportunity_id: lookup.opportunityId,
+      updated_rows: byOpp.rowCount ?? 0,
+    });
+    return byOpp.rowCount ?? 0;
+  }
+
+  return 0;
 }
 
 export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext) => {
@@ -304,6 +417,50 @@ export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext
       }
     } catch (dbErr) {
       console.error("[db-inspections] DB persistence failed (non-fatal):", dbErr instanceof Error ? dbErr.message : String(dbErr));
+    }
+
+    // Backfill CRM inspection -> essential review id link (best-effort, non-fatal).
+    try {
+      const productCode = String(raw.inspection_product ?? "essential_full");
+      const crmTable: CrmInspectionTable =
+        productCode === "rental_lite" ? "rental_inspections" : "pre_purchase_inspections";
+      const jobRawForLink = raw.job as Record<string, unknown> | undefined;
+      const jobNumberRaw =
+        (jobRawForLink?.serviceM8_job_number != null ? extractValue(jobRawForLink.serviceM8_job_number) : undefined) ??
+        (jobRawForLink?.serviceM8JobNumber != null ? extractValue(jobRawForLink.serviceM8JobNumber) : undefined) ??
+        (jobRawForLink?.job_number != null ? extractValue(jobRawForLink.job_number) : undefined) ??
+        (raw.job_number != null ? extractValue(raw.job_number) : undefined);
+      const opportunityRaw =
+        (raw.opportunity_id != null ? extractValue(raw.opportunity_id) : undefined) ??
+        (jobRawForLink?.opportunity_id != null ? extractValue(jobRawForLink.opportunity_id) : undefined);
+      const crmInspectionRaw =
+        (raw.crm_inspection_id != null ? extractValue(raw.crm_inspection_id) : undefined) ??
+        (raw.crmInspectionId != null ? extractValue(raw.crmInspectionId) : undefined) ??
+        (jobRawForLink?.crm_inspection_id != null ? extractValue(jobRawForLink.crm_inspection_id) : undefined);
+
+      const updated = await backfillCrmReviewInspectionId(crmTable, inspection_id, {
+        crmInspectionUuid: crmInspectionRaw != null ? String(crmInspectionRaw).trim() : undefined,
+        jobNumber: jobNumberRaw != null ? String(jobNumberRaw).trim() : undefined,
+        opportunityId: opportunityRaw != null ? String(opportunityRaw).trim() : undefined,
+      });
+      console.log("[db-inspections] CRM review_inspection_id backfill result", {
+        table: crmTable,
+        inspection_id,
+        strategy:
+          crmInspectionRaw != null
+            ? "crm_inspection_id"
+            : jobNumberRaw != null
+              ? "job_number"
+              : opportunityRaw != null
+                ? "opportunity_id"
+                : "none",
+        updated_rows: updated,
+      });
+    } catch (crmLinkErr) {
+      console.error(
+        "[db-inspections] CRM review_inspection_id backfill failed (non-fatal):",
+        crmLinkErr instanceof Error ? crmLinkErr.message : String(crmLinkErr)
+      );
     }
 
     // Legacy DB calls (keep for backward compatibility)

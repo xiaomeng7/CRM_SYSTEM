@@ -43,6 +43,8 @@ const internalLeadIntakeRouter = require('./routes/internal-lead-intake');
 const b2bProspectsRouter = require('./routes/b2b-prospects');
 const inspectionsRouter = require('./routes/inspections');
 const inspectorsRouter = require('./routes/inspectors');
+const reportActionsRouter = require('./routes/report-actions');
+const generateQuoteRouter = require('./routes/generate-quote');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -129,6 +131,8 @@ app.use('/api/internal', internalLeadIntakeRouter);
 app.use('/api/b2b-prospects', b2bProspectsRouter);
 app.use('/api/inspections', inspectionsRouter);
 app.use('/api/inspectors', inspectorsRouter);
+app.use('/api/report-actions', reportActionsRouter);
+app.use('/api/generate-quote', generateQuoteRouter);
 
 app.get('/api/dashboard/stats', async (req, res) => {
   try {

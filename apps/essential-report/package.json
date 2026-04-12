@@ -63,7 +63,7 @@
     "markdown-to-word": "node scripts/markdown-to-word.ts",
     "markdown-to-word-pandoc": "node scripts/markdown-to-word-pandoc.ts",
     "preview": "vite preview",
-    "netlify:dev": "npx netlify-cli dev"
+    "netlify:dev": "npx netlify-cli dev --cwd ."
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

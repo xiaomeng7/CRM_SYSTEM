@@ -1,6 +1,10 @@
 import { normalizeSnapshotIntake } from "./snapshotContract";
 import { normalizeEnergyV2 } from "./normalizeEnergyV2";
 import { extractAssetsEnergy } from "./extractAssetsEnergy";
+import {
+  normalizeInspectionProduct as normalizeInspectionProductForExecution,
+  resolveEffectiveWizardSteps,
+} from "../../../../src/config/inspectionProducts";
 
 const ALLOWED_INSPECTION_PRODUCTS = new Set([
   "pre_purchase",
@@ -31,6 +35,9 @@ export function prepareSubmissionRaw(input: Record<string, unknown>): Record<str
   const raw = { ...input };
   raw.inspection_product = normalizeInspectionProduct(raw.inspection_product);
   raw.selected_addons = normalizeSelectedAddons(raw.selected_addons);
+  const executionProduct = normalizeInspectionProductForExecution(raw.inspection_product);
+  const executionAddons = normalizeSelectedAddons(raw.selected_addons);
+  raw.resolved_steps = Array.from(resolveEffectiveWizardSteps(executionProduct, executionAddons));
   raw.snapshot_intake = normalizeSnapshotIntake(raw);
   raw.energy_v2 = normalizeEnergyV2(raw);
   if (raw.assets_energy == null || typeof raw.assets_energy !== "object") {

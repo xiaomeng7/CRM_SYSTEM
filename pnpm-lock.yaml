@@ -154,6 +154,12 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(vite@5.4.21(@types/node@20.19.37)(terser@5.46.0))(workbox-build@7.4.0(@types/babel__core@7.20.5))(workbox-window@7.4.0)
 
+  apps/rental-safety-check:
+    devDependencies:
+      serve:
+        specifier: ^14.2.0
+        version: 14.2.6
+
   apps/risk-snapshot:
     devDependencies:
       serve:
@@ -10114,7 +10120,7 @@ snapshots:
     dependencies:
       ansi-align: 3.0.1
       camelcase: 7.0.1
-      chalk: 5.0.1
+      chalk: 5.3.0
       cli-boxes: 3.0.0
       string-width: 5.1.2
       type-fest: 2.19.0
@@ -15210,7 +15216,7 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       fs-extra: 9.1.0
       glob: 11.1.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       pretty-bytes: 5.6.0
       rollup: 2.80.0
       source-map: 0.8.0-beta.0

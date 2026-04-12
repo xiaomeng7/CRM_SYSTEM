@@ -137,14 +137,17 @@ class ServiceM8Client {
       note: (opts.note || opts.description || '').trim() || 'Quote created from CRM',
     };
     if (amount != null) body.amount = amount;
+    const st = opts.status != null ? String(opts.status).trim() : '';
     const endpoints = ['jobquote.json', 'quote.json'];
     for (const ep of endpoints) {
       try {
+        const payload = { ...body };
+        if (ep === 'jobquote.json' && st) payload.status = st;
         const url = `${BASE_URL}/${ep}`;
         const res = await fetch(url, {
           method: 'POST',
           headers: this._headers(),
-          body: JSON.stringify(body),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) {
           const text = await res.text();
@@ -160,7 +163,10 @@ class ServiceM8Client {
         }
         const returnedUuid = data.uuid || data.UUID || uuid;
         if (!returnedUuid) throw new Error('ServiceM8 quote creation did not return uuid');
-        return { uuid: returnedUuid };
+        const acceptUrl =
+          (data && typeof data === 'object' && (data.accept_url || data.quote_accept_url || data.acceptance_url || data.AcceptURL)) ||
+          null;
+        return { uuid: returnedUuid, accept_url: acceptUrl || null, raw: data };
       } catch (e) {
         if (ep === 'quote.json') throw e;
         if (/404|400|401|not found|method not allowed/i.test(e.message)) continue;

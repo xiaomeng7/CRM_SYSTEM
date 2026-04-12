@@ -23,6 +23,8 @@ function rateLimit(ip: string): boolean {
   return ++e.count <= RATE_LIMIT_PER_IP;
 }
 
+const KNOWN_ADDON_IDS = new Set(["thermal_imaging", "full_safety_check"]);
+
 type Body = {
   name: string; phone: string; email: string;
   property_address: string; inspection_date: string;
@@ -33,6 +35,9 @@ type Body = {
   page_url?: string | null;
   gclid?: string | null; click_id?: string | null;
   landing_page_version?: string | null; creative_version?: string | null;
+  /** Aligns with essential-report Wizard / submit payload naming */
+  inspection_product?: string | null;
+  selected_addons?: string[] | null;
 };
 
 function optStr(b: Record<string, unknown>, key: string): string | null {
@@ -40,6 +45,24 @@ function optStr(b: Record<string, unknown>, key: string): string | null {
   if (typeof v !== "string") return null;
   const t = v.trim();
   return t || null;
+}
+
+function parseSelectedAddons(b: Record<string, unknown>): string[] {
+  const raw = b.selected_addons;
+  if (raw == null) return [];
+  if (Array.isArray(raw)) {
+    return raw
+      .filter((x): x is string => typeof x === "string")
+      .map((x) => x.trim())
+      .filter((x) => KNOWN_ADDON_IDS.has(x));
+  }
+  if (typeof raw === "string") {
+    return raw
+      .split(",")
+      .map((x) => x.trim())
+      .filter((x) => KNOWN_ADDON_IDS.has(x));
+  }
+  return [];
 }
 
 function validate(body: unknown): { ok: true; data: Body } | { ok: false; error: string } {
@@ -55,6 +78,7 @@ function validate(body: unknown): { ok: true; data: Body } | { ok: false; error:
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: "Valid email is required" };
   if (!property_address || property_address.length < 5) return { ok: false, error: "Property address is required" };
   if (!inspection_date) return { ok: false, error: "Inspection date is required" };
+  const selected_addons = parseSelectedAddons(b);
   return { ok: true, data: {
     name, phone, email, property_address, inspection_date,
     settlement_date: typeof b.settlement_date === "string" ? b.settlement_date || null : null,
@@ -70,6 +94,8 @@ function validate(body: unknown): { ok: true; data: Body } | { ok: false; error:
     click_id: optStr(b, "click_id"),
     landing_page_version: optStr(b, "landing_page_version"),
     creative_version: optStr(b, "creative_version"),
+    inspection_product: "pre_purchase",
+    selected_addons,
   }};
 }
 
@@ -148,9 +174,18 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
   // 2. Push to CRM
   let crmBase = (process.env.CRM_API_BASE_URL || "").trim();
-  if (crmBase) {
-    if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
-    try {
+  if (!crmBase) {
+    console.error("CRM_API_BASE_URL is missing; cannot confirm CRM lead write.");
+    return {
+      statusCode: 503,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success: false, error: "CRM lead intake unavailable: CRM_API_BASE_URL is not configured" }),
+    };
+  }
+  if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
+  const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
+  let crmLeadId: string | null = null;
+  try {
       const raw = body as Record<string, unknown>;
       const urlSrc = String(raw.source ?? "").trim().toLowerCase();
       const inspectorSub =
@@ -159,6 +194,10 @@ export const handler: Handler = async (event: HandlerEvent) => {
       const messageLines = [
         `Property: ${data.property_address}`,
         `Inspection date: ${data.inspection_date}`,
+        `Inspection product: ${data.inspection_product}`,
+        data.selected_addons?.length
+          ? `Selected add-ons: ${data.selected_addons.join(", ")}`
+          : null,
         data.settlement_date ? `Settlement: ${data.settlement_date}` : null,
         data.access_contact ? `Agent: ${data.access_contact}` : null,
         data.property_type ? `Type: ${data.property_type}` : null,
@@ -167,7 +206,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
         data.landing_page_version ? `LP version (lpv): ${data.landing_page_version}` : null,
         data.creative_version ? `Creative version (cv): ${data.creative_version}` : null,
       ].filter(Boolean);
-      await fetch(`${crmBase.replace(/\/$/, "")}/api/public/leads`, {
+      const crmRes = await fetch(crmUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -205,10 +244,48 @@ export const handler: Handler = async (event: HandlerEvent) => {
             creative_version: data.creative_version,
             client_source: typeof raw.source === "string" ? raw.source : null,
             ...(inspectorSub != null ? { sub_source: inspectorSub } : {}),
+            inspection_product: data.inspection_product,
+            selected_addons: data.selected_addons,
           },
         }),
       });
-    } catch (e) { console.error("CRM push error:", e); }
+      const crmText = await crmRes.text();
+      let crmJson: Record<string, unknown> | null = null;
+      try {
+        crmJson = crmText ? (JSON.parse(crmText) as Record<string, unknown>) : null;
+      } catch {
+        crmJson = null;
+      }
+      if (!crmRes.ok) {
+        console.error("CRM lead intake non-2xx response:", {
+          status: crmRes.status,
+          body: crmText,
+          target_url: crmUrl,
+        });
+        return {
+          statusCode: 502,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            success: false,
+            error: "CRM lead intake failed",
+            crm_url: crmUrl,
+            status: crmRes.status,
+          }),
+        };
+      }
+      crmLeadId = crmJson && typeof crmJson.lead_id === "string" ? crmJson.lead_id : null;
+      console.log("CRM lead intake success:", { lead_id: crmLeadId, target_url: crmUrl });
+  } catch (e) {
+    console.error("CRM push error:", { error: e, target_url: crmUrl });
+    return {
+      statusCode: 502,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        success: false,
+        error: "CRM lead intake request failed",
+        crm_url: crmUrl,
+      }),
+    };
   }
 
   // 3. Email BHT team
@@ -226,6 +303,8 @@ export const handler: Handler = async (event: HandlerEvent) => {
           `Email: ${data.email}`,
           `Property: ${data.property_address}`,
           `Inspection date: ${data.inspection_date}`,
+          `Inspection product: ${data.inspection_product}`,
+          data.selected_addons?.length ? `Selected add-ons: ${data.selected_addons.join(", ")}` : null,
           data.settlement_date ? `Settlement: ${data.settlement_date}` : null,
           data.access_contact ? `Agent: ${data.access_contact}` : null,
           data.property_type ? `Property type: ${data.property_type}` : null,
@@ -242,5 +321,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
     } catch (e) { console.error("Email error:", e); }
   }
 
-  return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ok: true }) };
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ok: true, success: true, lead_id: crmLeadId, crm_url: crmUrl }),
+  };
 };

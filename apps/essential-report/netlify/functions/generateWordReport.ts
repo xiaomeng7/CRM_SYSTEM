@@ -40,6 +40,10 @@ import {
 } from "./lib/reportEngine";
 import { extractSnapshotSignals } from "./lib/report/extractSnapshotSignals";
 import { resolveReportSelection } from "./lib/report/resolveReportSelection";
+import { buildRentalSampleSummary } from "./lib/report/buildRentalSampleSummary";
+import { renderRentalSampleReport } from "./lib/report/renderRentalSampleReport";
+import { buildPrePurchaseSampleSummary } from "./lib/report/buildPrePurchaseSampleSummary";
+import { renderPrePurchaseSampleReport } from "./lib/report/renderPrePurchaseSampleReport";
 import { runBaselineLoadEngine } from "./lib/reportEngine/baselineLoadEngine";
 import { extractEnhancedCircuits } from "./lib/report/canonical/extractEnhancedCircuits";
 import { 
@@ -2282,9 +2286,16 @@ export const handler: Handler = async (event: HandlerEvent, _ctx: HandlerContext
       limitations_count: inspection.limitations.length
     });
 
-    if ((inspection.raw as Record<string, unknown> | undefined)?.inspection_product !== "essential_full") {
-      const raw = (inspection.raw || {}) as Record<string, unknown>;
-      const product = typeof raw.inspection_product === "string" ? raw.inspection_product : "essential_full";
+    const rawForProduct = (inspection.raw || {}) as Record<string, unknown>;
+    const productForEarlyReturn =
+      typeof rawForProduct.inspection_product === "string" ? rawForProduct.inspection_product : "essential_full";
+    if (
+      productForEarlyReturn !== "essential_full" &&
+      productForEarlyReturn !== "rental_lite" &&
+      productForEarlyReturn !== "pre_purchase"
+    ) {
+      const raw = rawForProduct;
+      const product = productForEarlyReturn;
       const summaryFocus =
         product === "pre_purchase"
           ? "<p>Focus: Pre-purchase risk assessment</p>"
@@ -2585,54 +2596,88 @@ ${debugSection}`,
     const coverData = await buildCoverData(inspection, event);
     console.log("Cover data built:", Object.keys(coverData));
     
-    // Generate HTML report: StructuredReport → preflight → slot-only markdown → HTML
+    // Generate HTML report: rental_lite uses dedicated sample renderer; others keep existing path.
     console.log("[report][RUN_ID]", RUN_ID, "before buildReportMarkdown/buildReportHtml");
     let reportHtml: string;
-    try {
-      // Build focus context for Executive Summary (stressRatio, hasDetailedCircuits, snapshot signals)
-      const raw = (inspection.raw || {}) as Record<string, unknown>;
-      const baselineMetrics = runBaselineLoadEngine(raw).metrics;
-      const enhancedCircuits = extractEnhancedCircuits(raw);
-      const reportFocus = {
-        primaryGoal: snapshotSignals.primaryGoal,
-        weights: resolvedSelection.weights,
-        stressRatio: baselineMetrics?.stressRatio,
-        tenantChangeSoon: snapshotSignals.tenantChangeSoon,
-        symptoms: snapshotSignals.symptoms ?? [],
-        hasDetailedCircuits: enhancedCircuits.circuits.length >= 2,
-        billBand: snapshotSignals.billBand,
-        allElectricNoGas: snapshotSignals.allElectricNoGas,
-        hasSolar: snapshotSignals.hasSolar,
-        hasEv: snapshotSignals.hasEv,
-        billUploadWilling: snapshotSignals.billUploadWilling,
-      };
-      const structuredReport = await buildStructuredReport({
-        inspection: { ...inspection, findings: reportFindingsWithPriority },
-        canonical,
-        findings: reportFindingsWithPriority,
-        responses,
-        computed,
-        event,
-        coverData,
-        reportData: reportDataForOutput,
-        baseUrl: baseUrlForMerged,
-        signingSecret: signingSecretForMerged,
-        reportFocus,
-      });
-      assertReportReady(structuredReport);
-      reportHtml = markdownToHtml(renderReportFromSlots(structuredReport));
-    } catch (preflightError: unknown) {
-      const msg = preflightError instanceof Error ? preflightError.message : String(preflightError);
-      console.log("[report][RUN_ID]", RUN_ID, "buildReportMarkdown/buildReportHtml FAILED:", msg);
-      if (msg.includes("Report preflight failed")) {
-        console.error("Report preflight failed:", msg);
-        return {
-          statusCode: 400,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ error: "Report preflight failed", message: msg }),
+    if (inspectionProductForReport === "rental_lite") {
+      const rentalSummary = buildRentalSampleSummary(
+        reportRaw,
+        reportFindingsWithPriority as Array<Record<string, unknown>>,
+        {
+          inspection_id: inspection.inspection_id,
+          prepared_for: String(coverData.PREPARED_FOR ?? ""),
+          prepared_by: String(coverData.PREPARED_BY ?? ""),
+          assessment_date: String(coverData.ASSESSMENT_DATE ?? ""),
+          limitations: inspection.limitations,
+        }
+      );
+      reportHtml = renderRentalSampleReport(rentalSummary);
+      console.log("[report][RUN_ID]", RUN_ID, "rental_lite sample renderer enabled");
+    } else if (inspectionProductForReport === "pre_purchase") {
+      const prePurchaseSummary = buildPrePurchaseSampleSummary(
+        reportRaw,
+        reportFindingsWithPriority as Array<Record<string, unknown>>,
+        {
+          inspection_id: inspection.inspection_id,
+          prepared_for: String(coverData.PREPARED_FOR ?? ""),
+          prepared_by: String(coverData.PREPARED_BY ?? ""),
+          assessment_date: String(coverData.ASSESSMENT_DATE ?? ""),
+          limitations: inspection.limitations,
+          risk_rating: riskRating != null ? String(riskRating) : null,
+          capex_range: capexRange != null ? String(capexRange) : null,
+          capex_incomplete: overallScore.capex_incomplete,
+          executive_summary: executiveSummary,
+        }
+      );
+      reportHtml = renderPrePurchaseSampleReport(prePurchaseSummary);
+      console.log("[report][RUN_ID]", RUN_ID, "pre_purchase sample renderer enabled");
+    } else {
+      try {
+        // Build focus context for Executive Summary (stressRatio, hasDetailedCircuits, snapshot signals)
+        const raw = (inspection.raw || {}) as Record<string, unknown>;
+        const baselineMetrics = runBaselineLoadEngine(raw).metrics;
+        const enhancedCircuits = extractEnhancedCircuits(raw);
+        const reportFocus = {
+          primaryGoal: snapshotSignals.primaryGoal,
+          weights: resolvedSelection.weights,
+          stressRatio: baselineMetrics?.stressRatio,
+          tenantChangeSoon: snapshotSignals.tenantChangeSoon,
+          symptoms: snapshotSignals.symptoms ?? [],
+          hasDetailedCircuits: enhancedCircuits.circuits.length >= 2,
+          billBand: snapshotSignals.billBand,
+          allElectricNoGas: snapshotSignals.allElectricNoGas,
+          hasSolar: snapshotSignals.hasSolar,
+          hasEv: snapshotSignals.hasEv,
+          billUploadWilling: snapshotSignals.billUploadWilling,
         };
+        const structuredReport = await buildStructuredReport({
+          inspection: { ...inspection, findings: reportFindingsWithPriority },
+          canonical,
+          findings: reportFindingsWithPriority,
+          responses,
+          computed,
+          event,
+          coverData,
+          reportData: reportDataForOutput,
+          baseUrl: baseUrlForMerged,
+          signingSecret: signingSecretForMerged,
+          reportFocus,
+        });
+        assertReportReady(structuredReport);
+        reportHtml = markdownToHtml(renderReportFromSlots(structuredReport));
+      } catch (preflightError: unknown) {
+        const msg = preflightError instanceof Error ? preflightError.message : String(preflightError);
+        console.log("[report][RUN_ID]", RUN_ID, "buildReportMarkdown/buildReportHtml FAILED:", msg);
+        if (msg.includes("Report preflight failed")) {
+          console.error("Report preflight failed:", msg);
+          return {
+            statusCode: 400,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ error: "Report preflight failed", message: msg }),
+          };
+        }
+        throw preflightError;
       }
-      throw preflightError;
     }
     console.log("[report][RUN_ID]", RUN_ID, "after buildReportMarkdown/buildReportHtml, length:", reportHtml.length);
     

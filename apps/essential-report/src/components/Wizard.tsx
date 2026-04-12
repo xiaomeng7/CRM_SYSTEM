@@ -3,7 +3,7 @@
  * Optional Circuit, Customer Intake sections. UI-only; no field keys or payload changes.
  * CHANGELOG: Pre-submit heuristic alerts (stress test, circuit breakdown, bill calibration). Non-blocking.
  */
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useLayoutEffect, useState, useMemo } from "react";
 import { getSections } from "../lib/fieldDictionary";
 import { isSectionGatedOut, isSectionAutoSkipped } from "../lib/gates";
 import { validateSection } from "../lib/validation";
@@ -18,13 +18,12 @@ import { getFindingForField } from "../lib/fieldToFindingMap";
 import { computeHeuristicAlerts } from "../lib/reviewHeuristics";
 import type { SectionDef } from "../lib/fieldDictionary";
 import {
-  ADDON_FORCE_VISIBLE_STEPS,
   DEFAULT_INSPECTION_PRODUCT,
   FULL_SAFETY_CHECK_ADDON,
-  HIDDEN_STEPS_BY_PRODUCT,
   INSPECTION_PRODUCT_OPTIONS,
   THERMAL_IMAGING_ADDON,
   normalizeInspectionProduct,
+  resolveEffectiveWizardSteps,
   type InspectionProduct,
 } from "../config/inspectionProducts";
 
@@ -233,15 +232,43 @@ export function Wizard({ onSubmitted }: Props) {
     : [];
   const thermalAddonSelected = selectedAddons.includes(THERMAL_IMAGING_ADDON);
   const fullSafetyAddonSelected = selectedAddons.includes(FULL_SAFETY_CHECK_ADDON);
-  const forcedVisibleSteps = useMemo(() => {
-    const out = new Set<string>();
-    for (const addon of selectedAddons) {
-      const steps = ADDON_FORCE_VISIBLE_STEPS[addon];
-      if (!steps) continue;
-      for (const stepId of steps) out.add(stepId);
+  const effectiveWizardSteps = useMemo(
+    () => resolveEffectiveWizardSteps(inspectionProduct as InspectionProduct, selectedAddons),
+    [inspectionProduct, selectedAddons]
+  );
+
+  /** Pre-seed from URL so technicians opening a CRM/booking link land in the correct product mode before defaults run. */
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const ipRaw = sp.get("inspection_product")?.trim();
+    if (ipRaw && (INSPECTION_PRODUCT_OPTIONS as readonly string[]).includes(ipRaw)) {
+      setAnswer("inspection_product", { value: ipRaw as InspectionProduct, status: "answered" });
     }
-    return out;
-  }, [selectedAddons]);
+    const addonsParam = sp.get("selected_addons") ?? sp.get("addons");
+    if (addonsParam !== null) {
+      const trimmed = addonsParam.trim();
+      let parsed: string[] = [];
+      if (trimmed) {
+        try {
+          const j = JSON.parse(trimmed) as unknown;
+          if (Array.isArray(j)) {
+            parsed = j
+              .filter((x): x is string => typeof x === "string")
+              .map((x) => x.trim())
+              .filter(Boolean);
+          } else {
+            parsed = trimmed.split(",").map((x) => x.trim()).filter(Boolean);
+          }
+        } catch {
+          parsed = trimmed.split(",").map((x) => x.trim()).filter(Boolean);
+        }
+      }
+      const allowed = new Set<string>([THERMAL_IMAGING_ADDON, FULL_SAFETY_CHECK_ADDON]);
+      const filtered = parsed.filter((x) => allowed.has(x));
+      setAnswer("selected_addons", { value: filtered, status: "answered" });
+    }
+  }, [setAnswer]);
 
   useEffect(() => {
     if (getAnswer("inspection_product")) return;
@@ -297,12 +324,8 @@ export function Wizard({ onSubmitted }: Props) {
   const visibleSteps = useMemo((): VisibleStep[] => {
     const pages = getWizardPages();
     const out: VisibleStep[] = [];
-    const hiddenSteps =
-      HIDDEN_STEPS_BY_PRODUCT[(inspectionProduct as InspectionProduct)] ?? new Set<string>();
     for (const page of pages) {
-      if (hiddenSteps.has(page.id)) {
-        if (!forcedVisibleSteps.has(page.id)) continue;
-      }
+      if (!effectiveWizardSteps.has(page.id)) continue;
       const sectionIds = page.sectionIds.filter(
         (id) => !isSectionGatedOut(id, state) && !isSectionAutoSkipped(id, state)
       );
@@ -311,7 +334,7 @@ export function Wizard({ onSubmitted }: Props) {
       }
     }
     return out;
-  }, [forcedVisibleSteps, inspectionProduct, state]);
+  }, [effectiveWizardSteps, state]);
 
   useEffect(() => {
     if (visibleSteps.length === 0) {

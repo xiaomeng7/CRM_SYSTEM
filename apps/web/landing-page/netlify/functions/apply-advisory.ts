@@ -190,9 +190,16 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
     // Fan-out: also create a lead inside CRM (apps/crm) for the new application.
     let crmBase = (process.env.CRM_API_BASE_URL || "").trim();
-    if (crmBase) {
-      if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
-      const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
+    if (!crmBase) {
+      console.error("CRM_API_BASE_URL is missing; cannot confirm CRM lead write.");
+      return {
+        statusCode: 503,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ success: false, error: "CRM lead intake unavailable: CRM_API_BASE_URL is not configured" }),
+      };
+    }
+    if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
+    const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
       const raw = body as Record<string, unknown>;
       const urlSrc = String(raw.source ?? "").trim().toLowerCase();
       const inspectorSub =
@@ -241,15 +248,50 @@ export const handler: Handler = async (event: HandlerEvent) => {
         gclid: data.gclid || null,
         landing_variant_id: data.landing_variant_id || null,
       };
+    let crmLeadId: string | null = null;
+    try {
+      const crmRes = await fetch(crmUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(crmPayload),
+      });
+      const crmText = await crmRes.text();
+      let crmJson: Record<string, unknown> | null = null;
       try {
-        await fetch(crmUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(crmPayload),
-        });
-      } catch (e) {
-        console.error("CRM lead intake error:", e);
+        crmJson = crmText ? (JSON.parse(crmText) as Record<string, unknown>) : null;
+      } catch {
+        crmJson = null;
       }
+      if (!crmRes.ok) {
+        console.error("CRM lead intake non-2xx response:", {
+          status: crmRes.status,
+          body: crmText,
+          target_url: crmUrl,
+        });
+        return {
+          statusCode: 502,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            success: false,
+            error: "CRM lead intake failed",
+            crm_url: crmUrl,
+            status: crmRes.status,
+          }),
+        };
+      }
+      crmLeadId = crmJson && typeof crmJson.lead_id === "string" ? crmJson.lead_id : null;
+      console.log("CRM lead intake success:", { lead_id: crmLeadId, target_url: crmUrl });
+    } catch (e) {
+      console.error("CRM lead intake error:", { error: e, target_url: crmUrl });
+      return {
+        statusCode: 502,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          success: false,
+          error: "CRM lead intake request failed",
+          crm_url: crmUrl,
+        }),
+      };
     }
 
     const toEmail = process.env.BHT_ADVISORY_EMAIL_TO;
@@ -280,7 +322,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
     if (toEmail) await sendEmail({ to: toEmail, subject, text });
 
-    return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ok: true, id: row.id }) };
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ok: true, success: true, id: row.id, lead_id: crmLeadId, crm_url: crmUrl }),
+    };
   } catch (err) {
     console.error("apply-advisory error:", err);
     const msg = err instanceof Error ? err.message : String(err);

@@ -200,9 +200,16 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
   // 2. Push to CRM as a lead
   let crmBase = (process.env.CRM_API_BASE_URL || "").trim();
-  if (crmBase) {
-    if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
-    const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
+  if (!crmBase) {
+    console.error("CRM_API_BASE_URL is missing; cannot confirm CRM lead write.");
+    return {
+      statusCode: 503,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success: false, error: "CRM lead intake unavailable: CRM_API_BASE_URL is not configured" }),
+    };
+  }
+  if (!/^https?:\/\//i.test(crmBase)) crmBase = "https://" + crmBase;
+  const crmUrl = `${crmBase.replace(/\/$/, "")}/api/public/leads`;
     const raw = body as Record<string, unknown>;
     const urlSrc = String(raw.source ?? "").trim().toLowerCase();
     const inspectorSub =
@@ -251,15 +258,50 @@ export const handler: Handler = async (event: HandlerEvent) => {
         creative_version: data.creative_version,
       },
     };
+  let crmLeadId: string | null = null;
+  try {
+    const crmRes = await fetch(crmUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(crmPayload),
+    });
+    const crmText = await crmRes.text();
+    let crmJson: Record<string, unknown> | null = null;
     try {
-      await fetch(crmUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(crmPayload),
-      });
-    } catch (e) {
-      console.error("CRM lead push error:", e);
+      crmJson = crmText ? (JSON.parse(crmText) as Record<string, unknown>) : null;
+    } catch {
+      crmJson = null;
     }
+    if (!crmRes.ok) {
+      console.error("CRM lead intake non-2xx response:", {
+        status: crmRes.status,
+        body: crmText,
+        target_url: crmUrl,
+      });
+      return {
+        statusCode: 502,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          success: false,
+          error: "CRM lead intake failed",
+          crm_url: crmUrl,
+          status: crmRes.status,
+        }),
+      };
+    }
+    crmLeadId = crmJson && typeof crmJson.lead_id === "string" ? crmJson.lead_id : null;
+    console.log("CRM lead intake success:", { lead_id: crmLeadId, target_url: crmUrl });
+  } catch (e) {
+    console.error("CRM lead push error:", { error: e, target_url: crmUrl });
+    return {
+      statusCode: 502,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        success: false,
+        error: "CRM lead intake request failed",
+        crm_url: crmUrl,
+      }),
+    };
   }
 
   // 3. Notify BHT team by email
@@ -289,6 +331,6 @@ export const handler: Handler = async (event: HandlerEvent) => {
   return {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ok: true }),
+    body: JSON.stringify({ ok: true, success: true, lead_id: crmLeadId, crm_url: crmUrl }),
   };
 };

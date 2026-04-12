@@ -479,6 +479,13 @@
         if (!sub || !/^[a-z][a-z0-9_]*$/.test(sub)) return null;
         return sub;
       })();
+      function selectedAddonsFromQuery() {
+        var raw = (params.get('selected_addons') || params.get('addons') || '').trim();
+        if (!raw) return [];
+        var allowed = { thermal_imaging: true, full_safety_check: true };
+        return raw.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return !!allowed[s]; });
+      }
+
       const payload = {
         name,
         phone,
@@ -490,6 +497,8 @@
         property_type: document.getElementById('property_type').value || null,
         notes: document.getElementById('notes').value.trim() || null,
         product_type: 'pre_purchase',
+        inspection_product: 'pre_purchase',
+        selected_addons: selectedAddonsFromQuery(),
         utm_source: paramTrim('utm_source'),
         utm_medium: paramTrim('utm_medium'),
         utm_campaign: paramTrim('utm_campaign'),

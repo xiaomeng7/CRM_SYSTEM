@@ -10,6 +10,7 @@ import {
   DEFAULT_INSPECTION_PRODUCT,
   INSPECTION_PRODUCT_LABELS,
   normalizeInspectionProduct,
+  resolveEffectiveWizardSteps,
 } from "../config/inspectionProducts";
 
 type Props = {
@@ -156,6 +157,17 @@ export function ReviewPage({ inspectionId, onBack }: Props) {
         .map((x) => x.trim())
         .filter(Boolean)
     : [];
+  const storedResolvedSteps = Array.isArray(raw.resolved_steps)
+    ? (raw.resolved_steps as unknown[])
+        .filter((x): x is string => typeof x === "string")
+        .map((x) => x.trim())
+        .filter(Boolean)
+    : [];
+  const effectiveStepIds =
+    storedResolvedSteps.length > 0
+      ? storedResolvedSteps
+      : Array.from(resolveEffectiveWizardSteps(inspectionProductCode, selectedAddons));
+  const deliveryMode = inspectionProductCode === "essential_full" ? "Word Report" : "HTML Summary";
   const energy = raw.energy_v2 as Record<string, unknown> | undefined;
   const supply = energy?.supply as Record<string, unknown> | undefined;
   const stress = energy?.stressTest as Record<string, unknown> | undefined;
@@ -222,8 +234,12 @@ export function ReviewPage({ inspectionId, onBack }: Props) {
           <li>
             Inspection Product: {inspectionProductLabel} ({inspectionProductCode})
           </li>
+          <li>Delivery Mode: {deliveryMode}</li>
           <li>
             Selected Add-ons: {selectedAddons.length ? selectedAddons.join(", ") : "none"}
+          </li>
+          <li>
+            Effective Steps: {effectiveStepIds.length ? effectiveStepIds.join(", ") : "none"}
           </li>
           <li>Main Load &amp; Voltage {supply ? "measured." : "—"}</li>
           <li>Load Stress measurement {stress ? (Boolean(stress.performed) ? "completed." : "skipped.") : "—"}</li>

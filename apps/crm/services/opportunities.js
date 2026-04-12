@@ -84,12 +84,14 @@ async function syncIntakeAttributionFromLead(db, opportunityId, leadId) {
 }
 
 async function create(data = {}) {
-  const { account_id, contact_id, lead_id, stage, value_estimate, created_by } = data;
+  const { account_id, contact_id, lead_id, stage, value_estimate, created_by, metadata } = data;
   const s = stage && isValidStage(stage) ? stage : 'new_inquiry';
+  const meta =
+    metadata != null && typeof metadata === 'object' && !Array.isArray(metadata) ? metadata : {};
 
   const result = await pool.query(
-    `INSERT INTO opportunities (account_id, contact_id, lead_id, stage, value_estimate, status, created_by)
-     VALUES ($1, $2, $3, $4, $5, 'open', $6)
+    `INSERT INTO opportunities (account_id, contact_id, lead_id, stage, value_estimate, status, created_by, metadata)
+     VALUES ($1, $2, $3, $4, $5, 'open', $6, $7::jsonb)
      RETURNING *`,
     [
       account_id && isValidUuid(account_id) ? account_id : null,
@@ -98,6 +100,7 @@ async function create(data = {}) {
       s,
       value_estimate != null ? parseFloat(value_estimate) : null,
       created_by || null,
+      JSON.stringify(meta),
     ]
   );
   const row = result.rows[0];
