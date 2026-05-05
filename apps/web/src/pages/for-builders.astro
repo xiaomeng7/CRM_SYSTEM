@@ -1,0 +1,758 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PhoneCTA from '../components/PhoneCTA.astro';
+
+// Worry → How we handle it. Reframed from the BHT delivery system pitch deck.
+// Each solution is deliberately CONCRETE — specific trades, specific
+// scenarios, specific consequences. Builders see the picture, not the concept.
+const worries = [
+  {
+    worry: 'Will you be on time?',
+    solution: "Locked timeline at design. Daily progress reports with photos. If we cause the delay, $3,000/day is on us — in writing. If scope, weather, or other trades cause it, you know the rate up front. No time-and-materials creep.",
+  },
+  {
+    worry: 'Will you coordinate with my other trades?',
+    solution: "We talk directly to your site manager, framer, plumber, HVAC contractor, cabinet maker, plasterer, and tiler. We mark wall openings clearly so the plasterer doesn't open more than needed. We sequence with the cabinet maker so we're not chasing cables behind installed cabinetry. Same crew, every visit.",
+  },
+  {
+    worry: 'Will the install pass scrutiny at handover?',
+    solution: 'Builder-grade finish: every cable labelled, every circuit photographed, every switchboard documented in your handover pack. 3-year workmanship warranty — if anything fails inside 3 years, we fix it. Free. No negotiation.',
+  },
+  {
+    worry: 'Will my client complain after handover?',
+    solution: 'Smart home programmed and walked through with the client at handover — they leave knowing how to control every scene, every light, every camera. Admin credentials and operating manual handed to client and to you. No mystery hardware, no support calls falling on you at 9pm.',
+  },
+  {
+    worry: 'Will costs blow out mid-project?',
+    solution: "Fixed package locked at design. Variations follow one process: issue → evidence → options → written approval. Nothing extra happens without your sign-off. Original scope is original scope. We'd rather lose a job than be the one who 'forgot' to mention an extra cost.",
+  },
+];
+
+// Capabilities — IMAGES NOW MATCH THE SUBJECT MATTER.
+const capabilities = [
+  {
+    title: 'Smart Home Design & Integration',
+    body: 'KNX, C-Bus, and open-protocol systems. AV, security, climate, and lighting designed as one specification — wired during 1st fix and commissioned before handover.',
+    image: '/images/work-private-cinema',
+    alt: 'Private home cinema with integrated AV, recessed projector and discrete in-ceiling speakers — Better Home Technology install',
+  },
+  {
+    title: 'Architectural Lighting Design',
+    body: 'Cove, perimeter, downlight, accent and feature lighting layouts — coordinated with the interior designer at design stage, not bolted on after the cornice goes up.',
+    image: '/images/work-sconce-detail',
+    alt: 'Brass wall sconce installed against classic cornice and panelling in a luxury Adelaide hallway',
+  },
+  {
+    title: 'Switchboard & Load Planning',
+    body: 'Sized for the home today and the EV / battery / heat-pump tomorrow. DIN-rail breakers, terminal-block wiring, photographed and documented at handover.',
+    image: '/images/work-switchboard-panel',
+    alt: 'Inside of a residential switchboard with DIN-rail breakers, terminal blocks and clearly colour-coded wiring',
+  },
+  {
+    title: 'Custom Lighting Detail',
+    body: "Cornice LEDs, arched ceiling features, exterior wall lights — the small details that read as 'premium'. Sketched, costed and built without ad-hoc onsite decisions.",
+    image: '/images/work-arched-led',
+    alt: 'Custom arched LED light strip installed in a luxury residential entrance way',
+  },
+];
+
+// Project lifecycle in AU builder terminology — 1st fix / 2nd fix, not rough-in/fit-off.
+const stages = [
+  {
+    n: '01',
+    title: 'Pre-design consult',
+    body: 'One sit-down with you and the designer on lighting plan, smart home spec, EV/solar future-proofing — before drawings lock.',
+  },
+  {
+    n: '02',
+    title: 'Design & specification',
+    body: 'Documented circuit schedule, lighting plan, smart home spec, switchboard schematic. Pricing fixed at this stage.',
+  },
+  {
+    n: '03',
+    title: '1st Fix coordination',
+    body: 'Cabling, conduits, mounting boxes — coordinated with framing, plumbing and HVAC. 2-3 days for Tier 1; 1-3 weeks for full new builds. No clashes at 2nd fix.',
+  },
+  {
+    n: '04',
+    title: '2nd Fix & commissioning',
+    body: 'All fittings, switchboard energised, smart home programmed, scenes set with the client. 3-4 days for Tier 1; 2-4 weeks for premium builds. Certificate of compliance issued.',
+  },
+  {
+    n: '05',
+    title: 'Handover & documentation',
+    body: 'As-built drawings, switchboard photos, smart home admin credentials, warranty register — handed to the client and to you.',
+  },
+];
+
+// Variation management process — directly from BHT delivery pitch deck.
+const variationSteps = [
+  { n: '01', title: 'Issue identified',     body: 'Anything outside the original scope is recognised on site and logged.' },
+  { n: '02', title: 'Evidence collected',   body: 'Photos and a written description sent to your project lead the same day.' },
+  { n: '03', title: 'Options defined',      body: 'Two or three resolution options with cost and schedule impact for each.' },
+  { n: '04', title: 'Approval before work', body: 'Nothing chargeable proceeds until you (or the client) approve in writing.' },
+];
+
+// Scope responsibility table — straight from pitch deck slide 11.
+const scopeMatrix = [
+  { area: 'Electrical work',          owner: 'Electrician',         note: 'Cabling, fittings, switchboard, smart home — our scope.' },
+  { area: 'Pipe obstructions',        owner: 'Plumber',             note: "If a pipe blocks our cable path, plumber relocates — flagged as a variation." },
+  { area: 'Wall openings & closures', owner: 'Builder / Plasterer', note: 'We mark openings, builder/plasterer cuts and seals — coordinated at 1st fix.' },
+];
+
+// Why builders pick us
+const reasons = [
+  { title: 'Single point of contact',     body: 'One project lead from design through handover. Not a roster of strangers.' },
+  { title: 'Same crew, no subbies',       body: "Our own electricians on every visit. We don't subcontract residential builds." },
+  { title: '3-year workmanship warranty', body: 'Every install we deliver carries a 3-year warranty. Defective work is rectified at our cost — no negotiation.' },
+  { title: 'Pricing locked at design',    body: 'Variations only when scope changes. No mid-project price creep.' },
+  { title: 'Brand-independent',           body: "We spec what suits the build — not what we're paid commission to push." },
+  { title: 'Documented handover',         body: 'As-built drawings, photos, admin credentials. Your client gets a manual, not a mystery.' },
+];
+
+// Recent work — refreshed, no overlap with home page (only #46 hero photo is shared).
+const projectImages = [
+  { src: '/images/work-builder-wiring',       alt: 'Cable tray and conduit installation during 1st fix on a luxury new build', caption: '1st fix — Adelaide luxury new build' },
+  { src: '/images/work-team-install',         alt: 'Better Home Technology electrician installing a custom curved chandelier', caption: 'Premium chandelier install — 2nd fix' },
+  { src: '/images/work-team-brass-chandelier', alt: 'BHT crew member fitting a large brass tiered chandelier from scaffolding', caption: 'Custom brass fixture — final fit' },
+  { src: '/images/work-control-panels',       alt: 'Industrial-grade control cabinets with orange power cables and status indicators', caption: 'Mechanical room — control & monitoring' },
+  { src: '/images/work-cable-tray-beams',     alt: 'Suspended cable tray installed under steel roof beams in a commercial fitout', caption: 'Suspended tray under steel structure' },
+  { src: '/images/work-exterior-night',       alt: 'Adelaide luxury home exterior at night with up/down wall lighting and recessed entry lights', caption: 'Completed luxury exterior — Adelaide' },
+];
+---
+
+<Layout
+  title="For Builders & Designers — Smart Home & Premium Electrical | Better Home Technology"
+  description="Adelaide's specialist electrical and smart home partner for luxury custom builders. Fixed-price packages from $16K + GST, 1st/2nd fix in 6 working days, daily progress reports."
+>
+  <Header />
+
+  <main>
+    <!-- Hero -->
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div
+        class="absolute -top-32 -right-20 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style="background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0) 65%);"
+      ></div>
+
+      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <div class="grid lg:grid-cols-[1.7fr_1fr] gap-12 lg:gap-16 items-center">
+          <div>
+            <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+              For Builders & Designers
+            </p>
+            <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+              Electrical &amp; Smart Home,<br class="hidden md:inline" />
+              <span class="text-brand-amber">delivered without delays or drama.</span>
+            </h1>
+            <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-xl leading-relaxed">
+              We coordinate with your schedule, your trades, and your client — so handover
+              runs smoothly. No rework at 2nd fix. No reopens after plaster. Trusted by
+              Adelaide builders who care about finish, timing, and reputation.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 sm:items-center">
+              <a
+                href="#engage"
+                class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition text-center"
+              >
+                Request availability for your next project
+              </a>
+              <a
+                href="#engage"
+                class="text-white font-medium underline-offset-4 hover:underline px-2 py-4 text-center"
+              >
+                or send us your plans →
+              </a>
+            </div>
+            <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-slate-400">
+              <span class="flex items-center gap-2">
+                <span class="text-brand-amber" aria-hidden="true">✓</span> Licensed PGE275430
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="text-brand-amber" aria-hidden="true">●</span> Fully insured
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="text-brand-amber" aria-hidden="true">●</span> Mawson Lakes-based
+              </span>
+            </div>
+          </div>
+
+          <div class="relative max-w-sm mx-auto lg:mx-0 lg:ml-auto">
+            <div class="absolute -top-3 -right-3 w-20 h-20 border-t-2 border-r-2 border-brand-amber/60 rounded-tr-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-3 -left-3 w-20 h-20 border-b-2 border-l-2 border-brand-amber/40 rounded-bl-2xl pointer-events-none"></div>
+            <picture>
+              <source srcset="/images/work-builder-wiring.webp" type="image/webp" />
+              <img
+                src="/images/work-builder-wiring.jpg"
+                alt="Cable tray and conduit installation during 1st fix on a luxury Adelaide new build"
+                width="800"
+                height="600"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                class="relative w-full h-auto rounded-2xl shadow-2xl"
+              />
+            </picture>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stat strip — commitments, not specific numbers (those vary by tier) -->
+    <section class="bg-white border-y border-slate-200">
+      <div class="mx-auto max-w-6xl px-6 py-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <p class="text-4xl md:text-5xl font-bold text-brand-navy">3 tiers</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Transparent fixed pricing</p>
+          </div>
+          <div>
+            <p class="text-4xl md:text-5xl font-bold text-brand-navy">Daily</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Progress reports + photos</p>
+          </div>
+          <div>
+            <p class="text-4xl md:text-5xl font-bold text-brand-amber">Both ways</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Overage rate commitment</p>
+          </div>
+          <div>
+            <p class="text-4xl md:text-5xl font-bold text-brand-navy">3 years</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Workmanship warranty</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Worry → How we handle it. Replaces the old "5 pains" + "4 pillars"
+         sections with builder-anxiety-first framing (per ChatGPT critique). -->
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            What builders worry about
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Five fears every builder has about a new electrician — and exactly how we handle each.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            You've been burnt by every one of these at least once. Our delivery system was built around fixing them.
+          </p>
+        </div>
+        <div class="space-y-4">
+          {worries.map((w, i) => (
+            <article class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-brand-amber/50 hover:shadow-md transition">
+              <div class="grid md:grid-cols-[auto_1fr_2fr] gap-6 p-6 md:p-8 items-start">
+                <p class="text-brand-amber font-mono text-2xl font-bold md:pt-1">
+                  {String(i + 1).padStart(2, '0')}
+                </p>
+                <div>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-brand-muted mb-2">Worry</p>
+                  <p class="text-xl md:text-2xl font-bold text-brand-ink leading-snug">{w.worry}</p>
+                </div>
+                <div class="md:border-l md:border-slate-200 md:pl-6">
+                  <p class="text-xs uppercase tracking-wider font-semibold text-brand-amber mb-2">How we handle it</p>
+                  <p class="text-brand-ink leading-relaxed">{w.solution}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Capabilities — 4 cards with PROPERLY MATCHED photos -->
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-3xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            What we deliver
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Specified at design. Wired at 1st fix. Commissioned at 2nd.
+          </h2>
+          <p class="mt-5 text-lg text-brand-muted leading-relaxed border-l-4 border-brand-amber pl-5">
+            <span class="text-brand-ink font-semibold">Most electricians install.</span> We plan, coordinate, and deliver systems that work at handover — the difference between a contractor and a vendor.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {capabilities.map((cap) => (
+            <article class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition">
+              <div class="aspect-[4/3] overflow-hidden">
+                <picture>
+                  <source srcset={`${cap.image}.webp`} type="image/webp" />
+                  <img
+                    src={`${cap.image}.jpg`}
+                    alt={cap.alt}
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover"
+                  />
+                </picture>
+              </div>
+              <div class="p-6 md:p-8">
+                <h3 class="text-xl font-bold text-brand-ink mb-3">{cap.title}</h3>
+                <p class="text-brand-muted leading-relaxed">{cap.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing tiers + two-way commitment — the headline value prop -->
+    <section class="bg-brand-navy text-white py-20 md:py-28 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Pricing & schedule
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold tracking-tight">
+            Three tiers. Locked at design. Written timeframe.
+          </h2>
+          <p class="mt-4 text-lg text-slate-300 leading-relaxed">
+            Most builder partnerships fall into one of three tiers. We quote per tier at
+            design stage and lock the timeframe in writing — with a two-way overage rate
+            on every working day past it.
+          </p>
+        </div>
+
+        <!-- 3 TIERS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-10">
+          <!-- Tier 1 -->
+          <div class="bg-white/5 backdrop-blur rounded-xl p-7 border border-white/10 flex flex-col">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-3">TIER 1 — STARTER</p>
+            <p class="text-3xl font-bold mb-1">$16-18K <span class="text-base text-slate-400">+ GST</span></p>
+            <p class="text-sm text-slate-400 mb-5">~6 working days</p>
+            <p class="text-sm text-slate-300 mb-5 leading-relaxed">
+              3-bed / 2-bath without smart home or specialty lighting.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-200 mt-auto">
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Basic lighting + downlights</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Standard GPO + switches</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Switchboard + smoke alarms</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Documentation + COES</li>
+            </ul>
+          </div>
+
+          <!-- Tier 2 — highlighted as the most common new build tier -->
+          <div class="bg-white/10 backdrop-blur rounded-xl p-7 border border-brand-amber/40 ring-1 ring-brand-amber/20 flex flex-col relative">
+            <span class="absolute -top-3 left-7 bg-brand-amber text-brand-navy text-xs font-bold px-3 py-1 rounded">MOST COMMON</span>
+            <p class="text-brand-amber font-mono text-xs font-bold mb-3">TIER 2 — STANDARD NEW BUILD</p>
+            <p class="text-3xl font-bold mb-1">$35-50K <span class="text-base text-slate-400">+ GST</span></p>
+            <p class="text-sm text-slate-400 mb-5">~4-6 weeks</p>
+            <p class="text-sm text-slate-300 mb-5 leading-relaxed">
+              Full-house electrical for new builds without smart home integration.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-200 mt-auto">
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> 60-80 LED downlights</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> 30+ GPO (indoor + outdoor)</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Sub-board + 25mm submain</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> NBN conduit + smoke alarms</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Outdoor lighting on request</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Documentation + COES</li>
+            </ul>
+          </div>
+
+          <!-- Tier 3 -->
+          <div class="bg-white/5 backdrop-blur rounded-xl p-7 border border-white/10 flex flex-col">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-3">TIER 3 — PREMIUM / SMART</p>
+            <p class="text-3xl font-bold mb-1">From $50K <span class="text-base text-slate-400">+ GST</span></p>
+            <p class="text-sm text-slate-400 mb-5">~6-10 weeks · quoted at design</p>
+            <p class="text-sm text-slate-300 mb-5 leading-relaxed">
+              Luxury custom builds with smart home, AV, security and specialty lighting.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-200 mt-auto">
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Everything in Tier 2</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Cinema / AV integration</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> CCTV + NVR + intercom</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> KNX / C-Bus / smart home</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> 3-phase / EV / battery prep</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">✓</span> Custom chandeliers + LED strip</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- TWO-WAY commitment — the differentiator -->
+        <div class="mb-3">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Two-way overage rate
+          </p>
+          <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-6">
+            Time has a price. Both ways.
+          </h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white/5 backdrop-blur rounded-xl p-8 border border-white/10">
+            <p class="text-brand-amber font-mono text-sm font-bold mb-4">IF THE DELAY IS OURS</p>
+            <p class="text-2xl md:text-3xl font-bold mb-4 leading-tight">
+              We wear it. <span class="text-brand-amber">In writing.</span>
+            </p>
+            <p class="text-slate-300 mb-6 leading-relaxed">
+              If we cause the delay or deliver work that needs rectification, we cover it.
+              Period.
+            </p>
+            <ul class="space-y-3 text-slate-200">
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Defective work rectified at our cost</li>
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Time we lose, we don't bill for</li>
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Documented client-side cost? Compensated, in writing</li>
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> 3-year workmanship warranty on every install</li>
+            </ul>
+          </div>
+
+          <div class="bg-white/5 backdrop-blur rounded-xl p-8 border border-white/10">
+            <p class="text-brand-amber font-mono text-sm font-bold mb-4">IF THE DELAY IS EXTERNAL</p>
+            <p class="text-2xl md:text-3xl font-bold mb-4 leading-tight">
+              <span class="text-brand-amber">$3,000</span> per day. <span class="text-slate-400 text-base font-medium">No more, no less.</span>
+            </p>
+            <p class="text-slate-300 mb-6 leading-relaxed">
+              Scope changes, other trades, site not ready, client decisions — known cost,
+              known process, no time-and-materials creep.
+            </p>
+            <ul class="space-y-3 text-slate-200">
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Rate communicated before any work begins</li>
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Daily reports flag risks early — you decide how to act</li>
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Variation order documented in writing</li>
+              <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> You choose: absorb, pass through, or renegotiate scope</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-8 text-sm text-slate-400 max-w-2xl">
+          Verification work (e.g. inaccessible cable paths) is billed at half-day or full-day rates communicated before the work starts — never as a surprise.
+        </p>
+      </div>
+    </section>
+
+    <!-- Recent project highlights — real specs from real Adelaide builds -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Recent project highlights
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Specs from real Adelaide builds we've delivered.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            Three recent new builds — line-item scope and pricing tier, anonymised by suburb.
+            Builder names available on request.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <article class="bg-brand-surface-alt rounded-xl p-7 border border-slate-200">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-2">TIER 2 · WATTLE PARK</p>
+            <p class="text-2xl font-bold text-brand-ink mb-1">~$49K + GST</p>
+            <p class="text-sm text-brand-muted mb-5">Full new-build electrical · ~4 weeks</p>
+            <ul class="space-y-2 text-sm text-brand-ink leading-relaxed">
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 68 LED downlights</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 33 indoor GPO + 5 outdoor</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 27 light switches</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> Sub-board + 25mm submain</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 12 pool lights · 5 pole lights · 12 bollard drive lights</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> NBN conduit · smoke alarms · heating combos</li>
+            </ul>
+          </article>
+
+          <article class="bg-brand-surface-alt rounded-xl p-7 border border-slate-200">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-2">TIER 3 · PARALOWIE</p>
+            <p class="text-2xl font-bold text-brand-ink mb-1">$50K+ · in progress</p>
+            <p class="text-sm text-brand-muted mb-5">Luxury new build with smart home + AV · ~6 weeks</p>
+            <ul class="space-y-2 text-sm text-brand-ink leading-relaxed">
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 77 LED downlights</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 51 GPO + 3 outdoor</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 3-phase meter + consumer main</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> Cinema: 12 speakers · projector · LED strips · wall box</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 6 PTZ cameras + 1TB NVR</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 4 bathroom heater combos · multi-room speaker pre-wire</li>
+            </ul>
+          </article>
+
+          <article class="bg-brand-surface-alt rounded-xl p-7 border border-slate-200">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-2">TIER 3 · SOUTH PLYMPTON</p>
+            <p class="text-2xl font-bold text-brand-ink mb-1">~$37K + GST</p>
+            <p class="text-sm text-brand-muted mb-5">Luxury new build with feature lighting · ~5 weeks</p>
+            <ul class="space-y-2 text-sm text-brand-ink leading-relaxed">
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 90 LED downlights (including deep)</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 55 GPO</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 6 chandeliers (front · island · meal · rumpus · stair · TV)</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> 4 PTZ cameras + 2TB NVR + intercom</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> Stair light strip · LED feature lighting</li>
+              <li class="flex gap-2"><span class="text-brand-amber" aria-hidden="true">●</span> Bathroom heaters · mirror lights · ceiling speakers</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Variation management — process flow -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-14">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Variation management
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            One process, every time. No surprise invoices.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            Original scope is original scope — included in the package. When something genuinely sits outside scope, this is the process:
+          </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {variationSteps.map((step) => (
+            <div class="bg-brand-surface-alt rounded-xl p-6">
+              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{step.n}</p>
+              <h3 class="text-lg font-bold text-brand-ink mb-2">{step.title}</h3>
+              <p class="text-sm text-brand-muted leading-relaxed">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Scope clarity table -->
+    <section class="bg-brand-surface-alt py-20 md:py-24">
+      <div class="mx-auto max-w-4xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Scope clarity
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-3">
+          Whose job is which job.
+        </h2>
+        <p class="text-lg text-brand-muted leading-relaxed mb-10">
+          When other trades cause electrical work to expand, we flag it as a variation rather than absorb the cost silently.
+        </p>
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          {scopeMatrix.map((row, i) => (
+            <div class={`grid grid-cols-1 md:grid-cols-[1fr_1fr_2fr] gap-4 p-6 ${i > 0 ? 'border-t border-slate-200' : ''}`}>
+              <div>
+                <p class="text-xs text-brand-muted uppercase tracking-wider font-semibold mb-1">Area</p>
+                <p class="font-bold text-brand-ink">{row.area}</p>
+              </div>
+              <div>
+                <p class="text-xs text-brand-muted uppercase tracking-wider font-semibold mb-1">Owner</p>
+                <p class="font-bold text-brand-amber">{row.owner}</p>
+              </div>
+              <div>
+                <p class="text-xs text-brand-muted uppercase tracking-wider font-semibold mb-1">In practice</p>
+                <p class="text-brand-ink leading-relaxed">{row.note}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Where we fit in the build — 5 stages, AU terminology -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-14">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Where we fit in the build
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Five stages — pre-design through handover.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          {stages.map((stage) => (
+            <div class="bg-brand-surface-alt rounded-xl p-6 hover:bg-brand-navy hover:text-white transition group">
+              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{stage.n}</p>
+              <h3 class="text-lg font-bold text-brand-ink group-hover:text-white mb-2">{stage.title}</h3>
+              <p class="text-sm text-brand-muted group-hover:text-slate-300 leading-relaxed">{stage.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent project gallery — refreshed, image-text matched -->
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Recent project work
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            From 1st fix to chandelier.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {projectImages.map((p) => (
+            <figure class="group">
+              <div class="aspect-[4/3] overflow-hidden rounded-lg bg-white">
+                <picture>
+                  <source srcset={`${p.src}.webp`} type="image/webp" />
+                  <img
+                    src={`${p.src}.jpg`}
+                    alt={p.alt}
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  />
+                </picture>
+              </div>
+              <figcaption class="mt-3 text-sm text-brand-muted">{p.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Why builders pick us -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Why builders pick us
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Built for repeat partnerships, not one-off jobs.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {reasons.map((r) => (
+            <div class="border-l-2 border-brand-amber pl-5">
+              <h3 class="text-lg font-bold text-brand-ink mb-2">{r.title}</h3>
+              <p class="text-brand-muted leading-relaxed">{r.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Builder Guarantee — explicit anti-risk commitments. The "if anything
+         goes wrong, here's what we do" panel that lets a builder commit. -->
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            The Builder Guarantee
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Three things we will never do to your project.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-brand-surface-alt rounded-xl p-7 border-l-4 border-brand-amber">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-3">01 · NEVER</p>
+            <h3 class="text-xl font-bold text-brand-ink mb-3">Overbook your project</h3>
+            <p class="text-brand-muted leading-relaxed">
+              We won't take on a job we can't crew properly. If our schedule is full, we say so before you sign — not after.
+            </p>
+          </div>
+          <div class="bg-brand-surface-alt rounded-xl p-7 border-l-4 border-brand-amber">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-3">02 · NEVER</p>
+            <h3 class="text-xl font-bold text-brand-ink mb-3">Disappear mid-job</h3>
+            <p class="text-brand-muted leading-relaxed">
+              Same crew, every visit. Single project lead. Daily contact. You'll always know who is on site and who to call.
+            </p>
+          </div>
+          <div class="bg-brand-surface-alt rounded-xl p-7 border-l-4 border-brand-amber">
+            <p class="text-brand-amber font-mono text-xs font-bold mb-3">03 · NEVER</p>
+            <h3 class="text-xl font-bold text-brand-ink mb-3">Spring surprises at handover</h3>
+            <p class="text-brand-muted leading-relaxed">
+              If something changes, we tell you the day it happens — not at handover. No "by the way" invoices, ever.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brand promise — leads with team-aligned framing (B2B variation of the
+         "Independent Honesty" voice). Now followed by the price-positioning
+         line that filters out price-shoppers. -->
+    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          On your team
+        </p>
+        <p class="text-3xl md:text-5xl font-bold leading-tight">
+          We work as part of your team —<br class="hidden md:inline" />
+          <span class="text-brand-amber">not against it.</span>
+        </p>
+        <p class="mt-8 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          Our independent voice is for your client, not against your build. With your project,
+          we're the contractor — coordinated, on schedule, on budget.
+        </p>
+
+        <!-- Price-positioning line — filters out price-shoppers, raises the price ceiling. -->
+        <div class="mt-12 pt-10 border-t border-white/10">
+          <p class="text-xl md:text-2xl font-bold leading-snug max-w-2xl mx-auto">
+            We're not the cheapest electrician —<br class="hidden md:inline" />
+            <span class="text-brand-amber">we're the one you call when the project matters.</span>
+          </p>
+          <p class="mt-6 text-base text-slate-400 max-w-xl mx-auto">
+            Tell us about your project. We'll tell you honestly if we're the right partner for it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA — low-commitment, builder-friendly options. -->
+    <section id="engage" class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-4xl px-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-10 md:p-16 shadow-sm">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Start the conversation
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-4">
+            Three ways in. Pick whichever's lowest friction.
+          </h2>
+          <p class="text-brand-muted leading-relaxed mb-10 max-w-xl">
+            We come back within one business day with a fit assessment and, if we're the right partner for your build, a written package quote with the timeframe locked in.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a
+              href="mailto:Info@bhtechnology.com.au?subject=Availability%20%E2%80%94%20Next%20Project"
+              class="bg-brand-amber text-brand-navy font-semibold px-6 py-5 rounded-md hover:bg-brand-amber-soft transition text-center flex flex-col items-center gap-1"
+            >
+              <span>Request availability</span>
+              <span class="text-xs font-normal opacity-80">For your next project</span>
+            </a>
+            <a
+              href="mailto:Info@bhtechnology.com.au?subject=Builder%20Partnership%20%E2%80%94%20Plans%20Attached"
+              class="bg-brand-navy text-white font-semibold px-6 py-5 rounded-md hover:bg-slate-800 transition text-center flex flex-col items-center gap-1"
+            >
+              <span>Send us your plans</span>
+              <span class="text-xs font-normal opacity-80">PDF, sketch, or floor plan</span>
+            </a>
+            <a
+              href="tel:0410323034"
+              class="border-2 border-brand-navy text-brand-navy font-semibold px-6 py-5 rounded-md hover:bg-brand-navy hover:text-white transition text-center flex flex-col items-center gap-1"
+            >
+              <span>Book a 10-min call</span>
+              <span class="text-xs font-normal opacity-80">0410 323 034</span>
+            </a>
+          </div>
+
+          <p class="mt-8 text-sm text-brand-muted">
+            Mawson Lakes office: Level 3, 1-3 Metro Parade, Mawson Lakes SA 5095. Coffee meetings welcome — we come to you.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>

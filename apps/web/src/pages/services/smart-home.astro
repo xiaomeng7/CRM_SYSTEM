@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PhoneCTA from '../../components/PhoneCTA.astro';
+
+const deliverables = [
+  'New build smart home specification from pre-wire stage through handover.',
+  'Retrofit planning for occupied homes with staged wiring and minimal rework.',
+  'Builder-ready packages covering scenes, keypad logic, and commissioning windows.',
+  'Unified control through app, voice, and wall scenes for lighting, access, and comfort.',
+  'Future-ready wiring paths for later expansion without opening finished walls.',
+];
+
+const suitableFor = [
+  'Luxury new builds where electrical and automation are designed together.',
+  'Homeowners upgrading lighting, access, and comfort into one control workflow.',
+  'Builders handing over homes that need predictable, documented smart control.',
+];
+
+const process = [
+  { n: '01', title: 'Define the control plan', body: 'We map spaces, lifestyle patterns, and builder milestones before a single cable is run.' },
+  { n: '02', title: 'Design and pre-wire', body: 'We lock wiring routes, panel locations, and device requirements for current and future stages.' },
+  { n: '03', title: 'Program and commission', body: 'We build scenes, app access, and voice logic, then test on site room by room.' },
+  { n: '04', title: 'Handover and support', body: 'You receive system credentials, scene map, and practical guidance for daily use and future additions.' },
+];
+---
+
+<Layout
+  title="Smart Home Systems — Better Home Technology | Adelaide"
+  description="Integrated smart home systems for Adelaide homeowners and builders: lighting, security, access, comfort, automation, and future-ready wiring."
+>
+  <Header />
+
+  <main>
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          Smart home
+        </p>
+        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
+          Smart home is not gadgets.
+          <span class="text-brand-amber"> It is a complete electrical system.</span>
+        </h1>
+        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
+          We integrate lighting, security, access, comfort, and automation into one predictable system for
+          Adelaide homeowners and builders.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Why it matters
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6">
+          Fragmented installs create expensive rework.
+        </h2>
+        <p class="text-lg text-brand-muted leading-relaxed max-w-4xl">
+          Separate vendors for lighting, alarms, intercom, and app control usually leave gaps in wiring,
+          unstable automations, and poor handover. We solve this by specifying one electrical architecture at
+          design stage and commissioning it as one system at completion.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          What we do
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
+          Smart home delivery across new build, retrofit, and builder handover.
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {deliverables.map((item) => (
+            <div class="bg-white rounded-xl p-7 border border-slate-200">
+              <p class="text-brand-ink leading-relaxed">{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Suitable for
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
+          Homeowners and builders who want one coherent system.
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {suitableFor.map((item) => (
+            <div class="border-l-4 border-brand-amber pl-5">
+              <p class="text-brand-ink leading-relaxed">{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Process
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-12">
+          Four stages from concept to lived-in control.
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {process.map((step) => (
+            <div class="bg-white rounded-xl p-6 border border-slate-200">
+              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{step.n}</p>
+              <h3 class="text-lg font-bold text-brand-ink mb-2">{step.title}</h3>
+              <p class="text-brand-muted text-sm leading-relaxed">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          Next step
+        </p>
+        <p class="text-3xl md:text-5xl font-bold leading-tight">
+          Planning a smart home project in Adelaide?
+        </p>
+        <p class="mt-8 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          Send your plans or current layout. We will confirm whether the system should be done in one phase
+          or staged across build and retrofit.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
+            Discuss smart home scope
+          </a>
+          <a href="/for-builders" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white/10 transition">
+            Builder pathway
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>

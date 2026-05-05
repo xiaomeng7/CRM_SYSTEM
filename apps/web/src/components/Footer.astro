@@ -1,0 +1,91 @@
+---
+const services = [
+  { href: '/services/smart-home', label: 'Smart Home' },
+  { href: '/services/cctv-security', label: 'CCTV & Security' },
+  { href: '/services/switchboard', label: 'Switchboard' },
+  { href: '/services/ev-chargers', label: 'EV Chargers' },
+  { href: '/services', label: 'All Services' },
+];
+
+const specialty = [
+  { href: '/pre-purchase-inspection', label: 'Pre-Purchase Inspection' },
+  { href: '/for-builders', label: 'Builder Partnerships' },
+  { href: '/services/smart-home', label: 'Smart Home Advisory' },
+  { href: '/contact', label: 'Project Assessment' },
+];
+
+const company = [
+  { href: '/about', label: 'About' },
+  { href: '/services', label: 'Services' },
+  { href: '/contact', label: 'Contact' },
+];
+
+const year = new Date().getFullYear();
+---
+<footer class="bg-brand-navy text-slate-300">
+  <div class="mx-auto max-w-6xl px-6 py-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+      <div class="col-span-2 md:col-span-1">
+        <p class="text-white font-bold text-lg mb-3">Better Home Technology</p>
+        <p class="text-sm leading-relaxed text-slate-400">
+          Licensed Adelaide electricians.<br />
+          Smart home, premium residential, builder partnerships.
+        </p>
+        <div class="mt-6 space-y-1 text-sm">
+          <p>
+            <a href="tel:0410323034" class="text-brand-amber font-semibold hover:text-brand-amber-soft">
+              0410 323 034
+            </a>
+          </p>
+          <p>
+            <a href="mailto:Info@bhtechnology.com.au" class="hover:text-white">
+              Info@bhtechnology.com.au
+            </a>
+          </p>
+          <address class="text-slate-400 pt-3 not-italic text-sm leading-relaxed">
+            Level 3, 1-3 Metro Parade<br />
+            Mawson Lakes SA 5095
+          </address>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Services</p>
+        <ul class="space-y-2 text-sm">
+          {services.map((link) => (
+            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Specialty</p>
+        <ul class="space-y-2 text-sm">
+          {specialty.map((link) => (
+            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Company</p>
+        <ul class="space-y-2 text-sm">
+          {company.map((link) => (
+            <li><a href={link.href} class="hover:text-white">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-4 text-xs text-slate-500">
+      <p>
+        © {year} Better Home Technology Pty Ltd ·
+        ABN 56 613 514 640 ·
+        Electrical Contractor Licence PGE275430 ·
+        Fully Insured ·
+        3-Year Workmanship Warranty
+      </p>
+      <p>Independent · No Sales Commission</p>
+    </div>
+  </div>
+</footer>

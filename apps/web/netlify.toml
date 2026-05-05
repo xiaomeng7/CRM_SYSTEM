@@ -1,6 +1,22 @@
-# Netlify deployment for @bht/web (BHT Revenue OS public UI)
-# In Netlify: set Base directory to apps/web, Publish directory to public (or leave default if repo root is apps/web)
+# Netlify deployment for @bht/web (BHT Revenue OS public marketing site, Astro)
+#
+# Netlify CLI auto-detected this as a pnpm monorepo and runs the build from
+# the repo root, so we use the workspace --filter form for both the install
+# and build commands and resolve the publish path from root.
 
 [build]
-  publish = "public"
-  command = "npm run build"
+  publish = "apps/web/dist"
+  command = "pnpm install --filter @bht/web... && pnpm --filter @bht/web build"
+  functions = "apps/web/netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Pre-purchase booking form posts here. Function copied from
+# apps/web/pre-purchase-landing/netlify/functions/ so the marketing site is
+# self-contained and doesn't depend on the legacy landing being deployed.
+[[redirects]]
+  from = "/api/apply-pre-purchase"
+  to = "/.netlify/functions/apply-pre-purchase"
+  status = 200
+  force = true

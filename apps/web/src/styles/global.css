@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Brand tokens — see docs/brand-brief.md */
+@theme {
+  --color-brand-navy: #0E1E33;
+  --color-brand-amber: #F59E0B;
+  --color-brand-amber-soft: #FBBF24;
+  --color-brand-ink: #1E293B;
+  --color-brand-muted: #64748B;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-surface-alt: #F8FAFC;
+
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-brand-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add bottom padding on mobile to leave room for sticky phone CTA */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 80px;
+  }
+}

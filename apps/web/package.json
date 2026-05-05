@@ -1,14 +1,27 @@
 {
   "name": "@bht/web",
   "version": "1.0.0",
-  "description": "BHT Revenue OS — Public-facing UI, landing pages, client portal. Deploy to Netlify.",
+  "description": "BHT Revenue OS — Public marketing site (Astro). Deploy to Netlify.",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "npx serve public -l 3001",
-    "build": "echo 'Static site; no build step required for placeholder.'",
-    "preview": "npx serve public -l 3001"
+    "dev": "astro dev --port 3001",
+    "start": "astro dev --port 3001",
+    "build": "astro build",
+    "preview": "astro preview --port 3001",
+    "astro": "astro",
+    "check": "astro check",
+    "deploy:preview": "astro build && cd ../.. && npx --yes netlify-cli deploy --no-build --dir=apps/web/dist",
+    "deploy:prod": "astro build && cd ../.. && npx --yes netlify-cli deploy --no-build --dir=apps/web/dist --prod"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "astro": "^5.0.0"
   },
   "devDependencies": {
-    "serve": "^14.2.0"
+    "@astrojs/check": "^0.9.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.0"
   }
 }
