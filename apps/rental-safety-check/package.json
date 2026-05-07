@@ -1,0 +1,13 @@
+{
+  "name": "@bht/rental-safety-check",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rental Electrical Safety Check — Netlify static site + functions",
+  "scripts": {
+    "dev": "npx serve . -l 3005",
+    "preview": "npx serve . -l 3005"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

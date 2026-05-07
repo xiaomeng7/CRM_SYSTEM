@@ -1,0 +1,39 @@
+---
+const navLinks = [
+  { href: '/services', label: 'Services' },
+  { href: '/pre-purchase-inspection', label: 'Pre-Purchase' },
+  { href: '/for-builders', label: 'For Builders' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+<header class="bg-brand-navy text-white sticky top-0 z-40 border-b border-white/10">
+  <div class="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
+    <a href="/" class="font-bold text-lg tracking-tight hover:text-brand-amber transition">
+      Better Home Technology
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm">
+      {navLinks.map((link) => (
+        <a href={link.href} class="text-slate-300 hover:text-white transition">
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <a
+      href="tel:0410323034"
+      class="hidden md:inline-flex items-center gap-2 text-brand-amber font-semibold text-sm"
+    >
+      <span aria-hidden="true">📞</span> 0410 323 034
+    </a>
+
+    <!-- Mobile: just show phone button compactly -->
+    <a
+      href="tel:0410323034"
+      class="md:hidden text-brand-amber font-semibold text-sm"
+    >
+      Call
+    </a>
+  </div>
+</header>

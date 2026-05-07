@@ -1,0 +1,55 @@
+---
+import Icon from './Icon.astro';
+
+export interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  icon:
+    | 'smart-home'
+    | 'cctv'
+    | 'switchboard'
+    | 'ev'
+    | 'lighting'
+    | 'ac'
+    | 'test-tag'
+    | 'commercial';
+  featured?: boolean;
+}
+
+const { slug, title, description, icon, featured = false } = Astro.props;
+---
+<a
+  href={`/services/${slug}`}
+  class:list={[
+    'block bg-white rounded-lg p-6 border transition group relative',
+    featured
+      ? 'border-brand-amber ring-1 ring-brand-amber/20 hover:ring-brand-amber/40'
+      : 'border-slate-200 hover:border-brand-navy hover:shadow-sm',
+  ]}
+>
+  {featured && (
+    <p class="text-brand-amber text-xs font-bold uppercase tracking-wider mb-3">
+      Featured
+    </p>
+  )}
+  <div
+    class:list={[
+      'mb-5 inline-flex items-center justify-center w-16 h-16 rounded-lg transition',
+      featured
+        ? 'bg-brand-amber/10 text-brand-amber'
+        : 'bg-brand-surface-alt text-brand-navy group-hover:bg-brand-navy group-hover:text-brand-amber',
+    ]}
+  >
+    <Icon name={icon} class="w-9 h-9" />
+  </div>
+  <h3 class="text-lg font-bold text-brand-ink mb-2 group-hover:text-brand-navy">
+    {title}
+  </h3>
+  <p class="text-base text-brand-muted leading-relaxed">
+    {description}
+  </p>
+  <p class="mt-5 text-sm font-semibold text-brand-navy group-hover:text-brand-amber transition">
+    Learn more →
+  </p>
+</a>

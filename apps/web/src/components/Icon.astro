@@ -1,0 +1,225 @@
+---
+// Lucide-inspired line icons. Use currentColor for stroke so colors come from
+// parent (e.g. text-brand-amber).
+export interface Props {
+  name:
+    | 'smart-home'
+    | 'cctv'
+    | 'switchboard'
+    | 'ev'
+    | 'lighting'
+    | 'ac'
+    | 'test-tag'
+    | 'commercial'
+    | 'inspection'
+    | 'blueprint';
+  class?: string;
+}
+
+const { name, class: className = 'w-9 h-9' } = Astro.props;
+---
+{name === 'smart-home' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 12 12 3l9 9" />
+    <path d="M5 10v10h14V10" />
+    <path d="M9 17h6" />
+    <path d="M12 14v3" />
+    <circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none" />
+    <path d="M14.5 9.5a3.5 3.5 0 0 0-5 0" />
+    <path d="M16 8a5.5 5.5 0 0 0-8 0" />
+  </svg>
+)}
+{name === 'cctv' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 7h13l4 4v6H3z" />
+    <circle cx="9" cy="13" r="2.5" />
+    <path d="M3 22v-5M7 22v-2" />
+  </svg>
+)}
+{name === 'switchboard' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- Circuit breaker panel: outer box + label strip + 2 rows of breakers,
+         one tripped (filled) to give the icon character. -->
+    <rect x="4" y="3" width="16" height="18" rx="1.5" />
+    <line x1="4" y1="7.5" x2="20" y2="7.5" />
+    <!-- Row 1 of breakers -->
+    <rect x="6" y="10" width="2.6" height="3" rx="0.3" />
+    <rect x="9.7" y="10" width="2.6" height="3" rx="0.3" />
+    <rect x="13.4" y="10" width="2.6" height="3" rx="0.3" />
+    <rect x="17.1" y="10" width="2.6" height="3" rx="0.3" />
+    <!-- Row 2 of breakers — one tripped (filled), giving the icon character -->
+    <rect x="6" y="15" width="2.6" height="3" rx="0.3" />
+    <rect x="9.7" y="15" width="2.6" height="3" rx="0.3" fill="currentColor" stroke="none" />
+    <rect x="13.4" y="15" width="2.6" height="3" rx="0.3" />
+    <rect x="17.1" y="15" width="2.6" height="3" rx="0.3" />
+  </svg>
+)}
+{name === 'ev' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- Car body -->
+    <path d="M5 17h11V11l-2-3H7L5 11z" />
+    <circle cx="8" cy="17" r="1.6" />
+    <circle cx="13" cy="17" r="1.6" />
+    <!-- Charging plug & lightning indicator -->
+    <path d="M18 9v6a2 2 0 0 0 2 2v-3" />
+    <path d="M21 4l-2 2.5h1.5L19 9" stroke-width="1.4" />
+  </svg>
+)}
+{name === 'lighting' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M9 21h6" />
+    <path d="M10 18h4" />
+    <path d="M15.5 14a5 5 0 1 0-7 0c.5.5 1 1.5 1 2v2h5v-2c0-.5.5-1.5 1-2z" />
+  </svg>
+)}
+{name === 'ac' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- Snowflake — universally reads as cold/AC -->
+    <path d="M12 3v18" />
+    <path d="M3 12h18" />
+    <path d="M5.6 5.6 18.4 18.4" />
+    <path d="M5.6 18.4 18.4 5.6" />
+    <path d="M12 6 10 4M12 6l2-2M12 18l-2 2M12 18l2 2" />
+    <path d="M6 12 4 10M6 12l-2 2M18 12l2-2M18 12l2 2" />
+  </svg>
+)}
+{name === 'test-tag' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- Battery with charge bars + small + terminal -->
+    <rect x="3" y="7" width="16" height="11" rx="2" />
+    <line x1="20" y1="11" x2="20" y2="14" stroke-width="2" />
+    <rect x="5" y="9.5" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" />
+    <rect x="9" y="9.5" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" />
+    <rect x="13" y="9.5" width="3" height="6" rx="0.5" fill="currentColor" stroke="none" opacity="0.5" />
+  </svg>
+)}
+{name === 'inspection' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- House outline -->
+    <path d="M3 12 11 4l8 8" />
+    <path d="M5 10v10h7" />
+    <!-- Magnifier overlapping bottom-right of house -->
+    <circle cx="16" cy="16" r="3.5" />
+    <line x1="18.5" y1="18.5" x2="21" y2="21" />
+  </svg>
+)}
+{name === 'blueprint' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- Floor plan / blueprint grid -->
+    <rect x="3" y="3" width="18" height="18" rx="1" />
+    <path d="M3 9h18" />
+    <path d="M9 9v12" />
+    <path d="M9 15h7" />
+    <path d="M16 15v6" />
+  </svg>
+)}
+{name === 'commercial' && (
+  <svg
+    class={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <!-- Office tower (tall) + adjacent shorter building = "commercial" -->
+    <path d="M3 21V9l5-3 5 3v12" />
+    <path d="M13 21V13l4-1.5 4 1.5v8" />
+    <path d="M3 21h18" />
+    <!-- Windows on tall tower -->
+    <rect x="5.5" y="11" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="9" y="11" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="5.5" y="14" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="9" y="14" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="5.5" y="17" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="9" y="17" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <!-- Windows on shorter building -->
+    <rect x="14.5" y="15" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="18" y="15" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="14.5" y="18" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+    <rect x="18" y="18" width="1.5" height="1.5" fill="currentColor" stroke="none" />
+  </svg>
+)}

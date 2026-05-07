@@ -3,7 +3,7 @@
  * GET  /api/inspections/job-lookup?job_number=XXX&product=rental  — technician job lookup
  * POST /api/inspections/pre-purchase               — submit pre-purchase technician form
  * POST /api/inspections/rental                     — submit rental technician form
- * POST /api/inspections/:id/invoice                — generate Stripe invoice
+ * POST /api/inspections/:id/invoice                — create ServiceM8 invoice
  * GET  /api/inspections/rental-list                — list rental inspections (admin)
  * GET  /api/inspections                            — list pre-purchase inspections (admin)
  * GET  /api/inspections/public/:id                 — client report (CORS-open, pre-purchase)
@@ -15,47 +15,7 @@
 const router = require('express').Router();
 const { pool } = require('../../lib/db');
 const { runDecisionEngine } = require('../../services/pre-purchase-decision-engine');
-const { sendSMS } = require('@bht/integrations');
-
-// ─── HELPERS ────────────────────────────────────────────────────────────────
-
-function generateInvoiceNumber(prefix) {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const rand = Math.floor(Math.random() * 9000) + 1000;
-  return `${prefix}-${y}${m}-${rand}`;
-}
-
-async function createStripeCheckoutSession({ amountCents, description, customerEmail, customerName, successUrl, cancelUrl, metadata }) {
-  const stripeKey = process.env.STRIPE_SECRET_KEY;
-  if (!stripeKey) throw new Error('STRIPE_SECRET_KEY not configured');
-
-  const body = new URLSearchParams();
-  body.set('mode', 'payment');
-  body.set('success_url', successUrl);
-  body.set('cancel_url', cancelUrl);
-  body.set('line_items[0][price_data][currency]', 'aud');
-  body.set('line_items[0][price_data][unit_amount]', String(amountCents));
-  body.set('line_items[0][price_data][product_data][name]', description);
-  body.set('line_items[0][quantity]', '1');
-  if (customerEmail) body.set('customer_email', customerEmail);
-  if (metadata) {
-    Object.entries(metadata).forEach(([k, v]) => body.set(`metadata[${k}]`, String(v)));
-  }
-
-  const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${stripeKey}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: body.toString(),
-  });
-  const data = await resp.json();
-  if (!resp.ok) throw new Error(data.error?.message || 'Stripe error');
-  return data; // { id, url, ... }
-}
+const { sendSMS, ServiceM8Client } = require('@bht/integrations');
 
 // ─── RENTAL DECISION ENGINE ──────────────────────────────────────────────────
 
@@ -372,85 +332,88 @@ router.patch('/:id/status', async (req, res) => {
 });
 
 // ─── POST /api/inspections/:id/invoice ──────────────────────────────────────
+// Creates a ServiceM8 invoice linked to the job, then records it in CRM.
 // Works for both pre_purchase and rental (query param: ?product=rental)
 router.post('/:id/invoice', async (req, res) => {
   const { id } = req.params;
   const productType = req.query.product === 'rental' ? 'rental' : 'pre_purchase';
-  const { amount_cents, contact_email, contact_name, description } = req.body || {};
+  const { amount, description } = req.body || {};
 
-  if (!amount_cents || amount_cents < 100) {
-    return res.status(400).json({ ok: false, error: 'amount_cents required (min 100)' });
+  if (!amount || Number(amount) <= 0) {
+    return res.status(400).json({ ok: false, error: 'amount required (AUD dollars, e.g. 299)' });
   }
 
   const table = productType === 'rental' ? 'rental_inspections' : 'pre_purchase_inspections';
-  const invoicePrefix = productType === 'rental' ? 'RI' : 'PP';
   const productLabel = productType === 'rental' ? 'Rental Electrical Safety Inspection' : 'Pre-Purchase Electrical Inspection';
 
   try {
-    // Fetch inspection record
     const inspR = await pool.query(`SELECT * FROM ${table} WHERE id = $1`, [id]);
     if (!inspR.rows[0]) return res.status(404).json({ ok: false, error: 'Inspection not found' });
     const insp = inspR.rows[0];
 
-    // Generate invoice number
-    const invoiceNumber = generateInvoiceNumber(invoicePrefix);
+    // Resolve ServiceM8 job UUID — from inspection record or via job_number lookup
+    let jobUuid = insp.servicem8_job_uuid || null;
+    if (!jobUuid && insp.job_number) {
+      const jobRow = await pool.query(
+        `SELECT servicem8_job_uuid FROM jobs WHERE job_number = $1 LIMIT 1`,
+        [insp.job_number]
+      );
+      jobUuid = jobRow.rows[0]?.servicem8_job_uuid || null;
+    }
+    if (!jobUuid) {
+      return res.status(400).json({ ok: false, error: 'No ServiceM8 job UUID found for this inspection. Link a job first.' });
+    }
+
     const invoiceDesc = description || `${productLabel} — ${insp.job_number || id.slice(0, 8)}`;
 
-    const baseUrl = process.env.REPORT_BASE_URL || 'https://pre-purchase.bhtechnology.com.au';
-    const successUrl = `${baseUrl}/payment-success.html?inv=${invoiceNumber}`;
-    const cancelUrl  = `${baseUrl}/payment-cancel.html`;
-
-    // Create Stripe checkout session
-    const session = await createStripeCheckoutSession({
-      amountCents: Number(amount_cents),
+    // Create invoice in ServiceM8
+    const sm8 = new ServiceM8Client();
+    const { uuid: sm8InvoiceUuid } = await sm8.createInvoice(jobUuid, {
+      amount: Number(amount),
       description: invoiceDesc,
-      customerEmail: contact_email || insp.contact_email || undefined,
-      customerName: contact_name || insp.contact_name || undefined,
-      successUrl,
-      cancelUrl,
-      metadata: { invoice_number: invoiceNumber, inspection_id: id, product_type: productType },
+      status: 'Draft',
     });
 
-    // Save invoice to DB
+    // Record in CRM inspection_invoices
+    const invoiceNumber = `SM8-${sm8InvoiceUuid.slice(0, 8).toUpperCase()}`;
     await pool.query(
       `INSERT INTO inspection_invoices
         (invoice_number, product_type, inspection_id, contact_phone, contact_email, contact_name,
-         amount_cents, description, status, payment_session_id, payment_link_url)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'pending',$9,$10)`,
+         amount_cents, description, status, payment_session_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'pending',$9)
+       ON CONFLICT DO NOTHING`,
       [
         invoiceNumber, productType, id,
         insp.contact_phone || null,
-        contact_email || insp.contact_email || null,
-        contact_name || insp.contact_name || null,
-        Number(amount_cents),
+        insp.contact_email || null,
+        insp.contact_name || null,
+        Math.round(Number(amount) * 100),
         invoiceDesc,
-        session.id,
-        session.url,
+        sm8InvoiceUuid,
       ]
     );
 
-    // Update inspection record with invoice info
+    // Update inspection row
     await pool.query(
       `UPDATE ${table} SET invoice_number=$1, invoice_amount_cents=$2, invoice_status='pending',
-       payment_session_id=$3, payment_link_url=$4, updated_at=NOW() WHERE id=$5`,
-      [invoiceNumber, Number(amount_cents), session.id, session.url, id]
+       payment_session_id=$3, updated_at=NOW() WHERE id=$4`,
+      [invoiceNumber, Math.round(Number(amount) * 100), sm8InvoiceUuid, id]
     );
 
-    // SMS payment link to client phone if available
+    // SMS client
     const phone = insp.contact_phone;
     if (phone) {
       try {
-        const dollars = (Number(amount_cents) / 100).toFixed(2);
         await sendSMS(phone,
-          `Hi from Better Home Technology! Your inspection invoice is ready. Amount: $${dollars} AUD. ` +
-          `Pay securely online: ${session.url} Invoice #${invoiceNumber}. Questions? Call 0410 323 034.`
+          `Hi from Better Home Technology! Your inspection invoice for $${Number(amount).toFixed(2)} AUD has been created. ` +
+          `Invoice #${invoiceNumber}. Our team will be in touch with payment details. Questions? Call 0410 323 034.`
         );
       } catch (smsErr) {
         console.warn('[invoice] SMS failed:', smsErr.message);
       }
     }
 
-    res.json({ ok: true, invoice_number: invoiceNumber, payment_url: session.url, session_id: session.id });
+    res.json({ ok: true, invoice_number: invoiceNumber, servicem8_invoice_uuid: sm8InvoiceUuid });
   } catch (e) {
     console.error('[invoice]', e);
     res.status(500).json({ ok: false, error: e.message });

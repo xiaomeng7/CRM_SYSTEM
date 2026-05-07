@@ -1,0 +1,153 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PhoneCTA from '../components/PhoneCTA.astro';
+
+const channels = [
+  {
+    eyebrow: 'Phone',
+    title: '0410 323 034',
+    body: 'Fastest. Mon-Fri 8am-5pm. After-hours for urgent electrical only.',
+    href: 'tel:0410323034',
+    cta: 'Call now',
+    highlight: true,
+  },
+  {
+    eyebrow: 'Email',
+    title: 'Info@bhtechnology.com.au',
+    body: "For quotes, project briefs, and partnership enquiries. We reply within one business day.",
+    href: 'mailto:Info@bhtechnology.com.au',
+    cta: 'Send an email',
+    highlight: false,
+  },
+  {
+    eyebrow: 'In person',
+    title: 'Level 3, 1-3 Metro Parade, Mawson Lakes',
+    body: "Drop in by appointment, or we'll come to you for site visits and design consults across Adelaide.",
+    href: 'https://www.google.com/maps/search/?api=1&query=Level+3,+1-3+Metro+Parade,+Mawson+Lakes+SA+5095',
+    cta: 'Get directions',
+    highlight: false,
+  },
+];
+
+const fastTracks = [
+  { eyebrow: 'Buying a property?', title: 'Pre-Purchase Inspection', body: 'Booked in 3 days. Written report in 48 hours.', href: '/pre-purchase-inspection' },
+  { eyebrow: 'Builder or designer?', title: 'For Builders & Designers', body: 'Send us your plans for a fit assessment.', href: '/for-builders' },
+];
+---
+
+<Layout
+  title="Contact — Better Home Technology | Adelaide Electricians"
+  description="Phone, email, office address. Adelaide-wide. Mawson Lakes-based. We reply within one business day."
+>
+  <Header />
+
+  <main>
+    <!-- Hero -->
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-4xl px-6 py-20 md:py-28">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          Contact
+        </p>
+        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+          Three ways to reach us.<br class="hidden md:inline" />
+          <span class="text-brand-amber">Pick the lowest friction.</span>
+        </h1>
+        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-2xl leading-relaxed">
+          We reply within one business day. For urgent electrical issues, the phone is fastest.
+        </p>
+      </div>
+    </section>
+
+    <!-- Channels -->
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {channels.map((c) => (
+            <a
+              href={c.href}
+              class:list={[
+                'block rounded-xl p-8 transition group',
+                c.highlight
+                  ? 'bg-brand-navy text-white hover:shadow-2xl'
+                  : 'bg-white border border-slate-200 hover:border-brand-amber hover:shadow-lg'
+              ]}
+              {...(c.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+            >
+              <p class:list={[
+                'text-sm font-semibold uppercase tracking-wider mb-3',
+                c.highlight ? 'text-brand-amber' : 'text-brand-amber'
+              ]}>{c.eyebrow}</p>
+              <h3 class:list={[
+                'text-xl md:text-2xl font-bold mb-3 leading-tight',
+                c.highlight ? 'text-white' : 'text-brand-ink'
+              ]}>{c.title}</h3>
+              <p class:list={[
+                'text-base leading-relaxed mb-6',
+                c.highlight ? 'text-slate-300' : 'text-brand-muted'
+              ]}>{c.body}</p>
+              <p class:list={[
+                'text-base font-semibold',
+                c.highlight ? 'text-brand-amber' : 'text-brand-navy group-hover:text-brand-amber'
+              ]}>{c.cta} →</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Fast tracks -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-4xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Or skip the conversation
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-3">
+          Already know what you need?
+        </h2>
+        <p class="text-lg text-brand-muted leading-relaxed mb-10">
+          The two pages below take you straight to a structured intake — faster than email if you've got a clear ask.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {fastTracks.map((t) => (
+            <a href={t.href} class="block bg-brand-surface-alt rounded-xl p-8 border border-slate-200 hover:border-brand-amber hover:shadow-lg transition group">
+              <p class="text-brand-amber text-sm font-semibold uppercase tracking-wider mb-3">{t.eyebrow}</p>
+              <h3 class="text-xl md:text-2xl font-bold text-brand-ink mb-3 group-hover:text-brand-navy">{t.title}</h3>
+              <p class="text-base text-brand-muted leading-relaxed mb-6">{t.body}</p>
+              <p class="text-base text-brand-navy font-semibold group-hover:text-brand-amber">Go →</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Service area -->
+    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          Service area
+        </p>
+        <p class="text-3xl md:text-5xl font-bold leading-tight">
+          Adelaide-wide.<br class="hidden md:inline" />
+          <span class="text-brand-amber">Mawson Lakes-based.</span>
+        </p>
+        <p class="mt-8 text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
+          We service all Adelaide metro suburbs. For properties further afield — call us, we'll quote travel and book accordingly.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>

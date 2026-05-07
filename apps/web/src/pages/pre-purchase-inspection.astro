@@ -1,0 +1,612 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PhoneCTA from '../components/PhoneCTA.astro';
+
+// 8 checks — each has WHAT we inspect + WHY it matters to the buyer.
+// Plain language, but technical enough to convey expertise.
+const checks = [
+  {
+    title: 'Switchboard',
+    what: 'RCDs, breaker age, circuit labelling, capacity, condition of internal wiring.',
+    why: 'An undersized or unsafe board is the most common $5,000-$15,000 finding we report.',
+  },
+  {
+    title: 'Smoke Alarms',
+    what: 'Number, location, type, interconnection, expiry date — against current SA standards.',
+    why: 'Mandatory under SA law. Missing or expired alarms delay settlement and insurance.',
+  },
+  {
+    title: 'Wiring Condition',
+    what: 'All visible wiring, junctions, cabling. Looking for old VIR, scorch marks, DIY work.',
+    why: 'Pre-1970s wiring often needs partial rewire — $8,000-$20,000 depending on home size.',
+  },
+  {
+    title: 'Power Points & Switches',
+    what: 'Polarity tested, RCD operation tested, condition of accessible fittings.',
+    why: 'Reverse polarity and unprotected circuits are immediate safety and insurance risks.',
+  },
+  {
+    title: 'Earthing & Bonding',
+    what: 'Main earth integrity, bonding to water and gas, protective device coordination.',
+    why: 'Faulty earthing means electrocution risk. Frequently missing in older Adelaide homes.',
+  },
+  {
+    title: 'Lighting Circuits',
+    what: 'Internal, external, sensor circuits — operation and compliance.',
+    why: "Pre-1990s circuits often share lighting with power, which doesn't meet current standards.",
+  },
+  {
+    title: 'Hot Water & Fixed Appliances',
+    what: 'Dedicated circuits, isolators, condition of supply to oven, cooktop, HWS.',
+    why: 'Without proper isolation, future replacement work costs more and risks non-compliance.',
+  },
+  {
+    title: 'Solar & Battery',
+    what: 'If present: inverter age, isolators, AS/NZS 4777 compliance, shutdown labelling.',
+    why: 'Non-compliant solar is illegal to leave in service. Forced retrofit costs $2,000-$5,000+.',
+  },
+];
+
+const steps = [
+  {
+    n: '01',
+    title: 'Book online or by phone',
+    body: 'Tell us the property address and your settlement date. We confirm a time that fits your contract window.',
+  },
+  {
+    n: '02',
+    title: 'On-site inspection',
+    body: 'A licensed BHT electrician inspects the property in person — typically 60-90 minutes — and photographs anything notable.',
+  },
+  {
+    n: '03',
+    title: 'Written report — within 48 hours',
+    body: "You receive a clear written report covering every check, with photos, severity ratings, and our honest opinion. Use it to negotiate or walk away.",
+  },
+];
+
+const faqs = [
+  {
+    q: 'What does the inspection actually cover?',
+    a: "A visual electrical inspection of every accessible part of the property — switchboard, wiring, points, lighting, smoke alarms, hot water, and any solar or battery. We don't pull walls apart, but we tell you exactly what's safe to assume and what isn't.",
+  },
+  {
+    q: 'Can I use the report to negotiate?',
+    a: "Yes — that's most of the point. A documented electrical fault from a licensed electrician is a strong negotiating instrument before settlement. Many clients use the report to renegotiate price or have specific items rectified by the vendor.",
+  },
+  {
+    q: 'What if you find something serious?',
+    a: "We tell you in writing, with photos and a recommendation. If we think the property isn't worth buying without major rectification, we say that — clearly, in writing. We're paid for the report, not commission on the sale.",
+  },
+  {
+    q: 'How quickly can you turn this around?',
+    a: 'Most inspections are booked within 3 business days, and the written report is sent within 48 hours of the on-site visit. Tight settlement window? Tell us — we work around it.',
+  },
+  {
+    q: 'How is this different from a building inspection?',
+    a: "A building inspector checks structure, roof, dampness, pests. They typically don't open switchboards or test electrical compliance. Our report is a focused electrical-only report by a licensed electrician — it complements a building inspection, it doesn't replace it.",
+  },
+  {
+    q: 'Do you only inspect homes in Adelaide?',
+    a: "We service all Adelaide metro suburbs. For properties further out, call us — we'll quote travel and book accordingly.",
+  },
+];
+---
+
+<Layout
+  title="Pre-Purchase Electrical Inspection — Adelaide | Better Home Technology"
+  description="Buying a home in Adelaide? Get an independent written electrical report before you sign. Booked in 3 days, written report within 48 hours of inspection. From $495."
+>
+  <Header />
+
+  <main>
+    <!-- Hero -->
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div
+        class="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style="background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0) 65%);"
+      ></div>
+
+      <div class="relative mx-auto max-w-4xl px-6 py-14 md:py-28 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          Pre-Purchase Electrical Inspection
+        </p>
+        <h1 class="text-4xl md:text-6xl font-bold leading-[1.08] md:leading-[1.05] tracking-tight">
+          Avoid a <span class="text-brand-amber">$10,000-$20,000</span><br class="hidden md:inline" />
+          electrical mistake before you buy.
+        </h1>
+        <p class="mt-6 text-lg text-slate-300 max-w-xl mx-auto leading-relaxed md:hidden">
+          7-14 day cooling-off window. Clear written verdict before commitment.
+        </p>
+        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-2xl mx-auto leading-relaxed hidden md:block">
+          Most buyers only have a 7-14 day cooling-off window. We deliver a clear written
+          electrical verdict in time for your decision - before that window closes.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center sm:items-center">
+          <a
+            href="#book"
+            class="w-full sm:w-auto min-h-12 bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition text-center"
+          >
+            Get your electrical verdict
+          </a>
+          <a
+            href="/sample-pre-purchase-report.html"
+            class="hidden md:inline text-white font-medium underline-offset-4 hover:underline px-2 py-4 text-center"
+            target="_blank"
+            rel="noopener"
+          >
+            View sample report →
+          </a>
+        </div>
+        <div class="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-slate-400">
+          <span class="flex items-center gap-2">
+            <span class="text-brand-amber" aria-hidden="true">✓</span> Licensed electrician (PGE275430)
+          </span>
+          <span class="flex items-center gap-2">
+            <span class="text-brand-amber" aria-hidden="true">●</span> Written report with photos & severity ratings
+          </span>
+          <span class="flex items-center gap-2">
+            <span class="text-brand-amber" aria-hidden="true">●</span> Use it to negotiate
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Authority trust strip -->
+    <section class="bg-brand-surface-alt py-12">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="bg-white border border-slate-200 rounded-lg p-4 text-center">
+            <p class="text-xs uppercase tracking-wider text-brand-muted mb-1">Licensed electrician</p>
+            <p class="font-bold text-brand-ink">PGE275430</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4 text-center">
+            <p class="text-xs uppercase tracking-wider text-brand-muted mb-1">Independent advice</p>
+            <p class="font-bold text-brand-ink">No repair upsell model</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4 text-center">
+            <p class="text-xs uppercase tracking-wider text-brand-muted mb-1">Decision output</p>
+            <p class="font-bold text-brand-ink">Written report</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4 text-center">
+            <p class="text-xs uppercase tracking-wider text-brand-muted mb-1">Turnaround</p>
+            <p class="font-bold text-brand-ink">24-48h after site visit</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4 text-center">
+            <p class="text-xs uppercase tracking-wider text-brand-muted mb-1">Coverage</p>
+            <p class="font-bold text-brand-ink">Adelaide local operator</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cooling-off timing block -->
+    <section class="bg-white border-y border-slate-200">
+      <div class="mx-auto max-w-5xl px-6 py-12">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3 text-center">
+          Timing matters
+        </p>
+        <h2 class="text-3xl md:text-4xl font-bold text-brand-ink tracking-tight text-center mb-4">
+          Your negotiation power usually sits inside a 7-14 day cooling-off period.
+        </h2>
+        <p class="text-lg text-brand-muted leading-relaxed text-center max-w-3xl mx-auto">
+          If electrical risks are found after that window, you are usually carrying the cost yourself.
+          We keep the process fast so you can decide, renegotiate, or walk away while options are still open.
+        </p>
+      </div>
+    </section>
+
+    <!-- Decision Output — what the report actually concludes. The 3-state
+         outcome that makes "written report" tangible. -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Your decision, in writing
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Your report will tell you one of three things.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            We don't hand you 30 pages of jargon and leave you to figure it out. Every report ends with one of three clear conclusions.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Outcome 1: SAFE -->
+          <div class="bg-brand-surface-alt rounded-xl p-7 border-l-4 border-emerald-500">
+            <p class="font-mono text-xs font-bold text-emerald-700 mb-3">OUTCOME 01</p>
+            <p class="text-2xl md:text-3xl font-bold text-brand-ink mb-3">Safe to buy</p>
+            <ul class="space-y-2 text-brand-muted leading-relaxed">
+              <li>What it means: no major electrical risks identified in accessible areas.</li>
+              <li>What to do: proceed without planning immediate upgrade works.</li>
+              <li>Typical cost posture: no near-term major electrical allowance expected.</li>
+            </ul>
+          </div>
+
+          <!-- Outcome 2: BUDGET -->
+          <div class="bg-brand-surface-alt rounded-xl p-7 border-l-4 border-brand-amber">
+            <p class="font-mono text-xs font-bold text-brand-amber mb-3">OUTCOME 02</p>
+            <p class="text-2xl md:text-3xl font-bold text-brand-ink mb-3">Buy with budget</p>
+            <ul class="space-y-2 text-brand-muted leading-relaxed">
+              <li>What it means: system is functional but ageing or partially outdated.</li>
+              <li>What to do: buy with a staged upgrade budget and use findings to negotiate.</li>
+              <li>Typical cost posture: often around $3,000-$10,000 depending on scope.</li>
+            </ul>
+          </div>
+
+          <!-- Outcome 3: WALK AWAY -->
+          <div class="bg-brand-surface-alt rounded-xl p-7 border-l-4 border-red-500">
+            <p class="font-mono text-xs font-bold text-red-700 mb-3">OUTCOME 03</p>
+            <p class="text-2xl md:text-3xl font-bold text-brand-ink mb-3">High risk — walk away</p>
+            <ul class="space-y-2 text-brand-muted leading-relaxed">
+              <li>What it means: significant issues suggest major electrical rectification risk.</li>
+              <li>What to do: renegotiate hard or exit the deal if risk profile does not stack up.</li>
+              <li>Typical cost posture: major works commonly exceed $10,000.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-10 text-center text-brand-muted">
+          One conclusion. Documented. Defensible at the negotiating table.
+        </p>
+      </div>
+    </section>
+
+    <!-- What we check -->
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            What we check — and why it matters
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Eight things every Adelaide buyer should know about a property's wiring.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            We don't open walls. We do open every switchboard and check everything visible —
+            then tell you in writing what you can assume, and what you can't.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {checks.map((check, i) => (
+            <div class="bg-white rounded-lg p-6 border border-slate-200 flex flex-col">
+              <p class="text-brand-amber font-mono text-xs font-bold mb-3">
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <h3 class="text-lg font-bold text-brand-ink mb-3">{check.title}</h3>
+              <p class="text-sm text-brand-ink leading-relaxed mb-4">
+                <span class="text-brand-muted text-xs uppercase tracking-wider font-semibold block mb-1">What we check</span>
+                {check.what}
+              </p>
+              <p class="text-sm text-brand-ink leading-relaxed mt-auto pt-3 border-t border-slate-100">
+                <span class="text-brand-amber text-xs uppercase tracking-wider font-semibold block mb-1">Why it matters</span>
+                {check.why}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works — 3 steps -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-14">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            How it works
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Three steps. No surprises.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {steps.map((step) => (
+            <div class="relative bg-brand-surface-alt rounded-xl p-8">
+              <p class="text-brand-amber font-mono text-2xl font-bold mb-4">{step.n}</p>
+              <h3 class="text-xl font-bold text-brand-ink mb-3">{step.title}</h3>
+              <p class="text-brand-muted leading-relaxed">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing + sample report -->
+    <section class="bg-brand-surface-alt py-20 md:py-24">
+      <div class="mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Pricing
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-8">
+          Honest, fixed pricing.
+        </h2>
+        <div class="bg-white rounded-2xl border border-slate-200 p-8 md:p-12 max-w-2xl mx-auto shadow-sm">
+          <p class="text-brand-amber text-sm font-semibold uppercase tracking-wider mb-2">
+            Standard residential
+          </p>
+          <p class="text-5xl md:text-6xl font-bold text-brand-ink mb-3">
+            From <span class="text-brand-amber">$495</span>
+          </p>
+          <p class="text-brand-muted">
+            Most Adelaide metro homes — fixed, including site visit and written report.
+          </p>
+          <ul class="mt-8 space-y-3 text-left max-w-sm mx-auto text-brand-ink">
+            <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Licensed BHT electrician on site</li>
+            <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Full switchboard inspection</li>
+            <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Written report with photos</li>
+            <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Severity rating per finding</li>
+            <li class="flex gap-3"><span class="text-brand-amber" aria-hidden="true">✓</span> Delivered within 48 hours</li>
+          </ul>
+          <a
+            href="/sample-pre-purchase-report.html"
+            class="mt-8 inline-flex items-center gap-2 text-brand-navy font-semibold underline underline-offset-4 hover:text-brand-amber"
+            target="_blank"
+            rel="noopener"
+          >
+            View a sample report →
+          </a>
+          <p class="mt-6 text-sm text-brand-muted">
+            Larger properties, dual-occupancy or rural homes — call for a fixed quote before you book.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brand promise -->
+    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          What you actually get
+        </p>
+        <p class="text-2xl md:text-4xl font-bold leading-tight">
+          If we don't think you should buy this house,<br class="hidden md:inline" />
+          <span class="text-brand-amber">we'll tell you — in writing.</span>
+        </p>
+        <p class="mt-8 text-slate-400 max-w-xl mx-auto leading-relaxed">
+          We're a licensed electrician — not a real estate agent and not a building inspector.
+          We're paid for the report, not the sale. That's the whole point.
+        </p>
+      </div>
+    </section>
+
+    <!-- Booking form — posts to /api/apply-pre-purchase, same schema as legacy landing -->
+    <section id="book" class="bg-brand-surface-alt py-20 pb-40 md:py-28 md:pb-28">
+      <div class="mx-auto max-w-3xl px-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-8 md:p-12 shadow-sm">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Book your inspection
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-3">
+            Book your inspection before your cooling-off period ends.
+          </h2>
+          <p class="text-brand-muted mb-8">
+            Takes less than 2 minutes. No payment required now - invoice issued on report delivery.
+          </p>
+
+          <form id="booking-form" novalidate class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="name" class="block text-sm font-semibold text-brand-ink mb-2">Your name *</label>
+                <input id="name" name="name" type="text" required
+                  placeholder="First and last name"
+                  class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+              </div>
+              <div>
+                <label for="phone" class="block text-sm font-semibold text-brand-ink mb-2">Mobile *</label>
+                <input id="phone" name="phone" type="tel" required
+                  placeholder="0412 345 678"
+                  class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-semibold text-brand-ink mb-2">Email *</label>
+              <input id="email" name="email" type="email" required
+                placeholder="you@email.com"
+                class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+            </div>
+
+            <div>
+              <label for="property_address" class="block text-sm font-semibold text-brand-ink mb-2">Property address being purchased *</label>
+              <input id="property_address" name="property_address" type="text" required
+                placeholder="e.g. 24 Prospect Rd, Prospect SA 5082"
+                class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="inspection_date" class="block text-sm font-semibold text-brand-ink mb-2">Preferred inspection date *</label>
+                <input id="inspection_date" name="inspection_date" type="date" required
+                  class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+              </div>
+              <div>
+                <label for="settlement_date" class="block text-sm font-semibold text-brand-ink mb-2">Settlement / finance deadline</label>
+                <input id="settlement_date" name="settlement_date" type="date"
+                  class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+              </div>
+            </div>
+
+            <div>
+              <label for="access_contact" class="block text-sm font-semibold text-brand-ink mb-2">Agent name &amp; number (for access)</label>
+              <input id="access_contact" name="access_contact" type="text"
+                placeholder="e.g. James Smith 0400 000 000 — Ray White Norwood"
+                class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition" />
+            </div>
+
+            <div>
+              <label for="property_type" class="block text-sm font-semibold text-brand-ink mb-2">Property type</label>
+              <select id="property_type" name="property_type"
+                class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition bg-white">
+                <option value="">Select…</option>
+                <option value="House">House</option>
+                <option value="Townhouse">Townhouse / Semi</option>
+                <option value="Unit">Unit / Apartment</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="notes" class="block text-sm font-semibold text-brand-ink mb-2">Anything else we should know</label>
+              <textarea id="notes" name="notes" rows="3"
+                placeholder="e.g. older home, visible knob-and-tube wiring, solar on roof…"
+                class="w-full px-4 py-3 border border-slate-300 rounded-md focus:border-brand-amber focus:ring-2 focus:ring-brand-amber/20 outline-none transition resize-y"></textarea>
+            </div>
+
+            <div id="form-error" class="hidden p-4 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm"></div>
+
+            <button type="submit" id="submit-btn"
+              class="w-full bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition disabled:opacity-50 disabled:cursor-not-allowed">
+              Get your electrical verdict
+            </button>
+            <p class="text-sm text-brand-muted text-center">
+              Or call <a href="tel:0410323034" class="text-brand-navy font-semibold hover:text-brand-amber">0410 323 034</a> · Invoice issued on report delivery.
+            </p>
+          </form>
+
+          <div id="form-success" class="hidden text-center py-12">
+            <div class="text-6xl mb-4" aria-hidden="true">✓</div>
+            <h3 class="text-2xl font-bold text-brand-ink mb-3">Got it — we'll be in touch.</h3>
+            <p class="text-brand-muted">
+              We've received your booking request and will confirm timing within 1 business day.
+              For urgent settlement windows, call <a href="tel:0410323034" class="text-brand-navy font-semibold hover:text-brand-amber">0410 323 034</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-3xl px-6">
+        <div class="mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            FAQ
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Common questions, honest answers.
+          </h2>
+        </div>
+        <div class="space-y-4">
+          {faqs.map((faq) => (
+            <details class="group border border-slate-200 rounded-lg overflow-hidden">
+              <summary class="cursor-pointer px-6 py-5 font-semibold text-brand-ink flex justify-between items-center gap-4 list-none hover:bg-brand-surface-alt transition">
+                <span>{faq.q}</span>
+                <span class="text-brand-amber font-mono text-2xl group-open:rotate-45 transition-transform" aria-hidden="true">+</span>
+              </summary>
+              <div class="px-6 pb-6 text-brand-muted leading-relaxed">
+                {faq.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>
+
+<script>
+  // Booking form submission. POSTs to /api/apply-pre-purchase (same schema and
+  // endpoint as the legacy pre-purchase-landing). Captures UTM/gclid/click_id
+  // from the URL automatically so attribution flows to CRM.
+  const form = document.getElementById('booking-form') as HTMLFormElement | null;
+  const errorBox = document.getElementById('form-error') as HTMLDivElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const successBox = document.getElementById('form-success') as HTMLDivElement | null;
+  const bookingSection = document.getElementById('book') as HTMLElement | null;
+  const mobilePhoneBar = document.getElementById('mobile-phone-cta') as HTMLAnchorElement | null;
+
+  function getQueryParam(key: string): string | null {
+    if (typeof window === 'undefined') return null;
+    const v = new URLSearchParams(window.location.search).get(key);
+    return v ? v.trim() || null : null;
+  }
+
+  function showError(msg: string) {
+    if (!errorBox) return;
+    errorBox.textContent = msg;
+    errorBox.classList.remove('hidden');
+    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Prevent the mobile fixed phone CTA from intercepting form interactions.
+  // When the booking section is in view, temporarily disable the floating bar.
+  if (bookingSection && mobilePhoneBar && window.matchMedia('(max-width: 767px)').matches) {
+    const togglePhoneBar = (hide: boolean) => {
+      mobilePhoneBar.classList.toggle('opacity-0', hide);
+      mobilePhoneBar.classList.toggle('pointer-events-none', hide);
+      mobilePhoneBar.classList.toggle('transition-opacity', true);
+      mobilePhoneBar.classList.toggle('duration-200', true);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const inBookingArea = entries.some((entry) => entry.isIntersecting);
+        togglePhoneBar(inBookingArea);
+      },
+      { root: null, threshold: 0.15, rootMargin: '0px 0px -120px 0px' }
+    );
+
+    observer.observe(bookingSection);
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox?.classList.add('hidden');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+      }
+
+      const fd = new FormData(form);
+      const payload: Record<string, string | null> = {};
+      fd.forEach((v, k) => { payload[k] = typeof v === 'string' ? v : null; });
+
+      // Attach attribution from URL params (matches legacy pre-purchase-landing).
+      payload.utm_source    = getQueryParam('utm_source');
+      payload.utm_medium    = getQueryParam('utm_medium');
+      payload.utm_campaign  = getQueryParam('utm_campaign');
+      payload.utm_content   = getQueryParam('utm_content');
+      payload.gclid         = getQueryParam('gclid');
+      payload.click_id      = getQueryParam('click_id');
+      payload.page_url      = typeof window !== 'undefined' ? window.location.href : null;
+
+      try {
+        const res = await fetch('/api/apply-pre-purchase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data?.error || `Request failed (${res.status})`);
+        }
+        // Success — swap form for success message
+        form.classList.add('hidden');
+        successBox?.classList.remove('hidden');
+        successBox?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err: any) {
+        showError(err?.message || 'Something went wrong. Please call 0410 323 034.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Get your electrical verdict';
+        }
+      }
+    });
+  }
+</script>

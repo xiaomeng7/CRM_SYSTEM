@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PhoneCTA from '../../components/PhoneCTA.astro';
+
+const serviceGroups = [
+  {
+    title: 'Electrical infrastructure',
+    body: 'Switchboards, protection devices, circuit planning, and capacity upgrades for premium homes, renovations, and new builds.',
+    href: '/services/switchboard',
+    cta: 'Switchboard & capacity upgrades →',
+  },
+  {
+    title: 'Smart home & automation',
+    body: 'Lighting, comfort, access, and security integrated as one system with app, scene, and voice control.',
+    href: '/services/smart-home',
+    cta: 'Smart home systems →',
+  },
+  {
+    title: 'Security & CCTV',
+    body: 'Camera placement strategy, stable recording, secure remote viewing, and practical handover for real day-to-day use.',
+    href: '/services/cctv-security',
+    cta: 'CCTV & security systems →',
+  },
+  {
+    title: 'EV charging',
+    body: 'Assessment-first EV charger design around switchboard readiness, cable route, tariff strategy, and future solar or battery.',
+    href: '/services/ev-chargers',
+    cta: 'EV charging solutions →',
+  },
+  {
+    title: 'Inspection & advisory',
+    body: 'Independent electrical inspections and written advice before purchase, upgrade, or major electrical decisions.',
+    href: '/pre-purchase-inspection',
+    cta: 'Pre-purchase inspection & advisory →',
+  },
+];
+---
+
+<Layout
+  title="Services — Better Home Technology | Adelaide Smart Home & Premium Electrical"
+  description="Explore BHT services: electrical infrastructure, smart home automation, CCTV security, EV charging, and inspection advisory across Adelaide."
+>
+  <Header />
+
+  <main>
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          Services
+        </p>
+        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
+          Electrical systems built for
+          <span class="text-brand-amber"> premium homes and serious projects.</span>
+        </h1>
+        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
+          We are not a commodity call-out electrician. BHT focuses on luxury new builds, structured smart
+          home integration, infrastructure upgrades, and independent electrical advisory in Adelaide.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Service categories
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Five lanes. One delivery standard.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            Every scope is specified before work starts, coordinated to site conditions, and handed over with
+            clear documentation.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {serviceGroups.map((service) => (
+            <a href={service.href} class="block bg-white rounded-xl p-8 border border-slate-200 hover:border-brand-amber hover:shadow-lg transition group">
+              <h3 class="text-2xl font-bold text-brand-ink mb-3 group-hover:text-brand-navy">
+                {service.title}
+              </h3>
+              <p class="text-brand-muted leading-relaxed mb-6">
+                {service.body}
+              </p>
+              <p class="text-brand-navy font-semibold group-hover:text-brand-amber transition">
+                {service.cta}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          Need help choosing?
+        </p>
+        <p class="text-3xl md:text-5xl font-bold text-brand-ink leading-tight">
+          Tell us the property and your timeline.
+        </p>
+        <p class="mt-8 text-lg text-brand-muted leading-relaxed max-w-2xl mx-auto">
+          We will point you to the right service pathway and tell you if the scope is ready now or needs
+          staged planning.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
+            Contact BHT
+          </a>
+          <a href="tel:0410323034" class="border-2 border-brand-navy text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-navy hover:text-white transition">
+            Call 0410 323 034
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>

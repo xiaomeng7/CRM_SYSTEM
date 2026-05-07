@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PhoneCTA from '../../components/PhoneCTA.astro';
+
+const deliverables = [
+  'Assessment-first EV charger planning before any installation booking.',
+  'Switchboard readiness check for available capacity and protection requirements.',
+  'Cable route design that suits driveway, garage, or carport layout.',
+  'Charging setup aligned with current tariffs and daily vehicle usage pattern.',
+  'Future planning for solar or battery interaction where relevant.',
+];
+
+const suitableFor = [
+  'Homeowners moving to EV and wanting reliable overnight charging at home.',
+  'New build projects that need EV infrastructure integrated at design stage.',
+  'Renovation scopes where charger location and board capacity must be resolved together.',
+];
+
+const process = [
+  { n: '01', title: 'Property and load review', body: 'We assess switchboard condition, existing demand, and practical charger locations.' },
+  { n: '02', title: 'Charging design', body: 'We recommend charger type, route strategy, and control settings for your usage pattern.' },
+  { n: '03', title: 'Install and commission', body: 'Installation proceeds once readiness is confirmed, followed by testing and charger setup.' },
+  { n: '04', title: 'Usage handover', body: 'You receive clear guidance on charging schedule, app control, and future expansion options.' },
+];
+---
+
+<Layout
+  title="EV Chargers — Better Home Technology | Adelaide"
+  description="Assessment-first EV charger solutions in Adelaide with switchboard readiness, cable route planning, and future solar-battery compatibility."
+>
+  <Header />
+
+  <main>
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          EV charging
+        </p>
+        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
+          EV charger installs start with
+          <span class="text-brand-amber"> electrical readiness.</span>
+        </h1>
+        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
+          We design and install EV charging for Adelaide homeowners and builders after checking load capacity,
+          board readiness, and practical cable routing.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Why it matters
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6">
+          Not every property is ready for direct charger install.
+        </h2>
+        <p class="text-lg text-brand-muted leading-relaxed max-w-4xl">
+          Charger performance depends on switchboard capacity, route length, and total household load profile.
+          We evaluate these constraints first so your charging setup is reliable today and still workable when
+          solar, battery, or additional electrification is added later.
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          What we do
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
+          EV charging designed around infrastructure, not assumptions.
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {deliverables.map((item) => (
+            <div class="bg-white rounded-xl p-7 border border-slate-200">
+              <p class="text-brand-ink leading-relaxed">{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Suitable for
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
+          Homes and projects planning long-term electrification.
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {suitableFor.map((item) => (
+            <div class="border-l-4 border-brand-amber pl-5">
+              <p class="text-brand-ink leading-relaxed">{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-brand-surface-alt py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+          Process
+        </p>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-12">
+          Four steps from assessment to first charge.
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {process.map((step) => (
+            <div class="bg-white rounded-xl p-6 border border-slate-200">
+              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{step.n}</p>
+              <h3 class="text-lg font-bold text-brand-ink mb-2">{step.title}</h3>
+              <p class="text-brand-muted text-sm leading-relaxed">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+      <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          Next step
+        </p>
+        <p class="text-3xl md:text-5xl font-bold leading-tight">
+          Want to add EV charging at home or in a new build?
+        </p>
+        <p class="mt-8 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          Send your property details and parking layout. We will confirm readiness and the right installation
+          pathway before booking works.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
+            Request EV charging assessment
+          </a>
+          <a href="tel:0410323034" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white/10 transition">
+            Call 0410 323 034
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>

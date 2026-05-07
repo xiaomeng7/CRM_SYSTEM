@@ -93,14 +93,14 @@
       const [err, setErr]         = useState('');
 
       async function generate() {
-        const cents = Math.round(parseFloat(amount) * 100);
-        if (!cents || cents < 100) { setErr('Enter a valid amount (min $1)'); return; }
+        const dollars = parseFloat(amount);
+        if (!dollars || dollars < 1) { setErr('Enter a valid amount (min $1)'); return; }
         setLoading(true); setErr('');
         try {
           const r = await fetch(`/api/inspections/${inspection.id}/invoice?product=${productType === 'rental' ? 'rental' : 'pre_purchase'}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount_cents: cents, contact_email: email, contact_name: name }),
+            body: JSON.stringify({ amount: dollars }),
           });
           const d = await r.json();
           if (!d.ok) throw new Error(d.error);
@@ -112,10 +112,9 @@
 
       if (result) return (
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-2">
-          <p className="text-sm font-semibold text-emerald-800">✅ Invoice #{result.invoice_number} created</p>
-          <p className="text-xs text-emerald-700">Payment link SMS sent to client.</p>
-          <a href={result.payment_url} target="_blank" rel="noreferrer"
-            className="text-xs text-blue-600 underline break-all">{result.payment_url}</a>
+          <p className="text-sm font-semibold text-emerald-800">✅ Invoice #{result.invoice_number} created in ServiceM8</p>
+          <p className="text-xs text-emerald-700">SMS notification sent to client. Invoice visible in ServiceM8.</p>
+          <p className="text-xs text-slate-500 font-mono">{result.servicem8_invoice_uuid}</p>
         </div>
       );
 

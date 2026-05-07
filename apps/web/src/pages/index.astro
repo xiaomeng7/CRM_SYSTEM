@@ -1,0 +1,339 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PhoneCTA from '../components/PhoneCTA.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import Icon from '../components/Icon.astro';
+
+// Home grid: only the 4 active-investment services (Tier 1 + Tier 2).
+// LED / AC / Test & Tag / Commercial moved to /services overview page only.
+// Pre-Purchase is featured separately in the "For Property Buyers" callout.
+const services = [
+  { slug: 'smart-home',    title: 'Smart Home',           icon: 'smart-home' as const, description: 'Designed and integrated from the wiring up — not bolted on later.', featured: true },
+  { slug: 'cctv-security', title: 'CCTV & Security',      icon: 'cctv' as const,       description: 'Discreet camera systems with mobile alerts and recording.' },
+  { slug: 'switchboard',   title: 'Switchboard Upgrades', icon: 'switchboard' as const,description: 'Bring your home up to current SA safety standards.' },
+  { slug: 'ev-chargers',   title: 'EV Chargers',          icon: 'ev' as const,         description: 'Home charging that suits your car and your tariff.' },
+];
+
+// Recent Work strip — 4 photos. Captions stay specific to what's IN the photo,
+// no fake locations. When real project data is added, swap captions for project names.
+const recentWork = [
+  {
+    img: '/images/work-team-install',
+    alt: 'Better Home Technology team member installing a custom curved chandelier',
+    caption: 'On-site team — premium chandelier install',
+    href: '/for-builders',
+  },
+  {
+    img: '/images/work-kitchen-led',
+    alt: 'Modern kitchen with curved LED pendant light and warm cove lighting',
+    caption: 'Custom kitchen lighting design',
+    href: '/services/smart-home',
+  },
+  {
+    img: '/images/work-builder-wiring',
+    alt: 'Cable tray and conduit installation in a new luxury build',
+    caption: 'Luxury new build — early-stage wiring',
+    href: '/for-builders',
+  },
+  {
+    img: '/images/work-living-room-led',
+    alt: 'Family living room with layered ceiling LED design',
+    caption: 'Family living room — layered LED design',
+    href: '/services/smart-home',
+  },
+];
+---
+
+<Layout
+  title="Smart Home & Premium Electrical for Adelaide | Better Home Technology"
+  description="Licensed Adelaide electricians designing smart home systems for luxury builds, delivering pre-purchase inspections in 7 days. We'll tell you what your home needs — and what it doesn't."
+>
+  <Header />
+
+  <main>
+    <!-- Hero — text left, real install photo right -->
+    <section class="bg-brand-navy text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
+
+      <!-- Dot pattern -->
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+
+      <!-- Amber glow blob (top right, behind photo) -->
+      <div
+        class="absolute -top-32 -right-20 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style="background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0) 65%);"
+      ></div>
+
+      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <div class="grid lg:grid-cols-[1.7fr_1fr] gap-12 lg:gap-16 items-center">
+          <!-- Left: text -->
+          <div>
+            <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+              Adelaide · Mawson Lakes
+            </p>
+            <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+              Smart Home & Premium Electrical<br class="hidden md:inline" />
+              <span class="text-brand-amber">for Adelaide Homes.</span>
+            </h1>
+            <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-xl leading-relaxed">
+              Licensed electricians designing smart home systems for new luxury builds,
+              delivering pre-purchase electrical inspections in 7 days, and telling you the
+              truth about what your home needs — and what it doesn't.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 sm:items-center">
+              <a
+                href="/pre-purchase-inspection"
+                class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition text-center"
+              >
+                Book Pre-Purchase Inspection
+              </a>
+              <a
+                href="tel:0410323034"
+                class="text-white font-medium underline-offset-4 hover:underline px-2 py-4 text-center"
+              >
+                or call 0410 323 034
+              </a>
+            </div>
+            <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-slate-400">
+              <span class="flex items-center gap-2">
+                <span class="text-brand-amber" aria-hidden="true">✓</span> Licensed Electrician
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="text-brand-amber" aria-hidden="true">★</span> 5.0 Google Rating
+              </span>
+              <span class="flex items-center gap-2">
+                <span class="text-brand-amber" aria-hidden="true">●</span> Independent · No Sales Commission
+              </span>
+            </div>
+          </div>
+
+          <!-- Right: hero photo (#19 — luxury staircase + chandelier).
+               Capped to max-w-sm on lg+ so it doesn't crowd the headline. -->
+          <div class="relative max-w-sm mx-auto lg:mx-0 lg:ml-auto">
+            <!-- Subtle amber accent line behind image (top-right corner) -->
+            <div class="absolute -top-3 -right-3 w-20 h-20 border-t-2 border-r-2 border-brand-amber/60 rounded-tr-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-3 -left-3 w-20 h-20 border-b-2 border-l-2 border-brand-amber/40 rounded-bl-2xl pointer-events-none"></div>
+            <picture>
+              <source srcset="/images/hero-luxury-stairway.webp" type="image/webp" />
+              <img
+                src="/images/hero-luxury-stairway.jpg"
+                alt="Custom crystal chandelier installation on a luxury Adelaide staircase by Better Home Technology"
+                width="720"
+                height="960"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                class="relative w-full h-auto rounded-2xl shadow-2xl"
+              />
+            </picture>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust strip — middle-of-page credibility anchor. For brand traffic
+         (referrals, "Google our company name" visitors), this is the
+         "are these people legit?" answer in one row. -->
+    <section class="bg-white border-y border-slate-200">
+      <div class="mx-auto max-w-6xl px-6 py-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <p class="text-2xl md:text-3xl font-bold text-brand-navy">Licensed</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">PGE275430</p>
+          </div>
+          <div>
+            <p class="text-2xl md:text-3xl font-bold text-brand-amber">3 Years</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Workmanship Warranty</p>
+          </div>
+          <div>
+            <p class="text-2xl md:text-3xl font-bold text-brand-navy">5.0 <span class="text-brand-amber">★</span></p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Google Rating</p>
+          </div>
+          <div>
+            <p class="text-2xl md:text-3xl font-bold text-brand-navy">Local</p>
+            <p class="text-xs uppercase tracking-wider text-brand-muted mt-2">Mawson Lakes · Adelaide</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-bucket user-state routing — primary "judgment-enabling" entry points
+         for the three audiences who arrive at the homepage directly (brand
+         traffic, referrals, comparison shoppers). Replaces the older
+         2-column "Where we lead" callout. -->
+    <section class="bg-white py-20 md:py-28">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            How can we help?
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Tell us your situation. We'll show you the right path.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- Bucket 1: Buying a property — VISUALLY DOMINANT (highest-volume B2C funnel) -->
+          <a href="/pre-purchase-inspection"
+             class="group block bg-brand-navy text-white rounded-xl p-8 border border-brand-navy hover:shadow-lg transition relative">
+            <span class="absolute -top-3 left-7 bg-brand-amber text-brand-navy text-xs font-bold px-3 py-1 rounded">MOST ASKED</span>
+            <div class="text-brand-amber mb-5 inline-flex items-center justify-center w-14 h-14 rounded-lg bg-white/10">
+              <Icon name="inspection" class="w-8 h-8" />
+            </div>
+            <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">If you're</p>
+            <h3 class="text-2xl font-bold mb-3">Buying a property</h3>
+            <p class="text-slate-300 leading-relaxed mb-6">
+              Get an independent electrical inspection before you sign. Booked in 3 days,
+              written report within 48 hours of the site visit.
+            </p>
+            <p class="text-brand-amber font-semibold transition">
+              Pre-Purchase Inspection →
+            </p>
+          </a>
+
+          <!-- Bucket 2: Builder / designer -->
+          <a href="/for-builders"
+             class="group block bg-brand-surface-alt rounded-xl p-8 border border-slate-200 hover:border-brand-amber hover:shadow-lg transition">
+            <div class="text-brand-amber mb-5 inline-flex items-center justify-center w-14 h-14 rounded-lg bg-brand-amber/10">
+              <Icon name="blueprint" class="w-8 h-8" />
+            </div>
+            <p class="text-brand-muted text-xs uppercase tracking-wider font-semibold mb-1">If you're a</p>
+            <h3 class="text-2xl font-bold text-brand-ink mb-3">Builder or designer</h3>
+            <p class="text-brand-muted leading-relaxed mb-6">
+              We coordinate with your build schedule, your trades, and your client.
+              Fixed pricing, locked timeline, no drama at handover.
+            </p>
+            <p class="text-brand-navy font-semibold group-hover:text-brand-amber transition">
+              For Builders &amp; Designers →
+            </p>
+          </a>
+
+          <!-- Bucket 3: Upgrading existing home -->
+          <a href="#services"
+             class="group block bg-brand-surface-alt rounded-xl p-8 border border-slate-200 hover:border-brand-amber hover:shadow-lg transition">
+            <div class="text-brand-amber mb-5 inline-flex items-center justify-center w-14 h-14 rounded-lg bg-brand-amber/10">
+              <Icon name="smart-home" class="w-8 h-8" />
+            </div>
+            <p class="text-brand-muted text-xs uppercase tracking-wider font-semibold mb-1">If you're</p>
+            <h3 class="text-2xl font-bold text-brand-ink mb-3">Upgrading your home</h3>
+            <p class="text-brand-muted leading-relaxed mb-6">
+              Smart home, CCTV, switchboard upgrades, EV chargers — premium electrical work
+              for Adelaide homes that need an upgrade.
+            </p>
+            <p class="text-brand-navy font-semibold group-hover:text-brand-amber transition">
+              Browse services ↓
+            </p>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Grid — secondary "browse all" for SEO + detail-oriented visitors -->
+    <section id="services" class="bg-brand-surface-alt py-20 md:py-28 scroll-mt-16">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl mb-12">
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Or browse by service
+          </p>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+            Everything we do for Adelaide homes.
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
+            Same crew, every visit. Coordinated, scheduled, and on time.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {services.map((service) => (
+            <ServiceCard
+              slug={service.slug}
+              title={service.title}
+              description={service.description}
+              icon={service.icon}
+              featured={service.featured}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Work strip — 4 real install photos, 1-line captions -->
+    <section class="bg-white py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="flex items-end justify-between gap-6 mb-10">
+          <div class="max-w-xl">
+            <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+              Recent work
+            </p>
+            <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
+              Adelaide installs we're proud of.
+            </h2>
+          </div>
+          <a href="/for-builders" class="hidden sm:inline-block text-brand-navy font-semibold hover:text-brand-amber whitespace-nowrap">
+            View builder projects →
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {recentWork.map((item) => (
+            <a href={item.href} class="group block">
+              <div class="aspect-[4/3] overflow-hidden rounded-lg bg-brand-surface-alt">
+                <picture>
+                  <source srcset={`${item.img}.webp`} type="image/webp" />
+                  <img
+                    src={`${item.img}.jpg`}
+                    alt={item.alt}
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  />
+                </picture>
+              </div>
+              <p class="mt-4 text-sm font-medium text-brand-ink group-hover:text-brand-navy">
+                {item.caption}
+              </p>
+            </a>
+          ))}
+        </div>
+
+        <div class="mt-8 sm:hidden text-center">
+          <a href="/for-builders" class="text-brand-navy font-semibold hover:text-brand-amber">
+            View builder projects →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brand Promise -->
+    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
+      <div
+        class="absolute inset-0 pointer-events-none opacity-100"
+        style="background-image: radial-gradient(rgba(245, 158, 11, 0.22) 1.2px, transparent 1.5px); background-size: 28px 28px;"
+      ></div>
+
+      <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
+          Our promise
+        </p>
+        <p class="text-2xl md:text-4xl font-bold leading-tight">
+          If we don't think you should spend the money,<br class="hidden md:inline" />
+          we'll tell you — <span class="text-brand-amber">in writing.</span>
+        </p>
+        <p class="mt-8 text-slate-400 max-w-xl mx-auto leading-relaxed">
+          We're paid for advice, not commission. That's why builders, designers, and
+          property buyers trust our written opinions.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>
