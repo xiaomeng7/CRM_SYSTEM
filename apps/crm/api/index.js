@@ -43,6 +43,7 @@ const internalLeadIntakeRouter = require('./routes/internal-lead-intake');
 const b2bProspectsRouter = require('./routes/b2b-prospects');
 const inspectionsRouter = require('./routes/inspections');
 const inspectorsRouter = require('./routes/inspectors');
+const seoRouter = require('./routes/seo');
 const customers = require('./customers');
 const jobs = require('./jobs');
 
@@ -87,6 +88,14 @@ app.get('/dashboard/new-lead.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard/new-lead.html'));
 });
 
+app.get('/admin/seo/tasks', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/seo-tasks.html'));
+});
+
+app.get('/admin/seo/opportunities', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/seo-opportunities.html'));
+});
+
 app.use('/api/leads', leadsRouter);
 app.use('/api/opportunities', opportunitiesRouter);
 app.use('/api/public/leads', publicLeadsRouter);
@@ -121,6 +130,7 @@ app.use('/api/internal', internalLeadIntakeRouter);
 app.use('/api/b2b-prospects', b2bProspectsRouter);
 app.use('/api/inspections', inspectionsRouter);
 app.use('/api/inspectors', inspectorsRouter);
+app.use('/api/seo', seoRouter);
 
 app.get('/api/dashboard/stats', async (req, res) => {
   try {

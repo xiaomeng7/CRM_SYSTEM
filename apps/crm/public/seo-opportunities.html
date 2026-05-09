@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Opportunities — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .toolbar { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1rem; align-items:end; }
+    .toolbar .field { display:flex; flex-direction:column; gap:.25rem; min-width: 10rem; }
+    .toolbar label { font-size:.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
+    .toolbar input, .toolbar select, .toolbar textarea {
+      padding: .45rem .6rem; border:1px solid var(--border); border-radius:4px; background:#fff; font:inherit;
+    }
+    .toolbar textarea { min-height: 4.5rem; }
+    .toolbar .actions { margin-left:auto; }
+    .msg { margin:.5rem 0 1rem; padding:.55rem .75rem; border-radius:4px; }
+    .msg.ok { background:#d1e7dd; color:#0f5132; }
+    .msg.err { background:#f8d7da; color:#842029; }
+    .badge.status-active { background:#d1e7dd; color:#0f5132; }
+    .badge.status-paused { background:#fff3cd; color:#664d03; }
+    .badge.status-used { background:#e2e3e5; color:#41464b; }
+    .badge.priority-high { background:#f8d7da; color:#842029; }
+    .badge.priority-medium { background:#fff3cd; color:#664d03; }
+    .badge.priority-low { background:#e2e3e5; color:#41464b; }
+    .table-wrap td .actions { display:flex; gap:.35rem; flex-wrap: wrap; }
+    .seo-subnav { margin-bottom: 1rem; display: flex; gap: .5rem; }
+    .seo-subnav a { text-decoration:none; }
+    .modal-mask {
+      position:fixed; inset:0; background:rgba(0,0,0,.35);
+      display:none; align-items:center; justify-content:center; z-index:99;
+    }
+    .modal-mask.open { display:flex; }
+    .modal {
+      width:min(52rem, 95vw); max-height:90vh; overflow:auto;
+      background:#fff; border-radius:8px; border:1px solid var(--border); padding:1rem;
+    }
+    .modal h3 { margin:0 0 .75rem 0; }
+    .modal-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:.7rem; }
+    .modal-grid .full { grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/admin/seo/tasks">SEO Tasks</a>
+        <a href="/admin/seo/opportunities" class="active">SEO Opportunities</a>
+        <a href="/b2b-prospects.html">B2B Prospects</a>
+        <a href="/inspection-review.html">Inspection Review</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/growth-console.html">Growth Ops</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Internal CRM</header>
+      <div class="content">
+        <h1 class="page-title">SEO Opportunities</h1>
+        <div class="seo-subnav">
+          <a class="btn btn-sm" href="/admin/seo/tasks">Tasks</a>
+          <a class="btn btn-sm btn-primary" href="/admin/seo/opportunities">Opportunities</a>
+        </div>
+        <p class="section-note muted">Phase 1 keyword opportunities only. No dashboard, AI, publishing, or external APIs.</p>
+        <div id="msg"></div>
+
+        <h2 class="section-title">Quick Create Opportunity</h2>
+        <div class="toolbar">
+          <div class="field" style="min-width:18rem;">
+            <label for="create-keyword">Keyword</label>
+            <input id="create-keyword" type="text" placeholder="e.g. pre purchase electrical inspection adelaide" />
+          </div>
+          <div class="field">
+            <label for="create-intent">Intent</label>
+            <select id="create-intent"></select>
+          </div>
+          <div class="field">
+            <label for="create-priority">Priority</label>
+            <select id="create-priority"></select>
+          </div>
+          <div class="field">
+            <label for="create-status">Status</label>
+            <select id="create-status"></select>
+          </div>
+          <div class="field" style="min-width:16rem;">
+            <label for="create-target-page-hint">Target Page Hint</label>
+            <input id="create-target-page-hint" type="text" placeholder="/pre-purchase-inspection" />
+          </div>
+          <div class="field" style="min-width:20rem;">
+            <label for="create-notes">Notes</label>
+            <input id="create-notes" type="text" placeholder="Optional notes" />
+          </div>
+          <div class="actions">
+            <button id="btn-create" class="btn btn-primary">Create Opportunity</button>
+          </div>
+        </div>
+
+        <h2 class="section-title">Filters</h2>
+        <div class="toolbar">
+          <div class="field" style="min-width:18rem;">
+            <label for="f-keyword">Keyword Search</label>
+            <input id="f-keyword" type="text" placeholder="Search keyword..." />
+          </div>
+          <div class="field">
+            <label for="f-status">Status</label>
+            <select id="f-status"></select>
+          </div>
+          <div class="field">
+            <label for="f-intent">Intent</label>
+            <select id="f-intent"></select>
+          </div>
+          <div class="field">
+            <label for="f-priority">Priority</label>
+            <select id="f-priority"></select>
+          </div>
+          <div class="actions">
+            <button id="btn-apply-filters" class="btn">Apply</button>
+            <button id="btn-clear-filters" class="btn">Clear</button>
+            <button id="btn-refresh" class="btn">Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Keyword</th>
+                <th>Intent</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Target Page Hint</th>
+                <th>Notes</th>
+                <th>Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="opp-tbody">
+              <tr><td colspan="8" class="muted">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="edit-mask" aria-hidden="true">
+    <div class="modal">
+      <h3>Edit Opportunity</h3>
+      <div class="modal-grid">
+        <div class="field full">
+          <label for="edit-keyword">Keyword</label>
+          <input id="edit-keyword" type="text" />
+        </div>
+        <div class="field">
+          <label for="edit-intent">Intent</label>
+          <select id="edit-intent"></select>
+        </div>
+        <div class="field">
+          <label for="edit-priority">Priority</label>
+          <select id="edit-priority"></select>
+        </div>
+        <div class="field">
+          <label for="edit-status">Status</label>
+          <select id="edit-status"></select>
+        </div>
+        <div class="field full">
+          <label for="edit-target-page-hint">Target Page Hint</label>
+          <input id="edit-target-page-hint" type="text" />
+        </div>
+        <div class="field full">
+          <label for="edit-notes">Notes</label>
+          <textarea id="edit-notes"></textarea>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:1rem; justify-content:flex-end;">
+        <button id="btn-edit-cancel" class="btn">Cancel</button>
+        <button id="btn-edit-save" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    (function () {
+      var INTENTS = ['pre_purchase', 'builder', 'service', 'suburb', 'advisory', 'informational'];
+      var PRIORITIES = ['high', 'medium', 'low'];
+      var STATUSES = ['active', 'paused', 'used'];
+      var ACTOR = 'seo-control-center';
+      var rows = [];
+      var editingId = null;
+      var tbody = document.getElementById('opp-tbody');
+      var msgEl = document.getElementById('msg');
+      var editMask = document.getElementById('edit-mask');
+
+      function getSyncSecret() {
+        try {
+          return localStorage.getItem('sync_secret') || localStorage.getItem('admin_secret') || '';
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function apiFetch(url, options) {
+        var opts = options || {};
+        var headers = Object.assign({}, opts.headers || {});
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+        headers['x-actor'] = headers['x-actor'] || ACTOR;
+        var secret = getSyncSecret();
+        if (secret && !headers['x-sync-secret']) headers['x-sync-secret'] = secret;
+        return fetch(url, Object.assign({}, opts, { headers: headers }))
+          .then(function (res) {
+            return res.text().then(function (txt) {
+              var data = {};
+              try { data = txt ? JSON.parse(txt) : {}; } catch (_) {}
+              if (!res.ok) {
+                var err = new Error((data && data.error) || ('Request failed (' + res.status + ')'));
+                err.status = res.status;
+                err.body = data;
+                throw err;
+              }
+              return data;
+            });
+          });
+      }
+
+      function escapeHtml(s) {
+        var d = document.createElement('div');
+        d.textContent = s == null ? '' : String(s);
+        return d.innerHTML;
+      }
+
+      function showMsg(text, isError) {
+        if (!text) {
+          msgEl.innerHTML = '';
+          return;
+        }
+        msgEl.innerHTML = '<div class="msg ' + (isError ? 'err' : 'ok') + '">' + escapeHtml(text) + '</div>';
+      }
+
+      function fmtDate(v) {
+        if (!v) return '—';
+        var d = new Date(v);
+        if (isNaN(d.getTime())) return '—';
+        return d.toLocaleString();
+      }
+
+      function optionHtml(values, includeAll) {
+        var html = includeAll ? '<option value="">All</option>' : '';
+        values.forEach(function (v) {
+          html += '<option value="' + escapeHtml(v) + '">' + escapeHtml(v) + '</option>';
+        });
+        return html;
+      }
+
+      function initSelects() {
+        document.getElementById('create-intent').innerHTML = optionHtml(INTENTS);
+        document.getElementById('create-priority').innerHTML = optionHtml(PRIORITIES);
+        document.getElementById('create-status').innerHTML = optionHtml(STATUSES);
+        document.getElementById('create-status').value = 'active';
+
+        document.getElementById('f-status').innerHTML = optionHtml(STATUSES, true);
+        document.getElementById('f-intent').innerHTML = optionHtml(INTENTS, true);
+        document.getElementById('f-priority').innerHTML = optionHtml(PRIORITIES, true);
+
+        document.getElementById('edit-intent').innerHTML = optionHtml(INTENTS);
+        document.getElementById('edit-priority').innerHTML = optionHtml(PRIORITIES);
+        document.getElementById('edit-status').innerHTML = optionHtml(STATUSES);
+      }
+
+      function collectFilters() {
+        var f = {};
+        var keyword = (document.getElementById('f-keyword').value || '').trim();
+        var status = document.getElementById('f-status').value;
+        var intent = document.getElementById('f-intent').value;
+        var priority = document.getElementById('f-priority').value;
+        if (keyword) f.keyword = keyword;
+        if (status) f.status = status;
+        if (intent) f.intent = intent;
+        if (priority) f.priority = priority;
+        return f;
+      }
+
+      function toQuery(params) {
+        var sp = new URLSearchParams();
+        Object.keys(params).forEach(function (k) {
+          if (params[k] != null && params[k] !== '') sp.set(k, params[k]);
+        });
+        var q = sp.toString();
+        return q ? ('?' + q) : '';
+      }
+
+      function statusActions(row) {
+        var actions = [];
+        if (row.status === 'active') {
+          actions.push('<button class="btn btn-sm js-quick-status" data-id="' + row.id + '" data-next="paused">Pause</button>');
+          actions.push('<button class="btn btn-sm js-quick-status" data-id="' + row.id + '" data-next="used">Mark used</button>');
+        } else if (row.status === 'paused') {
+          actions.push('<button class="btn btn-sm js-quick-status" data-id="' + row.id + '" data-next="active">Activate</button>');
+        } else if (row.status === 'used') {
+          actions.push('<button class="btn btn-sm js-quick-status" data-id="' + row.id + '" data-next="active">Activate</button>');
+          actions.push('<button class="btn btn-sm js-quick-status" data-id="' + row.id + '" data-next="paused">Pause</button>');
+        }
+        return actions.join('');
+      }
+
+      function renderRows() {
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="8" class="muted">No opportunities found.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = rows.map(function (r) {
+          return '' +
+          '<tr>' +
+            '<td><strong>' + escapeHtml(r.keyword || '—') + '</strong></td>' +
+            '<td>' + escapeHtml(r.intent || '—') + '</td>' +
+            '<td><span class="badge priority-' + escapeHtml(r.priority) + '">' + escapeHtml(r.priority) + '</span></td>' +
+            '<td><span class="badge status-' + escapeHtml(r.status) + '">' + escapeHtml(r.status) + '</span></td>' +
+            '<td>' + escapeHtml(r.target_page_hint || '—') + '</td>' +
+            '<td>' + escapeHtml(r.notes || '—') + '</td>' +
+            '<td>' + escapeHtml(fmtDate(r.updated_at)) + '</td>' +
+            '<td><div class="actions">' +
+              '<button class="btn btn-sm js-edit" data-id="' + r.id + '">Edit</button>' +
+              statusActions(r) +
+              '<a class="btn btn-sm" href="/admin/seo/tasks?keyword_id=' + encodeURIComponent(r.id) + '">Create Task</a>' +
+            '</div></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      function loadRows() {
+        tbody.innerHTML = '<tr><td colspan="8" class="muted">Loading...</td></tr>';
+        return apiFetch('/api/seo/opportunities' + toQuery(collectFilters()))
+          .then(function (data) {
+            rows = data.items || [];
+            renderRows();
+          })
+          .catch(function (e) {
+            showMsg(e.message || 'Failed to load opportunities', true);
+            tbody.innerHTML = '<tr><td colspan="8" class="muted">Error loading opportunities.</td></tr>';
+          });
+      }
+
+      function createRow() {
+        var body = {
+          keyword: (document.getElementById('create-keyword').value || '').trim(),
+          intent: document.getElementById('create-intent').value,
+          priority: document.getElementById('create-priority').value,
+          status: document.getElementById('create-status').value || 'active',
+          target_page_hint: (document.getElementById('create-target-page-hint').value || '').trim() || null,
+          notes: (document.getElementById('create-notes').value || '').trim() || null
+        };
+        return apiFetch('/api/seo/opportunities', { method: 'POST', body: JSON.stringify(body) })
+          .then(function () {
+            showMsg('Opportunity created successfully.');
+            return loadRows();
+          })
+          .catch(function (e) {
+            showMsg(e.message || 'Create opportunity failed', true);
+          });
+      }
+
+      function openEdit(id) {
+        var row = rows.find(function (r) { return r.id === id; });
+        if (!row) return showMsg('Opportunity not found for editing', true);
+        editingId = id;
+        document.getElementById('edit-keyword').value = row.keyword || '';
+        document.getElementById('edit-intent').value = row.intent || 'informational';
+        document.getElementById('edit-priority').value = row.priority || 'medium';
+        document.getElementById('edit-status').value = row.status || 'active';
+        document.getElementById('edit-target-page-hint').value = row.target_page_hint || '';
+        document.getElementById('edit-notes').value = row.notes || '';
+        editMask.classList.add('open');
+      }
+
+      function closeEdit() {
+        editingId = null;
+        editMask.classList.remove('open');
+      }
+
+      function saveEdit() {
+        if (!editingId) return;
+        var body = {
+          keyword: (document.getElementById('edit-keyword').value || '').trim(),
+          intent: document.getElementById('edit-intent').value,
+          priority: document.getElementById('edit-priority').value,
+          status: document.getElementById('edit-status').value,
+          target_page_hint: (document.getElementById('edit-target-page-hint').value || '').trim() || null,
+          notes: (document.getElementById('edit-notes').value || '').trim() || null
+        };
+        apiFetch('/api/seo/opportunities/' + encodeURIComponent(editingId), {
+          method: 'PATCH',
+          body: JSON.stringify(body)
+        }).then(function () {
+          closeEdit();
+          showMsg('Opportunity updated successfully.');
+          return loadRows();
+        }).catch(function (e) {
+          showMsg(e.message || 'Update failed', true);
+        });
+      }
+
+      function quickStatus(id, nextStatus) {
+        apiFetch('/api/seo/opportunities/' + encodeURIComponent(id), {
+          method: 'PATCH',
+          body: JSON.stringify({ status: nextStatus })
+        }).then(function () {
+          showMsg('Status updated to ' + nextStatus + '.');
+          return loadRows();
+        }).catch(function (e) {
+          showMsg(e.message || 'Status update failed', true);
+        });
+      }
+
+      function bindEvents() {
+        document.getElementById('btn-create').addEventListener('click', createRow);
+        document.getElementById('btn-apply-filters').addEventListener('click', loadRows);
+        document.getElementById('btn-refresh').addEventListener('click', loadRows);
+        document.getElementById('btn-clear-filters').addEventListener('click', function () {
+          document.getElementById('f-keyword').value = '';
+          document.getElementById('f-status').value = '';
+          document.getElementById('f-intent').value = '';
+          document.getElementById('f-priority').value = '';
+          loadRows();
+        });
+
+        tbody.addEventListener('click', function (e) {
+          var editBtn = e.target.closest('.js-edit');
+          if (editBtn) return openEdit(editBtn.getAttribute('data-id'));
+          var quickBtn = e.target.closest('.js-quick-status');
+          if (quickBtn) return quickStatus(quickBtn.getAttribute('data-id'), quickBtn.getAttribute('data-next'));
+        });
+
+        document.getElementById('btn-edit-cancel').addEventListener('click', closeEdit);
+        document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
+        editMask.addEventListener('click', function (e) {
+          if (e.target === editMask) closeEdit();
+        });
+      }
+
+      initSelects();
+      bindEvents();
+      loadRows();
+    })();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Tasks — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .toolbar { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1rem; align-items:end; }
+    .toolbar .field { display:flex; flex-direction:column; gap:.25rem; min-width: 10rem; }
+    .toolbar label { font-size:.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
+    .toolbar input, .toolbar select, .toolbar textarea {
+      padding: .45rem .6rem; border:1px solid var(--border); border-radius:4px; background:#fff; font:inherit;
+    }
+    .toolbar textarea { min-height: 4.5rem; }
+    .toolbar .actions { margin-left:auto; }
+    .msg { margin:.5rem 0 1rem; padding:.55rem .75rem; border-radius:4px; }
+    .msg.ok { background:#d1e7dd; color:#0f5132; }
+    .msg.err { background:#f8d7da; color:#842029; }
+    .badge.status-draft { background:#e9ecef; }
+    .badge.status-pending_approval { background:#fff3cd; color:#664d03; }
+    .badge.status-approved { background:#d1e7dd; color:#0f5132; }
+    .badge.status-in_progress { background:#cff4fc; color:#055160; }
+    .badge.status-done { background:#198754; color:#fff; }
+    .badge.status-rejected { background:#f8d7da; color:#842029; }
+    .badge.priority-high { background:#f8d7da; color:#842029; }
+    .badge.priority-medium { background:#fff3cd; color:#664d03; }
+    .badge.priority-low { background:#e2e3e5; color:#41464b; }
+    .table-wrap td .actions { display:flex; gap:.35rem; flex-wrap: wrap; }
+    .seo-subnav { margin-bottom: 1rem; display: flex; gap: .5rem; }
+    .seo-subnav a { text-decoration:none; }
+    .modal-mask {
+      position:fixed; inset:0; background:rgba(0,0,0,.35);
+      display:none; align-items:center; justify-content:center; z-index:99;
+    }
+    .modal-mask.open { display:flex; }
+    .modal {
+      width:min(52rem, 95vw); max-height:90vh; overflow:auto;
+      background:#fff; border-radius:8px; border:1px solid var(--border); padding:1rem;
+    }
+    .modal h3 { margin:0 0 .75rem 0; }
+    .modal-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:.7rem; }
+    .modal-grid .full { grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/leads.html">Leads</a>
+        <a href="/opportunities.html">Opportunities</a>
+        <a href="/contacts.html">Contacts</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/admin/seo/tasks" class="active">SEO Tasks</a>
+        <a href="/admin/seo/opportunities">SEO Opportunities</a>
+        <a href="/b2b-prospects.html">B2B Prospects</a>
+        <a href="/inspection-review.html">Inspection Review</a>
+        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
+        <a href="/reply-inbox.html">Reply Inbox</a>
+        <a href="/reactivation-queue.html">SMS Campaign</a>
+        <a href="/data-maintenance.html">Data Maintenance</a>
+        <a href="/growth-console.html">Growth Ops</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="header">Internal CRM</header>
+      <div class="content" data-page="seo-tasks">
+        <h1 class="page-title">SEO Tasks</h1>
+        <div class="seo-subnav">
+          <a class="btn btn-sm btn-primary" href="/admin/seo/tasks">Tasks</a>
+          <a class="btn btn-sm" href="/admin/seo/opportunities">Opportunities</a>
+        </div>
+        <p class="section-note muted">Phase 1 task management only. No dashboard aggregation, AI, publishing, or external data sources.</p>
+
+        <div id="msg"></div>
+
+        <h2 class="section-title">Quick Create Task</h2>
+        <div class="toolbar" id="create-form">
+          <div class="field" style="min-width:18rem;">
+            <label for="create-title">Title</label>
+            <input id="create-title" type="text" placeholder="Task title" />
+          </div>
+          <div class="field">
+            <label for="create-week">Week Start Date</label>
+            <input id="create-week" type="date" />
+          </div>
+          <div class="field">
+            <label for="create-intent">Intent</label>
+            <select id="create-intent"></select>
+          </div>
+          <div class="field">
+            <label for="create-priority">Priority</label>
+            <select id="create-priority"></select>
+          </div>
+          <div class="field">
+            <label for="create-owner">Owner</label>
+            <input id="create-owner" type="text" placeholder="owner_id" />
+          </div>
+          <div class="field" style="min-width:16rem;">
+            <label for="create-target-page">Target Page</label>
+            <input id="create-target-page" type="text" placeholder="/pre-purchase-inspection" />
+          </div>
+          <div class="field" style="min-width:18rem;">
+            <label for="create-keyword-id">Keyword</label>
+            <select id="create-keyword-id"></select>
+          </div>
+          <div class="field" style="min-width:20rem;">
+            <label for="create-notes">Notes</label>
+            <input id="create-notes" type="text" placeholder="Optional notes" />
+          </div>
+          <div class="actions">
+            <button id="btn-create" class="btn btn-primary">Create Task</button>
+          </div>
+        </div>
+
+        <h2 class="section-title">Filters</h2>
+        <div class="toolbar">
+          <div class="field">
+            <label for="f-week">Week Start Date</label>
+            <input id="f-week" type="date" />
+          </div>
+          <div class="field">
+            <label for="f-status">Status</label>
+            <select id="f-status"></select>
+          </div>
+          <div class="field">
+            <label for="f-priority">Priority</label>
+            <select id="f-priority"></select>
+          </div>
+          <div class="field">
+            <label for="f-intent">Intent</label>
+            <select id="f-intent"></select>
+          </div>
+          <div class="field">
+            <label for="f-owner">Owner</label>
+            <input id="f-owner" type="text" placeholder="owner_id" />
+          </div>
+          <div class="actions">
+            <button id="btn-apply-filters" class="btn">Apply</button>
+            <button id="btn-clear-filters" class="btn">Clear</button>
+            <button id="btn-refresh" class="btn">Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Intent</th>
+                <th>Week</th>
+                <th>Owner</th>
+                <th>Target Page</th>
+                <th>Keyword</th>
+                <th>Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-tbody">
+              <tr><td colspan="10" class="muted">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="edit-mask" aria-hidden="true">
+    <div class="modal">
+      <h3>Edit Task</h3>
+      <div class="modal-grid">
+        <div class="field full">
+          <label for="edit-title">Title</label>
+          <input id="edit-title" type="text" />
+        </div>
+        <div class="field">
+          <label for="edit-priority">Priority</label>
+          <select id="edit-priority"></select>
+        </div>
+        <div class="field">
+          <label for="edit-intent">Intent</label>
+          <select id="edit-intent"></select>
+        </div>
+        <div class="field">
+          <label for="edit-owner">Owner</label>
+          <input id="edit-owner" type="text" />
+        </div>
+        <div class="field">
+          <label for="edit-keyword-id">Keyword</label>
+          <select id="edit-keyword-id"></select>
+        </div>
+        <div class="field full">
+          <label for="edit-target-page">Target Page</label>
+          <input id="edit-target-page" type="text" />
+        </div>
+        <div class="field full">
+          <label for="edit-notes">Notes</label>
+          <textarea id="edit-notes"></textarea>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:1rem; justify-content:flex-end;">
+        <button id="btn-edit-cancel" class="btn">Cancel</button>
+        <button id="btn-edit-save" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    (function () {
+      var INTENTS = ['pre_purchase', 'builder', 'service', 'suburb', 'advisory', 'informational'];
+      var PRIORITIES = ['high', 'medium', 'low'];
+      var STATUSES = ['draft', 'pending_approval', 'approved', 'in_progress', 'done', 'rejected'];
+      var ACTOR = 'seo-control-center';
+      var tasks = [];
+      var keywords = [];
+      var editingTaskId = null;
+
+      var tbody = document.getElementById('tasks-tbody');
+      var msgEl = document.getElementById('msg');
+      var editMask = document.getElementById('edit-mask');
+
+      function getSyncSecret() {
+        try {
+          return localStorage.getItem('sync_secret') || localStorage.getItem('admin_secret') || '';
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function apiFetch(url, options) {
+        var opts = options || {};
+        var headers = Object.assign({}, opts.headers || {});
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+        headers['x-actor'] = headers['x-actor'] || ACTOR;
+        var secret = getSyncSecret();
+        if (secret && !headers['x-sync-secret']) headers['x-sync-secret'] = secret;
+        return fetch(url, Object.assign({}, opts, { headers: headers }))
+          .then(function (res) {
+            return res.text().then(function (txt) {
+              var data = {};
+              try { data = txt ? JSON.parse(txt) : {}; } catch (_) {}
+              if (!res.ok) {
+                var err = new Error((data && data.error) || ('Request failed (' + res.status + ')'));
+                err.status = res.status;
+                err.body = data;
+                throw err;
+              }
+              return data;
+            });
+          });
+      }
+
+      function showMsg(text, isError) {
+        if (!text) {
+          msgEl.innerHTML = '';
+          return;
+        }
+        msgEl.innerHTML = '<div class="msg ' + (isError ? 'err' : 'ok') + '">' + escapeHtml(text) + '</div>';
+      }
+
+      function escapeHtml(s) {
+        var d = document.createElement('div');
+        d.textContent = s == null ? '' : String(s);
+        return d.innerHTML;
+      }
+
+      function fmtDate(v) {
+        if (!v) return '—';
+        var d = new Date(v);
+        if (isNaN(d.getTime())) return '—';
+        return d.toLocaleString();
+      }
+
+      function toDateInput(v) {
+        if (!v) return '';
+        var d = new Date(v);
+        if (isNaN(d.getTime())) return '';
+        return d.toISOString().slice(0, 10);
+      }
+
+      function optionHtml(values, includeAll, includeEmptyKeyword) {
+        var html = '';
+        if (includeAll) html += '<option value="">All</option>';
+        if (includeEmptyKeyword) html += '<option value="">(None)</option>';
+        values.forEach(function (v) {
+          html += '<option value="' + escapeHtml(v) + '">' + escapeHtml(v) + '</option>';
+        });
+        return html;
+      }
+
+      function keywordOptionsHtml(includeEmptyKeyword) {
+        var html = '';
+        if (includeEmptyKeyword) html += '<option value="">(None)</option>';
+        keywords.forEach(function (k) {
+          html += '<option value="' + escapeHtml(k.id) + '">' + escapeHtml(k.keyword) + ' [' + escapeHtml(k.id.slice(0, 8)) + ']</option>';
+        });
+        return html;
+      }
+
+      function initSelects() {
+        document.getElementById('create-intent').innerHTML = optionHtml(INTENTS);
+        document.getElementById('create-priority').innerHTML = optionHtml(PRIORITIES);
+        document.getElementById('f-status').innerHTML = optionHtml(STATUSES, true);
+        document.getElementById('f-priority').innerHTML = optionHtml(PRIORITIES, true);
+        document.getElementById('f-intent').innerHTML = optionHtml(INTENTS, true);
+        document.getElementById('edit-priority').innerHTML = optionHtml(PRIORITIES);
+        document.getElementById('edit-intent').innerHTML = optionHtml(INTENTS);
+      }
+
+      function refreshKeywordSelects() {
+        document.getElementById('create-keyword-id').innerHTML = keywordOptionsHtml(true);
+        document.getElementById('edit-keyword-id').innerHTML = keywordOptionsHtml(true);
+        var qsKeywordId = new URLSearchParams(window.location.search).get('keyword_id');
+        if (qsKeywordId) document.getElementById('create-keyword-id').value = qsKeywordId;
+      }
+
+      function getTaskActionButtons(task) {
+        var btns = [];
+        btns.push('<button class="btn btn-sm js-edit" data-id="' + task.id + '">Edit</button>');
+        if (task.status === 'draft') {
+          btns.push('<button class="btn btn-sm js-status" data-id="' + task.id + '" data-next="pending_approval">Submit for approval</button>');
+        } else if (task.status === 'pending_approval') {
+          btns.push('<button class="btn btn-sm btn-primary js-approve" data-id="' + task.id + '" data-action="approve">Approve</button>');
+          btns.push('<button class="btn btn-sm js-approve" data-id="' + task.id + '" data-action="reject">Reject</button>');
+        } else if (task.status === 'approved') {
+          btns.push('<button class="btn btn-sm js-status" data-id="' + task.id + '" data-next="in_progress">Start</button>');
+        } else if (task.status === 'in_progress') {
+          btns.push('<button class="btn btn-sm js-status" data-id="' + task.id + '" data-next="done">Mark done</button>');
+        }
+        return btns.join('');
+      }
+
+      function renderTasks() {
+        if (!tasks.length) {
+          tbody.innerHTML = '<tr><td colspan="10" class="muted">No tasks found.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = tasks.map(function (t) {
+          var keyword = t.keyword || t.keyword_id || '—';
+          var week = toDateInput(t.week_start_date);
+          return '' +
+            '<tr>' +
+              '<td><strong>' + escapeHtml(t.title || '—') + '</strong></td>' +
+              '<td><span class="badge status-' + escapeHtml(t.status) + '">' + escapeHtml(t.status) + '</span></td>' +
+              '<td><span class="badge priority-' + escapeHtml(t.priority) + '">' + escapeHtml(t.priority) + '</span></td>' +
+              '<td>' + escapeHtml(t.intent || '—') + '</td>' +
+              '<td>' + escapeHtml(week || '—') + '</td>' +
+              '<td>' + escapeHtml(t.owner_id || '—') + '</td>' +
+              '<td>' + escapeHtml(t.target_page || '—') + '</td>' +
+              '<td>' + escapeHtml(keyword) + '</td>' +
+              '<td>' + escapeHtml(fmtDate(t.updated_at)) + '</td>' +
+              '<td><div class="actions">' + getTaskActionButtons(t) + '</div></td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      function collectFilters() {
+        var f = {};
+        var week = document.getElementById('f-week').value;
+        var status = document.getElementById('f-status').value;
+        var priority = document.getElementById('f-priority').value;
+        var intent = document.getElementById('f-intent').value;
+        var owner = (document.getElementById('f-owner').value || '').trim();
+        if (week) f.week_start_date = week;
+        if (status) f.status = status;
+        if (priority) f.priority = priority;
+        if (intent) f.intent = intent;
+        if (owner) f.owner_id = owner;
+        return f;
+      }
+
+      function toQuery(params) {
+        var sp = new URLSearchParams();
+        Object.keys(params).forEach(function (k) {
+          if (params[k] != null && params[k] !== '') sp.set(k, params[k]);
+        });
+        var q = sp.toString();
+        return q ? ('?' + q) : '';
+      }
+
+      function loadKeywords() {
+        return apiFetch('/api/seo/opportunities')
+          .then(function (data) {
+            keywords = (data && data.items) || [];
+            refreshKeywordSelects();
+          });
+      }
+
+      function loadTasks() {
+        tbody.innerHTML = '<tr><td colspan="10" class="muted">Loading...</td></tr>';
+        var query = toQuery(collectFilters());
+        return apiFetch('/api/seo/tasks' + query)
+          .then(function (data) {
+            tasks = (data && data.items) || [];
+            renderTasks();
+          });
+      }
+
+      function createTask() {
+        var body = {
+          title: (document.getElementById('create-title').value || '').trim(),
+          week_start_date: document.getElementById('create-week').value,
+          intent: document.getElementById('create-intent').value,
+          priority: document.getElementById('create-priority').value,
+          owner_id: (document.getElementById('create-owner').value || '').trim(),
+          target_page: (document.getElementById('create-target-page').value || '').trim() || null,
+          keyword_id: document.getElementById('create-keyword-id').value || null,
+          notes: (document.getElementById('create-notes').value || '').trim() || null
+        };
+        return apiFetch('/api/seo/tasks', { method: 'POST', body: JSON.stringify(body) })
+          .then(function () {
+            showMsg('Task created successfully.');
+            return loadTasks();
+          })
+          .catch(function (e) {
+            showMsg(e.message || 'Create task failed', true);
+          });
+      }
+
+      function openEdit(taskId) {
+        var task = tasks.find(function (t) { return t.id === taskId; });
+        if (!task) {
+          showMsg('Task not found for editing', true);
+          return;
+        }
+        editingTaskId = task.id;
+        document.getElementById('edit-title').value = task.title || '';
+        document.getElementById('edit-priority').value = task.priority || 'medium';
+        document.getElementById('edit-intent').value = task.intent || 'informational';
+        document.getElementById('edit-owner').value = task.owner_id || '';
+        document.getElementById('edit-target-page').value = task.target_page || '';
+        document.getElementById('edit-notes').value = task.notes || '';
+        document.getElementById('edit-keyword-id').value = task.keyword_id || '';
+        editMask.classList.add('open');
+      }
+
+      function closeEdit() {
+        editingTaskId = null;
+        editMask.classList.remove('open');
+      }
+
+      function saveEdit() {
+        if (!editingTaskId) return;
+        var body = {
+          title: (document.getElementById('edit-title').value || '').trim(),
+          priority: document.getElementById('edit-priority').value,
+          intent: document.getElementById('edit-intent').value,
+          owner_id: (document.getElementById('edit-owner').value || '').trim(),
+          target_page: (document.getElementById('edit-target-page').value || '').trim() || null,
+          notes: (document.getElementById('edit-notes').value || '').trim() || null,
+          keyword_id: document.getElementById('edit-keyword-id').value || null
+        };
+        apiFetch('/api/seo/tasks/' + encodeURIComponent(editingTaskId), {
+          method: 'PATCH',
+          body: JSON.stringify(body)
+        }).then(function () {
+          closeEdit();
+          showMsg('Task updated successfully.');
+          return loadTasks();
+        }).catch(function (e) {
+          showMsg(e.message || 'Update failed', true);
+        });
+      }
+
+      function runStatusAction(taskId, nextStatus) {
+        apiFetch('/api/seo/tasks/' + encodeURIComponent(taskId) + '/status', {
+          method: 'POST',
+          body: JSON.stringify({ status: nextStatus })
+        }).then(function () {
+          showMsg('Task status updated to ' + nextStatus + '.');
+          return loadTasks();
+        }).catch(function (e) {
+          showMsg(e.message || 'Status update failed', true);
+        });
+      }
+
+      function runApproveAction(taskId, action) {
+        apiFetch('/api/seo/tasks/' + encodeURIComponent(taskId) + '/approve', {
+          method: 'POST',
+          headers: { 'x-role': 'owner' },
+          body: JSON.stringify({ action: action })
+        }).then(function () {
+          showMsg('Task ' + (action === 'approve' ? 'approved' : 'rejected') + '.');
+          return loadTasks();
+        }).catch(function (e) {
+          showMsg(e.message || 'Approval action failed', true);
+        });
+      }
+
+      function bindEvents() {
+        document.getElementById('btn-create').addEventListener('click', createTask);
+        document.getElementById('btn-apply-filters').addEventListener('click', loadTasks);
+        document.getElementById('btn-refresh').addEventListener('click', loadTasks);
+        document.getElementById('btn-clear-filters').addEventListener('click', function () {
+          document.getElementById('f-week').value = '';
+          document.getElementById('f-status').value = '';
+          document.getElementById('f-priority').value = '';
+          document.getElementById('f-intent').value = '';
+          document.getElementById('f-owner').value = '';
+          loadTasks();
+        });
+
+        tbody.addEventListener('click', function (e) {
+          var editBtn = e.target.closest('.js-edit');
+          if (editBtn) return openEdit(editBtn.getAttribute('data-id'));
+          var statusBtn = e.target.closest('.js-status');
+          if (statusBtn) return runStatusAction(statusBtn.getAttribute('data-id'), statusBtn.getAttribute('data-next'));
+          var approveBtn = e.target.closest('.js-approve');
+          if (approveBtn) return runApproveAction(approveBtn.getAttribute('data-id'), approveBtn.getAttribute('data-action'));
+        });
+
+        document.getElementById('btn-edit-cancel').addEventListener('click', closeEdit);
+        document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
+        editMask.addEventListener('click', function (e) {
+          if (e.target === editMask) closeEdit();
+        });
+      }
+
+      function defaultWeekMonday() {
+        var d = new Date();
+        var day = d.getDay();
+        var diff = (day === 0 ? -6 : 1 - day);
+        d.setDate(d.getDate() + diff);
+        return d.toISOString().slice(0, 10);
+      }
+
+      function init() {
+        initSelects();
+        document.getElementById('create-week').value = defaultWeekMonday();
+        bindEvents();
+        Promise.all([loadKeywords(), loadTasks()])
+          .catch(function (e) {
+            showMsg(e.message || 'Failed to initialize page', true);
+          });
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
+
