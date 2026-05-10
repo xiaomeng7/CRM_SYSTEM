@@ -1,35 +1,72 @@
 ---
 import '../styles/global.css';
+import SeoHead from '../components/SeoHead.astro';
 
 export interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  canonicalPath?: string;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 const {
   title = 'Better Home Technology — Adelaide Smart Home & Premium Electrical',
   description = 'Licensed Adelaide electricians. Smart home design for luxury builds, pre-purchase electrical inspections, switchboard upgrades. We tell you the truth about what your home needs.',
-  ogImage = '/og-default.png',
+  ogImage = '/og-default.svg',
+  noindex = false,
+  ogType = 'website',
+  canonicalPath,
+  structuredData = [],
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const canonical = new URL(canonicalPath || Astro.url.pathname, Astro.site).toString();
+const businessName = 'Better Home Technology';
+const businessPhone = '+61-410-323-034';
+const businessUrl = 'https://bhtechnology.com.au';
+const businessAddress = {
+  '@type': 'PostalAddress',
+  addressLocality: 'Adelaide',
+  addressRegion: 'SA',
+  addressCountry: 'AU',
+};
+
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: businessName,
+  url: businessUrl,
+  logo: new URL('/favicon.svg', Astro.site).toString(),
+  sameAs: ['https://www.google.com/search?q=Better+Home+Technology+Adelaide'],
+};
+
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: businessName,
+  telephone: businessPhone,
+  url: businessUrl,
+  image: new URL(ogImage, Astro.site).toString(),
+  areaServed: 'Adelaide',
+  address: businessAddress,
+};
+
+const schema = [orgSchema, localBusinessSchema, ...(Array.isArray(structuredData) ? structuredData : [structuredData])];
 ---
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
-    <meta property="og:locale" content="en_AU" />
+    <SeoHead
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      structuredData={schema}
+    />
 
     <!-- Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

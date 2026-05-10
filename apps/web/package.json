@@ -15,6 +15,7 @@
     "deploy:prod": "astro build && cd ../.. && npx --yes netlify-cli deploy --no-build --dir=apps/web/dist --prod"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "@neondatabase/serverless": "^0.10.4",
     "astro": "^5.0.0"
   },

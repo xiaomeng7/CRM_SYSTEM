@@ -1,0 +1,163 @@
+---
+import Layout from './Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PhoneCTA from '../components/PhoneCTA.astro';
+
+export interface Props {
+  title: string;
+  h1: string;
+  metaTitle: string;
+  metaDescription: string;
+  slug: string;
+  heroImage?: string;
+  publishedAt: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  ctaType?: 'pre_purchase' | 'builder' | 'contact' | 'services';
+  relatedLandingPage?: string;
+}
+
+const {
+  title,
+  h1,
+  metaTitle,
+  metaDescription,
+  slug,
+  heroImage = '/og-default.svg',
+  publishedAt,
+  updatedAt,
+  tags = [],
+  ctaType = 'contact',
+  relatedLandingPage,
+} = Astro.props;
+
+const canonicalPath = `/insights/${slug}`;
+const canonicalUrl = new URL(canonicalPath, Astro.site).toString();
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: metaDescription,
+  datePublished: publishedAt.toISOString(),
+  dateModified: (updatedAt || publishedAt).toISOString(),
+  mainEntityOfPage: canonicalUrl,
+  image: new URL(heroImage, Astro.site).toString(),
+  author: {
+    '@type': 'Organization',
+    name: 'Better Home Technology',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Better Home Technology',
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL('/favicon.svg', Astro.site).toString(),
+    },
+  },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: new URL('/', Astro.site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Insights',
+      item: new URL('/insights', Astro.site).toString(),
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: title,
+      item: canonicalUrl,
+    },
+  ],
+};
+
+const ctaMap = {
+  pre_purchase: {
+    title: 'Need an electrical verdict before settlement?',
+    body: 'Book a pre-purchase inspection with a licensed electrician and get a written report you can act on.',
+    href: '/pre-purchase-inspection',
+    label: 'Book pre-purchase inspection',
+  },
+  builder: {
+    title: 'Working on a premium build project?',
+    body: 'Coordinate your next electrical stage with a team experienced in Adelaide luxury and custom builds.',
+    href: '/for-builders',
+    label: 'View builder services',
+  },
+  services: {
+    title: 'Need electrical upgrades for your current home?',
+    body: 'Explore smart home, switchboard, CCTV and EV charger services tailored for Adelaide households.',
+    href: '/services',
+    label: 'Browse all services',
+  },
+  contact: {
+    title: 'Need help with your property questions?',
+    body: 'Talk directly to Better Home Technology and we will point you to the right next step.',
+    href: '/contact',
+    label: 'Contact Better Home Technology',
+  },
+}[ctaType];
+---
+
+<Layout
+  title={metaTitle}
+  description={metaDescription}
+  ogType="article"
+  ogImage={heroImage}
+  canonicalPath={canonicalPath}
+  structuredData={[articleSchema, breadcrumbSchema]}
+>
+  <Header />
+  <main class="bg-brand-surface">
+    <article class="mx-auto max-w-4xl px-6 py-12 md:py-16">
+      <p class="text-sm text-brand-muted mb-3">
+        Insights · {publishedAt.toLocaleDateString('en-AU')}
+        {updatedAt && ` · Updated ${updatedAt.toLocaleDateString('en-AU')}`}
+      </p>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-brand-ink mb-5">{h1}</h1>
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-8">
+          {tags.map((tag) => (
+            <span class="badge">{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <div class="prose prose-lg max-w-none">
+        <slot />
+      </div>
+
+      <section class="mt-12 bg-white border border-slate-200 rounded-lg p-6">
+        <h2 class="text-2xl font-semibold text-brand-ink mb-2">{ctaMap.title}</h2>
+        <p class="text-brand-muted mb-4">{ctaMap.body}</p>
+        <a href={ctaMap.href} class="btn btn-primary">{ctaMap.label}</a>
+      </section>
+
+      <section class="mt-8 bg-white border border-slate-200 rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-brand-ink mb-2">Related reading</h2>
+        <p class="text-brand-muted">
+          More Adelaide electrical insights and inspection guides will be listed here as content grows.
+        </p>
+        {relatedLandingPage && (
+          <p class="mt-3">
+            Related service page: <a href={relatedLandingPage}>{relatedLandingPage}</a>
+          </p>
+        )}
+      </section>
+    </article>
+  </main>
+  <Footer />
+  <PhoneCTA />
+</Layout>
+

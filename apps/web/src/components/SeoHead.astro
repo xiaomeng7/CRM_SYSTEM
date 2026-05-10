@@ -1,0 +1,46 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType = 'website',
+  noindex = false,
+  structuredData = [],
+} = Astro.props;
+
+const absoluteOgImage = new URL(ogImage, Astro.site).toString();
+const schemaItems = Array.isArray(structuredData) ? structuredData : [structuredData];
+---
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content={description} />
+{noindex && <meta name="robots" content="noindex,nofollow" />}
+<link rel="canonical" href={canonical} />
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={absoluteOgImage} />
+<meta property="og:locale" content="en_AU" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={absoluteOgImage} />
+
+{schemaItems.filter(Boolean).map((item) => (
+  <script type="application/ld+json" set:html={JSON.stringify(item)} />
+))}
+

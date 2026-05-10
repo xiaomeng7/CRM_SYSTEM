@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from 'astro:content';
+import InsightLayout from '../../layouts/InsightLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('insights', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id.replace(/\.md$/, '') },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<InsightLayout {...entry.data} slug={entry.id.replace(/\.md$/, '')}>
+  <Content />
+</InsightLayout>
+

@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PhoneCTA from '../../components/PhoneCTA.astro';
+
+const insights = (await getCollection('insights', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+---
+
+<Layout
+  title="Electrical Insights for Adelaide Property Buyers and Builders | Better Home Technology"
+  description="Practical Adelaide electrical insights for pre-purchase due diligence, builder planning and home safety upgrades."
+  canonicalPath="/insights"
+>
+  <Header />
+  <main class="bg-brand-surface">
+    <section class="bg-brand-navy text-white">
+      <div class="mx-auto max-w-6xl px-6 py-14 md:py-20">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">Insights</p>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Electrical knowledge for Adelaide property decisions.</h1>
+        <p class="mt-5 max-w-3xl text-slate-300 text-lg">
+          Field-led guides based on issues we actually see across pre-purchase inspections and builder handovers.
+        </p>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-12 md:py-16">
+      <div class="grid gap-6 md:grid-cols-2">
+        {insights.map((item) => (
+          <article class="bg-white border border-slate-200 rounded-lg p-6">
+            <p class="text-sm text-brand-muted mb-2">
+              {item.data.intent} · {item.data.publishedAt.toLocaleDateString('en-AU')}
+            </p>
+            <h2 class="text-2xl font-semibold text-brand-ink mb-3">
+              <a href={`/insights/${item.id.replace(/\.md$/, '')}`}>{item.data.title}</a>
+            </h2>
+            <p class="text-brand-muted mb-4">{item.data.metaDescription}</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              {(item.data.tags || []).map((tag) => (
+                <span class="badge">{tag}</span>
+              ))}
+            </div>
+            <a class="btn" href={`/insights/${item.id.replace(/\.md$/, '')}`}>Read article</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 pb-16">
+      <div class="bg-white border border-slate-200 rounded-lg p-6">
+        <h2 class="text-2xl font-semibold text-brand-ink mb-3">Related service pages</h2>
+        <ul class="list-disc pl-6 text-brand-muted space-y-2">
+          <li><a href="/pre-purchase-inspection">Pre-purchase electrical inspection</a></li>
+          <li><a href="/for-builders">Electrical services for builders and designers</a></li>
+          <li><a href="/services/switchboard">Switchboard upgrades</a></li>
+          <li><a href="/services">All electrical services</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <PhoneCTA />
+</Layout>
+
