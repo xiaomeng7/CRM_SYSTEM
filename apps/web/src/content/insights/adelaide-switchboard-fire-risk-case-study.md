@@ -8,7 +8,7 @@ suburb: "Adelaide"
 serviceType: "pre_purchase_inspection"
 publishedAt: 2026-05-11
 updatedAt: 2026-05-11
-heroImage: "/og-default.svg"
+heroImage: "/images/insights/adelaide-switchboard-burn-main-switch-01.png"
 tags:
   - Adelaide electrician
   - switchboard fire risk
@@ -41,10 +41,9 @@ That combination, visible thermal damage plus remaining energised sections, crea
 
 If this had gone unnoticed for longer, there was a realistic chance of escalation inside the switchboard enclosure.
 
-### Suggested image placement
+![Burnt and melted main switch in an Adelaide residential switchboard after severe overheating.](/images/insights/adelaide-switchboard-burn-main-switch-01.png)
 
-- **Photo 1 (recommended here):** burnt main switch close-up
-- **Alt text suggestion:** "Burnt and melted main switch in an Adelaide residential switchboard after severe overheating."
+*Field photo: thermal damage and carbonisation at the main switch connection point.*
 
 ## Why this installation was under pressure
 
@@ -70,10 +69,9 @@ The switchboard earthing had been connected to a metallic gas pipe rather than a
 
 So the job was not only "replace one failed part." It required a full safety-led upgrade path.
 
-### Suggested image placement
+![Board internal condition before rectification in an Adelaide home, showing older switchgear layout and mixed legacy protection.](/images/insights/adelaide-switchboard-board-internal-before-rectification.png)
 
-- **Photo 2 (recommended here):** board internal condition before rectification
-- **Alt text suggestion:** "Older Adelaide switchboard with legacy ceramic fuses and heat-damaged main isolation components."
+*Field photo: board condition before rectification works commenced.*
 
 ## Remediation scope completed
 
@@ -89,10 +87,9 @@ To return the installation to a safe and future-ready state, we carried out:
 
 This was a structured remediation, not a cosmetic panel swap.
 
-### Suggested image placement
+![Second close-up angle of the same failed main switch showing melted casing and conductor heat impact.](/images/insights/adelaide-switchboard-burn-main-switch-03.png)
 
-- **Photo 3 (recommended here):** completed upgraded board
-- **Alt text suggestion:** "Upgraded Adelaide switchboard with modern RCBO protection, reorganised circuits, and compliant labeling."
+*Additional evidence angle recorded on site during fault diagnosis.*
 
 ## What Adelaide homeowners should take from this case
 
