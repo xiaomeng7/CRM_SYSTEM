@@ -145,3 +145,4 @@ Older homes are higher risk, but risk depends on current load profile and legacy
 - [EV chargers service](/services/ev-chargers)
 - [Electrical defects during cooling-off](/insights/electrical-defects-during-cooling-off-period)
 - [Common switchboard issues in Adelaide homes](/insights/common-switchboard-issues-adelaide-homes)
+- [Common electrical problems in older Adelaide switchboards](/insights/common-electrical-problems-found-in-older-adelaide-switchboards)
