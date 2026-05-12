@@ -116,14 +116,3 @@ Not always. Some homes need targeted upgrades, while others need broader board a
 ### What is a common mistake buyers make with older electrical systems?
 
 Assuming visible operation equals acceptable risk. Many board issues only become obvious during structured inspection and testing.
-
----
-
-## Image placeholder suggestions (for future field photos)
-
-- **Image A (recommended near section 2):** close-up of legacy ceramic fuse assembly and adjacent wiring.
-  - Alt suggestion: "Older Adelaide switchboard with legacy ceramic fuse protection and ageing internal wiring."
-- **Image B (recommended near section 4):** internal board view showing mixed-era devices and undocumented additions.
-  - Alt suggestion: "Patchwork switchboard layout in an older Adelaide home after decades of partial electrical additions."
-- **Image C (recommended near section 6):** board context with high-load circuits identified for modern appliance demand.
-  - Alt suggestion: "Older residential switchboard assessed for EV charging and high-load appliance demand in Adelaide."

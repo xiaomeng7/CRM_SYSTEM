@@ -121,6 +121,61 @@ body {
   font-weight: 700;
 }
 
+.insight-content figure {
+  margin-block: 1.25rem 0.75rem;
+}
+
+.insight-content figcaption {
+  color: var(--color-brand-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+/* Shared small UI primitives used in insights pages/layout */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  background: var(--color-brand-surface-alt);
+  color: var(--color-brand-muted);
+  border-radius: 9999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  padding: 0.62rem 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  border: 1px solid #cbd5e1;
+  color: var(--color-brand-navy);
+  background: #fff;
+}
+
+.btn:hover {
+  border-color: var(--color-brand-amber);
+  color: var(--color-brand-amber);
+}
+
+.btn-primary {
+  border-color: var(--color-brand-amber);
+  background: var(--color-brand-amber);
+  color: var(--color-brand-navy);
+}
+
+.btn-primary:hover {
+  border-color: var(--color-brand-amber-soft);
+  background: var(--color-brand-amber-soft);
+  color: var(--color-brand-navy);
+}
+
 /* Add bottom padding on mobile to leave room for sticky phone CTA */
 @media (max-width: 768px) {
   body {
