@@ -87,9 +87,9 @@ To return the installation to a safe and future-ready state, we carried out:
 
 This was a structured remediation, not a cosmetic panel swap.
 
-![Second close-up angle of the same failed main switch showing melted casing and conductor heat impact.](/images/insights/adelaide-switchboard-burn-main-switch-03.png)
+![Upgraded Adelaide meter and switchboard setup after remediation, including modern protection layout and improved circuit organisation.](/images/insights/adelaide-switchboard-upgrade-after-01.png)
 
-*Additional evidence angle recorded on site during fault diagnosis.*
+*Post-upgrade field photo: upgraded board arrangement after rectification and protection modernisation works.*
 
 ## What Adelaide homeowners should take from this case
 
