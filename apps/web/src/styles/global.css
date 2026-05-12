@@ -123,6 +123,23 @@ h4 {
   );
 }
 
+/* Homepage hero only — matte charcoal, quieter pattern/glow (Phase 2) */
+.bg-brand-pattern-dots-hero {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-brand-amber) 8%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 32px 32px;
+}
+
+.bg-brand-glow-orb-hero {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-brand-amber) 5%, transparent) 0%,
+    transparent 70%
+  );
+}
+
 /* Insights article typography (markdown content) */
 .insight-content {
   max-width: 68ch;

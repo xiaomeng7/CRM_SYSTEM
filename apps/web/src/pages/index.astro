@@ -53,78 +53,84 @@ const recentWork = [
   <Header />
 
   <main>
-    <!-- Hero — text left, real install photo right -->
+    <!-- Hero — architectural luxury rhythm (Phase 2); links & H1 copy unchanged -->
     <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
+      <!-- Matte charcoal — no diagonal gradient wash -->
 
-      <!-- Dot pattern -->
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
+      <!-- Quieter dot texture -->
+      <div class="absolute inset-0 pointer-events-none opacity-[0.85] bg-brand-pattern-dots-hero"></div>
 
-      <!-- Accent glow (top right, behind photo) -->
-      <div class="absolute -top-32 -right-20 w-[600px] h-[600px] rounded-full pointer-events-none bg-brand-glow-orb"></div>
+      <!-- Very soft ambient glow behind photo -->
+      <div class="absolute -top-40 -right-24 w-[min(90vw,560px)] h-[min(90vw,560px)] rounded-full pointer-events-none bg-brand-glow-orb-hero"></div>
 
-      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
-        <div class="grid lg:grid-cols-[1.7fr_1fr] gap-12 lg:gap-16 items-center">
+      <div class="relative mx-auto max-w-[1200px] px-6 lg:px-10 py-28 md:py-36">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-14 xl:gap-16 items-center">
           <!-- Left: text -->
-          <div>
-            <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          <div class="max-w-xl lg:max-w-none">
+            <p class="text-brand-amber/90 text-xs md:text-[13px] font-medium tracking-[0.2em] uppercase mb-5 md:mb-6">
               Adelaide · Mawson Lakes
             </p>
-            <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight">
-              Smart Home & Premium Electrical<br class="hidden md:inline" />
-              <span class="text-brand-amber">for Adelaide Homes.</span>
+            <h1
+              class="font-bold tracking-[-0.035em] leading-[0.98] text-[clamp(2.125rem,5vw+0.5rem,4.5rem)] max-w-[22rem] sm:max-w-[26rem] lg:max-w-[17ch] xl:max-w-[19ch]"
+            >
+              <span class="block text-white">Smart Home & Premium Electrical</span>
+              <span class="block text-brand-amber mt-2 md:mt-3">for Adelaide Homes.</span>
             </h1>
-            <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-xl leading-relaxed">
+            <p class="mt-8 md:mt-10 text-lg md:text-xl text-slate-400 max-w-[36rem] leading-[1.65]">
               Licensed electricians designing smart home systems for new luxury builds,
               delivering pre-purchase electrical inspections in 7 days, and telling you the
               truth about what your home needs — and what it doesn't.
             </p>
-            <div class="mt-10 flex flex-col sm:flex-row gap-4 sm:items-center">
+            <div class="mt-10 flex flex-col sm:flex-row gap-5 sm:gap-8 sm:items-center">
               <a
                 href="/pre-purchase-inspection"
-                class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition text-center"
+                class="inline-flex min-h-[48px] items-center justify-center border border-brand-amber/90 bg-transparent text-brand-amber px-10 md:px-12 py-3.5 text-sm font-medium tracking-[0.06em] rounded-sm hover:bg-brand-amber hover:text-brand-navy transition-colors duration-300 text-center"
               >
                 Book Pre-Purchase Inspection
               </a>
               <a
                 href="tel:0410323034"
-                class="text-white font-medium underline-offset-4 hover:underline px-2 py-4 text-center"
+                class="text-slate-500 hover:text-brand-amber/90 font-normal text-sm underline-offset-[5px] hover:underline py-3 text-center sm:text-left"
               >
                 or call 0410 323 034
               </a>
             </div>
-            <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-slate-400">
+            <div class="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-slate-500">
               <span class="flex items-center gap-2">
-                <span class="text-brand-amber" aria-hidden="true">✓</span> Licensed Electrician
+                <span class="text-brand-amber/80" aria-hidden="true">✓</span> Licensed Electrician
               </span>
               <span class="flex items-center gap-2">
-                <span class="text-brand-amber" aria-hidden="true">★</span> 5.0 Google Rating
+                <span class="text-brand-amber/80" aria-hidden="true">★</span> 5.0 Google Rating
               </span>
               <span class="flex items-center gap-2">
-                <span class="text-brand-amber" aria-hidden="true">●</span> Independent · No Sales Commission
+                <span class="text-brand-amber/80" aria-hidden="true">●</span> Independent · No Sales Commission
               </span>
             </div>
           </div>
 
-          <!-- Right: hero photo (#19 — luxury staircase + chandelier).
-               Capped to max-w-sm on lg+ so it doesn't crowd the headline. -->
-          <div class="relative max-w-sm mx-auto lg:mx-0 lg:ml-auto">
-            <!-- Subtle amber accent line behind image (top-right corner) -->
-            <div class="absolute -top-3 -right-3 w-20 h-20 border-t-2 border-r-2 border-brand-amber/60 rounded-tr-2xl pointer-events-none"></div>
-            <div class="absolute -bottom-3 -left-3 w-20 h-20 border-b-2 border-l-2 border-brand-amber/40 rounded-bl-2xl pointer-events-none"></div>
-            <picture>
-              <source srcset="/images/hero-luxury-stairway.webp" type="image/webp" />
-              <img
-                src="/images/hero-luxury-stairway.jpg"
-                alt="Custom crystal chandelier installation on a luxury Adelaide staircase by Better Home Technology"
-                width="720"
-                height="960"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                class="relative w-full h-auto rounded-2xl shadow-xl"
-              />
-            </picture>
+          <!-- Right: hero photo — cinematic treatment, same asset -->
+          <div class="relative w-full max-w-md mx-auto lg:max-w-none lg:mx-0 lg:justify-self-end">
+            <div
+              class="relative rounded-2xl overflow-hidden ring-1 ring-white/[0.08] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.55)] bg-brand-charcoal-elevated"
+            >
+              <picture>
+                <source srcset="/images/hero-luxury-stairway.webp" type="image/webp" />
+                <img
+                  src="/images/hero-luxury-stairway.jpg"
+                  alt="Custom crystal chandelier installation on a luxury Adelaide staircase by Better Home Technology"
+                  width="720"
+                  height="960"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  class="relative w-full h-auto block brightness-[0.82] contrast-[1.06] saturate-[0.92]"
+                />
+              </picture>
+              <div
+                class="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-brand-navy/55 via-brand-navy/10 to-transparent"
+                aria-hidden="true"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
