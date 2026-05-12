@@ -29,12 +29,60 @@ const navLinks = [
       <span aria-hidden="true">📞</span> 0410 323 034
     </a>
 
-    <!-- Mobile: just show phone button compactly -->
-    <a
-      href="tel:0410323034"
-      class="md:hidden text-brand-amber font-semibold text-sm"
-    >
-      Call
-    </a>
+    <div class="md:hidden flex items-center gap-3">
+      <a
+        href="tel:0410323034"
+        class="text-brand-amber font-semibold text-sm"
+      >
+        Call
+      </a>
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        class="inline-flex items-center justify-center rounded-md border border-white/20 px-3 py-2 text-sm font-semibold text-white hover:border-brand-amber hover:text-brand-amber transition"
+        aria-controls="mobile-menu-panel"
+        aria-expanded="false"
+      >
+        Menu
+      </button>
+    </div>
   </div>
+
+  <nav id="mobile-menu-panel" class="md:hidden hidden border-t border-white/10 bg-brand-navy/98">
+    <div class="mx-auto max-w-6xl px-6 py-3 flex flex-col">
+      <a href="/" data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">Home</a>
+      {navLinks.map((link) => (
+        <a href={link.href} data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">
+          {link.label}
+        </a>
+      ))}
+      <a href="tel:0410323034" data-mobile-nav-link class="py-3 text-brand-amber font-semibold">Call 0410 323 034</a>
+    </div>
+  </nav>
 </header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const panel = document.getElementById('mobile-menu-panel');
+  const links = document.querySelectorAll('[data-mobile-nav-link]');
+
+  if (toggle && panel) {
+    const setOpen = (open) => {
+      panel.classList.toggle('hidden', !open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+    });
+
+    links.forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+  }
+</script>

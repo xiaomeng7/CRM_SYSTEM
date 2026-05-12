@@ -54,6 +54,8 @@ const localBusinessSchema = {
 };
 
 const schema = [orgSchema, localBusinessSchema, ...(Array.isArray(structuredData) ? structuredData : [structuredData])];
+const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-VWQL6TH7KQ';
+const enableAnalytics = import.meta.env.PROD && Boolean(gaMeasurementId);
 ---
 <!doctype html>
 <html lang="en">
@@ -79,9 +81,17 @@ const schema = [orgSchema, localBusinessSchema, ...(Array.isArray(structuredData
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
 
-    <!-- TODO: re-enable analytics after migration verified
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VWQL6TH7KQ"></script>
-    -->
+    {enableAnalytics && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>
+        <script is:inline define:vars={{ gaMeasurementId }}>
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', gaMeasurementId);`}
+        </script>
+      </>
+    )}
   </head>
   <body class="bg-brand-surface">
     <slot />
