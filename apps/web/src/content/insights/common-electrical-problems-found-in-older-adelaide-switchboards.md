@@ -84,13 +84,13 @@ A focused assessment during cooling-off gives buyers a usable risk picture befor
 
 ---
 
-## CTA: For buyers in cooling-off
+## For buyers in cooling-off
 
 If the property has an older board, get the electrical condition assessed before contract deadlines lock in your risk.
 
 [Book a pre-purchase electrical inspection](/pre-purchase-inspection)
 
-## CTA: For owners planning upgrades
+## For owners planning upgrades
 
 If your home is adding EV, major HVAC, or other large loads, review switchboard protection and mains capacity before installing new equipment.
 

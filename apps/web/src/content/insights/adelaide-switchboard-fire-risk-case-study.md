@@ -103,13 +103,13 @@ If you are buying, this is exactly why switchboard condition and supply context 
 
 ---
 
-## CTA: For Adelaide buyers in cooling-off
+## For Adelaide buyers in cooling-off
 
 If you are in a contract decision window, prioritise electrical risk early. A clear defect severity assessment helps separate urgent safety work from staged upgrades and gives you practical negotiation context.
 
 [Book a pre-purchase electrical inspection](/pre-purchase-inspection)
 
-## CTA: If your home is adding high-load circuits
+## If your home is adding high-load circuits
 
 If you are planning EV charging, larger HVAC, or major kitchen electrification, confirm board protection, earthing, and mains capacity before adding more load.
 
