@@ -46,11 +46,8 @@ const serviceGroups = [
 
   <main>
     <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy to-slate-900 pointer-events-none"></div>
-      <div
-        class="absolute inset-0 pointer-events-none opacity-100"
-        style="background-image: radial-gradient(rgba(245, 158, 11, 0.30) 1.2px, transparent 1.5px); background-size: 28px 28px;"
-      ></div>
+      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
+      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
       <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
         <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
           Services
@@ -83,7 +80,7 @@ const serviceGroups = [
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {serviceGroups.map((service) => (
-            <a href={service.href} class="block bg-white rounded-xl p-8 border border-slate-200 hover:border-brand-amber hover:shadow-lg transition group">
+            <a href={service.href} class="block bg-white rounded-xl p-8 border border-brand-border hover:border-brand-amber hover:shadow-lg transition group">
               <h3 class="text-2xl font-bold text-brand-ink mb-3 group-hover:text-brand-navy">
                 {service.title}
               </h3>

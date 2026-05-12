@@ -1,18 +1,54 @@
 @import "tailwindcss";
 
-/* Brand tokens — see docs/brand-brief.md */
-@theme {
-  --color-brand-navy: #0E1E33;
-  --color-brand-amber: #F59E0B;
-  --color-brand-amber-soft: #FBBF24;
-  --color-brand-ink: #1E293B;
-  --color-brand-muted: #64748B;
-  --color-brand-surface: #FFFFFF;
-  --color-brand-surface-alt: #F8FAFC;
+/**
+ * Brand tokens — premium residential / architectural baseline (Phase 1 PR1).
+ * Semantic names keep Tailwind usage stable (`brand-navy`, `brand-amber`).
+ */
 
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+@theme {
+  /* Deep charcoal — primary dark brand ground (neutral, not SaaS blue) */
+  --color-brand-navy: #0f1115;
+  --color-brand-charcoal: #0f1115;
+  --color-brand-charcoal-elevated: #161a21;
+  --color-brand-charcoal-soft: #1e2229;
+  --color-brand-charcoal-deep: #12151c;
+
+  /* Champagne gold — restrained accent (replaces bright marketing amber) */
+  --color-brand-amber: #c6a55e;
+  --color-brand-amber-soft: #d4bc82;
+
+  /* Text */
+  --color-brand-ink: #1a1f27;
+  --color-brand-muted: #5c6570;
+
+  /* Surfaces */
+  --color-brand-surface: #ffffff;
+  --color-brand-surface-alt: #f4f5f7;
+
+  /* Borders — cleaner card / UI separation */
+  --color-brand-border: #e2e5ea;
+  --color-brand-border-soft: #edeff2;
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  /* Softer elevation — restrained shadows (charcoal-tinted, low saturation) */
+  --shadow-sm: 0 1px 2px 0 rgb(15 17 21 / 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgb(15 17 21 / 0.06),
+    0 2px 4px -2px rgb(15 17 21 / 0.04);
+  --shadow-lg:
+    0 10px 15px -3px rgb(15 17 21 / 0.07),
+    0 4px 6px -4px rgb(15 17 21 / 0.05);
+  --shadow-xl:
+    0 20px 25px -5px rgb(15 17 21 / 0.08),
+    0 8px 10px -6px rgb(15 17 21 / 0.05);
+  --shadow-2xl: 0 25px 50px -12px rgb(15 17 21 / 0.11);
+
+  /* Section rhythm helpers (optional utilities) */
+  --spacing-section-y: clamp(4.5rem, 8vw, 7rem);
 }
 
 html {
@@ -24,6 +60,67 @@ body {
   color: var(--color-brand-ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Display typography — headings only; body stays Inter for readability */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+}
+
+h1 {
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+h2 {
+  letter-spacing: -0.028em;
+  line-height: 1.12;
+}
+
+h3,
+h4 {
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/**
+ * Shared hero / dark-section overlays — driven by brand tokens (no hardcoded RGB).
+ * color-mix keeps accents subdued when champagne gold updates.
+ */
+.bg-brand-hero-gradient {
+  background: linear-gradient(
+    to bottom right,
+    var(--color-brand-navy),
+    var(--color-brand-navy),
+    var(--color-brand-charcoal-deep)
+  );
+}
+
+.bg-brand-pattern-dots {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-brand-amber) 20%, transparent) 1.2px,
+    transparent 1.5px
+  );
+  background-size: 28px 28px;
+}
+
+.bg-brand-pattern-dots-soft {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-brand-amber) 12%, transparent) 1.2px,
+    transparent 1.5px
+  );
+  background-size: 28px 28px;
+}
+
+.bg-brand-glow-orb {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-brand-amber) 11%, transparent) 0%,
+    transparent 65%
+  );
 }
 
 /* Insights article typography (markdown content) */
@@ -102,7 +199,7 @@ body {
 
 .insight-content hr {
   border: 0;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-brand-border);
   margin: 2rem 0;
 }
 
@@ -135,7 +232,7 @@ body {
 .badge {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-brand-border);
   background: var(--color-brand-surface-alt);
   color: var(--color-brand-muted);
   border-radius: 9999px;
@@ -153,8 +250,11 @@ body {
   padding: 0.62rem 1rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
-  border: 1px solid #cbd5e1;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+  border: 1px solid var(--color-brand-border);
   color: var(--color-brand-navy);
   background: #fff;
 }
@@ -165,7 +265,7 @@ body {
 }
 
 .btn-primary {
-  border-color: var(--color-brand-amber);
+  border-color: color-mix(in srgb, var(--color-brand-amber) 85%, var(--color-brand-navy));
   background: var(--color-brand-amber);
   color: var(--color-brand-navy);
 }
