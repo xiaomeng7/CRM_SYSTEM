@@ -1,10 +1,13 @@
 ---
 import Icon from './Icon.astro';
 
+/** Capability tiles — same visual system as homepage audience cards (architectural, calm). */
 export interface Props {
   href: string;
   title: string;
   description: string;
+  /** Short category line (uppercase via CSS); keeps vertical rhythm when set. */
+  eyebrow?: string;
   icon:
     | 'smart-home'
     | 'cctv'
@@ -15,42 +18,40 @@ export interface Props {
     | 'test-tag'
     | 'commercial'
     | 'blueprint';
-  featured?: boolean;
 }
 
-const { href, title, description, icon, featured = false } = Astro.props;
+const { href, title, description, icon, eyebrow } = Astro.props;
 ---
 <a
   href={href}
-  class:list={[
-    'block bg-white rounded-md p-7 md:p-8 border transition duration-300 ease-out group relative',
-    featured
-      ? 'border-brand-amber ring-1 ring-brand-amber/20 hover:ring-brand-amber/40'
-      : 'border-brand-border hover:border-brand-navy hover:shadow-sm',
-  ]}
+  class="group flex h-full flex-col rounded-[6px] border border-brand-navy/[0.08] bg-white p-7 shadow-[0_1px_0_rgba(15,23,42,0.03)] transition-all duration-500 ease-out hover:border-brand-navy/[0.13] hover:shadow-[0_14px_44px_-20px_rgba(15,23,42,0.12)] md:p-8"
 >
-  {featured && (
-    <p class="text-brand-amber text-xs font-bold uppercase tracking-wider mb-3">
-      Featured
-    </p>
-  )}
-  <div
-    class:list={[
-      'mb-5 inline-flex items-center justify-center w-16 h-16 rounded-lg transition',
-      featured
-        ? 'bg-brand-amber/10 text-brand-amber'
-        : 'bg-brand-surface-alt text-brand-navy group-hover:bg-brand-navy group-hover:text-brand-amber',
-    ]}
-  >
-    <Icon name={icon} class="w-9 h-9" />
+  <div class="min-h-[1.125rem] shrink-0">
+    {eyebrow ? (
+      <p class="text-[10px] font-semibold uppercase leading-none tracking-[0.2em] text-brand-amber/88 md:text-[10.5px]">
+        {eyebrow}
+      </p>
+    ) : null}
   </div>
-  <h3 class="text-lg font-bold text-brand-ink mb-2 group-hover:text-brand-navy">
+
+  <div
+    class="mt-3.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-[5px] border border-brand-navy/[0.12] bg-brand-navy/[0.045] text-brand-navy/[0.78] transition-colors duration-500 group-hover:border-brand-navy/[0.16] group-hover:bg-brand-navy/[0.07] group-hover:text-brand-navy/[0.88] md:mt-4"
+    aria-hidden="true"
+  >
+    <Icon name={icon} class="h-[1.55rem] w-[1.55rem] shrink-0" />
+  </div>
+
+  <h3
+    class="mt-5 text-lg font-bold leading-snug tracking-[-0.02em] text-brand-ink transition-colors duration-300 group-hover:text-brand-navy md:mt-6 md:text-[1.0625rem]"
+  >
     {title}
   </h3>
-  <p class="text-base text-brand-muted leading-[1.58]">
+  <p class="mt-2.5 flex-1 text-sm leading-[1.62] text-slate-600 md:mt-3 md:text-[15px]">
     {description}
   </p>
-  <p class="mt-5 text-sm font-semibold text-brand-navy group-hover:text-brand-amber transition">
+  <p
+    class="mt-5 text-sm font-medium tracking-[0.02em] text-brand-navy/75 transition-colors duration-500 group-hover:text-brand-amber md:mt-6"
+  >
     Learn more →
   </p>
 </a>

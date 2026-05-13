@@ -11,14 +11,15 @@ const services = [
   {
     href: '/services/smart-home',
     title: 'Smart Home Systems',
+    eyebrow: 'Systems',
     icon: 'smart-home' as const,
     description:
       'Integrated lighting, comfort, access, and automation — specified with architecture and commissioned before handover.',
-    featured: true,
   },
   {
     href: '/services/smart-home',
     title: 'Architectural Lighting',
+    eyebrow: 'Lighting',
     icon: 'lighting' as const,
     description:
       'Interior and exterior layers, scenes, and focal lighting aligned with design intent — not bolt-on downlights after paint.',
@@ -26,6 +27,7 @@ const services = [
   {
     href: '/for-builders/',
     title: 'New Build Electrical Infrastructure',
+    eyebrow: 'Infrastructure',
     icon: 'blueprint' as const,
     description:
       'Distribution, containment, and smart-ready backbone coordinated with programme, trades, and documentation for luxury residential.',
@@ -33,6 +35,7 @@ const services = [
   {
     href: '/services/switchboard',
     title: 'Switchboard & Energy Capacity',
+    eyebrow: 'Capacity',
     icon: 'switchboard' as const,
     description:
       'Protection, load planning, and headroom for climate, EV, and future phases — assessed before hardware is locked in.',
@@ -256,8 +259,8 @@ const featuredProjects = [
          Pre-purchase is secondary (current B2C volume). -->
     <section class="bg-white py-14 md:py-20 lg:py-24">
       <div class="mx-auto max-w-6xl px-6 lg:px-10">
-        <div class="max-w-2xl mb-8 md:mb-12">
-          <p class="text-brand-amber text-[11px] md:text-xs font-semibold tracking-[0.2em] uppercase mb-3">
+        <div class="max-w-2xl mb-10 md:mb-14 md:max-w-[42rem] pt-0.5 pl-[3px] md:pl-1">
+          <p class="text-brand-amber/90 text-[10.5px] md:text-[11px] font-semibold tracking-[0.22em] uppercase mb-4 md:mb-5">
             Who we work with
           </p>
           <h2 class="text-3xl md:text-4xl font-bold text-brand-ink tracking-[-0.03em] leading-tight">
@@ -271,16 +274,23 @@ const featuredProjects = [
              class="group block bg-brand-navy text-white rounded-lg p-8 md:p-10 border border-brand-navy/90 hover:shadow-xl transition-shadow duration-500 relative overflow-hidden">
             <div class="absolute inset-0 pointer-events-none opacity-60 bg-brand-pattern-dots-soft"></div>
             <div class="relative">
-              <span class="inline-block bg-brand-amber text-brand-navy text-[11px] font-bold px-2.5 py-0.5 rounded mb-4 tracking-[0.08em] uppercase">Builders &amp; design teams</span>
-              <div class="text-brand-amber mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-white/10">
-                <Icon name="blueprint" class="w-7 h-7" />
+              <div class="flex items-start justify-between gap-5 mb-6 md:mb-7">
+                <span class="inline-block self-start bg-brand-amber text-brand-navy text-[11px] font-bold px-2.5 py-0.5 rounded tracking-[0.08em] uppercase max-w-[min(100%,15rem)] leading-snug md:max-w-[min(100%,17rem)]">
+                  Builders &amp; design teams
+                </span>
+                <div
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[5px] border border-white/[0.14] bg-white/[0.06] text-brand-amber/95"
+                  aria-hidden="true"
+                >
+                  <Icon name="blueprint" class="h-[1.575rem] w-[1.575rem] -translate-y-px" />
+                </div>
               </div>
-              <h3 class="text-xl md:text-2xl font-bold mb-3">Building or designing a premium home</h3>
-              <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-5">
+              <h3 class="text-xl md:text-2xl font-bold mb-3 tracking-[-0.02em] leading-snug">Building or designing a premium home</h3>
+              <p class="text-slate-300/95 text-sm md:text-base leading-[1.62] mb-5 md:mb-6">
                 Electrical, lighting, and smart infrastructure coordinated with your programme,
                 documentation, and handover — so the home matches the design intent.
               </p>
-              <p class="text-brand-amber text-sm font-semibold group-hover:text-brand-amber-soft transition">
+              <p class="text-sm font-medium tracking-[0.02em] text-brand-amber/95 group-hover:text-brand-amber-soft transition-colors duration-500">
                 Explore builder partnerships →
               </p>
             </div>
@@ -288,18 +298,26 @@ const featuredProjects = [
 
           <!-- Card 2: Pre-purchase inspection — B2C product -->
           <a href="/pre-purchase-inspection"
-             class="group block bg-brand-surface-alt rounded-lg p-8 md:p-10 border border-brand-border hover:border-brand-navy/20 hover:shadow-md transition-all duration-500">
-            <div class="text-brand-amber mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-brand-amber/10">
-              <Icon name="inspection" class="w-7 h-7" />
-            </div>
-            <h3 class="text-xl md:text-2xl font-bold text-brand-ink mb-3">Buying before you commit</h3>
-            <p class="text-brand-muted text-sm md:text-base leading-relaxed mb-5">
-              Independent electrical inspection and written report before you sign — clear scope,
-              clear risk, and no sales commission on the outcome.
-            </p>
-            <p class="text-brand-navy text-sm font-semibold group-hover:text-brand-amber transition">
-              Book pre-purchase inspection →
-            </p>
+             class="group block rounded-lg border border-brand-navy/[0.09] bg-brand-surface-alt p-8 shadow-[0_1px_0_rgba(15,23,42,0.04)] transition-all duration-500 hover:border-brand-navy/[0.14] hover:shadow-[0_18px_48px_-22px_rgba(15,23,42,0.14)] md:p-10">
+              <div class="flex items-start justify-between gap-5 mb-6 md:mb-7">
+                <span class="inline-block self-start bg-brand-amber text-brand-navy text-[11px] font-bold px-2.5 py-0.5 rounded tracking-[0.08em] uppercase max-w-[min(100%,15rem)] leading-snug md:max-w-[min(100%,17rem)]">
+                  Pre-purchase inspection
+                </span>
+                <div
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[5px] border border-brand-navy/[0.12] bg-brand-navy/[0.055] text-brand-navy/[0.78] transition-colors duration-500 group-hover:border-brand-navy/[0.16] group-hover:bg-brand-navy/[0.075] group-hover:text-brand-navy/[0.88]"
+                  aria-hidden="true"
+                >
+                  <Icon name="inspection" class="h-[1.625rem] w-[1.625rem] translate-y-px" />
+                </div>
+              </div>
+              <h3 class="text-xl md:text-2xl font-bold text-brand-ink mb-3 tracking-[-0.02em] leading-snug">Buying before you commit</h3>
+              <p class="text-sm text-slate-600 md:text-base md:leading-[1.62] leading-[1.58] mb-5 md:mb-6">
+                Independent electrical inspection and written report before you sign — clear scope,
+                clear risk, and no sales commission on the outcome.
+              </p>
+              <p class="text-sm font-medium tracking-[0.02em] text-brand-navy/75 transition-colors duration-500 group-hover:text-brand-amber">
+                Book pre-purchase inspection →
+              </p>
           </a>
 
         </div>
@@ -309,25 +327,25 @@ const featuredProjects = [
     <!-- Services Grid — browse all, for SEO + detail-oriented visitors -->
     <section id="services" class="bg-brand-surface-alt py-14 md:py-20 lg:py-24 scroll-mt-20">
       <div class="mx-auto max-w-6xl px-6 lg:px-10">
-        <div class="max-w-2xl mb-8 md:mb-12">
-          <p class="text-brand-amber text-[11px] md:text-xs font-semibold tracking-[0.2em] uppercase mb-3">
+        <div class="max-w-2xl mb-10 md:mb-14 md:max-w-[42rem] pt-0.5 pl-[3px] md:pl-1">
+          <p class="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-brand-amber/90 md:text-[11px] mb-4 md:mb-5">
             Or browse by service
           </p>
           <h2 class="text-3xl md:text-4xl font-bold text-brand-ink tracking-[-0.03em] leading-tight">
             Capabilities
           </h2>
-          <p class="mt-3 text-base md:text-[17px] text-brand-muted leading-[1.55]">
+          <p class="mt-3 text-base leading-[1.58] text-slate-600 md:mt-4 md:text-[17px]">
             Secondary browsing — same delivery standard when you are ready to go deeper on scope.
           </p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {services.map((service) => (
             <ServiceCard
               href={service.href}
               title={service.title}
               description={service.description}
               icon={service.icon}
-              featured={service.featured}
+              eyebrow={service.eyebrow}
             />
           ))}
         </div>
