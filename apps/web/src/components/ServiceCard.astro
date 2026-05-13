@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 
 export interface Props {
-  slug: string;
+  href: string;
   title: string;
   description: string;
   icon:
@@ -13,16 +13,17 @@ export interface Props {
     | 'lighting'
     | 'ac'
     | 'test-tag'
-    | 'commercial';
+    | 'commercial'
+    | 'blueprint';
   featured?: boolean;
 }
 
-const { slug, title, description, icon, featured = false } = Astro.props;
+const { href, title, description, icon, featured = false } = Astro.props;
 ---
 <a
-  href={`/services/${slug}`}
+  href={href}
   class:list={[
-    'block bg-white rounded-lg p-6 border transition group relative',
+    'block bg-white rounded-md p-7 md:p-8 border transition duration-300 ease-out group relative',
     featured
       ? 'border-brand-amber ring-1 ring-brand-amber/20 hover:ring-brand-amber/40'
       : 'border-brand-border hover:border-brand-navy hover:shadow-sm',
@@ -46,7 +47,7 @@ const { slug, title, description, icon, featured = false } = Astro.props;
   <h3 class="text-lg font-bold text-brand-ink mb-2 group-hover:text-brand-navy">
     {title}
   </h3>
-  <p class="text-base text-brand-muted leading-relaxed">
+  <p class="text-base text-brand-muted leading-[1.58]">
     {description}
   </p>
   <p class="mt-5 text-sm font-semibold text-brand-navy group-hover:text-brand-amber transition">

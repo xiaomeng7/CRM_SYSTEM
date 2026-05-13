@@ -1,87 +1,79 @@
 ---
+/**
+ * Short labels + single-line nav — luxury horizontal rhythm (architecture-firm density).
+ * Routes unchanged; mobile uses same `navLinks`.
+ */
 const navLinks = [
+  { href: '/for-builders', label: 'Builders' },
+  { href: '/services/smart-home', label: 'Smart Systems' },
   { href: '/services', label: 'Services' },
-  { href: '/insights', label: 'Insights' },
-  { href: '/pre-purchase-inspection', label: 'Pre-Purchase' },
-  { href: '/for-builders', label: 'For Builders' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/pre-purchase-inspection', label: 'Inspections' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
 ---
-<header class="bg-brand-navy text-white sticky top-0 z-40 border-b border-white/[0.08]">
-  <div class="mx-auto max-w-6xl px-6 lg:px-10 min-h-[4.25rem] md:min-h-[5rem] flex items-center justify-between py-3 md:py-0">
-    <!-- BH Logo: architectural line-mark + dual-line wordmark -->
-    <a href="/" class="flex items-center gap-3 group" aria-label="Better Home Technology — Home">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 58 52"
-        class="h-9 md:h-10 w-auto flex-shrink-0 text-brand-amber"
+<header class="bg-brand-navy text-white sticky top-0 z-40 border-b border-white/[0.06]">
+  <div
+    class="bht-header-inner mx-auto flex max-w-[90rem] flex-nowrap items-center justify-between gap-8 px-6 py-3.5 min-h-[5.75rem] md:min-h-[6.25rem] md:gap-10 md:px-10 md:py-4 lg:gap-14 lg:px-12"
+  >
+    <!-- Wordmark only — no slogan in header (positioning lives in Hero). -->
+    <a
+      href="/"
+      class="group flex shrink-0 items-center gap-4 md:gap-5"
+      aria-label="Better Home — Home"
+    >
+      <img
+        src="/better_home_logo.svg"
+        alt=""
+        width="68"
+        height="68"
+        class="h-[3.35rem] w-[3.35rem] translate-y-[2px] md:h-[4rem] md:w-[4rem] md:translate-y-[3px] flex-shrink-0 object-contain select-none contrast-[1.06] opacity-[0.98] group-hover:opacity-100 transition-opacity duration-300"
         aria-hidden="true"
+        decoding="async"
+      />
+      <span
+        class="text-[17px] font-semibold uppercase leading-none tracking-[0.1em] text-white md:text-[18px] md:tracking-[0.09em]"
+        style="font-family: var(--font-display)"
       >
-        <!-- B: spine -->
-        <line x1="5" y1="3" x2="5" y2="49" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: top arm -->
-        <line x1="5" y1="3" x2="21" y2="3" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: top-right chamfer (architectural detail) -->
-        <line x1="21" y1="3" x2="27" y2="9" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: upper bump right -->
-        <line x1="27" y1="9" x2="27" y2="26" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: middle crossbar -->
-        <line x1="5" y1="26" x2="27" y2="26" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: lower bump right -->
-        <line x1="27" y1="26" x2="27" y2="43" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: bottom-right chamfer -->
-        <line x1="27" y1="43" x2="21" y2="49" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- B: bottom arm -->
-        <line x1="21" y1="49" x2="5" y2="49" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- H: left vertical -->
-        <line x1="34" y1="3" x2="34" y2="49" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- H: right vertical -->
-        <line x1="53" y1="3" x2="53" y2="49" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-        <!-- H: crossbar -->
-        <line x1="34" y1="26" x2="53" y2="26" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-      </svg>
-      <span class="flex flex-col leading-none gap-1">
-        <span
-          class="text-white font-semibold uppercase tracking-[0.14em] text-[14px] md:text-[15px]"
-          style="font-family: var(--font-display)"
-        >Better Home</span>
-        <span
-          class="text-brand-amber/90 font-medium uppercase tracking-[0.22em] text-[9px] md:text-[10px]"
-          style="font-family: var(--font-display)"
-        >Technology</span>
+        Better Home
       </span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-7 lg:gap-8 text-[13px] tracking-[0.06em]">
+    <nav
+      class="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-4 md:flex lg:gap-5 xl:gap-6"
+      aria-label="Primary"
+    >
       {navLinks.map((link) => (
         <a
           href={link.href}
-          class="text-slate-400 hover:text-brand-amber transition-colors duration-300"
+          class="whitespace-nowrap text-[13px] font-medium leading-none tracking-[0.025em] text-slate-400/95 transition-colors duration-500 ease-out hover:text-slate-100/95 lg:text-[14.5px]"
         >
           {link.label}
         </a>
       ))}
     </nav>
 
-    <a
-      href="tel:0410323034"
-      class="hidden md:inline-flex items-center text-brand-amber/85 hover:text-brand-amber font-medium text-[13px] tracking-[0.04em] transition-colors"
-    >
-      0410 323 034
-    </a>
-
-    <div class="md:hidden flex items-center gap-3">
+    <div class="hidden shrink-0 items-center md:flex">
       <a
         href="tel:0410323034"
-        class="text-brand-amber font-semibold text-sm"
+        class="bht-header-phone inline-flex items-center ml-4 border-l border-white/[0.1] pl-6 text-[12.5px] font-medium leading-none tracking-[0.012em] text-slate-400/90 transition-colors duration-500 tabular-nums hover:text-slate-200/95 lg:ml-6 lg:pl-8 lg:text-[13px]"
+      >
+        0410 323 034
+      </a>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-3 md:hidden">
+      <a
+        href="tel:0410323034"
+        class="text-[13px] font-medium tracking-[0.03em] text-slate-400 transition-colors duration-300 hover:text-slate-200"
       >
         Call
       </a>
       <button
         id="mobile-menu-toggle"
         type="button"
-        class="inline-flex items-center justify-center rounded-md border border-white/20 px-3 py-2 text-sm font-semibold text-white hover:border-brand-amber hover:text-brand-amber transition"
+        class="inline-flex items-center justify-center rounded-md border border-white/20 px-3 py-2 text-[14px] font-semibold text-white transition hover:border-white/35 hover:text-white"
         aria-controls="mobile-menu-panel"
         aria-expanded="false"
       >
@@ -91,14 +83,14 @@ const navLinks = [
   </div>
 
   <nav id="mobile-menu-panel" class="md:hidden hidden border-t border-white/10 bg-brand-navy/98">
-    <div class="mx-auto max-w-6xl px-6 py-3 flex flex-col">
+    <div class="mx-auto max-w-[90rem] px-6 py-3 flex flex-col text-[15px] tracking-[0.04em]">
       <a href="/" data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">Home</a>
       {navLinks.map((link) => (
         <a href={link.href} data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">
           {link.label}
         </a>
       ))}
-      <a href="tel:0410323034" data-mobile-nav-link class="py-3 text-brand-amber font-semibold">Call 0410 323 034</a>
+      <a href="tel:0410323034" data-mobile-nav-link class="py-3 text-[13px] font-medium tracking-[0.03em] text-slate-400 tabular-nums">0410 323 034</a>
     </div>
   </nav>
 </header>

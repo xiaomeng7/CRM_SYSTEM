@@ -71,8 +71,8 @@ h4 {
 }
 
 h1 {
-  letter-spacing: -0.035em;
-  line-height: 1.08;
+  letter-spacing: -0.032em;
+  line-height: 1.06;
 }
 
 h2 {
@@ -84,6 +84,11 @@ h3,
 h4 {
   letter-spacing: -0.02em;
   line-height: 1.2;
+}
+
+/* Luxury header — single-line rhythm; optical vertical alignment */
+.bht-header-inner {
+  align-items: center;
 }
 
 /**
@@ -138,6 +143,34 @@ h4 {
     color-mix(in srgb, var(--color-brand-amber) 5%, transparent) 0%,
     transparent 70%
   );
+}
+
+/**
+ * Homepage hero — left-weighted readability scrim, soft vignette, right-side quieting.
+ * Used by index.astro only; keeps typography legible without heavy blur or glow.
+ */
+.bht-hero-scrim-left {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-brand-navy) 97%, transparent) 0%,
+    color-mix(in srgb, var(--color-brand-navy) 82%, transparent) 32%,
+    color-mix(in srgb, var(--color-brand-navy) 48%, transparent) 56%,
+    transparent 84%
+  );
+}
+
+.bht-hero-scrim-right {
+  background: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--color-brand-charcoal-deep) 58%, transparent) 0%,
+    transparent 52%
+  );
+}
+
+.bht-hero-vignette {
+  box-shadow:
+    inset 0 0 min(140px, 16vw) rgb(15 17 21 / 0.5),
+    inset 0 0 min(220px, 28vw) rgb(15 17 21 / 0.22);
 }
 
 /* Insights article typography (markdown content) */

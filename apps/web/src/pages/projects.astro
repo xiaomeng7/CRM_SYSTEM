@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PhoneCTA from '../components/PhoneCTA.astro';
+---
+
+<Layout
+  title="Projects — Better Home Technology | Selected Residential Work"
+  description="Selected luxury residential electrical, lighting, and smart infrastructure — case studies and project notes coming soon."
+>
+  <Header />
+
+  <main>
+    <section class="bg-brand-navy text-white relative overflow-hidden min-h-[50vh] flex items-center">
+      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
+      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
+      <div class="relative mx-auto max-w-4xl px-6 py-24 md:py-32 text-center md:text-left">
+        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
+          Projects
+        </p>
+        <h1 class="text-4xl md:text-6xl font-bold leading-[1.08] tracking-tight">
+          Selected residential work<br class="hidden md:inline" />
+          <span class="text-brand-amber">is on the way.</span>
+        </h1>
+        <p class="mt-8 text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed">
+          We are preparing a curated set of premium residential projects — new builds, lighting layers,
+          and smart-home infrastructure — with photography and scope notes for builders and homeowners.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+          <a
+            href="/for-builders"
+            class="inline-flex items-center justify-center bg-brand-amber text-brand-navy font-semibold px-8 py-3.5 rounded-sm hover:bg-brand-amber-soft transition text-sm"
+          >
+            Discuss a project
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center border border-white/25 text-white font-medium px-8 py-3.5 rounded-sm hover:border-brand-amber/60 hover:text-brand-amber transition text-sm"
+          >
+            Contact
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <PhoneCTA />
+</Layout>

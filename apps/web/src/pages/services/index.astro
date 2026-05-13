@@ -4,43 +4,57 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PhoneCTA from '../../components/PhoneCTA.astro';
 
-const serviceGroups = [
+/** Capability overview — deeper than homepage cards; CCTV framed as part of integrated systems. */
+const capabilities = [
   {
-    title: 'Electrical infrastructure',
-    body: 'Switchboards, protection devices, circuit planning, and capacity upgrades for premium homes, renovations, and new builds.',
-    href: '/services/switchboard',
-    cta: 'Switchboard & capacity upgrades →',
+    title: 'Residential electrical infrastructure',
+    body:
+      'Distribution, earthing, circuit design and containment for new builds and major renovations — coordinated with programme, slab and ceiling zones, and the trades that follow.',
+    href: '/for-builders',
+    cta: 'New build & programme coordination →',
   },
   {
-    title: 'Smart home & automation',
-    body: 'Lighting, comfort, access, and security integrated as one system with app, scene, and voice control.',
+    title: 'Smart home & integration',
+    body:
+      'Lighting, comfort, access and automation specified as one stack — scenes, commissioning, and handover documentation suited to premium residential.',
     href: '/services/smart-home',
-    cta: 'Smart home systems →',
+    cta: 'Smart home & integration →',
   },
   {
-    title: 'Security & CCTV',
-    body: 'Camera placement strategy, stable recording, secure remote viewing, and practical handover for real day-to-day use.',
+    title: 'Architectural lighting',
+    body:
+      'Interior and exterior layers, focal lighting and control philosophy aligned with interiors — not a late bolt-on after paint and joinery are finished.',
+    href: '/services/smart-home',
+    cta: 'Lighting & control →',
+  },
+  {
+    title: 'Switchboard, capacity & future readiness',
+    body:
+      'Protection upgrades, load planning and headroom for climate, EV and later phases — assessed before hardware and cable routes are locked in.',
+    href: '/services/switchboard',
+    cta: 'Switchboard & capacity →',
+  },
+  {
+    title: 'Security & CCTV (within the integrated system)',
+    body:
+      'Cameras, access and notification paths designed to sit alongside lighting and automation — stable recording and practical daily use, not a standalone “alarm install” identity.',
     href: '/services/cctv-security',
-    cta: 'CCTV & security systems →',
+    cta: 'Integrated security →',
+    tone: 'muted' as const,
   },
   {
     title: 'EV charging',
-    body: 'Assessment-first EV charger design around switchboard readiness, cable route, tariff strategy, and future solar or battery.',
+    body:
+      'Charger selection and cable routes driven by switchboard capacity, tariff behaviour and future solar or battery — assessment before hardware is ordered.',
     href: '/services/ev-chargers',
-    cta: 'EV charging solutions →',
-  },
-  {
-    title: 'Inspection & advisory',
-    body: 'Independent electrical inspections and written advice before purchase, upgrade, or major electrical decisions.',
-    href: '/pre-purchase-inspection',
-    cta: 'Pre-purchase inspection & advisory →',
+    cta: 'EV charging →',
   },
 ];
 ---
 
 <Layout
-  title="Services — Better Home Technology | Adelaide Smart Home & Premium Electrical"
-  description="Explore BHT services: electrical infrastructure, smart home automation, CCTV security, EV charging, and inspection advisory across Adelaide."
+  title="Services — Better Home Technology | Premium Residential Capabilities"
+  description="Capability overview: residential electrical infrastructure, smart home and lighting integration, switchboard and future-ready capacity, integrated security, EV charging, and independent pre-purchase inspection."
 >
   <Header />
 
@@ -50,15 +64,15 @@ const serviceGroups = [
       <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
       <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
         <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          Services
+          Capabilities
         </p>
         <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
-          Electrical systems built for
-          <span class="text-brand-amber"> premium homes and serious projects.</span>
+          Electrical and smart infrastructure
+          <span class="text-brand-amber"> for premium residential work.</span>
         </h1>
         <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
-          We are not a commodity call-out electrician. BHT focuses on luxury new builds, structured smart
-          home integration, infrastructure upgrades, and independent electrical advisory in Adelaide.
+          This page is the catalogue view: how we think about scope, coordination and handover — before you choose a
+          single product line or trade day on site.
         </p>
       </div>
     </section>
@@ -67,28 +81,40 @@ const serviceGroups = [
       <div class="mx-auto max-w-6xl px-6">
         <div class="max-w-2xl mb-12">
           <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-            Service categories
+            By discipline
           </p>
           <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
-            Five lanes. One delivery standard.
+            Where we add the most leverage
           </h2>
           <p class="mt-4 text-lg text-brand-muted leading-relaxed">
-            Every scope is specified before work starts, coordinated to site conditions, and handed over with
-            clear documentation.
+            Each area links to a focused service page or programme entry point. Same delivery standard across scopes.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {serviceGroups.map((service) => (
-            <a href={service.href} class="block bg-white rounded-xl p-8 border border-brand-border hover:border-brand-amber hover:shadow-lg transition group">
+          {capabilities.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                'block rounded-xl p-8 border transition group',
+                item.tone === 'muted'
+                  ? 'bg-white/80 border-brand-border/80 hover:border-brand-navy/25 hover:shadow-md'
+                  : 'bg-white border-brand-border hover:border-brand-amber hover:shadow-lg',
+              ]}
+            >
+              {item.tone === 'muted' && (
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-muted mb-2">
+                  Integrated systems
+                </p>
+              )}
               <h3 class="text-2xl font-bold text-brand-ink mb-3 group-hover:text-brand-navy">
-                {service.title}
+                {item.title}
               </h3>
               <p class="text-brand-muted leading-relaxed mb-6">
-                {service.body}
+                {item.body}
               </p>
               <p class="text-brand-navy font-semibold group-hover:text-brand-amber transition">
-                {service.cta}
+                {item.cta}
               </p>
             </a>
           ))}
@@ -96,24 +122,48 @@ const serviceGroups = [
       </div>
     </section>
 
-    <section class="bg-white py-20 md:py-24">
+    <section class="bg-white py-16 md:py-20 border-y border-brand-border">
+      <div class="mx-auto max-w-4xl px-6 md:flex md:items-center md:justify-between md:gap-12">
+        <div>
+          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
+            Independent product
+          </p>
+          <h2 class="text-3xl md:text-4xl font-bold text-brand-ink tracking-tight">
+            Pre-purchase electrical inspection
+          </h2>
+          <p class="mt-4 text-lg text-brand-muted leading-relaxed max-w-xl">
+            For buyers who need a written electrical verdict before commitment — separate from builder programmes,
+            with clear scope and no commission on the outcome.
+          </p>
+        </div>
+        <div class="mt-8 md:mt-0 shrink-0">
+          <a
+            href="/pre-purchase-inspection/"
+            class="inline-flex items-center justify-center bg-brand-navy text-white font-semibold px-8 py-4 rounded-md hover:bg-brand-charcoal-soft transition"
+          >
+            Pre-purchase inspection →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-brand-surface-alt py-20 md:py-24">
       <div class="mx-auto max-w-4xl px-6 text-center">
         <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Need help choosing?
+          Not sure where to start?
         </p>
         <p class="text-3xl md:text-5xl font-bold text-brand-ink leading-tight">
-          Tell us the property and your timeline.
+          Send drawings, photos, or a short brief.
         </p>
         <p class="mt-8 text-lg text-brand-muted leading-relaxed max-w-2xl mx-auto">
-          We will point you to the right service pathway and tell you if the scope is ready now or needs
-          staged planning.
+          We will tell you which capability area fits first — and whether the job is ready now or better staged.
         </p>
         <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
             Contact BHT
           </a>
-          <a href="tel:0410323034" class="border-2 border-brand-navy text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-navy hover:text-white transition">
-            Call 0410 323 034
+          <a href="/for-builders" class="border-2 border-brand-navy text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-navy hover:text-white transition">
+            For builders &amp; designers
           </a>
         </div>
       </div>
