@@ -17,27 +17,22 @@ const navLinks = [
   <div
     class="bht-header-inner mx-auto flex max-w-[90rem] flex-nowrap items-center justify-between gap-8 px-6 py-3.5 min-h-[5.75rem] md:min-h-[6.25rem] md:gap-10 md:px-10 md:py-4 lg:gap-14 lg:px-12"
   >
-    <!-- Wordmark only — no slogan in header (positioning lives in Hero). -->
+    <!-- Horizontal wordmark: place file at public/images/logo-horizontal.png -->
     <a
       href="/"
-      class="group flex shrink-0 items-center gap-4 md:gap-5"
+      class="group flex shrink-0 items-center py-0.5"
       aria-label="Better Home — Home"
     >
       <img
-        src="/better_home_logo.svg"
-        alt=""
-        width="68"
-        height="68"
-        class="h-[3.35rem] w-[3.35rem] translate-y-[2px] md:h-[4rem] md:w-[4rem] md:translate-y-[3px] flex-shrink-0 object-contain select-none contrast-[1.06] opacity-[0.98] group-hover:opacity-100 transition-opacity duration-300"
-        aria-hidden="true"
+        src="/images/logo-horizontal.png"
+        alt="Better Home Technology"
+        width="1830"
+        height="369"
+        loading="eager"
+        fetchpriority="high"
         decoding="async"
+        class="h-8 w-auto max-w-[min(52vw,13rem)] object-contain object-left select-none opacity-[0.98] transition-opacity duration-300 group-hover:opacity-100 md:h-9 md:max-w-[16rem] lg:h-10 lg:max-w-[18rem]"
       />
-      <span
-        class="text-[17px] font-semibold uppercase leading-none tracking-[0.1em] text-white md:text-[18px] md:tracking-[0.09em]"
-        style="font-family: var(--font-display)"
-      >
-        Better Home
-      </span>
     </a>
 
     <nav
