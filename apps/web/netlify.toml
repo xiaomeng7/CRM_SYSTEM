@@ -20,3 +20,14 @@
   to = "/.netlify/functions/apply-pre-purchase"
   status = 200
   force = true
+
+# Legacy public filenames (spaces) → kebab-case assets committed in git
+[[redirects]]
+  from = "/better home new logo.png"
+  to = "/better-home-new-logo.png"
+  status = 301
+
+[[redirects]]
+  from = "/better home new logo.jpg"
+  to = "/better-home-new-logo.jpg"
+  status = 301
