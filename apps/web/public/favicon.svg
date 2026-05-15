@@ -1,13 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Better Home">
-  <rect width="800" height="800" fill="#0f1115"/>
-  <g stroke="#c6a55e" stroke-width="22" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="250" y1="180" x2="250" y2="620"/>
-    <line x1="250" y1="180" x2="380" y2="100"/>
-    <line x1="380" y1="100" x2="380" y2="300"/>
-    <line x1="250" y1="400" x2="380" y2="300"/>
-    <line x1="250" y1="400" x2="380" y2="500"/>
-    <line x1="380" y1="500" x2="380" y2="700"/>
-    <line x1="500" y1="120" x2="500" y2="700"/>
-    <line x1="500" y1="420" x2="250" y2="420"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Better Home">
+  <!-- Raster inset keeps gradient fidelity from generated PNG; scales cleanly in tab UI -->
+  <rect width="32" height="32" fill="#0f1115"/>
+  <image href="/favicon-32x32.png" width="32" height="32" preserveAspectRatio="xMidYMid meet"/>
 </svg>
