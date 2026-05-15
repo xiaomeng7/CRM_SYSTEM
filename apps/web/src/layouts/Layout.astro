@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import SeoHead from '../components/SeoHead.astro';
+import FaviconLinks from '../components/FaviconLinks.astro';
 
 export interface Props {
   title?: string;
@@ -38,7 +39,7 @@ const orgSchema = {
   '@type': 'Organization',
   name: businessName,
   url: businessUrl,
-  logo: new URL('/favicon.svg', Astro.site).toString(),
+  logo: new URL('/apple-touch-icon.png', Astro.site).toString(),
   sameAs: ['https://www.google.com/search?q=Better+Home+Technology+Adelaide'],
 };
 
@@ -78,7 +79,7 @@ const enableAnalytics = import.meta.env.PROD && Boolean(gaMeasurementId);
       rel="stylesheet"
     />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <FaviconLinks />
     <title>{title}</title>
 
     {enableAnalytics && (
