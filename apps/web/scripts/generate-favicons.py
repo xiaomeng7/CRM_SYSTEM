@@ -23,7 +23,21 @@ def render_size(src: Image.Image, size: int) -> Image.Image:
     """High-quality downscale + light sharpening so 16×16 stays readable."""
     im = src.resize((size, size), Image.Resampling.LANCZOS)
     if size <= 24:
-        im = im.filter(ImageFilter.UnsharpMask(radius=0.35, percent=130, threshold=1))
+        im = im.filter(ImageFilter.UnsharpMask(radius=0.4, percent=150, threshold=1))
+        # Lift gold slightly on tiny sizes (tabs / bookmarks)
+        px = im.load()
+        for y in range(size):
+            for x in range(size):
+                r, g, b, a = px[x, y]
+                if a < 8:
+                    continue
+                if r > 120 and g > 90 and b < 140 and r > b + 25:
+                    px[x, y] = (
+                        min(255, int(r * 1.08)),
+                        min(255, int(g * 1.06)),
+                        min(255, int(b * 1.02)),
+                        a,
+                    )
     return im
 
 
