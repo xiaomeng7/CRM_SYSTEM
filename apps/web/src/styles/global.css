@@ -162,15 +162,15 @@ h4 {
 .bht-hero-scrim-right {
   background: linear-gradient(
     270deg,
-    color-mix(in srgb, var(--color-brand-charcoal-deep) 58%, transparent) 0%,
-    transparent 52%
+    color-mix(in srgb, var(--color-brand-charcoal-deep) 32%, transparent) 0%,
+    transparent 44%
   );
 }
 
 .bht-hero-vignette {
   box-shadow:
-    inset 0 0 min(140px, 16vw) rgb(15 17 21 / 0.5),
-    inset 0 0 min(220px, 28vw) rgb(15 17 21 / 0.22);
+    inset 0 0 min(140px, 16vw) rgb(15 17 21 / 0.3),
+    inset 0 0 min(220px, 28vw) rgb(15 17 21 / 0.12);
 }
 
 /* Insights article typography (markdown content) */
