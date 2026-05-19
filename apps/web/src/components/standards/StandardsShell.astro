@@ -1,0 +1,68 @@
+---
+import StandardsHeader from './StandardsHeader.astro';
+import StandardsNav from './StandardsNav.astro';
+import type { NavGroup } from '../../lib/standards';
+
+interface Props {
+  navGroups: NavGroup[];
+  currentPath?: string;
+}
+
+const { navGroups, currentPath = Astro.url.pathname } = Astro.props;
+---
+<div class="standards-shell flex min-h-screen flex-col">
+  <StandardsHeader showMenuButton={true} />
+
+  <div class="mx-auto flex w-full max-w-[90rem] flex-1">
+    <!-- Mobile overlay -->
+    <div
+      id="standards-nav-backdrop"
+      class="fixed inset-0 z-30 hidden bg-[#1a1d22]/25 lg:hidden"
+      aria-hidden="true"
+    ></div>
+
+    <aside
+      id="standards-nav-panel"
+      class="standards-sidebar fixed inset-y-0 left-0 z-40 w-[min(18rem,88vw)] -translate-x-full border-r border-[#e8e4de] bg-[#f6f4f0] px-5 pb-10 pt-[4.25rem] transition-transform duration-300 ease-out lg:static lg:z-0 lg:w-64 lg:shrink-0 lg:translate-x-0 lg:pt-10 lg:pb-16 xl:w-72"
+      aria-label="Standards navigation"
+    >
+      <StandardsNav navGroups={navGroups} currentPath={currentPath} />
+    </aside>
+
+    <main class="min-w-0 flex-1 px-5 py-10 md:px-10 md:py-12 lg:px-14 lg:py-14">
+      <slot />
+    </main>
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById('standards-nav-toggle');
+  const panel = document.getElementById('standards-nav-panel');
+  const backdrop = document.getElementById('standards-nav-backdrop');
+
+  if (toggle && panel && backdrop) {
+    const setOpen = (open: boolean) => {
+      panel.classList.toggle('-translate-x-full', !open);
+      panel.classList.toggle('translate-x-0', open);
+      backdrop.classList.toggle('hidden', !open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+    });
+
+    backdrop.addEventListener('click', () => setOpen(false));
+
+    panel.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.matchMedia('(max-width: 1023px)').matches) setOpen(false);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  }
+</script>

@@ -326,6 +326,101 @@ h4 {
   color: var(--color-brand-navy);
 }
 
+/* —— Better Home Standards Portal (editorial shell) —— */
+.standards-shell {
+  min-height: 100vh;
+  background: #faf8f5;
+  color: var(--color-brand-ink);
+}
+
+/* Standards portal has no sticky phone CTA */
+body:has(.standards-shell) {
+  padding-bottom: 0;
+}
+
+.standards-prose {
+  max-width: 42rem;
+  color: #2a2d33;
+  font-size: 1.0625rem;
+  line-height: 1.78;
+  letter-spacing: 0.01em;
+}
+
+.standards-prose p,
+.standards-prose ul,
+.standards-prose ol,
+.standards-prose blockquote {
+  margin-block: 1.15rem;
+}
+
+.standards-prose h2 {
+  margin-top: 2.75rem;
+  margin-bottom: 0.85rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+  color: var(--color-brand-ink);
+}
+
+.standards-prose h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.32;
+  color: var(--color-brand-ink);
+}
+
+.standards-prose h2 + p,
+.standards-prose h3 + p {
+  margin-top: 0.5rem;
+}
+
+.standards-prose ul,
+.standards-prose ol {
+  padding-left: 1.35rem;
+}
+
+.standards-prose ul {
+  list-style: disc;
+}
+
+.standards-prose ol {
+  list-style: decimal;
+}
+
+.standards-prose li + li {
+  margin-top: 0.45rem;
+}
+
+.standards-prose hr {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-brand-ink) 12%, transparent);
+  margin: 2.5rem 0;
+}
+
+.standards-prose strong {
+  font-weight: 600;
+  color: var(--color-brand-ink);
+}
+
+.standards-prose a {
+  color: var(--color-brand-navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--color-brand-amber) 55%, transparent);
+}
+
+.standards-prose a:hover {
+  color: var(--color-brand-amber);
+}
+
+.standards-prose em {
+  color: #4a4f57;
+}
+
 /* Add bottom padding on mobile to leave room for sticky phone CTA */
 @media (max-width: 768px) {
   body {
@@ -344,5 +439,20 @@ h4 {
 
   .insight-content h3 {
     font-size: 1.12rem;
+  }
+
+  .standards-prose {
+    max-width: 100%;
+    font-size: 1.02rem;
+    line-height: 1.74;
+  }
+
+  .standards-prose h2 {
+    font-size: 1.32rem;
+    margin-top: 2.25rem;
+  }
+
+  .standards-prose h3 {
+    font-size: 1.1rem;
   }
 }

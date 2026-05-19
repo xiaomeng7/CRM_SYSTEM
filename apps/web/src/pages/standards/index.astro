@@ -1,0 +1,91 @@
+---
+import StandardsLayout from '../../layouts/StandardsLayout.astro';
+import {
+  buildStandardsNav,
+  getPublishedStandards,
+  PILLAR_LABELS,
+  standardsPath,
+} from '../../lib/standards';
+
+const entries = await getPublishedStandards();
+const navGroups = buildStandardsNav(entries);
+
+const featured = [
+  entries.find((e) => e.data.topic === 'philosophy'),
+  entries.find((e) => e.data.topic === 'on-site-conduct'),
+  entries.find((e) => e.data.topic === 'builders'),
+  entries.find((e) => e.data.topic === 'site-arrival-standard'),
+].filter(Boolean);
+---
+
+<StandardsLayout
+  title="Better Home Standards — Operating Standards Portal"
+  description="Internal standards for Better Home Technology: philosophy, delivery, experience, collaboration, and operational library."
+  canonicalPath="/standards"
+  navGroups={navGroups}
+  currentPath="/standards"
+>
+  <article class="max-w-2xl">
+    <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a8175] mb-5">
+      Better Home Operating Standards
+    </p>
+    <h1 class="text-[2rem] font-semibold leading-[1.12] tracking-[-0.03em] text-[#1a1d22] md:text-[2.35rem]">
+      Standards
+    </h1>
+    <p class="mt-6 text-[17px] leading-[1.65] text-[#4a4f57]">
+      A calm reference for how Better Home thinks, delivers, and shows up — on site, with builders,
+      and in every home we touch. Not an employee handbook. A residential systems operating journal.
+    </p>
+
+    <div class="mt-12 space-y-10 border-t border-[#e8e4de] pt-12">
+      {navGroups.map((group) => (
+        <section>
+          <h2 class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7078]">
+            {group.label}
+          </h2>
+          <p class="mt-2 text-[14px] text-[#8a8175]">{group.description}</p>
+          <ul class="mt-4 space-y-2">
+            {group.items.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="group inline-flex items-baseline gap-2 text-[15px] text-[#2a2d33] transition hover:text-[#c6a55e]"
+                >
+                  <span class="font-medium group-hover:underline group-hover:underline-offset-4">
+                    {item.title}
+                  </span>
+                  <span class="text-[#c6a55e]/0 transition group-hover:text-[#c6a55e]/100" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    {featured.length > 0 && (
+      <section class="mt-14 border-t border-[#e8e4de] pt-12">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7078] mb-6">
+          Start here
+        </h2>
+        <ul class="space-y-4">
+          {featured.map((entry) => (
+            <li>
+              <a
+                href={standardsPath(entry!)}
+                class="block rounded-[2px] border border-[#e8e4de] bg-white/60 px-5 py-4 transition hover:border-[#d4bc82]/50 hover:bg-white"
+              >
+                <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8a8175]">
+                  {PILLAR_LABELS[entry!.data.pillar] ?? entry!.data.pillar}
+                </p>
+                <p class="mt-1 text-[16px] font-medium text-[#1a1d22]">{entry!.data.title}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </article>
+</StandardsLayout>

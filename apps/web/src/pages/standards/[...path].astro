@@ -1,0 +1,103 @@
+---
+import { render } from 'astro:content';
+import StandardsLayout from '../../layouts/StandardsLayout.astro';
+import {
+  buildStandardsNav,
+  entrySlug,
+  getPublishedStandards,
+  PILLAR_LABELS,
+  standardsPath,
+} from '../../lib/standards';
+
+export async function getStaticPaths() {
+  const entries = await getPublishedStandards();
+  return entries.map((entry) => ({
+    params: { path: entrySlug(entry) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const allEntries = await getPublishedStandards();
+const navGroups = buildStandardsNav(allEntries);
+const { Content } = await render(entry);
+
+const canonicalPath = standardsPath(entry);
+const pillarLabel = PILLAR_LABELS[entry.data.pillar] ?? entry.data.pillar;
+const updatedLabel = entry.data.updatedAt
+  ? entry.data.updatedAt.toLocaleDateString('en-AU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  : null;
+---
+
+<StandardsLayout
+  title={entry.data.metaTitle}
+  description={entry.data.metaDescription}
+  canonicalPath={canonicalPath}
+  navGroups={navGroups}
+  currentPath={canonicalPath}
+>
+  <article class="max-w-2xl">
+    <nav class="mb-8 text-[12px] text-[#8a8175]" aria-label="Breadcrumb">
+      <a href="/standards" class="hover:text-[#c6a55e] transition-colors">Standards</a>
+      <span class="mx-2 text-[#d0cbc3]">/</span>
+      <span>{pillarLabel}</span>
+    </nav>
+
+    {entry.data.eyebrow && (
+      <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8a8175] mb-4">
+        {entry.data.eyebrow}
+      </p>
+    )}
+
+    <h1 class="text-[2rem] font-semibold leading-[1.12] tracking-[-0.03em] text-[#1a1d22] md:text-[2.5rem]">
+      {entry.data.h1}
+    </h1>
+
+    {(entry.data.version || updatedLabel || entry.data.series) && (
+      <p class="mt-4 text-[12px] tracking-[0.04em] text-[#8a8175]">
+        {entry.data.series && <span>{entry.data.series}</span>}
+        {entry.data.series && entry.data.version && <span class="mx-2 text-[#d0cbc3]">·</span>}
+        {entry.data.version && <span>v{entry.data.version}</span>}
+        {updatedLabel && (
+          <>
+            {(entry.data.series || entry.data.version) && (
+              <span class="mx-2 text-[#d0cbc3]">·</span>
+            )}
+            <span>Updated {updatedLabel}</span>
+          </>
+        )}
+      </p>
+    )}
+
+    <div class="standards-prose mt-10 md:mt-12">
+      <Content />
+    </div>
+
+    {entry.data.relatedStandards && entry.data.relatedStandards.length > 0 && (
+      <aside class="mt-14 border-t border-[#e8e4de] pt-10">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7078] mb-4">
+          Related standards
+        </h2>
+        <ul class="space-y-2">
+          {entry.data.relatedStandards.map((href) => {
+            const related = allEntries.find((e) => standardsPath(e) === href || `/standards/${e.id}` === href);
+            return (
+              <li>
+                <a
+                  href={href.startsWith('/') ? href : `/standards/${href}`}
+                  class="text-[15px] text-[#2a2d33] underline decoration-[#c6a55e]/30 underline-offset-4 transition hover:text-[#c6a55e]"
+                >
+                  {related?.data.title ?? href}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
+    )}
+  </article>
+</StandardsLayout>

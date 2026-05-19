@@ -20,7 +20,29 @@ const insights = defineCollection({
   }),
 });
 
+const standards = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    h1: z.string(),
+    eyebrow: z.string().optional(),
+    pillar: z.string(),
+    topic: z.string(),
+    collection: z.string().optional(),
+    series: z.string().optional(),
+    metaTitle: z.string(),
+    metaDescription: z.string(),
+    status: z.enum(['published', 'draft']).default('published'),
+    version: z.string().optional(),
+    updatedAt: z.coerce.date().optional(),
+    roles: z.array(z.string()).default(['all']),
+    relatedStandards: z.array(z.string()).optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
 export const collections = {
   insights,
+  standards,
 };
 

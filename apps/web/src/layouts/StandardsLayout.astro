@@ -1,0 +1,20 @@
+---
+import Layout from './Layout.astro';
+import StandardsShell from '../components/standards/StandardsShell.astro';
+import type { NavGroup } from '../lib/standards';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  navGroups: NavGroup[];
+  currentPath?: string;
+}
+
+const { title, description, canonicalPath, navGroups, currentPath } = Astro.props;
+---
+<Layout title={title} description={description} canonicalPath={canonicalPath} noindex={true}>
+  <StandardsShell navGroups={navGroups} currentPath={currentPath}>
+    <slot />
+  </StandardsShell>
+</Layout>

@@ -1,0 +1,39 @@
+---
+/** Minimal portal header — not the marketing site nav */
+interface Props {
+  showMenuButton?: boolean;
+}
+
+const { showMenuButton = false } = Astro.props;
+---
+<header class="standards-shell-header border-b border-[#e8e4de] bg-[#faf8f5]/95 backdrop-blur-sm">
+  <div class="mx-auto flex h-14 max-w-[90rem] items-center justify-between gap-4 px-5 md:px-8 lg:px-10">
+    <div class="flex min-w-0 items-center gap-4">
+      {showMenuButton && (
+        <button
+          type="button"
+          id="standards-nav-toggle"
+          class="inline-flex items-center justify-center rounded-[2px] border border-[#d8d3cb] px-2.5 py-2 text-[13px] font-medium text-[#4a4f57] transition hover:border-[#c6a55e]/40 hover:text-[#1a1d22] lg:hidden"
+          aria-controls="standards-nav-panel"
+          aria-expanded="false"
+        >
+          Menu
+        </button>
+      )}
+      <a href="/standards" class="group min-w-0">
+        <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a8175] transition-colors group-hover:text-[#c6a55e]">
+          Better Home
+        </p>
+        <p class="truncate text-[15px] font-semibold tracking-[-0.02em] text-[#1a1d22] md:text-base">
+          Standards
+        </p>
+      </a>
+    </div>
+    <a
+      href="/"
+      class="shrink-0 text-[12px] font-medium tracking-[0.04em] text-[#6b7078] transition hover:text-[#c6a55e]"
+    >
+      ← Public site
+    </a>
+  </div>
+</header>
