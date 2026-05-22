@@ -191,3 +191,15 @@ Cron 表达式示例：
 | 8 | 用 `/api/customers` 测试 API |
 
 之后每次往 GitHub 的 `main` 分支 push，Railway 会自动重新部署。
+
+---
+
+## 十、Cashflow / Bank / CEO Daily（063–065）
+
+推送 `main` 后：
+
+1. **Release 日志**中确认 `063–065 bank/cashflow migrations done`（见根目录 `railway.toml` 的 `releaseCommand`）。
+2. 跑一次 **`pnpm --filter @bht/crm run job:cashflow-intel`**（Railway CLI：`railway run …`），否则 CEO Daily 的 Cashflow Intelligence 为空。
+3. 浏览器验收：`/ceo-daily.html`、`/bank-import.html`、`/bank-review.html`。
+
+详细清单见 [apps/crm/docs/railway-cashflow-bank-deploy.md](../apps/crm/docs/railway-cashflow-bank-deploy.md)。
