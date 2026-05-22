@@ -50,6 +50,54 @@
     .pipeline-stage .stage-label { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
     .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
     .panel-header h3 { margin: 0; font-size: 0.95rem; font-weight: 600; }
+
+    /* Cashflow Intelligence */
+    .cf-panel {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .cf-panel.cf-status-critical { border-color: #f5c2c7; background: #fffbfb; }
+    .cf-panel.cf-status-warning { border-color: #ffecb5; background: #fffdf8; }
+    .cf-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+    .cf-title { margin: 0; font-size: 1.05rem; font-weight: 600; }
+    .cf-subtitle { margin: 0.2rem 0 0; font-size: 0.82rem; color: var(--muted); }
+    .cf-status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .cf-status-badge.healthy { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+    .cf-status-badge.warning { background: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+    .cf-status-badge.critical { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+    .cf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 0.6rem; margin-bottom: 1rem; }
+    .cf-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.55rem 0.65rem;
+      min-width: 0;
+    }
+    .cf-card.cf-gap-alert { border-color: #f5c2c7; background: #fff5f5; }
+    .cf-card-value { font-size: 1.05rem; font-weight: 700; line-height: 1.2; word-break: break-word; }
+    .cf-card-label { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.25; }
+    .cf-section { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid var(--border); }
+    .cf-section-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.5rem; }
+    .cf-risk-line { font-size: 0.88rem; line-height: 1.45; }
+    .cf-risk-meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+    .cf-list-item { padding: 0.45rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; line-height: 1.4; }
+    .cf-list-item:last-child { border-bottom: none; }
+    .cf-rec-item { margin-bottom: 0.5rem; font-size: 0.85rem; line-height: 1.45; }
+    .cf-rec-cat { display: inline-block; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-right: 0.35rem; }
+    .cf-summary { font-size: 0.88rem; line-height: 1.5; color: var(--text); }
+    .cf-empty { font-size: 0.88rem; color: var(--muted); line-height: 1.45; }
+    .cf-empty-hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.35rem; }
   </style>
 </head>
 <body>
@@ -107,6 +155,20 @@
             <div class="owner-card-label">Overdue Tasks</div>
           </div>
         </div>
+
+        <!-- Cashflow Intelligence -->
+        <section id="cf-panel" class="cf-panel" aria-labelledby="cf-title">
+          <div class="cf-header">
+            <div>
+              <h2 id="cf-title" class="cf-title">Cashflow Intelligence</h2>
+              <p class="cf-subtitle">This week’s operational cash position.</p>
+            </div>
+            <span id="cf-status-badge" class="cf-status-badge healthy" hidden>—</span>
+          </div>
+          <div id="cf-body">
+            <div class="cf-empty">Loading cashflow intelligence…</div>
+          </div>
+        </section>
 
         <!-- Needs Attention -->
         <div id="ceo-attention" class="ceo-attention">

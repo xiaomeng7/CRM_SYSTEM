@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bank Review — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .br-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: flex-end;
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .br-toolbar label { font-size: 0.75rem; color: var(--muted); display: block; margin-bottom: 0.2rem; }
+    .br-toolbar input, .br-toolbar select {
+      font-size: 0.85rem;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    .br-secret { min-width: 12rem; }
+    .br-table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--border); border-radius: 6px; }
+    .br-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .br-table th, .br-table td { padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    .br-table th { background: var(--bg); font-weight: 600; font-size: 0.75rem; color: var(--muted); }
+    .br-table tr:last-child td { border-bottom: none; }
+    .br-amt-out { color: #842029; }
+    .br-amt-in { color: #0f5132; }
+    .br-meta { font-size: 0.72rem; color: var(--muted); }
+    .br-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+    .br-actions select { max-width: 9rem; font-size: 0.78rem; }
+    .br-btn {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .br-btn.primary { background: #0d6efd; color: #fff; border-color: #0d6efd; }
+    .br-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .br-bulk-bar {
+      margin-top: 0.75rem;
+      padding: 0.6rem 1rem;
+      background: #f8f9fa;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      font-size: 0.82rem;
+    }
+    .br-count { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .br-msg { margin-bottom: 0.75rem; font-size: 0.85rem; }
+    .br-msg.err { color: #842029; }
+    .br-msg.ok { color: #0f5132; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/">Dashboard</a>
+        <a href="/bank-review.html" class="active">Bank Review</a>
+        <a href="/tasks.html">Tasks</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Bank Transaction Review</header>
+      <div class="content">
+        <p class="br-meta" style="margin-bottom:0.75rem;">
+          Suggested transactions only. Confirm to teach operational memory. Secret stays in memory only (not saved).
+        </p>
+
+        <div class="br-toolbar">
+          <div>
+            <label for="br-secret">API secret</label>
+            <input type="password" id="br-secret" class="br-secret" autocomplete="off" placeholder="X-Admin-Secret" />
+          </div>
+          <div>
+            <label for="br-date-from">From</label>
+            <input type="date" id="br-date-from" />
+          </div>
+          <div>
+            <label for="br-date-to">To</label>
+            <input type="date" id="br-date-to" />
+          </div>
+          <div>
+            <label for="br-category-filter">Suggested category</label>
+            <select id="br-category-filter">
+              <option value="">All</option>
+            </select>
+          </div>
+          <div>
+            <label for="br-counterparty">Counterparty</label>
+            <input type="text" id="br-counterparty" placeholder="search key" />
+          </div>
+          <div>
+            <label for="br-limit">Limit</label>
+            <select id="br-limit">
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <button type="button" class="br-btn primary" id="br-load">Load queue</button>
+        </div>
+
+        <div id="br-msg" class="br-msg" style="display:none;"></div>
+        <div id="br-count" class="br-count"></div>
+
+        <div class="br-table-wrap">
+          <table class="br-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Suggested</th>
+                <th>Source / conf.</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="br-tbody">
+              <tr><td colspan="6" class="br-meta">Enter secret and load queue.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="br-bulk-bar" id="br-bulk-bar" style="display:none;">
+          <strong>Bulk confirm</strong> same counterparty:
+          <span id="br-bulk-key"></span>
+          <select id="br-bulk-category"></select>
+          <label><input type="checkbox" id="br-bulk-remember" checked /> Remember</label>
+          <button type="button" class="br-btn primary" id="br-bulk-btn">Confirm all suggested</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/bank-review.js"></script>
+</body>
+</html>

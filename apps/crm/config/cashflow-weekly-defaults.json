@@ -1,0 +1,14 @@
+{
+  "currency": "AUD",
+  "timezone": "Australia/Adelaide",
+  "weekly_fixed": 800,
+  "payroll": [
+    { "label": "Weekly wages", "amount": 3500, "day_of_week": 5 }
+  ],
+  "supplier_payments": [
+    { "label": "Wholesaler", "amount": 1200, "day_of_week": 3 }
+  ],
+  "quote_conversion_rate": 0.35,
+  "pipeline_conversion_rate": 0.25,
+  "scheduled_job_conversion_rate": 0.5
+}
