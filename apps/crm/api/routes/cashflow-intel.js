@@ -70,7 +70,13 @@ function normalizeFacts(facts) {
     expenses: {
       ...expenses,
       expected_total: roundMoney(expenses.expected_total),
-      effective_total: roundMoney(expenses.effective_total),
+      effective_total: roundMoney(
+        expenses.effective_total != null &&
+        !(Number(expenses.effective_total) === 0 && Number(expenses.expected_total) > 0)
+          ? expenses.effective_total
+          : expenses.expected_total
+      ),
+      source: expenses.source || cashflow.expense_basis || 'config',
     },
     obligations: f.obligations || {},
     liquidity: f.liquidity
@@ -87,6 +93,7 @@ function normalizeFacts(facts) {
       gap_optimistic: roundMoney(cashflow.gap_optimistic),
       gap_amount: roundMoney(cashflow.gap_amount),
       has_gap: Boolean(cashflow.has_gap),
+      expense_basis: cashflow.expense_basis || expenses.source || 'config',
     },
     overdue: {
       ...overdue,
@@ -121,6 +128,14 @@ function formatSnapshotRow(row) {
       config_source: facts.meta?.config_source || null,
       generated_at: facts.meta?.generated_at || null,
       data_freshness: facts.meta?.data_freshness || null,
+      bank_freshness: facts.meta?.data_freshness
+        ? {
+            last_import_at: facts.meta.data_freshness.bank_last_import_at || null,
+            last_confirmed_txn_date:
+              facts.meta.data_freshness.bank_last_confirmed_txn_date || null,
+            confirmed_count_30d: facts.meta.data_freshness.bank_confirmed_count_30d || 0,
+          }
+        : null,
     },
   };
 }

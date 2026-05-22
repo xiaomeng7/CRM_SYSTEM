@@ -6,4 +6,6 @@
 buildCommand = "pnpm install"
 
 [deploy]
+# Idempotent 063–065 before each deploy (cashflow intel, bank CSV, recurring).
+releaseCommand = "pnpm --filter @bht/crm run db:bank-cashflow-migrations"
 startCommand = "pnpm --filter @bht/crm start"

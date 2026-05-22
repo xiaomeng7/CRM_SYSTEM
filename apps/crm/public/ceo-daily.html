@@ -98,6 +98,67 @@
     .cf-summary { font-size: 0.88rem; line-height: 1.5; color: var(--text); }
     .cf-empty { font-size: 0.88rem; color: var(--muted); line-height: 1.45; }
     .cf-empty-hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.35rem; }
+    .cf-freshness {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0.65rem;
+      background: var(--bg);
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .cf-freshness span { display: inline-block; margin-right: 1rem; }
+    .cf-source-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .owner-card-clickable { cursor: pointer; }
+    .owner-card-clickable:hover { border-color: #0d6efd; box-shadow: 0 0 0 1px #0d6efd33; }
+    .ceo-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .ceo-modal-backdrop.open { display: flex; }
+    .ceo-modal {
+      background: #fff;
+      border-radius: 8px;
+      max-width: 42rem;
+      width: 100%;
+      max-height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+    }
+    .ceo-modal-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .ceo-modal-header h3 { margin: 0; font-size: 1rem; }
+    .ceo-modal-meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+    .ceo-modal-body { overflow: auto; padding: 0.5rem 1rem 1rem; }
+    .ceo-modal-table { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
+    .ceo-modal-table th, .ceo-modal-table td {
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .ceo-modal-table th { color: var(--muted); font-weight: 600; font-size: 0.72rem; }
   </style>
 </head>
 <body>
@@ -106,6 +167,8 @@
       <div class="logo">BHT Revenue OS</div>
       <nav>
         <a href="/ceo-daily.html" class="active">CEO Daily</a>
+        <a href="/bank-import.html">Bank Import</a>
+        <a href="/bank-review.html">Bank Review</a>
         <a href="/">Dashboard</a>
         <a href="/leads.html">Leads</a>
         <a href="/opportunities.html">Opportunities</a>
@@ -142,9 +205,9 @@
             <div class="owner-card-value" id="m-received">—</div>
             <div class="owner-card-label">Revenue Received</div>
           </div>
-          <div class="owner-card">
+          <div class="owner-card owner-card-clickable" id="card-outstanding" title="Click for invoice list" role="button" tabindex="0">
             <div class="owner-card-value" id="m-outstanding" style="color:var(--danger)">—</div>
-            <div class="owner-card-label">Outstanding Invoices</div>
+            <div class="owner-card-label">Outstanding Invoices <span class="cf-source-tag">ServiceM8</span></div>
           </div>
           <div class="owner-card">
             <div class="owner-card-value" id="m-pipeline">—</div>
@@ -255,6 +318,20 @@
       </div>
     </main>
   </div>
+
+  <div id="ceo-outstanding-modal" class="ceo-modal-backdrop" aria-hidden="true">
+    <div class="ceo-modal" role="dialog" aria-labelledby="ceo-modal-title">
+      <div class="ceo-modal-header">
+        <div>
+          <h3 id="ceo-modal-title">Outstanding Invoices</h3>
+          <div class="ceo-modal-meta" id="ceo-modal-meta">Loading…</div>
+        </div>
+        <button type="button" class="btn btn-sm" id="ceo-modal-close">Close</button>
+      </div>
+      <div class="ceo-modal-body" id="ceo-modal-body"></div>
+    </div>
+  </div>
+
   <script src="/js/ceo-daily.js"></script>
 </body>
 </html>

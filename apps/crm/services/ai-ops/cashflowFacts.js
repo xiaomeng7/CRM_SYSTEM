@@ -250,6 +250,9 @@ async function fetchUnpaidInvoiceJobIds(db) {
 async function fetchDataFreshness(db) {
   let invoices_count = 0;
   let last_sync_hint = null;
+  let bank_last_import_at = null;
+  let bank_last_confirmed_txn_date = null;
+  let bank_confirmed_count_30d = 0;
   try {
     const c = await db.query(`SELECT COUNT(*)::int AS n FROM invoices`);
     invoices_count = Number(c.rows[0]?.n ?? 0);
@@ -263,7 +266,29 @@ async function fetchDataFreshness(db) {
     );
     last_sync_hint = s.rows[0]?.finished_at || null;
   } catch (_) {}
-  return { invoices_count, last_sync_hint };
+  try {
+    const b = await db.query(
+      `SELECT finished_at FROM bank_import_batches
+       WHERE status = 'completed' ORDER BY finished_at DESC NULLS LAST LIMIT 1`
+    );
+    bank_last_import_at = b.rows[0]?.finished_at || null;
+    const t = await db.query(
+      `SELECT MAX(txn_date)::text AS last_date,
+              COUNT(*)::int AS n
+       FROM bank_transactions
+       WHERE category_status = 'confirmed'
+         AND txn_date >= CURRENT_DATE - INTERVAL '30 days'`
+    );
+    bank_last_confirmed_txn_date = t.rows[0]?.last_date?.slice(0, 10) || null;
+    bank_confirmed_count_30d = Number(t.rows[0]?.n ?? 0);
+  } catch (_) {}
+  return {
+    invoices_count,
+    last_sync_hint,
+    bank_last_import_at,
+    bank_last_confirmed_txn_date,
+    bank_confirmed_count_30d,
+  };
 }
 
 // ---------------------------------------------------------------------------

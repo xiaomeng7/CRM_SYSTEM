@@ -25,6 +25,42 @@
     } catch (e) { return ''; }
   }
 
+  function fmtDateTime(v) {
+    if (!v) return '—';
+    try {
+      return new Date(v).toLocaleString('en-AU', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (e) {
+      return '—';
+    }
+  }
+
+  function resolveExpenses(expenses, cashflow) {
+    var exp = expenses || {};
+    var cfg = Number(exp.expected_total) || 0;
+    var eff = exp.effective_total;
+    if (eff == null || (eff === 0 && cfg > 0)) {
+      eff = cfg;
+    }
+    var source = exp.source || (cashflow && cashflow.expense_basis) || 'config';
+    return { effective: eff, config: cfg, source: source };
+  }
+
+  function sourceLabel(kind) {
+    var map = {
+      config: 'Config',
+      bank: 'Bank CSV',
+      hybrid: 'Hybrid',
+      servicem8: 'ServiceM8',
+    };
+    return map[kind] || kind || '—';
+  }
+
   function fetchJson(url) {
     return fetch(url).then(function (r) {
       return r.json().then(function (j) {
@@ -117,18 +153,50 @@
 
     var obligations = facts.obligations || {};
     var liquidity = facts.liquidity || {};
-    var expenseBasis = expenses.source || cashflow.expense_basis || 'config';
-    var effectiveExp = expenses.effective_total != null ? expenses.effective_total : expenses.expected_total;
+    var expResolved = resolveExpenses(expenses, cashflow);
     var bankOut = liquidity.actual_week_outflow || 0;
     var hasBank = bankOut > 0 || (obligations.active_recurring_count || 0) > 0;
+    var meta = snap.metadata || {};
+    var freshness = meta.data_freshness || facts.meta?.data_freshness || {};
+    var bankFresh = meta.bank_freshness || {};
+
+    var freshnessHtml =
+      '<div class="cf-freshness">' +
+      '<span><strong>Snapshot</strong> ' + escHtml(fmtDateTime(meta.generated_at || facts.meta?.generated_at)) + '</span>' +
+      '<span><strong>ServiceM8 sync</strong> ' + escHtml(fmtDateTime(freshness.last_sync_hint)) + '</span>' +
+      '<span><strong>Bank import</strong> ' + escHtml(fmtDateTime(bankFresh.last_import_at || freshness.bank_last_import_at)) +
+      (bankFresh.last_confirmed_txn_date || freshness.bank_last_confirmed_txn_date
+        ? ' · last txn ' + escHtml(bankFresh.last_confirmed_txn_date || freshness.bank_last_confirmed_txn_date)
+        : '') +
+      '</span>' +
+      '</div>';
+
+    var expSub =
+      expResolved.source === 'hybrid' && expResolved.config > 0
+        ? 'config ' + fmtMoney(expResolved.config) + ' · bank week ' + fmtMoney(bankOut)
+        : expResolved.source === 'config' && (facts.meta?.config_source || meta.config_source)
+          ? String(facts.meta?.config_source || meta.config_source)
+          : '';
 
     var cardsHtml =
       '<div class="cf-cards">' +
-      cfCard('High-certainty income', fmtMoney(income.high_certainty), '') +
-      cfCard('Possible income', fmtMoney(income.possible), '') +
-      cfCard('Expenses (' + escHtml(expenseBasis) + ')', fmtMoney(effectiveExp), '') +
-      cfCard('Conservative gap', gapDisplay, hasGap ? ' cf-gap-alert' : '') +
-      cfCard('Overdue invoices', fmtMoney(overdue.total_amount), '') +
+      cfCardWithSource('High-certainty income', fmtMoney(income.high_certainty), 'servicem8', '') +
+      cfCardWithSource('Possible income', fmtMoney(income.possible), 'servicem8', '') +
+      cfCardWithSource(
+        'Week expenses',
+        fmtMoney(expResolved.effective),
+        expResolved.source,
+        '',
+        expSub
+      ) +
+      cfCardWithSource(
+        'Conservative gap',
+        gapDisplay,
+        expResolved.source,
+        hasGap ? ' cf-gap-alert' : '',
+        hasGap ? 'income − expenses (' + sourceLabel(expResolved.source) + ')' : ''
+      ) +
+      cfCardWithSource('Overdue (collections)', fmtMoney(overdue.total_amount), 'servicem8', '') +
       '</div>';
 
     var bankHtml = '';
@@ -223,13 +291,80 @@
         '</div>';
     }
 
-    bodyEl.innerHTML = weekNote + cardsHtml + bankHtml + riskHtml + invHtml + recHtml + summaryHtml;
+    bodyEl.innerHTML = freshnessHtml + weekNote + cardsHtml + bankHtml + riskHtml + invHtml + recHtml + summaryHtml;
   }
 
   function cfCard(label, value, extraClass) {
-    return '<div class="cf-card' + (extraClass || '') + '">' +
+    return cfCardWithSource(label, value, '', extraClass, '');
+  }
+
+  function cfCardWithSource(label, value, sourceKey, extraClass, hint) {
+    var src = sourceKey ? '<span class="cf-source-tag">' + escHtml(sourceLabel(sourceKey)) + '</span>' : '';
+    var hintHtml = hint ? '<div class="cf-risk-meta">' + escHtml(hint) + '</div>' : '';
+    return (
+      '<div class="cf-card' + (extraClass || '') + '">' +
       '<div class="cf-card-value">' + escHtml(value) + '</div>' +
-      '<div class="cf-card-label">' + escHtml(label) + '</div></div>';
+      '<div class="cf-card-label">' + escHtml(label) + ' ' + src + hintHtml + '</div></div>'
+    );
+  }
+
+  function openOutstandingModal() {
+    var backdrop = $('ceo-outstanding-modal');
+    var body = $('ceo-modal-body');
+    var metaEl = $('ceo-modal-meta');
+    if (!backdrop || !body) return;
+    backdrop.classList.add('open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    body.innerHTML = '<div class="muted">Loading…</div>';
+    metaEl.textContent = 'Source: ServiceM8 · status = outstanding';
+
+    fetchJson('/api/cashflow/outstanding-details')
+      .then(function (data) {
+        metaEl.textContent =
+          'Source: ' +
+          escHtml(data.source || 'ServiceM8') +
+          ' · ' +
+          escHtml(data.count) +
+          ' invoice(s) · Total ' +
+          fmtMoney(data.total);
+        if (!data.invoices || !data.invoices.length) {
+          body.innerHTML = '<div class="cf-empty">No outstanding invoices.</div>';
+          return;
+        }
+        body.innerHTML =
+          '<table class="ceo-modal-table"><thead><tr>' +
+          '<th>Invoice</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th><th>Job</th>' +
+          '</tr></thead><tbody>' +
+          data.invoices
+            .map(function (inv) {
+              return (
+                '<tr>' +
+                '<td>' + escHtml(inv.invoice_number || '—') + '</td>' +
+                '<td>' + escHtml(inv.customer || '—') + '</td>' +
+                '<td>' + escHtml(fmtMoney(inv.amount)) + '</td>' +
+                '<td>' + escHtml(inv.due_date || '—') + '</td>' +
+                '<td>' +
+                escHtml(inv.days_overdue != null ? inv.days_overdue + 'd' : '—') +
+                '</td>' +
+                '<td>' + escHtml(inv.job_label || inv.builder || '—') + '</td>' +
+                '</tr>'
+              );
+            })
+            .join('') +
+          '</tbody></table>';
+      })
+      .catch(function (e) {
+        body.innerHTML =
+          '<div class="cf-empty">' + escHtml(e.message || 'Could not load invoices') + '</div>';
+      });
+  }
+
+  function closeOutstandingModal() {
+    var backdrop = $('ceo-outstanding-modal');
+    if (backdrop) {
+      backdrop.classList.remove('open');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
   }
 
   function load() {
@@ -263,7 +398,11 @@
     var overdueTasks = (dash.tasks && dash.tasks.overdue ? dash.tasks.overdue.length : 0);
     $('m-jobs').textContent = cf.jobsWonThisWeek != null ? cf.jobsWonThisWeek : '—';
     $('m-received').textContent = fmtMoney(cf.paymentsReceived);
-    $('m-outstanding').textContent = fmtMoney(cf.outstanding);
+    var outEl = $('m-outstanding');
+    if (outEl) {
+      outEl.textContent = fmtMoney(cf.outstanding);
+      outEl.title = 'ServiceM8 invoices with status outstanding — click for list';
+    }
     $('m-pipeline').textContent = fmtMoney(dash.opportunities ? dash.opportunities.totalPotential : null);
     $('m-overdue').textContent = overdueTasks || '0';
   }
@@ -403,6 +542,24 @@
       refreshBtn.addEventListener('click', function () {
         load();
         loadCashflowIntelligence();
+      });
+    }
+    var outCard = $('card-outstanding');
+    if (outCard) {
+      outCard.addEventListener('click', openOutstandingModal);
+      outCard.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openOutstandingModal();
+        }
+      });
+    }
+    var closeBtn = $('ceo-modal-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeOutstandingModal);
+    var backdrop = $('ceo-outstanding-modal');
+    if (backdrop) {
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) closeOutstandingModal();
       });
     }
     load();

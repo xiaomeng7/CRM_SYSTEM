@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bank CSV Import — BHT CRM</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .bi-panel {
+      max-width: 32rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .bi-panel label { font-size: 0.75rem; color: var(--muted); display: block; margin-bottom: 0.25rem; }
+    .bi-panel input, .bi-panel select {
+      width: 100%;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+    }
+    .bi-btn {
+      font-size: 0.85rem;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    .bi-btn.primary { background: #0d6efd; color: #fff; border-color: #0d6efd; }
+    .bi-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .bi-result {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .bi-result dt { font-weight: 600; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; margin-top: 0.5rem; }
+    .bi-result dd { margin: 0.15rem 0 0; }
+    .bi-msg { font-size: 0.85rem; margin-bottom: 0.75rem; }
+    .bi-msg.err { color: #842029; }
+    .bi-msg.ok { color: #0f5132; }
+    .bi-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">BHT Revenue OS</div>
+      <nav>
+        <a href="/ceo-daily.html">CEO Daily</a>
+        <a href="/bank-import.html" class="active">Bank Import</a>
+        <a href="/bank-review.html">Bank Review</a>
+        <a href="/">Dashboard</a>
+        <a href="/admin-console.html">Admin Console</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header">Bank CSV Import</header>
+      <div class="content">
+        <p class="bi-meta">Upload ANZ or CommBank CSV. File is processed in memory only — not stored on server.</p>
+
+        <div class="bi-panel">
+          <label for="bi-secret">API secret</label>
+          <input type="password" id="bi-secret" autocomplete="off" placeholder="X-Admin-Secret" />
+
+          <label for="bi-bank">Bank</label>
+          <select id="bi-bank">
+            <option value="anz">ANZ</option>
+            <option value="commbank">CommBank</option>
+          </select>
+
+          <label for="bi-file">CSV file</label>
+          <input type="file" id="bi-file" accept=".csv,text/csv" />
+
+          <button type="button" class="bi-btn primary" id="bi-import">Import</button>
+        </div>
+
+        <div id="bi-msg" class="bi-msg" style="display:none;"></div>
+        <div id="bi-result" style="display:none;"></div>
+        <div id="bi-next" style="display:none; margin-top:1rem;">
+          <a href="/bank-review.html" class="bi-btn primary">Go to Review Queue</a>
+          <a href="/ceo-daily.html" class="bi-btn">Go to CEO Daily</a>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/bank-import.js"></script>
+</body>
+</html>
