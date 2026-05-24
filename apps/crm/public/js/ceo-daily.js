@@ -333,25 +333,33 @@
         }
         body.innerHTML =
           '<table class="ceo-modal-table"><thead><tr>' +
-          '<th>Invoice</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th><th>Job / site</th>' +
+          '<th>Invoice</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th>' +
+          '<th>Job #</th><th>Site / address</th>' +
           '</tr></thead><tbody>' +
           data.invoices
             .map(function (inv) {
+              var dueCell = inv.due_date || '—';
+              if (inv.due_date_is_invoice_date && inv.due_date) {
+                dueCell = inv.due_date + ' (inv.)';
+              }
               return (
                 '<tr>' +
                 '<td>' + escHtml(inv.invoice_number || '—') + '</td>' +
                 '<td>' + escHtml(inv.customer || '—') + '</td>' +
                 '<td>' + escHtml(fmtMoney(inv.amount)) + '</td>' +
-                '<td>' + escHtml(inv.due_date || '—') + '</td>' +
+                '<td>' + escHtml(dueCell) + '</td>' +
                 '<td>' +
                 escHtml(inv.days_overdue != null ? inv.days_overdue + 'd' : '—') +
                 '</td>' +
-                '<td>' + escHtml(inv.job_label || inv.job_number || '—') + '</td>' +
+                '<td><strong>' + escHtml(inv.job_number || '—') + '</strong></td>' +
+                '<td>' + escHtml(inv.job_site || inv.job_label || '—') + '</td>' +
                 '</tr>'
               );
             })
             .join('') +
-          '</tbody></table>';
+          '</tbody></table>' +
+          '<p class="cf-empty-hint" style="margin-top:0.75rem;">Job # and site from ServiceM8 sync. ' +
+          'SM8- prefix = reference when official number missing. Run sync if fields are blank.</p>';
       })
       .catch(function (e) {
         body.innerHTML =

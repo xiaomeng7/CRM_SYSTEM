@@ -8,24 +8,40 @@ const { pool } = require('../../lib/db');
 
 const startOfWeek = `date_trunc('week', CURRENT_DATE)::timestamptz`;
 
+function buildJobSite(row) {
+  const line = row.job_address_line && String(row.job_address_line).trim();
+  const suburb = row.job_suburb && String(row.job_suburb).trim();
+  if (line && suburb) return `${line}, ${suburb}`;
+  if (line) return line;
+  if (suburb) return suburb;
+  return null;
+}
+
 function buildJobLabel(row) {
   const num = row.job_number && String(row.job_number).trim();
-  const suburb = row.job_suburb && String(row.job_suburb).trim();
-  const desc = row.job_description && String(row.job_description).trim();
+  const site = buildJobSite(row);
   const status = row.job_status && String(row.job_status).trim();
+  const customer = row.customer && String(row.customer).trim().toLowerCase();
+  const desc = row.job_description && String(row.job_description).trim();
+  const descOk = desc && desc.toLowerCase() !== customer;
 
   if (num) {
-    let label = `Job ${num}`;
-    if (suburb) label += ` · ${suburb}`;
-    else if (desc) label += ` · ${desc.slice(0, 40)}`;
+    let label = num;
+    if (site) label += ` · ${site}`;
+    else if (descOk) label += ` · ${desc.slice(0, 40)}`;
     if (status) label += ` (${status})`;
     return label;
   }
-  if (suburb) {
-    return `Job · ${suburb}${status ? ` (${status})` : ''}`;
-  }
-  if (desc) {
-    return desc.length > 50 ? `${desc.slice(0, 50)}…` : desc;
+  if (site) return site + (status ? ` (${status})` : '');
+  if (descOk) return desc.length > 50 ? `${desc.slice(0, 50)}…` : desc;
+  return null;
+}
+
+function resolveJobNumber(row) {
+  const num = row.job_number && String(row.job_number).trim();
+  if (num) return num;
+  if (row.servicem8_job_uuid) {
+    return `SM8-${String(row.servicem8_job_uuid).slice(0, 8)}`;
   }
   return null;
 }
@@ -40,16 +56,21 @@ router.get('/outstanding-details', async (req, res) => {
        FROM invoices WHERE status = 'outstanding'`
     );
     const rows = await pool.query(
-      `SELECT i.id, i.invoice_number, i.amount, i.due_date, i.status, i.job_id,
-              i.servicem8_invoice_uuid,
+      `SELECT i.id, i.invoice_number, i.amount, i.due_date, i.invoice_date, i.status,
+              i.job_id, i.servicem8_invoice_uuid, i.servicem8_job_uuid,
               a.name AS customer,
-              j.job_number,
-              j.suburb AS job_suburb,
-              j.description AS job_description,
-              j.status AS job_status
+              COALESCE(j1.job_number, j2.job_number) AS job_number,
+              COALESCE(j1.suburb, j2.suburb) AS job_suburb,
+              COALESCE(j1.address_line, j2.address_line) AS job_address_line,
+              COALESCE(j1.description, j2.description) AS job_description,
+              COALESCE(j1.status, j2.status) AS job_status,
+              COALESCE(j1.servicem8_job_uuid, j2.servicem8_job_uuid) AS servicem8_job_uuid
        FROM invoices i
        LEFT JOIN accounts a ON a.id = i.account_id
-       LEFT JOIN jobs j ON j.id = i.job_id
+       LEFT JOIN jobs j1 ON j1.id = i.job_id
+       LEFT JOIN jobs j2 ON i.job_id IS NULL
+         AND i.servicem8_job_uuid IS NOT NULL
+         AND j2.servicem8_job_uuid = i.servicem8_job_uuid
        WHERE i.status = 'outstanding'
        ORDER BY i.amount DESC NULLS LAST, i.due_date ASC NULLS LAST
        LIMIT $1`,
@@ -57,8 +78,9 @@ router.get('/outstanding-details', async (req, res) => {
     );
     const invoices = rows.rows.map((r) => {
       let days_overdue = null;
-      if (r.due_date) {
-        const due = new Date(r.due_date);
+      const dueRaw = r.due_date || r.invoice_date;
+      if (dueRaw) {
+        const due = new Date(dueRaw);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         due.setHours(0, 0, 0, 0);
@@ -66,21 +88,30 @@ router.get('/outstanding-details', async (req, res) => {
           days_overdue = Math.floor((today - due) / 86400000);
         }
       }
+      const jobNumber = resolveJobNumber(r);
+      const jobSite = buildJobSite(r);
       const jobLabel = buildJobLabel(r);
       const invoiceNumber =
         r.invoice_number ||
         (r.servicem8_invoice_uuid ? `SM8-${String(r.servicem8_invoice_uuid).slice(0, 8)}` : null);
+      const dueDate = r.due_date
+        ? String(r.due_date).slice(0, 10)
+        : r.invoice_date
+          ? String(r.invoice_date).slice(0, 10)
+          : null;
       return {
         id: r.id,
         invoice_number: invoiceNumber,
         customer: r.customer || '—',
         amount: parseFloat(r.amount),
-        due_date: r.due_date ? String(r.due_date).slice(0, 10) : null,
+        due_date: dueDate,
+        due_date_is_invoice_date: !r.due_date && !!r.invoice_date,
         days_overdue,
         job_id: r.job_id || null,
-        job_number: r.job_number || null,
+        job_number: jobNumber,
+        job_site: jobSite,
         job_label: jobLabel,
-        builder: r.customer || null,
+        servicem8_job_uuid: r.servicem8_job_uuid || null,
       };
     });
     res.json({
