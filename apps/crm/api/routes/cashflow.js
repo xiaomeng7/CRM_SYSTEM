@@ -8,6 +8,28 @@ const { pool } = require('../../lib/db');
 
 const startOfWeek = `date_trunc('week', CURRENT_DATE)::timestamptz`;
 
+function buildJobLabel(row) {
+  const num = row.job_number && String(row.job_number).trim();
+  const suburb = row.job_suburb && String(row.job_suburb).trim();
+  const desc = row.job_description && String(row.job_description).trim();
+  const status = row.job_status && String(row.job_status).trim();
+
+  if (num) {
+    let label = `Job ${num}`;
+    if (suburb) label += ` · ${suburb}`;
+    else if (desc) label += ` · ${desc.slice(0, 40)}`;
+    if (status) label += ` (${status})`;
+    return label;
+  }
+  if (suburb) {
+    return `Job · ${suburb}${status ? ` (${status})` : ''}`;
+  }
+  if (desc) {
+    return desc.length > 50 ? `${desc.slice(0, 50)}…` : desc;
+  }
+  return null;
+}
+
 const router = require('express').Router();
 
 router.get('/outstanding-details', async (req, res) => {
@@ -19,8 +41,11 @@ router.get('/outstanding-details', async (req, res) => {
     );
     const rows = await pool.query(
       `SELECT i.id, i.invoice_number, i.amount, i.due_date, i.status, i.job_id,
+              i.servicem8_invoice_uuid,
               a.name AS customer,
+              j.job_number,
               j.suburb AS job_suburb,
+              j.description AS job_description,
               j.status AS job_status
        FROM invoices i
        LEFT JOIN accounts a ON a.id = i.account_id
@@ -41,19 +66,19 @@ router.get('/outstanding-details', async (req, res) => {
           days_overdue = Math.floor((today - due) / 86400000);
         }
       }
-      const jobLabel = r.job_suburb
-        ? `Job · ${r.job_suburb}${r.job_status ? ` (${r.job_status})` : ''}`
-        : r.job_id
-          ? `Job #${String(r.job_id).slice(0, 8)}`
-          : null;
+      const jobLabel = buildJobLabel(r);
+      const invoiceNumber =
+        r.invoice_number ||
+        (r.servicem8_invoice_uuid ? `SM8-${String(r.servicem8_invoice_uuid).slice(0, 8)}` : null);
       return {
         id: r.id,
-        invoice_number: r.invoice_number || null,
+        invoice_number: invoiceNumber,
         customer: r.customer || '—',
         amount: parseFloat(r.amount),
         due_date: r.due_date ? String(r.due_date).slice(0, 10) : null,
         days_overdue,
         job_id: r.job_id || null,
+        job_number: r.job_number || null,
         job_label: jobLabel,
         builder: r.customer || null,
       };

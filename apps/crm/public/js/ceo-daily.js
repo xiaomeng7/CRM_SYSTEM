@@ -333,7 +333,7 @@
         }
         body.innerHTML =
           '<table class="ceo-modal-table"><thead><tr>' +
-          '<th>Invoice</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th><th>Job</th>' +
+          '<th>Invoice</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th><th>Job / site</th>' +
           '</tr></thead><tbody>' +
           data.invoices
             .map(function (inv) {
@@ -346,7 +346,7 @@
                 '<td>' +
                 escHtml(inv.days_overdue != null ? inv.days_overdue + 'd' : '—') +
                 '</td>' +
-                '<td>' + escHtml(inv.job_label || inv.builder || '—') + '</td>' +
+                '<td>' + escHtml(inv.job_label || inv.job_number || '—') + '</td>' +
                 '</tr>'
               );
             })
