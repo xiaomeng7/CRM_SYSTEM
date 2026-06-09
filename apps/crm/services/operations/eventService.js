@@ -20,6 +20,7 @@ const EXAMPLE_EVENT_TYPES = [
   'builder_reply_received',
   'builder_meeting_needed',
   'builder_target',
+  'builder_priority',
   'sync_issue',
   'data_quality_issue',
   'operational_load',
@@ -32,6 +33,7 @@ const BUILDER_EVENT_TYPES = [
   'builder_reply_received',
   'builder_meeting_needed',
   'builder_target',
+  'builder_priority',
 ];
 
 const MAX_LIST_LIMIT = 100;

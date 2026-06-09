@@ -1,12 +1,13 @@
 /**
- * Refresh all builder target scores (PR8E).
+ * Refresh builder target scores + founder priority scores (PR8E / PR8E.1).
  */
 
 const { pool } = require('../../../lib/db');
 const { PROSPECT_TYPE_BUILDER } = require('../builderProspectConstants');
 const { calculateBuilderTargetScore } = require('./calculateBuilderTargetScore');
+const { calculateFounderPriorityScore } = require('./calculateFounderPriorityScore');
 const { buildTargetAction } = require('./buildTargetAction');
-const { runBuilderTargetDetector } = require('../../operations/detectors/builderTargetDetector');
+const { runBuilderPriorityDetector } = require('../../operations/detectors/builderPriorityDetector');
 
 async function loadBuilderProspectsWithProfiles(db) {
   const r = await db.query(
@@ -51,13 +52,24 @@ async function loadOpenFollowupEvents(db) {
 async function upsertTargetScore(prospectId, data, db) {
   const r = await db.query(
     `INSERT INTO builder_target_scores (
-       prospect_id, target_score, target_band, next_best_action, score_breakdown, calculated_at
-     ) VALUES ($1, $2, $3, $4, $5::jsonb, NOW())
+       prospect_id,
+       target_score,
+       target_band,
+       next_best_action,
+       score_breakdown,
+       founder_priority_score,
+       founder_priority_band,
+       founder_priority_breakdown,
+       calculated_at
+     ) VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8::jsonb, NOW())
      ON CONFLICT (prospect_id) DO UPDATE SET
        target_score = EXCLUDED.target_score,
        target_band = EXCLUDED.target_band,
        next_best_action = EXCLUDED.next_best_action,
        score_breakdown = EXCLUDED.score_breakdown,
+       founder_priority_score = EXCLUDED.founder_priority_score,
+       founder_priority_band = EXCLUDED.founder_priority_band,
+       founder_priority_breakdown = EXCLUDED.founder_priority_breakdown,
        calculated_at = NOW()
      RETURNING *`,
     [
@@ -66,6 +78,9 @@ async function upsertTargetScore(prospectId, data, db) {
       data.target_band,
       data.next_best_action,
       JSON.stringify(data.score_breakdown),
+      data.founder_priority_score,
+      data.founder_priority_band,
+      JSON.stringify(data.founder_priority_breakdown),
     ]
   );
   return r.rows[0];
@@ -104,34 +119,45 @@ async function refreshBuilderTargetScores(options = {}) {
       ? { payload: followupMap.get(row.id).payload }
       : null;
 
-    const scoreResult = calculateBuilderTargetScore({
+    const legacyScore = calculateBuilderTargetScore({
       prospect: row,
       profile,
       openFollowupEvent,
       now,
     });
 
+    const priorityScore = calculateFounderPriorityScore({
+      prospect: row,
+      profile,
+      openFollowupEvent,
+      now,
+    });
+
+    const scoreResult = {
+      ...priorityScore,
+      target_score: priorityScore.founder_priority_score,
+      target_band: priorityScore.founder_priority_band,
+      score_breakdown: {
+        legacy: legacyScore.score_breakdown,
+        founder_priority: priorityScore.founder_priority_breakdown,
+      },
+    };
+
     const next_best_action = buildTargetAction(row, profile, scoreResult);
 
-    await upsertTargetScore(
-      row.id,
-      {
-        ...scoreResult,
-        next_best_action,
-      },
-      db
-    );
+    await upsertTargetScore(row.id, { ...scoreResult, next_best_action }, db);
 
     stats.upserted++;
-    stats.bands[scoreResult.target_band] = (stats.bands[scoreResult.target_band] || 0) + 1;
+    stats.bands[priorityScore.founder_priority_band] =
+      (stats.bands[priorityScore.founder_priority_band] || 0) + 1;
   }
 
   log(
-    `Target scores refreshed: scanned=${stats.scanned} bands A=${stats.bands.A} B=${stats.bands.B} C=${stats.bands.C} D=${stats.bands.D}`
+    `Founder priority refreshed: scanned=${stats.scanned} bands A=${stats.bands.A} B=${stats.bands.B} C=${stats.bands.C} D=${stats.bands.D}`
   );
 
   if (options.runDetector !== false) {
-    stats.detector = await runBuilderTargetDetector({ db, now, log });
+    stats.detector = await runBuilderPriorityDetector({ db, now, log });
   }
 
   return stats;

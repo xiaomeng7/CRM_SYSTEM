@@ -35,9 +35,13 @@ const {
   FIT_PRIORITIES,
   RESEARCH_STATUSES,
   RELATIONSHIP_STAGES,
+  RELATIONSHIP_STRENGTHS,
+  OPPORTUNITY_POTENTIALS,
+  TIMING_STATUSES,
 } = require('../../services/builder/builderProspectConstants');
 const { FIT_LEVELS } = require('../../services/builder/builderProfileConstants');
 const { getTopBuilderTargets } = require('../../services/builder/targetSelection/getTopBuilderTargets');
+const { getStrategicBuilders } = require('../../services/builder/targetSelection/getStrategicBuilders');
 const { refreshBuilderTargetScores } = require('../../services/builder/targetSelection/refreshBuilderTargetScores');
 
 function requireAdminSecret(req, res) {
@@ -87,8 +91,21 @@ router.get('/prospects/enums', (_req, res) => {
     fit_priorities: FIT_PRIORITIES,
     research_statuses: RESEARCH_STATUSES,
     relationship_stages: RELATIONSHIP_STAGES,
+    relationship_strengths: RELATIONSHIP_STRENGTHS,
+    opportunity_potentials: OPPORTUNITY_POTENTIALS,
+    timing_statuses: TIMING_STATUSES,
     fit_levels: FIT_LEVELS,
   });
+});
+
+router.get('/strategic-builders', async (req, res) => {
+  try {
+    const result = await getStrategicBuilders({ limit: req.query.limit });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET strategic-builders]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
 });
 
 router.get('/targets', async (req, res) => {

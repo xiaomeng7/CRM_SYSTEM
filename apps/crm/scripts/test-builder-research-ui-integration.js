@@ -34,7 +34,10 @@ function testHtmlResearchSection(html) {
   assert(html.includes('id="bi-profile_summary"'), 'profile_summary field');
   assert(html.includes('id="bi-quality_signals"'), 'quality_signals field');
   assert(html.includes('id="bi-risk_signals"'), 'risk_signals field');
-  assert(html.includes('id="bi-fit-snapshot"'), 'fit snapshot section');
+  assert(html.includes('Contact This Week'), 'contact this week heading');
+  assert(html.includes('Strategic Builders'), 'strategic builders section');
+  assert(html.includes('id="bi-relationship_strength"'), 'relationship strength field');
+  assert(html.includes('id="bi-founder_notes"'), 'founder notes field');
   assert(html.includes('Builder Fit Snapshot'), 'snapshot heading');
   assert(html.includes('id="bi-why-bht-fit"'), 'why bht fit list');
   assert(html.includes('id="bi-opportunity-summary"'), 'opportunity list');

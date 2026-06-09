@@ -15,6 +15,7 @@ const EVENT_TYPE_BOOST = {
   cashflow_risk: 20,
   builder_reply_received: 18,
   builder_target: 17,
+  builder_priority: 18,
   builder_meeting_needed: 16,
   builder_followup: 15,
   builder_research_needed: 12,

@@ -14,12 +14,14 @@ const { generateCollectionsActions } = require('./actionGenerators/collectionsAc
 const { generateCashflowActions } = require('./actionGenerators/cashflowActionGenerator');
 const { generateBuilderFollowupActions } = require('./actionGenerators/builderFollowupActionGenerator');
 const { generateBuilderTargetActions } = require('./actionGenerators/builderTargetActionGenerator');
+const { generateBuilderPriorityActions } = require('./actionGenerators/builderPriorityActionGenerator');
 
 const GENERATORS = {
   collections_risk: generateCollectionsActions,
   cashflow_risk: generateCashflowActions,
   builder_followup: generateBuilderFollowupActions,
   builder_target: generateBuilderTargetActions,
+  builder_priority: generateBuilderPriorityActions,
 };
 
 /**

@@ -11,7 +11,8 @@ require('../lib/load-env');
 const { pool } = require('../lib/db');
 const { runCollectionsRiskDetector } = require('../services/operations/detectors/collectionsRiskDetector');
 const { runBuilderFollowupDetector } = require('../services/operations/detectors/builderFollowupDetector');
-const { runBuilderTargetDetector } = require('../services/operations/detectors/builderTargetDetector');
+const { refreshBuilderTargetScores } = require('../services/builder/targetSelection/refreshBuilderTargetScores');
+const { runBuilderPriorityDetector } = require('../services/operations/detectors/builderPriorityDetector');
 
 function parseArgs(argv) {
   const out = { dryRun: false };
@@ -41,13 +42,22 @@ async function main() {
   console.log('\n=== Builder Follow-up ===');
   console.log(JSON.stringify(builderFollowup, null, 2));
 
-  const builderTarget = await runBuilderTargetDetector({
+  if (!args.dryRun) {
+    const refreshStats = await refreshBuilderTargetScores({
+      runDetector: false,
+      log: console.log,
+    });
+    console.log('\n=== Builder Priority Refresh ===');
+    console.log(JSON.stringify(refreshStats, null, 2));
+  }
+
+  const builderPriority = await runBuilderPriorityDetector({
     dryRun: args.dryRun,
     log: console.log,
   });
 
-  console.log('\n=== Builder Target ===');
-  console.log(JSON.stringify(builderTarget, null, 2));
+  console.log('\n=== Builder Priority ===');
+  console.log(JSON.stringify(builderPriority, null, 2));
 
   // Future: cashflowRiskDetector(), leadDetector()
 

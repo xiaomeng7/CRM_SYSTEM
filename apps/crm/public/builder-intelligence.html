@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8d1" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8e1" />
 </head>
 <body>
   <div class="app">
@@ -39,7 +39,7 @@
 
         <section class="bi-top-targets" id="bi-top-targets">
           <div class="bi-top-targets-header">
-            <h2>Top Targets</h2>
+            <h2>Contact This Week</h2>
             <div class="bi-top-targets-actions">
               <select id="bi-target-band" class="bi-filter-select">
                 <option value="">All bands</option>
@@ -51,7 +51,15 @@
             </div>
           </div>
           <div id="bi-targets-list" class="bi-targets-list">
-            <p class="bi-empty">Loading targets…</p>
+            <p class="bi-empty">Loading priorities…</p>
+          </div>
+        </section>
+
+        <section class="bi-strategic-builders" id="bi-strategic-builders">
+          <h2>Strategic Builders</h2>
+          <p class="bi-section-hint">Marked strategic — always visible regardless of score.</p>
+          <div id="bi-strategic-list" class="bi-targets-list">
+            <p class="bi-empty">Loading strategic builders…</p>
           </div>
         </section>
 
@@ -119,6 +127,9 @@
           <label>Fit priority<select id="bi-fit_priority"></select></label>
           <label>Research status<select id="bi-research_status"></select></label>
           <label>Relationship stage<select id="bi-relationship_stage"></select></label>
+          <label>Relationship strength<select id="bi-relationship_strength"></select></label>
+          <label>Opportunity potential<select id="bi-opportunity_potential"></select></label>
+          <label>Timing status<select id="bi-timing_status"></select></label>
           <label>Decision maker<input type="text" id="bi-decision_maker_name" /></label>
           <label>DM role<input type="text" id="bi-decision_maker_role" placeholder="Director, Estimator…" /></label>
           <label>Contact name<input type="text" id="bi-contact_name" /></label>
@@ -135,6 +146,7 @@
           <label>Source detail<input type="text" id="bi-source_detail" /></label>
           <label>Next follow-up<input type="datetime-local" id="bi-next_followup_at" /></label>
           <label class="bi-full">Qualification notes<textarea id="bi-qualification_notes" rows="2"></textarea></label>
+          <label class="bi-full">Founder notes<textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event, interested in smart homes, calls back quickly…"></textarea></label>
           <label class="bi-full">Notes<textarea id="bi-notes" rows="3"></textarea></label>
         </div>
         <div class="bi-form-actions">
@@ -232,6 +244,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8d1"></script>
+  <script src="/js/builder-intelligence.js?v=pr8e1"></script>
 </body>
 </html>

@@ -1,13 +1,32 @@
 /**
- * Deterministic next-best-action for builder targets (PR8E).
+ * Recommended founder actions V2 (PR8E.1).
  */
+
+const { daysSinceContact } = require('./actionHelpers');
+
+const STRONG_RELATIONSHIPS = new Set(['known', 'worked_together', 'trusted_partner']);
+const COLD_RELATIONSHIPS = new Set(['unknown', 'cold']);
 
 function buildTargetAction(prospect, profile, scoreResult) {
   const stage = prospect.relationship_stage != null ? String(prospect.relationship_stage).trim() : '';
+  const band =
+    scoreResult?.founder_priority_band || scoreResult?.target_band || 'D';
+  const strength = prospect.relationship_strength || 'unknown';
+  const timing = prospect.timing_status || 'unknown';
   const fitScore = profile?.estimated_fit_score != null ? Number(profile.estimated_fit_score) : null;
-  const breakdown = scoreResult?.score_breakdown?.components || [];
-  const followup = breakdown.find((c) => c.component === 'followup_urgency');
-  const followupOverdue = (followup?.points || 0) >= 20;
+  const daysIdle = daysSinceContact(prospect.last_contacted_at);
+
+  if (stage === 'inactive' || stage === 'not_fit') {
+    return 'Not a Priority';
+  }
+
+  if (timing === 'quoting_projects') {
+    return 'Request Upcoming Tender Opportunities';
+  }
+
+  if (strength === 'worked_together' && daysIdle != null && daysIdle > 60) {
+    return 'Reconnect';
+  }
 
   if (stage === 'working_together') {
     return 'Maintain Relationship';
@@ -18,41 +37,41 @@ function buildTargetAction(prospect, profile, scoreResult) {
   if (stage === 'proposal_sent') {
     return 'Follow Up Proposal';
   }
-  if (stage === 'qualified' && followupOverdue) {
+
+  if (band === 'A' && STRONG_RELATIONSHIPS.has(strength)) {
+    return 'Arrange Meeting';
+  }
+
+  if (band === 'B' && COLD_RELATIONSHIPS.has(strength)) {
     return 'Call Builder';
   }
-  if (stage === 'contacted' && followupOverdue) {
+
+  if (band === 'C' && COLD_RELATIONSHIPS.has(strength)) {
+    return 'Send Introduction Email';
+  }
+
+  if (band === 'A') {
     return 'Call Builder';
   }
+
   if (
     (stage === 'discovered' || stage === 'researching' || stage === 'qualified') &&
     fitScore != null &&
     fitScore >= 75 &&
     !prospect.last_contacted_at
   ) {
-    return 'Send Introduction';
+    return 'Send Introduction Email';
   }
-  if (
-    prospect.research_status === 'researched' &&
-    !prospect.next_followup_at &&
-    stage !== 'inactive' &&
-    stage !== 'not_fit'
-  ) {
-    return 'Schedule Follow-up';
-  }
-  if (stage === 'qualified') {
+
+  if (stage === 'qualified' || stage === 'contacted') {
     return 'Call Builder';
   }
-  if (stage === 'contacted') {
-    return 'Call Builder';
-  }
+
   if (stage === 'discovered' || stage === 'researching') {
-    return 'Run Research';
+    return prospect.research_status === 'researched' ? 'Call Builder' : 'Research Further';
   }
-  if (stage === 'inactive' || stage === 'not_fit') {
-    return 'No Action';
-  }
+
   return 'Review Builder';
 }
 
-module.exports = { buildTargetAction };
+module.exports = { buildTargetAction, STRONG_RELATIONSHIPS, COLD_RELATIONSHIPS };

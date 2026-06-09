@@ -106,22 +106,86 @@
     if (band) p.set('band', band);
 
     var listEl = $('bi-targets-list');
-    if (listEl) listEl.innerHTML = '<p class="bi-empty">Loading targets…</p>';
+    if (listEl) listEl.innerHTML = '<p class="bi-empty">Loading priorities…</p>';
 
     return fetch('/api/builder-intel/targets?' + p.toString())
       .then(function (r) {
         return r.json();
       })
       .then(function (j) {
-        if (!j.ok) throw new Error(j.error || 'Failed to load targets');
+        if (!j.ok) throw new Error(j.error || 'Failed to load priorities');
         renderTargets(j.targets || []);
       })
       .catch(function (e) {
         if (listEl) {
           listEl.innerHTML =
-            '<p class="bi-empty">' + esc(e.message || 'No targets — run Recalculate') + '</p>';
+            '<p class="bi-empty">' + esc(e.message || 'No priorities — run Recalculate') + '</p>';
         }
       });
+  }
+
+  function loadStrategicBuilders() {
+    var listEl = $('bi-strategic-list');
+    if (listEl) listEl.innerHTML = '<p class="bi-empty">Loading strategic builders…</p>';
+
+    return fetch('/api/builder-intel/strategic-builders?limit=10')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Failed to load strategic builders');
+        renderStrategicBuilders(j.builders || []);
+      })
+      .catch(function (e) {
+        if (listEl) {
+          listEl.innerHTML =
+            '<p class="bi-empty">' + esc(e.message || 'No strategic builders marked yet') + '</p>';
+        }
+      });
+  }
+
+  function renderStrategicBuilders(builders) {
+    var listEl = $('bi-strategic-list');
+    if (!listEl) return;
+    if (!builders.length) {
+      listEl.innerHTML =
+        '<p class="bi-empty">No strategic builders. Set Opportunity Potential to strategic in a builder profile.</p>';
+      return;
+    }
+    listEl.innerHTML = builders
+      .map(function (b) {
+        return (
+          '<div class="bi-target-card bi-strategic-card" data-id="' +
+          esc(b.prospect_id) +
+          '">' +
+          '<div class="bi-target-rank">★</div>' +
+          '<div>' +
+          '<div class="bi-target-name">' +
+          esc(b.company_name) +
+          '</div>' +
+          '<div class="bi-target-meta">' +
+          esc(labelize(b.relationship_strength)) +
+          (b.founder_priority_score != null
+            ? ' · Priority ' + esc(String(b.founder_priority_score))
+            : '') +
+          '</div>' +
+          '<div class="bi-target-action">' +
+          esc(b.next_best_action || 'Review Builder') +
+          '</div>' +
+          '</div>' +
+          '<div class="bi-target-scorebox">' +
+          '<span class="bi-badge strategic">Strategic</span>' +
+          '</div>' +
+          '</div>'
+        );
+      })
+      .join('');
+
+    listEl.querySelectorAll('.bi-target-card[data-id]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        openDetail(card.getAttribute('data-id'));
+      });
+    });
   }
 
   function renderTargets(targets) {
@@ -129,7 +193,7 @@
     if (!listEl) return;
     if (!targets.length) {
       listEl.innerHTML =
-        '<p class="bi-empty">No targets yet. Add builders, run research, then Recalculate.</p>';
+        '<p class="bi-empty">No priorities yet. Add builders, set relationship data, then Recalculate.</p>';
       return;
     }
     listEl.innerHTML = targets
@@ -146,22 +210,23 @@
           esc(t.company_name) +
           '</div>' +
           '<div class="bi-target-meta">' +
-          esc(labelize(t.relationship_stage)) +
-          (t.estimated_fit_score != null ? ' · Fit ' + esc(String(t.estimated_fit_score)) : '') +
+          esc(labelize(t.relationship_strength)) +
+          ' · ' +
+          esc(labelize(t.opportunity_potential)) +
           (t.last_contacted_at ? ' · Last ' + esc(fmtDate(t.last_contacted_at)) : '') +
           '</div>' +
-          '<div class="bi-target-action">Next: ' +
+          '<div class="bi-target-action">' +
           esc(t.next_best_action || '—') +
           '</div>' +
           '</div>' +
           '<div class="bi-target-scorebox">' +
           '<div class="bi-target-score">' +
-          esc(String(t.target_score)) +
+          esc(String(t.founder_priority_score != null ? t.founder_priority_score : t.target_score)) +
           '</div>' +
           '<span class="bi-band ' +
-          bandClass(t.target_band) +
+          bandClass(t.founder_priority_band || t.target_band) +
           '">' +
-          esc(t.target_band) +
+          esc(t.founder_priority_band || t.target_band) +
           '</span>' +
           '</div>' +
           '</div>'
@@ -188,8 +253,8 @@
       .then(function (j) {
         if (!j.ok) throw new Error(j.error || 'Recalculate failed');
         renderTargets(j.targets || []);
-        showMsg('Target scores recalculated.', false);
-        return loadList();
+        showMsg('Founder priority scores recalculated.', false);
+        return Promise.all([loadList(), loadStrategicBuilders()]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Recalculate failed — check API secret.', true);
@@ -245,6 +310,9 @@
         fillSelect('bi-fit_priority', j.fit_priorities);
         fillSelect('bi-research_status', j.research_statuses);
         fillSelect('bi-relationship_stage', j.relationship_stages);
+        fillSelect('bi-relationship_strength', j.relationship_strengths);
+        fillSelect('bi-opportunity_potential', j.opportunity_potentials);
+        fillSelect('bi-timing_status', j.timing_statuses);
         fillFitSelects();
       });
   }
@@ -539,6 +607,9 @@
         $('bi-fit_priority').value = 'unknown';
         $('bi-research_status').value = 'not_started';
         $('bi-relationship_stage').value = 'discovered';
+        $('bi-relationship_strength').value = 'unknown';
+        $('bi-opportunity_potential').value = 'unknown';
+        $('bi-timing_status').value = 'unknown';
       }
       $('bi-source').value = 'manual';
     }
@@ -560,6 +631,9 @@
     $('bi-fit_priority').value = p.fit_priority || 'unknown';
     $('bi-research_status').value = p.research_status || 'not_started';
     $('bi-relationship_stage').value = p.relationship_stage || 'discovered';
+    $('bi-relationship_strength').value = p.relationship_strength || 'unknown';
+    $('bi-opportunity_potential').value = p.opportunity_potential || 'unknown';
+    $('bi-timing_status').value = p.timing_status || 'unknown';
     $('bi-decision_maker_name').value = p.decision_maker_name || '';
     $('bi-decision_maker_role').value = p.decision_maker_role || '';
     $('bi-contact_name').value = p.contact_name || '';
@@ -569,6 +643,7 @@
     $('bi-source_detail').value = p.source_detail || '';
     $('bi-next_followup_at').value = toLocalInput(p.next_followup_at);
     $('bi-qualification_notes').value = p.qualification_notes || '';
+    $('bi-founder_notes').value = p.founder_notes || '';
     $('bi-notes').value = p.notes || '';
   }
 
@@ -583,6 +658,9 @@
       fit_priority: $('bi-fit_priority').value,
       research_status: $('bi-research_status').value,
       relationship_stage: $('bi-relationship_stage').value,
+      relationship_strength: $('bi-relationship_strength').value,
+      opportunity_potential: $('bi-opportunity_potential').value,
+      timing_status: $('bi-timing_status').value,
       decision_maker_name: $('bi-decision_maker_name').value,
       decision_maker_role: $('bi-decision_maker_role').value,
       contact_name: $('bi-contact_name').value,
@@ -592,6 +670,7 @@
       source_detail: $('bi-source_detail').value,
       next_followup_at: fromLocalInput($('bi-next_followup_at').value),
       qualification_notes: $('bi-qualification_notes').value,
+      founder_notes: $('bi-founder_notes').value,
       notes: $('bi-notes').value,
     };
   }
@@ -991,6 +1070,7 @@
     $('bi-btn-refresh').addEventListener('click', function () {
       loadList();
       loadTargets();
+      loadStrategicBuilders();
     });
     $('bi-btn-recalc-targets').addEventListener('click', recalculateTargets);
     var bandFilter = $('bi-target-band');
@@ -1024,7 +1104,7 @@
 
   loadEnums()
     .then(function () {
-      return Promise.all([loadList(), loadTargets()]);
+      return Promise.all([loadList(), loadTargets(), loadStrategicBuilders()]);
     })
     .then(bindEvents)
     .catch(function (e) {

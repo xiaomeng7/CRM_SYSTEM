@@ -12,6 +12,9 @@ const {
   RELATIONSHIP_STAGES,
   BUILDER_CREATE_FIELDS,
   BUILDER_UPDATE_FIELDS,
+  RELATIONSHIP_STRENGTHS,
+  OPPORTUNITY_POTENTIALS,
+  TIMING_STATUSES,
 } = require('./builderProspectConstants');
 
 const MAX_LIMIT = 200;
@@ -109,6 +112,24 @@ function normalizeBuilderInput(data, { isCreate = false } = {}) {
     out.relationship_stage =
       assertEnum(data.relationship_stage, RELATIONSHIP_STAGES, 'relationship_stage') ||
       (isCreate ? 'discovered' : null);
+  }
+  if (data.relationship_strength !== undefined || isCreate) {
+    out.relationship_strength =
+      assertEnum(data.relationship_strength, RELATIONSHIP_STRENGTHS, 'relationship_strength') ||
+      (isCreate ? 'unknown' : null);
+  }
+  if (data.opportunity_potential !== undefined || isCreate) {
+    out.opportunity_potential =
+      assertEnum(data.opportunity_potential, OPPORTUNITY_POTENTIALS, 'opportunity_potential') ||
+      (isCreate ? 'unknown' : null);
+  }
+  if (data.timing_status !== undefined || isCreate) {
+    out.timing_status =
+      assertEnum(data.timing_status, TIMING_STATUSES, 'timing_status') ||
+      (isCreate ? 'unknown' : null);
+  }
+  if (data.founder_notes !== undefined) {
+    out.founder_notes = trimOrNull(data.founder_notes);
   }
 
   if (data.next_followup_at !== undefined || isCreate) {
@@ -222,6 +243,7 @@ async function createBuilderProspect(data, options = {}) {
        prospect_type, notes, source, source_detail,
        builder_type, project_focus, target_suburbs, fit_priority,
        research_status, relationship_stage,
+       relationship_strength, opportunity_potential, timing_status, founder_notes,
        decision_maker_name, decision_maker_role, qualification_notes,
        next_followup_at
      ) VALUES (
@@ -229,8 +251,9 @@ async function createBuilderProspect(data, options = {}) {
        $8,$9,$10,$11,
        $12,$13,$14,$15,
        $16,$17,
-       $18,$19,$20,
-       $21
+       $18,$19,$20,$21,
+       $22,$23,$24,
+       $25
      ) RETURNING *`,
     [
       input.company_name,
@@ -250,6 +273,10 @@ async function createBuilderProspect(data, options = {}) {
       input.fit_priority,
       input.research_status,
       input.relationship_stage,
+      input.relationship_strength ?? 'unknown',
+      input.opportunity_potential ?? 'unknown',
+      input.timing_status ?? 'unknown',
+      input.founder_notes ?? null,
       input.decision_maker_name,
       input.decision_maker_role,
       input.qualification_notes,

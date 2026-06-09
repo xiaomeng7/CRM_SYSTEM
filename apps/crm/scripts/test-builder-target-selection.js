@@ -20,10 +20,10 @@ const { buildTargetAction } = require('../services/builder/targetSelection/build
 const { refreshBuilderTargetScores } = require('../services/builder/targetSelection/refreshBuilderTargetScores');
 const { getTopBuilderTargets } = require('../services/builder/targetSelection/getTopBuilderTargets');
 const {
-  runBuilderTargetDetector,
+  runBuilderPriorityDetector,
   eventKeyForProspect,
   EVENT_TYPE,
-} = require('../services/operations/detectors/builderTargetDetector');
+} = require('../services/operations/detectors/builderPriorityDetector');
 const { generateEventActions } = require('../services/operations/generateEventActions');
 const { upsertOperationalEvent } = require('../services/operations/upsertOperationalEvent');
 
@@ -45,6 +45,7 @@ async function ensureMigrations() {
     '../database/069_builder_prospect_foundation.sql',
     '../database/070_builder_research_profiles.sql',
     '../database/071_builder_target_scores.sql',
+    '../database/073_builder_relationship_intelligence.sql',
     '../database/066_operational_events.sql',
     '../database/067_operational_events_event_key.sql',
     '../database/068_operational_event_actions.sql',
@@ -113,11 +114,16 @@ async function testActionGeneration() {
   assert(buildTargetAction(prospect, profile, score) === 'Call Builder', 'qualified overdue → Call');
 
   const intro = buildTargetAction(
-    { relationship_stage: 'discovered', last_contacted_at: null, research_status: 'researched' },
+    {
+      relationship_stage: 'discovered',
+      last_contacted_at: null,
+      research_status: 'researched',
+      relationship_strength: 'cold',
+    },
     { estimated_fit_score: 80 },
-    { score_breakdown: {} }
+    { founder_priority_band: 'B', score_breakdown: {} }
   );
-  assert(intro === 'Send Introduction', 'high fit discovered → Send Introduction');
+  assert(intro === 'Call Builder', 'band B cold → Call Builder');
 
   const meeting = buildTargetAction(
     { relationship_stage: 'meeting_booked' },
@@ -134,6 +140,8 @@ async function testRankingAndRecalculate() {
   const high = await createBuilderProspect({
     company_name: `${TEST_PREFIX} High Target`,
     relationship_stage: 'qualified',
+    relationship_strength: 'known',
+    timing_status: 'quoting_projects',
     research_status: 'researched',
     last_contacted_at: daysAgo(7),
     next_followup_at: daysAgo(2),
@@ -171,11 +179,14 @@ async function testRankingAndRecalculate() {
 }
 
 async function testEventGeneration() {
-  console.log('\n=== builder_target event ===\n');
+  console.log('\n=== builder_priority event ===\n');
 
   const prospect = await createBuilderProspect({
     company_name: `${TEST_PREFIX} Event Target`,
     relationship_stage: 'qualified',
+    relationship_strength: 'known',
+    timing_status: 'growth_mode',
+    opportunity_potential: 'strategic',
     research_status: 'researched',
     last_contacted_at: daysAgo(5),
     next_followup_at: daysAgo(35),
@@ -185,7 +196,7 @@ async function testEventGeneration() {
 
   await refreshBuilderTargetScores({ now: NOW, log: () => {} });
 
-  const detectorStats = await runBuilderTargetDetector({ now: NOW, log: () => {} });
+  const detectorStats = await runBuilderPriorityDetector({ now: NOW, log: () => {} });
   assert(detectorStats.upserted >= 1, 'detector upserted');
 
   const key = eventKeyForProspect(prospect.id);
@@ -197,14 +208,14 @@ async function testEventGeneration() {
   );
   assert(ev.rows[0], 'event exists');
   assert(ev.rows[0].event_type === EVENT_TYPE, 'event type');
-  assert(Number(ev.rows[0].attention_score) >= 90, 'attention score');
+  assert(Number(ev.rows[0].attention_score) >= 60, 'attention score');
 
   const actions = await generateEventActions({
     id: ev.rows[0].id,
     event_type: EVENT_TYPE,
     payload: ev.rows[0].payload,
   });
-  assert(actions.generated === 4, 'four actions');
+  assert(actions.generated >= 4, 'four actions');
   assert(actions.actions.some((a) => a.title === 'Call Builder'), 'call action');
   console.log('event OK:', ev.rows[0].title);
 }
@@ -227,7 +238,7 @@ async function testStaleEventClosed() {
     severity: 'high',
     attention_score: 92,
     source: 'test',
-    title: 'Stale target event',
+    title: 'Stale priority event',
     entity_type: 'b2b_prospect',
     entity_id: prospect.id,
     payload: { prospect_id: prospect.id },
@@ -239,7 +250,7 @@ async function testStaleEventClosed() {
     runDetector: false,
   });
 
-  const closed = await runBuilderTargetDetector({ now: NOW, log: () => {} });
+  const closed = await runBuilderPriorityDetector({ now: NOW, log: () => {} });
   assert(closed.closed_stale >= 0, 'detector ran');
 
   const open = await pool.query(

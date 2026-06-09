@@ -44,6 +44,25 @@ const RELATIONSHIP_STAGES = [
   'not_fit',
 ];
 
+const RELATIONSHIP_STRENGTHS = [
+  'unknown',
+  'cold',
+  'met_once',
+  'known',
+  'worked_together',
+  'trusted_partner',
+];
+
+const OPPORTUNITY_POTENTIALS = ['unknown', 'low', 'medium', 'high', 'strategic'];
+
+const TIMING_STATUSES = [
+  'unknown',
+  'active_project',
+  'quoting_projects',
+  'growth_mode',
+  'slow_period',
+];
+
 const BUILDER_CREATE_FIELDS = [
   'company_name',
   'contact_name',
@@ -65,6 +84,10 @@ const BUILDER_CREATE_FIELDS = [
   'decision_maker_role',
   'qualification_notes',
   'next_followup_at',
+  'relationship_strength',
+  'opportunity_potential',
+  'timing_status',
+  'founder_notes',
 ];
 
 const BUILDER_UPDATE_FIELDS = [
@@ -83,6 +106,9 @@ module.exports = {
   FIT_PRIORITIES,
   RESEARCH_STATUSES,
   RELATIONSHIP_STAGES,
+  RELATIONSHIP_STRENGTHS,
+  OPPORTUNITY_POTENTIALS,
+  TIMING_STATUSES,
   BUILDER_CREATE_FIELDS,
   BUILDER_UPDATE_FIELDS,
   BUILDER_ENTITY_TYPE,
