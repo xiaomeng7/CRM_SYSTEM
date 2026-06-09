@@ -64,11 +64,15 @@ const BUILDER_STATUSES = [
 
 const TIMING_STATUSES = [
   'unknown',
-  'active_project',
-  'quoting_projects',
   'growth_mode',
+  'quoting_projects',
+  'tendering',
+  'active_project',
   'slow_period',
 ];
+
+/** Founder-facing opportunity options (PR8G.2) — excludes unknown. */
+const FOUNDER_OPPORTUNITY_POTENTIALS = ['low', 'medium', 'high', 'strategic'];
 
 const BUILDER_CREATE_FIELDS = [
   'company_name',
@@ -128,6 +132,7 @@ module.exports = {
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
   BUILDER_STATUSES,
+  FOUNDER_OPPORTUNITY_POTENTIALS,
   BUILDER_CREATE_FIELDS,
   BUILDER_UPDATE_FIELDS,
   BUILDER_ENTITY_TYPE,

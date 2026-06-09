@@ -63,8 +63,12 @@ function deriveOpportunityPotential(builderStatus, fitPriority, estimatedFitScor
  * @param {object} updates — normalized founder-facing fields
  * @param {object} [context]
  */
-function applyRelationshipDerivation(updates, context = {}) {
+function applyRelationshipDerivation(updates, context = {}, options = {}) {
   const out = { ...updates };
+  if (options.derivedFromRelationshipLevel) {
+    return out;
+  }
+
   const builderStatus = updates.builder_status ?? context.builder_status ?? 'prospect';
   const strength = normalizeRelationshipStrength(
     updates.relationship_strength ?? context.relationship_strength

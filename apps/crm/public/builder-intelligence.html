@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8f1" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8g2" />
 </head>
 <body>
   <div class="app">
@@ -124,111 +124,102 @@
       <div class="bi-panel-body">
         <input type="hidden" id="bi-id" />
 
-        <div id="bi-summary-card" class="bi-summary-card">
-          <h3 id="bi-summary-company">—</h3>
-          <p id="bi-summary-focus" class="bi-summary-focus">—</p>
-          <p id="bi-summary-fit" class="bi-summary-fit">Fit Score —</p>
-          <p class="bi-summary-action"><span>Suggested Action:</span> <strong id="bi-summary-action">—</strong></p>
-          <p class="bi-summary-status"><span>Status:</span> <strong id="bi-summary-status">—</strong></p>
-        </div>
-
-        <div id="bi-relationship-score" class="bi-relationship-score" hidden>
-          <div class="bi-relationship-score-label" id="bi-relationship-score-label">Relationship Score</div>
-          <div class="bi-relationship-score-row">
-            <strong id="bi-relationship-score-value">—</strong>
-            <span class="bi-band" id="bi-relationship-score-band">—</span>
-          </div>
-          <p class="bi-relationship-score-hint" id="bi-relationship-score-hint"></p>
-        </div>
-
-        <section class="bi-detail-section" id="bi-research-results-section">
-          <h3>Research Results</h3>
-          <p class="bi-section-hint">Populated automatically from website research.</p>
-          <dl class="bi-readonly-grid" id="bi-research-results">
-            <dt>Builder Type</dt><dd id="bi-ro-builder_type">—</dd>
-            <dt>Focus</dt><dd id="bi-ro-project_focus">—</dd>
-            <dt>Fit Score</dt><dd id="bi-ro-fit_score">—</dd>
-            <dt>Priority</dt><dd id="bi-ro-fit_priority">—</dd>
-            <dt>Target Suburbs</dt><dd id="bi-ro-target_suburbs">—</dd>
-            <dt>Source</dt><dd id="bi-ro-research_source">—</dd>
-          </dl>
-          <div id="bi-fit-snapshot" class="bi-fit-snapshot">
-            <p id="bi-founder-summary" class="bi-founder-summary"></p>
-            <div class="bi-snapshot-block">
-              <h4>Why Better Home Fits</h4>
-              <ul id="bi-why-bht-fit" class="bi-snapshot-list"></ul>
+        <div class="bi-workflow">
+          <section class="bi-workflow-section" id="bi-section-discovery">
+            <h3 class="bi-workflow-heading">Discovery</h3>
+            <p class="bi-workflow-question">Who is this builder?</p>
+            <div class="bi-workflow-grid">
+              <div class="bi-field"><span class="bi-field-label">Builder name</span><input type="text" id="bi-company_name" /></div>
+              <div class="bi-field"><span class="bi-field-label">Website</span><input type="url" id="bi-website" placeholder="https://" /></div>
+              <div class="bi-field"><span class="bi-field-label">Contact name</span><input type="text" id="bi-contact_name" placeholder="Unknown" /></div>
+              <div class="bi-field"><span class="bi-field-label">Role</span><input type="text" id="bi-decision_maker_role" placeholder="Director, Estimator…" /></div>
+              <div class="bi-field"><span class="bi-field-label">Phone</span><input type="tel" id="bi-phone" /></div>
+              <div class="bi-field"><span class="bi-field-label">Email</span><input type="email" id="bi-email" /></div>
+              <div class="bi-field"><span class="bi-field-label">Source</span><select id="bi-source"></select></div>
+              <div class="bi-field bi-field-full"><span class="bi-field-label">Founder note</span><textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event…"></textarea></div>
             </div>
-            <div class="bi-snapshot-block">
-              <h4>Opportunity</h4>
-              <ul id="bi-opportunity-summary" class="bi-snapshot-list"></ul>
-            </div>
-            <details id="bi-score-breakdown-details" class="bi-score-breakdown">
-              <summary>Score breakdown</summary>
-              <ul id="bi-score-breakdown-list" class="bi-breakdown-list"></ul>
-            </details>
-          </div>
-          <div class="bi-research-actions">
-            <button type="button" id="bi-btn-run-research" class="bi-btn">Re-run Website Research</button>
-          </div>
-          <p id="bi-research-status" class="bi-research-meta" style="display:none;"></p>
-          <div id="bi-profile-error" class="bi-profile-error" style="display:none;"></div>
-          <div id="bi-research-runs" class="bi-research-runs"></div>
-        </section>
+          </section>
 
-        <section class="bi-detail-section" id="bi-contact-discovery-section">
-          <h3>Contact Discovery</h3>
-          <p class="bi-section-hint">Fill when known — not required to add a builder.</p>
-          <form id="bi-form" class="bi-form">
-            <div class="bi-form-grid bi-form-grid-2">
-              <label>Decision maker<input type="text" id="bi-decision_maker_name" placeholder="Unknown" /></label>
-              <label>Role<input type="text" id="bi-decision_maker_role" placeholder="Director, Estimator…" /></label>
-              <label>Phone<input type="tel" id="bi-phone" /></label>
-              <label>Email<input type="email" id="bi-email" /></label>
-              <label>Contact name<input type="text" id="bi-contact_name" /></label>
-              <label>Suburb<input type="text" id="bi-suburb" placeholder="e.g. Unley" /></label>
+          <section class="bi-workflow-section" id="bi-section-relationship">
+            <h3 class="bi-workflow-heading">Relationship</h3>
+            <p class="bi-workflow-question">What is my relationship with them?</p>
+            <div class="bi-workflow-grid">
+              <div class="bi-field bi-field-full"><span class="bi-field-label">Relationship level</span><select id="bi-relationship_level"></select></div>
             </div>
-          </form>
-        </section>
+          </section>
 
-        <section class="bi-detail-section" id="bi-relationship-section">
-          <h3>Relationship</h3>
-          <div class="bi-form-grid bi-form-grid-2">
-            <label>Builder status<select id="bi-builder_status"></select></label>
-            <label>Relationship strength<select id="bi-relationship_strength"></select></label>
-            <label>Timing status<select id="bi-timing_status"></select></label>
-            <label>Opportunity potential<select id="bi-opportunity_potential"></select></label>
-            <label class="bi-full">Founder notes<textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event…"></textarea></label>
-            <label class="bi-full">Notes<textarea id="bi-notes" rows="2"></textarea></label>
-          </div>
-          <div class="bi-form-actions">
+          <section class="bi-workflow-section" id="bi-section-opportunity">
+            <h3 class="bi-workflow-heading">Opportunity</h3>
+            <p class="bi-workflow-question">Is there an opportunity right now?</p>
+            <div class="bi-workflow-grid">
+              <div class="bi-field"><span class="bi-field-label">Timing status</span><select id="bi-timing_status"></select></div>
+              <div class="bi-field"><span class="bi-field-label">Opportunity potential</span><select id="bi-opportunity_potential"></select></div>
+            </div>
+          </section>
+
+          <section class="bi-workflow-section bi-workflow-readonly" id="bi-section-research">
+            <h3 class="bi-workflow-heading">Research</h3>
+            <p class="bi-section-hint">System-generated from website research.</p>
+            <dl class="bi-readonly-grid">
+              <dt>Fit score</dt><dd id="bi-ro-fit_score">—</dd>
+              <dt>Builder type</dt><dd id="bi-ro-builder_type">—</dd>
+              <dt>Project focus</dt><dd id="bi-ro-project_focus">—</dd>
+              <dt>Target areas</dt><dd id="bi-ro-target_suburbs">—</dd>
+            </dl>
+            <div class="bi-signal-block">
+              <span class="bi-field-label">Quality signals</span>
+              <div id="bi-ro-quality_signals" class="bi-signal-list-readonly"></div>
+            </div>
+            <div class="bi-signal-block">
+              <span class="bi-field-label">Risk signals</span>
+              <div id="bi-ro-risk_signals" class="bi-signal-list-readonly"></div>
+            </div>
+            <div class="bi-research-actions">
+              <button type="button" id="bi-btn-run-research" class="bi-btn">Re-run Website Research</button>
+            </div>
+            <p id="bi-research-status" class="bi-research-meta" style="display:none;"></p>
+            <div id="bi-profile-error" class="bi-profile-error" style="display:none;"></div>
+            <div id="bi-research-runs" class="bi-research-runs"></div>
+          </section>
+
+          <section class="bi-workflow-section bi-workflow-action" id="bi-section-action">
+            <h3 class="bi-workflow-heading">Recommended Action</h3>
+            <div class="bi-action-card">
+              <p class="bi-action-primary" id="bi-action-next">—</p>
+              <div class="bi-action-scores">
+                <div><span class="bi-field-label" id="bi-action-score-label">Priority score</span><strong id="bi-action-score">—</strong></div>
+                <div><span class="bi-field-label">Band</span><span class="bi-band" id="bi-action-band">—</span></div>
+              </div>
+            </div>
+          </section>
+
+          <div class="bi-workflow-footer">
             <button type="button" id="bi-btn-save" class="bi-btn primary">Save</button>
           </div>
-        </section>
 
-        <div id="bi-note-section" class="bi-note-section">
-          <h3>Add note</h3>
-          <textarea id="bi-new-note" rows="2" placeholder="Timestamped note…"></textarea>
-          <button type="button" id="bi-btn-add-note" class="bi-btn">Add note</button>
-          <div id="bi-outreach" class="bi-outreach"></div>
+          <div id="bi-note-section" class="bi-note-section">
+            <h3 class="bi-workflow-heading">Add note</h3>
+            <textarea id="bi-new-note" rows="2" placeholder="Timestamped note…"></textarea>
+            <button type="button" id="bi-btn-add-note" class="bi-btn">Add note</button>
+            <div id="bi-outreach" class="bi-outreach"></div>
+          </div>
         </div>
 
-        <!-- Legacy hidden fields for JS compatibility -->
-        <input type="hidden" id="bi-company_name" />
-        <input type="hidden" id="bi-website" />
+        <input type="hidden" id="bi-decision_maker_name" />
+        <input type="hidden" id="bi-suburb" />
+        <input type="hidden" id="bi-notes" />
         <input type="hidden" id="bi-target_suburbs" />
         <input type="hidden" id="bi-builder_type" />
         <input type="hidden" id="bi-project_focus" />
         <input type="hidden" id="bi-fit_priority" />
         <input type="hidden" id="bi-research_status" />
         <input type="hidden" id="bi-relationship_stage" />
-        <input type="hidden" id="bi-source" />
-        <input type="hidden" id="bi-source_detail" />
-        <input type="hidden" id="bi-next_followup_at" />
-        <input type="hidden" id="bi-qualification_notes" />
+        <input type="hidden" id="bi-builder_status" />
+        <input type="hidden" id="bi-relationship_strength" />
       </div>
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8f1"></script>
+  <script src="/js/builder-intelligence.js?v=pr8g2"></script>
 </body>
 </html>

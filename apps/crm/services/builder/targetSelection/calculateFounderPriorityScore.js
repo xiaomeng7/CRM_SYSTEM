@@ -19,6 +19,7 @@ const TIMING_POINTS = {
   slow_period: 4,
   active_project: 12,
   quoting_projects: 18,
+  tendering: 16,
   growth_mode: 20,
 };
 

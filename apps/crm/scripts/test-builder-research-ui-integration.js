@@ -25,12 +25,13 @@ function testHtmlDiscovery(html) {
   assert(html.includes('bi-add-dialog'), 'add builder dialog');
   assert(html.includes('bi-add-form'), 'add builder form');
   assert(html.includes('bi-builder-cards'), 'builder cards grid');
-  assert(html.includes('Contact Discovery'), 'contact discovery section');
-  assert(html.includes('Research Results'), 'research results section');
   assert(html.includes('Contact This Week'), 'contact this week');
   assert(html.includes('Strategic Partners'), 'strategic partners');
-  assert(html.includes('bi-builder_status'), 'builder status');
-  assert(html.includes('bi-relationship_strength'), 'relationship strength');
+  assert(html.includes('bi-workflow'), 'workflow drawer');
+  assert(html.includes('bi-relationship_level'), 'relationship level');
+  assert(html.includes('bi-section-discovery'), 'discovery section');
+  assert(html.includes('bi-section-action'), 'recommended action section');
+  assert(html.includes('type="hidden" id="bi-builder_status"'), 'builder_status hidden');
   console.log('  OK: discovery HTML');
 }
 
@@ -39,15 +40,18 @@ function testJsDiscovery(js) {
   assert(js.includes('saveAddAndResearch'), 'save and research');
   assert(js.includes('auto_research: true'), 'auto research flag');
   assert(js.includes('renderBuilderCards'), 'builder cards');
+  assert(js.includes('renderRecommendedAction'), 'recommended action');
+  assert(js.includes('relationship_level'), 'relationship level save');
   assert(js.includes('/research/run'), 'research endpoint');
   assert(js.includes('x-admin-secret'), 'admin secret');
   console.log('  OK: discovery JS');
 }
 
 function testCssCards(css) {
-  console.log('\n=== CSS: builder cards ===\n');
+  console.log('\n=== CSS: builder cards + workflow ===\n');
   assert(css.includes('.bi-builder-card'), 'builder card styles');
-  assert(css.includes('.bi-summary-card'), 'summary card styles');
+  assert(css.includes('.bi-workflow-grid'), 'workflow grid');
+  assert(css.includes('.bi-action-card'), 'action card');
   console.log('  OK: card CSS');
 }
 

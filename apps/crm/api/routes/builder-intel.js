@@ -40,7 +40,9 @@ const {
   TIMING_STATUSES,
   BUILDER_STATUSES,
   DISCOVERY_CREATE_DEFAULTS,
+  FOUNDER_OPPORTUNITY_POTENTIALS,
 } = require('../../services/builder/builderProspectConstants');
+const { relationshipLevelOptions } = require('../../services/builder/relationshipLevelMapping');
 const { FIT_LEVELS } = require('../../services/builder/builderProfileConstants');
 const { getTopBuilderTargets } = require('../../services/builder/targetSelection/getTopBuilderTargets');
 const { getStrategicPartners } = require('../../services/builder/targetSelection/getStrategicPartners');
@@ -107,6 +109,8 @@ router.get('/prospects/enums', (_req, res) => {
     builder_statuses: BUILDER_STATUSES,
     founder_builder_statuses: FOUNDER_BUILDER_STATUSES,
     founder_relationship_strengths: FOUNDER_RELATIONSHIP_STRENGTHS,
+    relationship_levels: relationshipLevelOptions(),
+    founder_opportunity_potentials: FOUNDER_OPPORTUNITY_POTENTIALS,
     discovery_sources: [
       { value: 'google_search', label: 'Google Search' },
       { value: 'google_maps', label: 'Google Maps' },

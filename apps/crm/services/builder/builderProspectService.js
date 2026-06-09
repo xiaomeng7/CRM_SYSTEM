@@ -19,6 +19,10 @@ const {
   DISCOVERY_CREATE_DEFAULTS,
 } = require('./builderProspectConstants');
 const { applyRelationshipDerivation } = require('./builderRelationshipDerivation');
+const {
+  deriveFieldsFromRelationshipLevel,
+  inferRelationshipLevelFromProspect,
+} = require('./relationshipLevelMapping');
 
 const MAX_LIMIT = 200;
 const DEFAULT_LIMIT = 100;
@@ -230,7 +234,10 @@ async function listBuilderProspects(filters = {}, options = {}) {
   ]);
 
   return {
-    prospects: rows.rows,
+    prospects: rows.rows.map((p) => ({
+      ...p,
+      relationship_level: inferRelationshipLevelFromProspect(p),
+    })),
     total: countRow.rows[0]?.cnt || 0,
     stage_stats: stageStats.rows,
   };
@@ -299,7 +306,11 @@ async function getBuilderProspectById(id, options = {}) {
     [id]
   );
 
-  return { ...prospect, outreach_log: outreach.rows };
+  return {
+    ...prospect,
+    relationship_level: inferRelationshipLevelFromProspect(prospect),
+    outreach_log: outreach.rows,
+  };
 }
 
 async function createBuilderProspect(data, options = {}) {
@@ -373,6 +384,9 @@ async function updateBuilderProspect(id, data, options = {}) {
   }
 
   const picked = pickFields(data, BUILDER_UPDATE_FIELDS);
+  if (data.relationship_level !== undefined) {
+    Object.assign(picked, deriveFieldsFromRelationshipLevel(data.relationship_level));
+  }
   if (!Object.keys(picked).length) {
     const err = new Error('No valid fields to update');
     err.code = 'INVALID_INPUT';
@@ -380,7 +394,9 @@ async function updateBuilderProspect(id, data, options = {}) {
   }
 
   let updates = normalizeBuilderInput(picked);
-  updates = applyRelationshipDerivation(updates, existing.rows[0]);
+  updates = applyRelationshipDerivation(updates, existing.rows[0], {
+    derivedFromRelationshipLevel: data.relationship_level !== undefined,
+  });
   if (!Object.keys(updates).length) {
     const err = new Error('No valid fields to update');
     err.code = 'INVALID_INPUT';

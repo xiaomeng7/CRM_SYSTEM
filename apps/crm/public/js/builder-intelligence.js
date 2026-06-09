@@ -24,10 +24,11 @@
     return String(v).replace(/_/g, ' ');
   }
 
-  function founderStatusLabel(status) {
-    if (status === 'active_partner') return 'Active Partner';
-    if (status === 'strategic_partner') return 'Strategic Partner';
-    return 'Prospect';
+  function relationshipLevelLabel(level) {
+    if (!level) return 'Never contacted';
+    return String(level).replace(/_/g, ' ').replace(/\b\w/g, function (c) {
+      return c.toUpperCase();
+    });
   }
 
   function fmtDate(iso) {
@@ -83,25 +84,24 @@
     return 'Not researched yet';
   }
 
-  function renderRelationshipScore(prospect) {
-    var box = $('bi-relationship-score');
-    var labelEl = $('bi-relationship-score-label');
-    var valueEl = $('bi-relationship-score-value');
-    var bandEl = $('bi-relationship-score-band');
-    var hintEl = $('bi-relationship-score-hint');
-    if (!box || !labelEl || !valueEl || !bandEl) return;
+  function renderRecommendedAction(prospect, profile) {
+    if (!prospect) return;
+    $('bi-panel-title').textContent = prospect.company_name || 'Builder';
 
-    var status = (prospect && prospect.builder_status) || 'prospect';
-    var scores = prospect && prospect.target_scores;
+    var action =
+      (prospect.target_scores && prospect.target_scores.next_best_action) ||
+      (profile && profile.recommended_founder_action) ||
+      prospect.suggested_action ||
+      suggestedActionForProspect(prospect);
+    $('bi-action-next').textContent = action;
+
+    var status = prospect.builder_status || 'prospect';
     var isPartner = isPartnerStatus(status);
-
-    if (!prospect || !prospect.id) {
-      box.hidden = true;
-      return;
+    var scores = prospect.target_scores;
+    var scoreLabel = $('bi-action-score-label');
+    if (scoreLabel) {
+      scoreLabel.textContent = isPartner ? 'Partner value score' : 'Priority score';
     }
-
-    box.hidden = false;
-    labelEl.textContent = isPartner ? 'Partner Value Score' : 'Prospect Priority Score';
 
     var score = null;
     var band = null;
@@ -116,30 +116,24 @@
       }
     }
 
-    valueEl.textContent = score != null ? String(score) : '—';
+    $('bi-action-score').textContent = score != null ? String(score) : '—';
+    var bandEl = $('bi-action-band');
     bandEl.textContent = band || '—';
     bandEl.className = 'bi-band ' + bandClass(band === '—' ? 'D' : band);
-    if (hintEl) {
-      hintEl.textContent = isPartner
-        ? 'Partners use Partner Value Score for relationship prioritisation.'
-        : 'Prospects use Prospect Priority Score for Contact This Week.';
-    }
   }
 
-  function renderSummaryCard(prospect, profile) {
-    $('bi-summary-company').textContent = prospect.company_name || '—';
-    $('bi-summary-focus').textContent = focusLineForProspect(
-      Object.assign({}, prospect, profile ? { builder_focus: profile.builder_focus } : {})
-    );
-    var fit = profile && profile.estimated_fit_score != null ? profile.estimated_fit_score : prospect.estimated_fit_score;
-    $('bi-summary-fit').textContent =
-      fit != null ? 'Fit Score ' + fit : 'Fit Score —';
-    $('bi-summary-action').textContent =
-      (profile && profile.recommended_founder_action) ||
-      prospect.suggested_action ||
-      suggestedActionForProspect(prospect);
-    $('bi-summary-status').textContent = founderStatusLabel(prospect.builder_status);
-    $('bi-panel-title').textContent = prospect.company_name || 'Builder';
+  function renderSignalTags(elId, items, kind) {
+    var el = $(elId);
+    if (!el) return;
+    if (!items || !items.length) {
+      el.innerHTML = '<span class="bi-empty-inline">None yet</span>';
+      return;
+    }
+    el.innerHTML = items
+      .map(function (s) {
+        return '<span class="bi-signal-tag ' + kind + '">' + esc(s) + '</span>';
+      })
+      .join('');
   }
 
   function renderResearchResults(prospect, profile) {
@@ -147,67 +141,10 @@
     $('bi-ro-project_focus').textContent = labelize(prospect.project_focus);
     var fit = profile && profile.estimated_fit_score != null ? profile.estimated_fit_score : '—';
     $('bi-ro-fit_score').textContent = fit !== '—' ? String(fit) : '—';
-    $('bi-ro-fit_priority').textContent = labelize(prospect.fit_priority);
     $('bi-ro-target_suburbs').textContent =
       prospect.target_suburbs || (profile && arrayToInput(profile.target_suburbs)) || '—';
-    $('bi-ro-research_source').textContent = profile
-      ? labelize(profile.research_source || 'website research')
-      : labelize(prospect.research_status);
-
-    renderFitSnapshot(profile);
-    renderResearchRuns([]);
-  }
-
-  function renderFitSnapshot(profile) {
-    if (!profile) {
-      $('bi-founder-summary').textContent = 'Run website research to populate results.';
-      renderBulletList('bi-why-bht-fit', [], 'Run website research.');
-      renderBulletList('bi-opportunity-summary', [], 'Opportunities appear after research.');
-      renderScoreBreakdown(null);
-      return;
-    }
-    $('bi-founder-summary').textContent = profile.founder_summary || profile.profile_summary || '';
-    renderBulletList('bi-why-bht-fit', profile.why_bht_fit, 'No fit signals yet.');
-    renderBulletList('bi-opportunity-summary', profile.opportunity_summary, 'No opportunities identified.');
-    renderScoreBreakdown(profile.score_breakdown);
-  }
-
-  function renderBulletList(elId, items, emptyText) {
-    var el = $(elId);
-    if (!el) return;
-    if (!items || !items.length) {
-      el.innerHTML = '<li class="bi-empty-item">' + esc(emptyText || 'None yet') + '</li>';
-      return;
-    }
-    el.innerHTML = items.map(function (item) {
-      return '<li>' + esc(item) + '</li>';
-    }).join('');
-  }
-
-  function renderScoreBreakdown(breakdown) {
-    var listEl = $('bi-score-breakdown-list');
-    if (!listEl) return;
-    if (!breakdown || !breakdown.details || !breakdown.details.length) {
-      listEl.innerHTML = '<li class="bi-empty-item">No breakdown yet.</li>';
-      return;
-    }
-    var rows = breakdown.details.slice();
-    if (breakdown.total != null) {
-      rows.push({ signal: 'Total fit score', points: breakdown.total, type: 'total' });
-    }
-    listEl.innerHTML = rows
-      .map(function (row) {
-        var pts =
-          row.type === 'total' ? String(row.points) : (row.points > 0 ? '+' : '') + String(row.points);
-        return (
-          '<li class="bi-breakdown-item"><span>' +
-          esc(row.signal) +
-          '</span><strong>' +
-          esc(pts) +
-          '</strong></li>'
-        );
-      })
-      .join('');
+    renderSignalTags('bi-ro-quality_signals', profile && profile.quality_signals, 'quality');
+    renderSignalTags('bi-ro-risk_signals', profile && profile.risk_signals, 'risk');
   }
 
   function renderResearchRuns(runs) {
@@ -237,13 +174,17 @@
     $('bi-id').value = p.id || '';
     $('bi-company_name').value = p.company_name || '';
     $('bi-website').value = p.website || '';
-    $('bi-suburb').value = p.suburb || '';
-    $('bi-decision_maker_name').value = p.decision_maker_name || '';
+    $('bi-contact_name').value = p.contact_name || p.decision_maker_name || '';
+    $('bi-decision_maker_name').value = p.decision_maker_name || p.contact_name || '';
     $('bi-decision_maker_role').value = p.decision_maker_role || '';
-    $('bi-contact_name').value = p.contact_name || '';
     $('bi-phone').value = p.phone || '';
     $('bi-email').value = p.email || '';
     $('bi-founder_notes').value = p.founder_notes || '';
+    $('bi-relationship_level').value = p.relationship_level || 'never_contacted';
+    $('bi-timing_status').value = p.timing_status || 'unknown';
+    $('bi-opportunity_potential').value = p.opportunity_potential || 'medium';
+    $('bi-source').value = p.source || 'manual';
+    $('bi-suburb').value = p.suburb || '';
     $('bi-notes').value = p.notes || '';
     $('bi-builder_status').value = p.builder_status || 'prospect';
     $('bi-relationship_strength').value = p.relationship_strength || 'unknown';
@@ -253,25 +194,23 @@
     $('bi-fit_priority').value = p.fit_priority || 'unknown';
     $('bi-research_status').value = p.research_status || 'not_started';
     $('bi-relationship_stage').value = p.relationship_stage || 'discovered';
-    $('bi-opportunity_potential').value = p.opportunity_potential || 'unknown';
-    $('bi-timing_status').value = p.timing_status || 'unknown';
-    $('bi-source').value = p.source || 'manual';
   }
 
   function detailSavePayload() {
+    var contactName = $('bi-contact_name').value;
     return {
-      decision_maker_name: $('bi-decision_maker_name').value,
+      company_name: $('bi-company_name').value,
+      website: $('bi-website').value,
+      contact_name: contactName,
+      decision_maker_name: contactName,
       decision_maker_role: $('bi-decision_maker_role').value,
-      contact_name: $('bi-contact_name').value,
       phone: $('bi-phone').value,
       email: $('bi-email').value,
-      suburb: $('bi-suburb').value,
-      builder_status: $('bi-builder_status').value,
-      relationship_strength: $('bi-relationship_strength').value,
+      source: $('bi-source').value,
+      founder_notes: $('bi-founder_notes').value,
+      relationship_level: $('bi-relationship_level').value,
       timing_status: $('bi-timing_status').value,
       opportunity_potential: $('bi-opportunity_potential').value,
-      founder_notes: $('bi-founder_notes').value,
-      notes: $('bi-notes').value,
     };
   }
 
@@ -461,18 +400,10 @@
         fillSelect('bi-filter-priority', j.fit_priorities, 'All priorities');
         fillSelect('bi-filter-research', j.research_statuses, 'All research');
         fillSelect('bi-add-source', j.discovery_sources || [], null);
-        fillSelect('bi-builder_status', j.founder_builder_statuses || j.builder_statuses, null, {
-          prospect: 'Prospect',
-          active_partner: 'Active Partner',
-          strategic_partner: 'Strategic Partner',
-        });
-        fillSelect(
-          'bi-relationship_strength',
-          j.founder_relationship_strengths || j.relationship_strengths,
-          null
-        );
+        fillSelect('bi-source', j.discovery_sources || [], null);
+        fillSelect('bi-relationship_level', j.relationship_levels || [], null);
         fillSelect('bi-timing_status', j.timing_statuses);
-        fillSelect('bi-opportunity_potential', j.opportunity_potentials);
+        fillSelect('bi-opportunity_potential', j.founder_opportunity_potentials || j.opportunity_potentials);
         if ($('bi-add-source') && !$('bi-add-source').value) {
           $('bi-add-source').value = 'google_search';
         }
@@ -514,8 +445,8 @@
           esc(fit) +
           '</p><p class="bi-card-action"><span>Suggested:</span> <strong>' +
           esc(suggestedActionForProspect(p)) +
-          '</strong></p><p class="bi-card-status"><span>Status:</span> <strong>' +
-          esc(founderStatusLabel(p.builder_status)) +
+          '</strong></p><p class="bi-card-status"><span>Relationship:</span> <strong>' +
+          esc(relationshipLevelLabel(p.relationship_level)) +
           '</strong></p></article>'
         );
       })
@@ -565,8 +496,8 @@
           showProfileError(profileRes.error || 'Could not load research profile.');
         }
         if (currentProspect && currentProspect.id === id) {
-          renderSummaryCard(currentProspect, currentProfile);
           renderResearchResults(currentProspect, currentProfile);
+          renderRecommendedAction(currentProspect, currentProfile);
         }
         renderResearchRuns(runsRes.ok ? runsRes.runs : []);
       })
@@ -673,9 +604,8 @@
         if (panel) panel.hidden = false;
         currentProspect = j.prospect;
         fillDetailForm(j.prospect);
-        renderSummaryCard(j.prospect, null);
-        renderRelationshipScore(j.prospect);
         renderResearchResults(j.prospect, null);
+        renderRecommendedAction(j.prospect, null);
         renderOutreach(j.prospect.outreach_log);
         $('bi-new-note').value = '';
         return loadProfileAndRuns(id);
@@ -709,8 +639,7 @@
         if (j.prospect) {
           currentProspect = j.prospect;
           fillDetailForm(j.prospect);
-          renderRelationshipScore(j.prospect);
-          renderSummaryCard(j.prospect, currentProfile);
+          renderRecommendedAction(j.prospect, currentProfile);
         }
         return Promise.all([loadList(), reloadDashboardSections()]);
       })
