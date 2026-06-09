@@ -42,6 +42,7 @@
     "db:builder-prospect-migration": "node scripts/run-builder-prospect-migration.js",
     "db:builder-research-migration": "node scripts/run-builder-research-migration.js",
     "test:builder-research-profile": "node scripts/test-builder-research-profile.js",
+    "test:builder-research-ui-integration": "node scripts/test-builder-research-ui-integration.js",
     "db:builder-target-scores-migration": "node scripts/run-builder-target-scores-migration.js",
     "test:builder-target-selection": "node scripts/test-builder-target-selection.js",
     "db:operational-events-migration": "node scripts/run-operational-events-migration.js",

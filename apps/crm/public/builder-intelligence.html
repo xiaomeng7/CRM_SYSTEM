@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8d-ui" />
 </head>
 <body>
   <div class="app">
@@ -106,6 +106,7 @@
         <h2 id="bi-panel-title">Builder</h2>
         <button type="button" id="bi-panel-close" class="bi-btn">Close</button>
       </div>
+      <div class="bi-panel-body">
       <form id="bi-form" class="bi-form">
         <input type="hidden" id="bi-id" />
         <div class="bi-form-grid">
@@ -141,16 +142,37 @@
         </div>
       </form>
 
-      <div id="bi-note-section" class="bi-note-section" hidden>
-        <h3>Add note</h3>
-        <textarea id="bi-new-note" rows="2" placeholder="Timestamped note appended to Notes…"></textarea>
-        <button type="button" id="bi-btn-add-note" class="bi-btn">Add note</button>
-        <div id="bi-outreach" class="bi-outreach"></div>
-      </div>
+      <div id="bi-research-section" class="bi-research-section bi-section-hidden" aria-label="Research Profile">
+        <div class="bi-section-divider">
+          <h3>Research Profile</h3>
+          <p class="bi-research-hint">Run website research or edit profile manually.</p>
+        </div>
 
-      <div id="bi-research-section" class="bi-research-section" hidden>
-        <h3>Research Profile</h3>
+        <div id="bi-profile-error" class="bi-profile-error" style="display:none;"></div>
+
+        <div class="bi-score-banner" id="bi-score-banner">
+          <div class="bi-score-banner-item">
+            <span class="bi-score-label">Estimated Fit Score</span>
+            <strong id="bi-score-display">—</strong>
+          </div>
+          <div class="bi-score-banner-item">
+            <span class="bi-score-label">Research Source</span>
+            <strong id="bi-research_source_display">—</strong>
+          </div>
+          <div class="bi-score-banner-item">
+            <span class="bi-score-label">Last Researched</span>
+            <strong id="bi-last_researched_display">—</strong>
+          </div>
+        </div>
+
+        <div class="bi-research-actions bi-research-actions-top">
+          <button type="button" id="bi-btn-run-research" class="bi-btn primary">Run Website Research</button>
+          <button type="button" id="bi-btn-mark-researched" class="bi-btn">Mark as Researched</button>
+        </div>
+        <p id="bi-research-status" class="bi-research-meta" style="display:none;"></p>
+
         <p class="bi-research-meta" id="bi-profile-meta">No research profile yet.</p>
+
         <form id="bi-profile-form" class="bi-form">
           <div class="bi-form-grid">
             <label class="bi-full">Profile summary<textarea id="bi-profile_summary" rows="3" placeholder="What does this builder do?"></textarea></label>
@@ -164,21 +186,27 @@
             <label>Architectural fit<select id="bi-architectural_fit"></select></label>
             <label>Luxury fit<select id="bi-luxury_fit"></select></label>
             <label>Estimated fit score<input type="number" id="bi-estimated_fit_score" min="0" max="100" placeholder="0–100" /></label>
-            <label>Last researched<span id="bi-last_researched_at" class="bi-readonly">—</span></label>
+            <label>Last researched (field)<span id="bi-last_researched_at" class="bi-readonly">—</span></label>
           </div>
+          <div id="bi-signals-display" class="bi-signals-display"></div>
           <div class="bi-form-actions bi-research-actions">
             <button type="submit" class="bi-btn primary">Save Research Profile</button>
-            <button type="button" id="bi-btn-mark-researched" class="bi-btn">Mark as Researched</button>
-            <button type="button" id="bi-btn-run-research" class="bi-btn primary">Run Website Research</button>
           </div>
-          <p id="bi-research-status" class="bi-research-meta" style="display:none;"></p>
-          <div id="bi-signals-display" class="bi-signals-display"></div>
         </form>
+
         <div id="bi-research-runs" class="bi-research-runs"></div>
+      </div>
+
+      <div id="bi-note-section" class="bi-note-section bi-section-hidden">
+        <h3>Add note</h3>
+        <textarea id="bi-new-note" rows="2" placeholder="Timestamped note appended to Notes…"></textarea>
+        <button type="button" id="bi-btn-add-note" class="bi-btn">Add note</button>
+        <div id="bi-outreach" class="bi-outreach"></div>
+      </div>
       </div>
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js"></script>
+  <script src="/js/builder-intelligence.js?v=pr8d-ui"></script>
 </body>
 </html>

@@ -376,18 +376,56 @@
       });
   }
 
+  function setSectionVisible(el, visible) {
+    if (!el) return;
+    el.classList.toggle('bi-section-hidden', !visible);
+  }
+
+  function showProfileError(text) {
+    var el = $('bi-profile-error');
+    if (!el) return;
+    if (!text) {
+      el.style.display = 'none';
+      el.textContent = '';
+      return;
+    }
+    el.style.display = 'block';
+    el.textContent = text;
+  }
+
+  function updateScoreBanner(profile) {
+    var scoreEl = $('bi-score-display');
+    var sourceEl = $('bi-research_source_display');
+    var lastEl = $('bi-last_researched_display');
+    if (scoreEl) {
+      scoreEl.textContent =
+        profile && profile.estimated_fit_score != null ? String(profile.estimated_fit_score) : '—';
+    }
+    if (sourceEl) {
+      sourceEl.textContent =
+        profile && profile.research_source ? labelize(profile.research_source) : '—';
+    }
+    if (lastEl) {
+      lastEl.textContent =
+        profile && profile.last_researched_at ? fmtDate(profile.last_researched_at) : '—';
+    }
+  }
+
   function openPanel(isNew) {
     var panel = $('bi-panel');
     var noteSection = $('bi-note-section');
     var researchSection = $('bi-research-section');
     if (!panel) return;
     panel.hidden = false;
-    if (noteSection) noteSection.hidden = isNew;
-    if (researchSection) researchSection.hidden = isNew;
+    setSectionVisible(noteSection, !isNew);
+    setSectionVisible(researchSection, !isNew);
+    showProfileError('');
     $('bi-panel-title').textContent = isNew ? 'Add Builder Prospect' : 'Edit Builder';
     if (isNew) {
       $('bi-form').reset();
       $('bi-id').value = '';
+      fillProfileForm(null);
+      renderResearchRuns([]);
       if (enums) {
         $('bi-builder_type').value = 'unknown';
         $('bi-project_focus').value = 'unknown';
@@ -455,29 +493,48 @@
     var el = $('bi-research-runs');
     if (!el) return;
     if (!runs || !runs.length) {
-      el.innerHTML = '<p>No research runs logged.</p>';
+      el.innerHTML = '<h4 class="bi-runs-heading">Research runs</h4><p class="bi-empty-runs">No research runs logged.</p>';
       return;
     }
     el.innerHTML =
-      '<h4 style="font-size:0.82rem;margin:0.5rem 0 0.35rem;">Research runs</h4>' +
+      '<h4 class="bi-runs-heading">Research runs</h4>' +
       runs
         .map(function (run) {
-          return (
-            '<div class="bi-research-run-item">' +
-            esc(fmtDate(run.started_at)) +
-            ' · ' +
-            esc(run.source) +
-            ' · ' +
-            esc(run.status) +
-            (run.summary ? '<br>' + esc(run.summary.slice(0, 160)) : '') +
-            '</div>'
+          var parts = [
+            '<div class="bi-research-run-item">',
+            '<div class="bi-run-header">',
+            '<strong>' + esc(labelize(run.status || 'unknown')) + '</strong>',
+            ' · ' + esc(labelize(run.source || '—')),
+            '</div>',
+          ];
+          if (run.input_url) {
+            parts.push('<div class="bi-run-row"><span class="bi-run-label">URL</span> ' + esc(run.input_url) + '</div>');
+          }
+          if (run.summary) {
+            parts.push('<div class="bi-run-row"><span class="bi-run-label">Summary</span> ' + esc(run.summary) + '</div>');
+          }
+          parts.push(
+            '<div class="bi-run-row"><span class="bi-run-label">Started</span> ' + esc(fmtDate(run.started_at)) + '</div>'
           );
+          if (run.finished_at) {
+            parts.push(
+              '<div class="bi-run-row"><span class="bi-run-label">Finished</span> ' + esc(fmtDate(run.finished_at)) + '</div>'
+            );
+          }
+          if (run.error_message) {
+            parts.push(
+              '<div class="bi-run-row bi-run-error"><span class="bi-run-label">Error</span> ' + esc(run.error_message) + '</div>'
+            );
+          }
+          parts.push('</div>');
+          return parts.join('');
         })
         .join('');
   }
 
   function fillProfileForm(profile) {
     var meta = $('bi-profile-meta');
+    updateScoreBanner(profile);
     if (!profile) {
       $('bi-profile_summary').value = '';
       $('bi-builder_focus').value = '';
@@ -491,7 +548,7 @@
       $('bi-luxury_fit').value = 'unknown';
       $('bi-estimated_fit_score').value = '';
       $('bi-last_researched_at').textContent = '—';
-      if (meta) meta.textContent = 'No research profile yet — add one below.';
+      if (meta) meta.textContent = 'No research profile yet — run website research or save manually.';
       renderSignalsDisplay(null);
       return;
     }
@@ -574,6 +631,7 @@
   }
 
   function loadProfileAndRuns(id) {
+    showProfileError('');
     return Promise.all([
       fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/profile').then(function (r) {
         return r.json();
@@ -583,15 +641,28 @@
           return r.json();
         }
       ),
-    ]).then(function (results) {
-      var profileRes = results[0];
-      var runsRes = results[1];
-      if (!profileRes.ok) throw new Error(profileRes.error || 'Profile load failed');
-      fillProfileForm(profileRes.profile);
-      renderResearchRuns(runsRes.ok ? runsRes.runs : []);
-      var statusEl = $('bi-research-status');
-      if (statusEl) statusEl.style.display = 'none';
-    });
+    ])
+      .then(function (results) {
+        var profileRes = results[0];
+        var runsRes = results[1];
+        if (!profileRes.ok) {
+          fillProfileForm(null);
+          showProfileError(
+            profileRes.error ||
+              'Could not load research profile — ensure migration 070 is applied.'
+          );
+        } else {
+          fillProfileForm(profileRes.profile);
+        }
+        renderResearchRuns(runsRes.ok ? runsRes.runs : []);
+        var statusEl = $('bi-research-status');
+        if (statusEl) statusEl.style.display = 'none';
+      })
+      .catch(function (e) {
+        fillProfileForm(null);
+        showProfileError(e.message || 'Failed to load research profile.');
+        renderResearchRuns([]);
+      });
   }
 
   function saveProfile(e) {
@@ -680,7 +751,6 @@
           $('bi-research_status').value = res.body.prospect.research_status || 'researched';
           $('bi-fit_priority').value = res.body.prospect.fit_priority || $('bi-fit_priority').value;
         }
-        renderResearchRuns(res.body.run ? [res.body.run] : []);
         if (statusEl) {
           statusEl.textContent =
             'Research complete — score ' +
@@ -689,7 +759,7 @@
           statusEl.className = 'bi-research-meta';
         }
         showMsg('Website research completed.', false);
-        return loadList();
+        return Promise.all([loadList(), loadProfileAndRuns(id)]);
       })
       .catch(function (e) {
         if (statusEl) {
@@ -770,7 +840,11 @@
       .then(function (res) {
         if (!res.body.ok) throw new Error(res.body.error || 'Save failed');
         showMsg(isNew ? 'Builder prospect created.' : 'Saved.', false);
-        closePanel();
+        if (isNew && res.body.prospect && res.body.prospect.id) {
+          openDetail(res.body.prospect.id);
+        } else {
+          closePanel();
+        }
         return loadList();
       })
       .catch(function (e) {
