@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8d-ui" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8d1" />
 </head>
 <body>
   <div class="app">
@@ -150,6 +150,31 @@
 
         <div id="bi-profile-error" class="bi-profile-error" style="display:none;"></div>
 
+        <div id="bi-fit-snapshot" class="bi-fit-snapshot">
+          <h3 class="bi-snapshot-title">Builder Fit Snapshot</h3>
+          <div class="bi-snapshot-score-row">
+            <span>Fit Score: <strong id="bi-snapshot-score">—</strong></span>
+            <span>Band: <strong id="bi-snapshot-band" class="bi-band">—</strong></span>
+          </div>
+          <p id="bi-founder-summary" class="bi-founder-summary"></p>
+          <div class="bi-snapshot-block">
+            <h4>Why Better Home Fits</h4>
+            <ul id="bi-why-bht-fit" class="bi-snapshot-list"></ul>
+          </div>
+          <div class="bi-snapshot-block">
+            <h4>Opportunity</h4>
+            <ul id="bi-opportunity-summary" class="bi-snapshot-list"></ul>
+          </div>
+          <div class="bi-snapshot-action">
+            <span class="bi-snapshot-action-label">Recommended Action</span>
+            <strong id="bi-recommended-action">—</strong>
+          </div>
+          <details id="bi-score-breakdown-details" class="bi-score-breakdown">
+            <summary>Score breakdown (auditable)</summary>
+            <ul id="bi-score-breakdown-list" class="bi-breakdown-list"></ul>
+          </details>
+        </div>
+
         <div class="bi-score-banner" id="bi-score-banner">
           <div class="bi-score-banner-item">
             <span class="bi-score-label">Estimated Fit Score</span>
@@ -207,6 +232,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8d-ui"></script>
+  <script src="/js/builder-intelligence.js?v=pr8d1"></script>
 </body>
 </html>

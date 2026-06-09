@@ -114,6 +114,9 @@ async function runBuilderResearch(prospectId, options = {}) {
       snippets: extracted.snippets,
       company_name: prospect.company_name,
       website_url: fetched.homepage_url,
+      prospect_suburb: prospect.suburb,
+      relationship_stage: prospect.relationship_stage,
+      research_status: prospect.research_status,
       useLlm,
     });
 
@@ -132,6 +135,11 @@ async function runBuilderResearch(prospectId, options = {}) {
       luxury_fit: analysis.luxury_fit,
       estimated_fit_score: analysis.estimated_fit_score,
       research_source: analysis.research_source,
+      founder_summary: analysis.founder_summary,
+      why_bht_fit: analysis.why_bht_fit,
+      opportunity_summary: analysis.opportunity_summary,
+      recommended_founder_action: analysis.recommended_founder_action,
+      score_breakdown: analysis.score_breakdown,
     }, { db });
 
     const updatedProspect = await updateProspectAfterResearch(prospectId, analysis, db);
@@ -165,10 +173,13 @@ async function runBuilderResearch(prospectId, options = {}) {
       run: completedRun,
       analysis: {
         estimated_fit_score: analysis.estimated_fit_score,
+        fit_band: analysis.fit_band,
         fit_priority: updatedProspect.fit_priority,
         research_source: analysis.research_source,
         quality_signals: analysis.quality_signals,
         risk_signals: analysis.risk_signals,
+        recommended_founder_action: analysis.recommended_founder_action,
+        score_breakdown: analysis.score_breakdown,
       },
     };
   } catch (err) {

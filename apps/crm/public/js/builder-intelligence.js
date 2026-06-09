@@ -393,6 +393,113 @@
     el.textContent = text;
   }
 
+  function fitBandFromScore(score) {
+    if (score == null || score === '') return '—';
+    var n = Number(score);
+    if (!Number.isFinite(n)) return '—';
+    if (n >= 90) return 'A';
+    if (n >= 75) return 'B';
+    if (n >= 50) return 'C';
+    return 'D';
+  }
+
+  function renderBulletList(elId, items, emptyText) {
+    var el = $(elId);
+    if (!el) return;
+    if (!items || !items.length) {
+      el.innerHTML = '<li class="bi-empty-item">' + esc(emptyText || 'None yet') + '</li>';
+      return;
+    }
+    el.innerHTML = items
+      .map(function (item) {
+        return '<li>' + esc(item) + '</li>';
+      })
+      .join('');
+  }
+
+  function renderScoreBreakdown(breakdown) {
+    var listEl = $('bi-score-breakdown-list');
+    var detailsEl = $('bi-score-breakdown-details');
+    if (!listEl || !detailsEl) return;
+    if (!breakdown || !breakdown.details || !breakdown.details.length) {
+      listEl.innerHTML = '<li class="bi-empty-item">No breakdown — run website research.</li>';
+      return;
+    }
+    var rows = [];
+    if (breakdown.base != null) {
+      rows.push({ signal: 'Base score', points: breakdown.base, type: 'base' });
+    }
+    rows = rows.concat(breakdown.details);
+    if (breakdown.synergy) {
+      /* synergy already in details */
+    }
+    if (breakdown.total != null) {
+      rows.push({ signal: 'Total fit score', points: breakdown.total, type: 'total' });
+    }
+    listEl.innerHTML = rows
+      .map(function (row) {
+        var pts =
+          row.type === 'total'
+            ? String(row.points)
+            : (row.points > 0 ? '+' : '') + String(row.points);
+        var cls =
+          row.type === 'risk' || row.points < 0
+            ? 'down'
+            : row.type === 'total'
+              ? 'total'
+              : 'up';
+        return (
+          '<li class="bi-breakdown-item ' +
+          cls +
+          '"><span>' +
+          esc(row.signal) +
+          '</span><strong>' +
+          esc(pts) +
+          '</strong></li>'
+        );
+      })
+      .join('');
+  }
+
+  function renderFitSnapshot(profile) {
+    var snapshot = $('bi-fit-snapshot');
+    if (!snapshot) return;
+
+    if (!profile) {
+      $('bi-snapshot-score').textContent = '—';
+      var bandEl = $('bi-snapshot-band');
+      if (bandEl) {
+        bandEl.textContent = '—';
+        bandEl.className = 'bi-band';
+      }
+      var founderEl = $('bi-founder-summary');
+      if (founderEl) founderEl.textContent = '';
+      renderBulletList('bi-why-bht-fit', [], 'Run website research to generate fit analysis.');
+      renderBulletList('bi-opportunity-summary', [], 'Opportunities appear after research.');
+      $('bi-recommended-action').textContent = 'Research Further';
+      renderScoreBreakdown(null);
+      return;
+    }
+
+    var score = profile.estimated_fit_score;
+    var band = fitBandFromScore(score);
+    $('bi-snapshot-score').textContent = score != null ? String(score) : '—';
+    var bandDisplay = $('bi-snapshot-band');
+    if (bandDisplay) {
+      bandDisplay.textContent = band;
+      bandDisplay.className = 'bi-band ' + bandClass(band === '—' ? 'D' : band);
+    }
+    var founderSummaryEl = $('bi-founder-summary');
+    if (founderSummaryEl) {
+      founderSummaryEl.textContent = profile.founder_summary || profile.profile_summary || '';
+    }
+    renderBulletList('bi-why-bht-fit', profile.why_bht_fit, 'No fit signals yet.');
+    renderBulletList('bi-opportunity-summary', profile.opportunity_summary, 'No opportunities identified.');
+    $('bi-recommended-action').textContent =
+      profile.recommended_founder_action || 'Review Builder';
+    renderScoreBreakdown(profile.score_breakdown);
+  }
+
   function updateScoreBanner(profile) {
     var scoreEl = $('bi-score-display');
     var sourceEl = $('bi-research_source_display');
@@ -535,6 +642,7 @@
   function fillProfileForm(profile) {
     var meta = $('bi-profile-meta');
     updateScoreBanner(profile);
+    renderFitSnapshot(profile);
     if (!profile) {
       $('bi-profile_summary').value = '';
       $('bi-builder_focus').value = '';

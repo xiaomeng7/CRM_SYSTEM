@@ -34,7 +34,12 @@ function testHtmlResearchSection(html) {
   assert(html.includes('id="bi-profile_summary"'), 'profile_summary field');
   assert(html.includes('id="bi-quality_signals"'), 'quality_signals field');
   assert(html.includes('id="bi-risk_signals"'), 'risk_signals field');
-  assert(html.includes('id="bi-score-display"'), 'score banner');
+  assert(html.includes('id="bi-fit-snapshot"'), 'fit snapshot section');
+  assert(html.includes('Builder Fit Snapshot'), 'snapshot heading');
+  assert(html.includes('id="bi-why-bht-fit"'), 'why bht fit list');
+  assert(html.includes('id="bi-opportunity-summary"'), 'opportunity list');
+  assert(html.includes('id="bi-recommended-action"'), 'recommended action');
+  assert(html.includes('id="bi-score-breakdown-list"'), 'score breakdown list');
   assert(html.includes('id="bi-research_source_display"'), 'research source display');
   assert(html.includes('id="bi-last_researched_display"'), 'last researched display');
   assert(html.includes('bi-section-hidden'), 'sections use bi-section-hidden class');
@@ -49,6 +54,9 @@ function testJsProfileEndpoints(js) {
   assert(js.includes('loadProfileAndRuns'), 'loadProfileAndRuns function');
   assert(js.includes('setSectionVisible'), 'setSectionVisible toggles section visibility');
   assert(js.includes('bi-section-hidden'), 'JS toggles bi-section-hidden class');
+  assert(js.includes('renderFitSnapshot'), 'renders fit snapshot');
+  assert(js.includes('renderScoreBreakdown'), 'renders score breakdown');
+  assert(js.includes('fitBandFromScore'), 'fit band helper');
   assert(js.includes('x-admin-secret'), 'write ops use x-admin-secret header');
   console.log('  OK: JS calls profile / research endpoints');
 }

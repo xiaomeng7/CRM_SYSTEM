@@ -19,7 +19,9 @@ const {
   detectSignals,
   computeFitScore,
   fitPriorityFromScore,
+  fitBandFromScore,
 } = require('../services/builder/research/analyzeBuilderWebsite');
+const { generateFounderIntelligence } = require('../services/builder/research/generateFounderIntelligence');
 const { runBuilderResearch } = require('../services/builder/runBuilderResearch');
 
 const TEST_PREFIX = 'test_pr8d_';
@@ -38,6 +40,7 @@ async function ensureMigrations() {
   const files = [
     '../database/069_builder_prospect_foundation.sql',
     '../database/070_builder_research_profiles.sql',
+    '../database/072_builder_research_intelligence_refinement.sql',
   ];
   for (const rel of files) {
     await pool.query(fs.readFileSync(path.join(__dirname, rel), 'utf8'));
@@ -103,12 +106,69 @@ async function testDeterministicAnalysis() {
     useLlm: false,
   });
 
-  assert(analysis.estimated_fit_score >= 70, `luxury score high, got ${analysis.estimated_fit_score}`);
+  assert(analysis.estimated_fit_score >= 80, `luxury score 80+, got ${analysis.estimated_fit_score}`);
+  assert(analysis.estimated_fit_score <= 95, `luxury score not inflated, got ${analysis.estimated_fit_score}`);
   assert(analysis.architectural_fit === 'high', 'architectural fit high');
   assert(analysis.smart_home_fit === 'high', 'smart home fit high');
   assert(analysis.research_source === 'website_fetch', 'no llm source');
   assert(analysis.target_suburbs.some((s) => /Unley/i.test(s)), 'suburb detected');
-  console.log('analysis score:', analysis.estimated_fit_score, 'focus:', analysis.builder_focus);
+  assert(analysis.target_suburbs.some((s) => /Toorak Gardens/i.test(s)), 'service area suburb');
+  assert(analysis.why_bht_fit.length >= 2, 'why_bht_fit bullets');
+  assert(analysis.opportunity_summary.length >= 2, 'opportunity bullets');
+  assert(analysis.recommended_founder_action, 'recommended action');
+  assert(analysis.score_breakdown?.details?.length >= 3, 'score breakdown');
+  assert(fitBandFromScore(analysis.estimated_fit_score) === 'A' || fitBandFromScore(analysis.estimated_fit_score) === 'B', 'band A or B');
+  console.log('analysis score:', analysis.estimated_fit_score, 'band:', analysis.fit_band, 'focus:', analysis.builder_focus);
+}
+
+async function testCommercialResidentialOverride() {
+  console.log('\n=== Commercial + residential risk override ===\n');
+
+  const html = readFixture('mixed-commercial-residential.html');
+  const extracted = extractWebsiteText([{ url: 'https://metrobuild.test/', html }]);
+  const signals = detectSignals(extracted.combined_text, extracted.snippets);
+
+  assert(!signals.risk_signals.includes('commercial-only focus'), 'no commercial-only when residential present');
+  assert(signals.quality_signals.includes('mentions custom homes'), 'custom homes detected');
+
+  const analysis = await analyzeBuilderWebsite({
+    combined_text: extracted.combined_text,
+    snippets: extracted.snippets,
+    company_name: 'Metro Build Co',
+    useLlm: false,
+    relationship_stage: 'discovered',
+    research_status: 'researched',
+  });
+
+  assert(!analysis.risk_signals.includes('commercial-only focus'), 'analysis excludes commercial-only risk');
+  assert(analysis.target_suburbs.some((s) => /Burnside|Norwood/i.test(s)), 'suburbs from mixed builder');
+  console.log('mixed builder score:', analysis.estimated_fit_score, 'risks:', analysis.risk_signals.join(', ') || 'none');
+}
+
+async function testFounderIntelligenceDeterministic() {
+  console.log('\n=== Founder intelligence (deterministic) ===\n');
+
+  const analysis = {
+    estimated_fit_score: 88,
+    builder_focus: 'architectural homes',
+    architectural_fit: 'high',
+    luxury_fit: 'high',
+    smart_home_fit: 'medium',
+    profile_summary: 'Test builder with strong architectural positioning.',
+    detected: { architect_mention: true, custom_homes: true, luxury_premium: true },
+  };
+
+  const intel = generateFounderIntelligence(analysis, {
+    company_name: 'Test Builder',
+    relationship_stage: 'discovered',
+    research_status: 'researched',
+  });
+
+  assert(intel.why_bht_fit.length <= 5, 'max 5 why bullets');
+  assert(intel.opportunity_summary.length <= 5, 'max 5 opportunity bullets');
+  assert(intel.recommended_founder_action === 'Call Builder', 'high score → call');
+  assert(intel.founder_summary.includes('Band'), 'founder summary includes band');
+  console.log('action:', intel.recommended_founder_action);
 }
 
 async function testScoringAndPriority() {
@@ -161,7 +221,11 @@ async function testFullResearchPipeline() {
   if (prevKey) process.env.OPENAI_API_KEY = prevKey;
 
   assert(result.ok, 'research ok');
-  assert(result.profile.estimated_fit_score >= 70, 'profile score saved');
+  assert(result.profile.estimated_fit_score >= 80, 'profile score saved');
+  assert(result.profile.founder_summary, 'founder summary saved');
+  assert(result.profile.why_bht_fit.length >= 1, 'why_bht_fit saved');
+  assert(result.profile.recommended_founder_action, 'recommended action saved');
+  assert(result.profile.score_breakdown, 'score breakdown saved');
   assert(result.prospect.research_status === 'researched', 'research_status researched');
   assert(result.prospect.fit_priority === 'high', 'fit_priority high');
   assert(result.run.status === 'completed', 'run completed');
@@ -242,6 +306,8 @@ async function main() {
 
     await testExtractFixture();
     await testDeterministicAnalysis();
+    await testCommercialResidentialOverride();
+    await testFounderIntelligenceDeterministic();
     await testScoringAndPriority();
     await testFullResearchPipeline();
     await testFailedResearchRun();

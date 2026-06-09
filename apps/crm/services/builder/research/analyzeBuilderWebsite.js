@@ -1,34 +1,56 @@
 /**
- * Deterministic builder website analysis (PR8D).
+ * Deterministic builder website analysis (PR8D / PR8D.1).
  * Optional LLM for profile_summary + ideal_contact_angle only.
  */
 
+const { generateFounderIntelligence, fitBandFromScore } = require('./generateFounderIntelligence');
+
 const ADELAIDE_SUBURBS = [
   'adelaide',
-  'unley',
-  'burnside',
-  'norwood',
-  'prospect',
-  'glenelg',
-  'henley beach',
-  'brighton',
-  'mitcham',
-  'marion',
-  'stirling',
   'adelaide hills',
-  'mount barker',
-  'port adelaide',
-  'north adelaide',
-  'walkerville',
-  'fullarton',
-  'goodwood',
+  'balhannah',
+  'beaumont',
   'blackwood',
+  'brighton',
+  'burnside',
   'campbelltown',
-  'salisbury',
-  'mclaren vale',
-  'victor harbor',
+  'colonel light gardens',
+  'dulwich',
+  'fullarton',
   'gawler',
+  'glen osmond',
+  'glenelg',
+  'goodwood',
+  'henley beach',
+  'hyde park',
+  'kensington',
+  'kent town',
+  'linden park',
+  'malvern',
+  'marion',
+  'mclaren vale',
+  'medindie',
+  'mile end',
+  'mitcham',
+  'mount barker',
+  'norwood',
+  'north adelaide',
+  'port adelaide',
+  'prospect',
+  'rose park',
+  'salisbury',
+  'stirling',
+  'thebarton',
+  'toorak gardens',
+  'unley',
+  'victor harbor',
+  'walkerville',
+  'wattle park',
+  'westbourne park',
 ];
+
+const RESIDENTIAL_STRENGTH_RE =
+  /custom home|custom build|bespoke home|architect|architectural|residential project|new home|luxury home|premium home|design.?led|residential build/i;
 
 const QUALITY_CHECKS = [
   { id: 'project_gallery', label: 'project gallery exists', re: /project|portfolio|gallery|our work|case stud/i, pages: /project|portfolio|gallery|work/i },
@@ -64,6 +86,13 @@ function pageUrlsMatch(pages, re) {
   return (pages || []).some((p) => re.test(p.url || ''));
 }
 
+function hasResidentialStrength(text, detected) {
+  return (
+    matchText(text, RESIDENTIAL_STRENGTH_RE) ||
+    Boolean(detected.custom_homes || detected.architect_mention || detected.luxury_premium)
+  );
+}
+
 function detectSignals(combinedText, snippets) {
   const text = (combinedText || '').toLowerCase();
   const pages = snippets || [];
@@ -79,11 +108,19 @@ function detectSignals(combinedText, snippets) {
     }
   }
 
+  const residentialStrong = hasResidentialStrength(text, detected);
   const risk_signals = [];
+
   for (const check of RISK_CHECKS) {
     if (check.sparse) continue;
     if (check.missing) {
       if (!detected[check.missing]) risk_signals.push(check.label);
+      continue;
+    }
+    if (check.id === 'commercial_only') {
+      if (matchText(text, check.re) && !residentialStrong) {
+        risk_signals.push(check.label);
+      }
       continue;
     }
     if (matchText(text, check.re)) risk_signals.push(check.label);
@@ -95,16 +132,78 @@ function detectSignals(combinedText, snippets) {
     }
   }
 
-  return { quality_signals, risk_signals, detected };
+  return { quality_signals, risk_signals, detected, residentialStrong };
 }
 
-function detectSuburbs(combinedText) {
-  const lower = (combinedText || '').toLowerCase();
+function titleCaseSuburb(name) {
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function matchSuburbsInText(text) {
+  const lower = (text || '').toLowerCase();
   const found = [];
   for (const suburb of ADELAIDE_SUBURBS) {
-    if (lower.includes(suburb)) found.push(suburb.replace(/\b\w/g, (c) => c.toUpperCase()));
+    if (lower.includes(suburb)) found.push(titleCaseSuburb(suburb));
   }
-  return [...new Set(found)].slice(0, 8);
+  return found;
+}
+
+function extractSuburbsFromPatterns(text) {
+  const found = [];
+  const patterns = [
+    /(?:service areas?|areas we serve|locations?|project areas?|suburbs? we serve|servicing)[:\s]+([^.!\n]{5,160})/gi,
+    /(?:across|throughout|based in|working in|projects in)\s+([A-Za-z][A-Za-z\s,&-]+(?:and\s+[A-Za-z][A-Za-z\s-]+)?)/gi,
+  ];
+
+  for (const re of patterns) {
+    let match;
+    while ((match = re.exec(text || '')) !== null) {
+      const chunk = match[1]
+        .replace(/\band\b/gi, ',')
+        .split(/[,;|/]/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      for (const part of chunk) {
+        const normalized = part.toLowerCase();
+        for (const suburb of ADELAIDE_SUBURBS) {
+          if (normalized.includes(suburb) || suburb.includes(normalized)) {
+            found.push(titleCaseSuburb(suburb));
+          }
+        }
+        if (part.length >= 3 && part.length <= 40 && /^[A-Za-z][A-Za-z\s-]+$/.test(part)) {
+          const direct = ADELAIDE_SUBURBS.find((s) => s === normalized);
+          if (direct) found.push(titleCaseSuburb(direct));
+        }
+      }
+    }
+  }
+  return found;
+}
+
+function detectSuburbs(combinedText, snippets, prospectSuburb) {
+  const parts = [combinedText || ''];
+  for (const s of snippets || []) {
+    const url = s.url || '';
+    if (/contact|location|area|service|about|project/i.test(url)) {
+      parts.push(s.snippet || '');
+    }
+  }
+
+  const haystack = parts.join('\n');
+  const found = [
+    ...matchSuburbsInText(haystack),
+    ...extractSuburbsFromPatterns(haystack),
+  ];
+
+  if (prospectSuburb && String(prospectSuburb).trim()) {
+    found.push(titleCaseSuburb(String(prospectSuburb).trim()));
+  }
+
+  return [...new Set(found.map(titleCaseSuburb))].slice(0, 10);
 }
 
 function deriveBuilderFocus(text, detected) {
@@ -116,7 +215,7 @@ function deriveBuilderFocus(text, detected) {
   if (detected.luxury_premium) return 'luxury residential';
   if (/townhouse|multi.?unit|development/i.test(t)) return 'townhouse development';
   if (detected.renovations) return 'renovations';
-  if (/commercial/i.test(t)) return 'commercial';
+  if (/commercial/i.test(t) && !hasResidentialStrength(t, detected)) return 'commercial';
   if (/volume builder|display home|house and land/i.test(t)) return 'volume builder';
   return 'unknown';
 }
@@ -130,7 +229,7 @@ function deriveProjectTypes(text, detected) {
   else if (detected.renovations) types.push('luxury_renovation');
   if (/townhouse|development/i.test(t)) types.push('townhouse');
   if (/small developer| boutique developer/i.test(t)) types.push('small_developer');
-  if (/commercial/i.test(t)) types.push('commercial');
+  if (/commercial/i.test(t) && !hasResidentialStrength(t, detected)) types.push('commercial');
   if (!types.length) types.push('unknown');
   return [...new Set(types)];
 }
@@ -152,17 +251,38 @@ function deriveFitLevels(detected, score) {
   return { smart_home_fit, architectural_fit, luxury_fit };
 }
 
+function computePremiumSynergyBonus(detected) {
+  const details = [];
+  let bonus = 0;
+
+  if (detected.architect_mention && detected.custom_homes && detected.luxury_premium) {
+    bonus += 8;
+    details.push({
+      signal: 'premium residential profile (architect + custom + luxury)',
+      points: 8,
+    });
+  } else if (detected.architect_mention && detected.custom_homes) {
+    bonus += 5;
+    details.push({ signal: 'design-led custom builder', points: 5 });
+  } else if (detected.architect_mention && detected.luxury_premium) {
+    bonus += 4;
+    details.push({ signal: 'architectural luxury positioning', points: 4 });
+  }
+
+  return { bonus, details };
+}
+
 function computeFitScore(quality_signals, risk_signals, detected, totalChars) {
-  const breakdown = { base: 40, quality: 0, risks: 0, details: [] };
+  const breakdown = { base: 18, quality: 0, risks: 0, synergy: 0, details: [] };
   const qualityPoints = {
-    'project gallery exists': 10,
-    'mentions architect / architectural': 12,
-    'mentions custom homes': 10,
+    'project gallery exists': 8,
+    'mentions architect / architectural': 11,
+    'mentions custom homes': 9,
     'mentions luxury / premium': 10,
-    'mentions renovations': 5,
-    'mentions smart home / automation / lighting': 15,
-    'has named team / about page': 8,
-    'has contact email / phone': 8,
+    'mentions renovations': 4,
+    'mentions smart home / automation / lighting': 12,
+    'has named team / about page': 6,
+    'has contact email / phone': 6,
   };
   const riskPoints = {
     'volume builder language': -15,
@@ -176,21 +296,37 @@ function computeFitScore(quality_signals, risk_signals, detected, totalChars) {
   for (const q of quality_signals) {
     const pts = qualityPoints[q] || 0;
     breakdown.quality += pts;
-    if (pts) breakdown.details.push({ signal: q, points: pts });
+    if (pts) breakdown.details.push({ signal: q, points: pts, type: 'quality' });
   }
+
+  const premiumQualityCount = quality_signals.filter((q) =>
+    /architect|custom|luxury|smart home/i.test(q)
+  ).length;
+
   for (const r of risk_signals) {
-    const pts = riskPoints[r] || 0;
+    let pts = riskPoints[r] || 0;
+    if (premiumQualityCount >= 3 && (r === 'no project gallery' || r === 'no clear contact')) {
+      pts = Math.round(pts / 2);
+    }
     breakdown.risks += pts;
-    if (pts) breakdown.details.push({ signal: r, points: pts });
+    if (pts) breakdown.details.push({ signal: r, points: pts, type: 'risk' });
   }
 
   if (totalChars < 300) {
     breakdown.risks -= 5;
-    breakdown.details.push({ signal: 'minimal content', points: -5 });
+    breakdown.details.push({ signal: 'minimal content', points: -5, type: 'risk' });
   }
 
-  const total = Math.max(0, Math.min(100, breakdown.base + breakdown.quality + breakdown.risks));
+  const synergy = computePremiumSynergyBonus(detected);
+  breakdown.synergy = synergy.bonus;
+  breakdown.details.push(...synergy.details.map((d) => ({ ...d, type: 'synergy' })));
+
+  const total = Math.max(
+    0,
+    Math.min(100, breakdown.base + breakdown.quality + breakdown.risks + breakdown.synergy)
+  );
   breakdown.total = total;
+  breakdown.fit_band = fitBandFromScore(total);
   return { estimated_fit_score: total, score_breakdown: breakdown };
 }
 
@@ -204,8 +340,9 @@ function buildDeterministicSummary(companyName, analysis) {
   const name = companyName || 'This builder';
   const focus = analysis.builder_focus !== 'unknown' ? analysis.builder_focus : 'residential building';
   const score = analysis.estimated_fit_score;
+  const band = analysis.fit_band || fitBandFromScore(score);
   const quality = (analysis.quality_signals || []).slice(0, 3).join('; ') || 'limited public signals';
-  return `${name} appears focused on ${focus}. Website analysis found: ${quality}. Estimated fit score ${score}/100 based on deterministic keyword signals.`;
+  return `${name} appears focused on ${focus} (Band ${band}, ${score}/100). Website analysis found: ${quality}.`;
 }
 
 function buildDeterministicContactAngle(companyName, analysis) {
@@ -276,13 +413,16 @@ Respond with JSON only:
  * @param {Array} input.snippets
  * @param {string} [input.company_name]
  * @param {string} [input.website_url]
+ * @param {string} [input.prospect_suburb]
+ * @param {string} [input.relationship_stage]
+ * @param {string} [input.research_status]
  * @param {boolean} [input.useLlm]
  */
 async function analyzeBuilderWebsite(input) {
   const combined_text = input.combined_text || '';
   const snippets = input.snippets || [];
   const { quality_signals, risk_signals, detected } = detectSignals(combined_text, snippets);
-  const target_suburbs = detectSuburbs(combined_text);
+  const target_suburbs = detectSuburbs(combined_text, snippets, input.prospect_suburb);
   const builder_focus = deriveBuilderFocus(combined_text, detected);
   const project_types = deriveProjectTypes(combined_text, detected);
   const { estimated_fit_score, score_breakdown } = computeFitScore(
@@ -302,6 +442,7 @@ async function analyzeBuilderWebsite(input) {
     project_types,
     estimated_fit_score,
     score_breakdown,
+    fit_band: score_breakdown.fit_band,
     ...fitLevels,
     fit_priority: fitPriorityFromScore(estimated_fit_score),
   };
@@ -325,10 +466,21 @@ async function analyzeBuilderWebsite(input) {
     }
   }
 
-  return {
+  const analysisWithSummary = {
     ...baseAnalysis,
     profile_summary,
     ideal_contact_angle,
+  };
+
+  const founderIntel = generateFounderIntelligence(analysisWithSummary, {
+    company_name: input.company_name,
+    relationship_stage: input.relationship_stage,
+    research_status: input.research_status || 'researched',
+  });
+
+  return {
+    ...analysisWithSummary,
+    ...founderIntel,
     research_source: usedLlm ? 'website_fetch_llm' : 'website_fetch',
   };
 }
@@ -341,8 +493,10 @@ module.exports = {
   deriveProjectTypes,
   deriveFitLevels,
   fitPriorityFromScore,
+  fitBandFromScore,
   buildDeterministicSummary,
   buildDeterministicContactAngle,
   detectSuburbs,
+  hasResidentialStrength,
   ADELAIDE_SUBURBS,
 };

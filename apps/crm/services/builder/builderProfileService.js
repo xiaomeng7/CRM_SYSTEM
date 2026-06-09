@@ -52,8 +52,25 @@ function parseFitScore(value) {
   return n;
 }
 
+function parseScoreBreakdown(value) {
+  if (value == null) return undefined;
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch (_) {
+      return null;
+    }
+  }
+  if (typeof value === 'object' && !Array.isArray(value)) return value;
+  return null;
+}
+
 function rowToProfile(row) {
   if (!row) return null;
+  let score_breakdown = row.score_breakdown;
+  if (score_breakdown != null && typeof score_breakdown === 'string') {
+    score_breakdown = parseScoreBreakdown(score_breakdown);
+  }
   return {
     id: row.id,
     prospect_id: row.prospect_id,
@@ -70,6 +87,11 @@ function rowToProfile(row) {
     estimated_fit_score:
       row.estimated_fit_score != null ? Number(row.estimated_fit_score) : null,
     research_source: row.research_source || 'manual',
+    founder_summary: row.founder_summary || null,
+    why_bht_fit: row.why_bht_fit || [],
+    opportunity_summary: row.opportunity_summary || [],
+    recommended_founder_action: row.recommended_founder_action || null,
+    score_breakdown: score_breakdown || null,
     last_researched_at: row.last_researched_at || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -146,9 +168,24 @@ function normalizeProfileInput(data) {
     out.research_source = trimOrNull(data.research_source) || 'manual';
   }
 
-  const arrayFields = ['project_types', 'target_suburbs', 'quality_signals', 'risk_signals'];
+  const arrayFields = [
+    'project_types',
+    'target_suburbs',
+    'quality_signals',
+    'risk_signals',
+    'why_bht_fit',
+    'opportunity_summary',
+  ];
   for (const key of arrayFields) {
     if (data[key] !== undefined) out[key] = parseStringArray(data[key]);
+  }
+
+  if (data.founder_summary !== undefined) out.founder_summary = trimOrNull(data.founder_summary);
+  if (data.recommended_founder_action !== undefined) {
+    out.recommended_founder_action = trimOrNull(data.recommended_founder_action);
+  }
+  if (data.score_breakdown !== undefined) {
+    out.score_breakdown = parseScoreBreakdown(data.score_breakdown);
   }
 
   const fitFields = ['smart_home_fit', 'architectural_fit', 'luxury_fit'];
@@ -202,8 +239,16 @@ async function upsertBuilderProfile(prospectId, data, options = {}) {
       profile = rowToProfile(r.rows[0]);
     } else {
       const keys = Object.keys(fields);
-      const setClauses = keys.map((k, i) => `${k} = $${i + 2}`);
-      const values = [prospectId, ...keys.map((k) => fields[k])];
+      const setClauses = keys.map((k, i) => {
+        if (k === 'score_breakdown') return `${k} = $${i + 2}::jsonb`;
+        return `${k} = $${i + 2}`;
+      });
+      const values = [prospectId, ...keys.map((k) => {
+        if (k === 'score_breakdown' && fields[k] != null) {
+          return JSON.stringify(fields[k]);
+        }
+        return fields[k];
+      })];
 
       const r = await db.query(
         `UPDATE builder_profiles SET ${setClauses.join(', ')}
@@ -226,6 +271,11 @@ async function upsertBuilderProfile(prospectId, data, options = {}) {
       luxury_fit: input.luxury_fit ?? 'unknown',
       estimated_fit_score: input.estimated_fit_score ?? null,
       research_source: input.research_source ?? 'manual',
+      founder_summary: input.founder_summary ?? null,
+      why_bht_fit: input.why_bht_fit ?? [],
+      opportunity_summary: input.opportunity_summary ?? [],
+      recommended_founder_action: input.recommended_founder_action ?? null,
+      score_breakdown: input.score_breakdown ?? null,
       last_researched_at: now,
     };
 
@@ -234,8 +284,9 @@ async function upsertBuilderProfile(prospectId, data, options = {}) {
          prospect_id, profile_summary, builder_focus, project_types, target_suburbs,
          quality_signals, risk_signals, ideal_contact_angle,
          smart_home_fit, architectural_fit, luxury_fit, estimated_fit_score,
-         research_source, last_researched_at
-       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+         research_source, founder_summary, why_bht_fit, opportunity_summary,
+         recommended_founder_action, score_breakdown, last_researched_at
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,$19)
        RETURNING *`,
       [
         prospectId,
@@ -251,6 +302,11 @@ async function upsertBuilderProfile(prospectId, data, options = {}) {
         fields.luxury_fit,
         fields.estimated_fit_score,
         fields.research_source,
+        fields.founder_summary,
+        fields.why_bht_fit,
+        fields.opportunity_summary,
+        fields.recommended_founder_action,
+        fields.score_breakdown ? JSON.stringify(fields.score_breakdown) : null,
         fields.last_researched_at,
       ]
     );

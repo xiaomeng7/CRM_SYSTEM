@@ -22,6 +22,11 @@ const PROFILE_UPDATE_FIELDS = [
   'luxury_fit',
   'estimated_fit_score',
   'research_source',
+  'founder_summary',
+  'why_bht_fit',
+  'opportunity_summary',
+  'recommended_founder_action',
+  'score_breakdown',
 ];
 
 /**
