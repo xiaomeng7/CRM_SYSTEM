@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8e3" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8e3debug" />
 </head>
 <body>
   <div class="app">
@@ -156,6 +156,14 @@
           <label>Next follow-up<input type="datetime-local" id="bi-next_followup_at" /></label>
           <label class="bi-full">Qualification notes<textarea id="bi-qualification_notes" rows="2"></textarea></label>
           <label class="bi-full">Founder notes<textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event, interested in smart homes, calls back quickly…"></textarea></label>
+          <div id="bi-relationship-score" class="bi-relationship-score" hidden>
+            <div class="bi-relationship-score-label" id="bi-relationship-score-label">Relationship Score</div>
+            <div class="bi-relationship-score-row">
+              <strong id="bi-relationship-score-value">—</strong>
+              <span class="bi-band" id="bi-relationship-score-band">—</span>
+            </div>
+            <p class="bi-relationship-score-hint" id="bi-relationship-score-hint"></p>
+          </div>
           <label class="bi-full">Notes<textarea id="bi-notes" rows="3"></textarea></label>
         </div>
         <div class="bi-form-actions">
@@ -174,8 +182,8 @@
         <div id="bi-fit-snapshot" class="bi-fit-snapshot">
           <h3 class="bi-snapshot-title">Builder Fit Snapshot</h3>
           <div class="bi-snapshot-score-row">
-            <span>Fit Score: <strong id="bi-snapshot-score">—</strong></span>
-            <span>Band: <strong id="bi-snapshot-band" class="bi-band">—</strong></span>
+            <span>Website Fit Score: <strong id="bi-snapshot-score">—</strong></span>
+            <span>Website Fit Band: <strong id="bi-snapshot-band" class="bi-band">—</strong></span>
           </div>
           <p id="bi-founder-summary" class="bi-founder-summary"></p>
           <div class="bi-snapshot-block">
@@ -253,6 +261,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8e3"></script>
+  <script src="/js/builder-intelligence.js?v=pr8e3debug"></script>
 </body>
 </html>

@@ -44,7 +44,10 @@ const { FIT_LEVELS } = require('../../services/builder/builderProfileConstants')
 const { getTopBuilderTargets } = require('../../services/builder/targetSelection/getTopBuilderTargets');
 const { getStrategicPartners } = require('../../services/builder/targetSelection/getStrategicPartners');
 const { getActivePartners } = require('../../services/builder/targetSelection/getActivePartners');
-const { refreshBuilderTargetScores } = require('../../services/builder/targetSelection/refreshBuilderTargetScores');
+const {
+  refreshBuilderTargetScores,
+  refreshBuilderTargetScoreForProspect,
+} = require('../../services/builder/targetSelection/refreshBuilderTargetScores');
 
 function requireAdminSecret(req, res) {
   const secret = process.env.ADMIN_SECRET || process.env.SYNC_SECRET;
@@ -267,7 +270,18 @@ router.put('/prospects/:id', async (req, res) => {
   if (!requireAdminSecret(req, res)) return;
   try {
     const prospect = await updateBuilderProspect(req.params.id, req.body || {});
-    res.json({ ok: true, prospect });
+    let target_scores = null;
+    try {
+      target_scores = await refreshBuilderTargetScoreForProspect(prospect.id);
+    } catch (refreshErr) {
+      console.warn('[builder-intel PUT prospect] score refresh skipped:', refreshErr.message);
+    }
+    const full = await getBuilderProspectById(prospect.id);
+    res.json({
+      ok: true,
+      prospect: full || prospect,
+      target_scores: target_scores || full?.target_scores || null,
+    });
   } catch (err) {
     console.error('[builder-intel PUT prospect]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });

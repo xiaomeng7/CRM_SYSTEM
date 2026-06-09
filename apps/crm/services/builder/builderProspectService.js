@@ -221,11 +221,56 @@ async function listBuilderProspects(filters = {}, options = {}) {
 async function getBuilderProspectById(id, options = {}) {
   const db = options.db || pool;
   const r = await db.query(
-    `SELECT * FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
+    `SELECT
+       p.*,
+       ts.score_kind,
+       ts.target_score,
+       ts.target_band,
+       ts.founder_priority_score,
+       ts.founder_priority_band,
+       ts.partner_value_score,
+       ts.partner_value_band,
+       ts.next_best_action AS target_next_best_action,
+       ts.calculated_at AS target_scores_calculated_at
+     FROM b2b_prospects p
+     LEFT JOIN builder_target_scores ts ON ts.prospect_id = p.id
+     WHERE p.id = $1 AND p.prospect_type = $2`,
     [id, PROSPECT_TYPE_BUILDER]
   );
-  const prospect = r.rows[0] || null;
-  if (!prospect) return null;
+  const row = r.rows[0] || null;
+  if (!row) return null;
+
+  const {
+    score_kind,
+    target_score,
+    target_band,
+    founder_priority_score,
+    founder_priority_band,
+    partner_value_score,
+    partner_value_band,
+    target_next_best_action,
+    target_scores_calculated_at,
+    ...prospectRow
+  } = row;
+
+  const prospect = {
+    ...prospectRow,
+    target_scores: target_score != null || partner_value_score != null || founder_priority_score != null
+      ? {
+          score_kind: score_kind || null,
+          target_score: target_score != null ? Number(target_score) : null,
+          target_band: target_band || null,
+          founder_priority_score:
+            founder_priority_score != null ? Number(founder_priority_score) : null,
+          founder_priority_band: founder_priority_band || null,
+          partner_value_score:
+            partner_value_score != null ? Number(partner_value_score) : null,
+          partner_value_band: partner_value_band || null,
+          next_best_action: target_next_best_action || null,
+          calculated_at: target_scores_calculated_at || null,
+        }
+      : null,
+  };
 
   const outreach = await db.query(
     `SELECT id, channel, message_body, status, sent_at

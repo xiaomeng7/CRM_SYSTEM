@@ -179,6 +179,46 @@
   display: none;
 }
 
+.bi-relationship-score {
+  grid-column: 1 / -1;
+  padding: 0.75rem 0.85rem;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.bi-relationship-score-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.bi-relationship-score-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.bi-relationship-score-row strong {
+  font-size: 1.35rem;
+}
+
+.bi-relationship-score-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.bi-target-score-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.15rem;
+}
+
 .bi-fit-snapshot {
   margin-bottom: 1rem;
   padding: 0.85rem 1rem;

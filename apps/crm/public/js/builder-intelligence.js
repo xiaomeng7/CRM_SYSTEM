@@ -99,6 +99,63 @@
     return b || 'D';
   }
 
+  function isPartnerStatus(status) {
+    return status === 'strategic_partner' || status === 'active_partner';
+  }
+
+  function renderRelationshipScore(prospect) {
+    var box = $('bi-relationship-score');
+    var labelEl = $('bi-relationship-score-label');
+    var valueEl = $('bi-relationship-score-value');
+    var bandEl = $('bi-relationship-score-band');
+    var hintEl = $('bi-relationship-score-hint');
+    if (!box || !labelEl || !valueEl || !bandEl) return;
+
+    var status = (prospect && prospect.builder_status) || 'prospect';
+    var scores = prospect && prospect.target_scores;
+    var isPartner = isPartnerStatus(status);
+
+    if (!prospect || !prospect.id) {
+      box.hidden = true;
+      return;
+    }
+
+    box.hidden = false;
+    labelEl.textContent = isPartner ? 'Partner Value Score' : 'Prospect Priority Score';
+
+    var score = null;
+    var band = null;
+    if (scores) {
+      if (isPartner) {
+        score = scores.partner_value_score != null ? scores.partner_value_score : scores.target_score;
+        band = scores.partner_value_band || scores.target_band;
+      } else {
+        score =
+          scores.founder_priority_score != null ? scores.founder_priority_score : scores.target_score;
+        band = scores.founder_priority_band || scores.target_band;
+      }
+    }
+
+    valueEl.textContent = score != null ? String(score) : '—';
+    bandEl.textContent = band || '—';
+    bandEl.className = 'bi-band ' + bandClass(band === '—' ? 'D' : band);
+
+    if (hintEl) {
+      if (!scores) {
+        hintEl.textContent = 'Save relationship fields, then Recalculate to generate score.';
+      } else if (isPartner) {
+        hintEl.textContent =
+          'Partners use Partner Value Score (relationship asset), not prospect priority.';
+      } else {
+        hintEl.textContent = 'Prospects use Prospect Priority Score for Contact This Week ranking.';
+      }
+    }
+  }
+
+  function reloadDashboardSections() {
+    return Promise.all([loadTargets(), loadStrategicPartners(), loadActivePartners()]);
+  }
+
   function loadTargets() {
     var band = ($('bi-target-band') && $('bi-target-band').value) || '';
     var p = new URLSearchParams();
@@ -201,6 +258,7 @@
           '</div>' +
           '</div>' +
           '<div class="bi-target-scorebox">' +
+          '<div class="bi-target-score-label">Partner Value</div>' +
           '<div class="bi-target-score">' +
           esc(String(score)) +
           '</div>' +
@@ -262,6 +320,7 @@
           '</div>' +
           '</div>' +
           '<div class="bi-target-scorebox">' +
+          '<div class="bi-target-score-label">Prospect Priority</div>' +
           '<div class="bi-target-score">' +
           esc(String(t.founder_priority_score != null ? t.founder_priority_score : t.target_score)) +
           '</div>' +
@@ -295,8 +354,8 @@
       .then(function (j) {
         if (!j.ok) throw new Error(j.error || 'Recalculate failed');
         renderTargets(j.targets || []);
-        showMsg('Founder priority scores recalculated.', false);
-        return Promise.all([loadList(), loadStrategicPartners(), loadActivePartners()]);
+        showMsg('Scores recalculated.', false);
+        return Promise.all([loadList(), reloadDashboardSections()]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Recalculate failed — check API secret.', true);
@@ -650,10 +709,11 @@
         $('bi-fit_priority').value = 'unknown';
         $('bi-research_status').value = 'not_started';
         $('bi-relationship_stage').value = 'discovered';
-        $('bi-builder_status').value = 'prospect';
-        $('bi-relationship_strength').value = 'unknown';
-        $('bi-opportunity_potential').value = 'unknown';
-        $('bi-timing_status').value = 'unknown';
+      $('bi-builder_status').value = 'prospect';
+      $('bi-relationship_strength').value = 'unknown';
+      $('bi-opportunity_potential').value = 'unknown';
+      $('bi-timing_status').value = 'unknown';
+      renderRelationshipScore(null);
       }
       $('bi-source').value = 'manual';
     }
@@ -1044,6 +1104,7 @@
         if (!j.ok || !j.prospect) throw new Error(j.error || 'Not found');
         openPanel(false);
         fillForm(j.prospect);
+        renderRelationshipScore(j.prospect);
         renderOutreach(j.prospect.outreach_log);
         $('bi-new-note').value = '';
         return loadProfileAndRuns(id);
@@ -1076,9 +1137,13 @@
         if (isNew && res.body.prospect && res.body.prospect.id) {
           openDetail(res.body.prospect.id);
         } else {
+          if (res.body.prospect) {
+            fillForm(res.body.prospect);
+            renderRelationshipScore(res.body.prospect);
+          }
           closePanel();
         }
-        return loadList();
+        return Promise.all([loadList(), reloadDashboardSections()]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Save failed — check API secret for writes.', true);

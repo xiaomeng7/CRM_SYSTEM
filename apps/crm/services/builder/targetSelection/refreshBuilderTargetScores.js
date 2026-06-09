@@ -214,9 +214,71 @@ async function refreshBuilderTargetScores(options = {}) {
   return stats;
 }
 
+async function loadBuilderProspectWithProfile(db, prospectId) {
+  const r = await db.query(
+    `SELECT
+       p.*,
+       bp.estimated_fit_score,
+       bp.last_researched_at AS profile_last_researched_at,
+       bp.id AS profile_id
+     FROM b2b_prospects p
+     LEFT JOIN builder_profiles bp ON bp.prospect_id = p.id
+     WHERE p.id = $1 AND p.prospect_type = $2`,
+    [prospectId, PROSPECT_TYPE_BUILDER]
+  );
+  return r.rows[0] || null;
+}
+
+/**
+ * Recalculate scores for a single builder prospect (after save).
+ * @param {string} prospectId
+ * @param {object} [options]
+ */
+async function refreshBuilderTargetScoreForProspect(prospectId, options = {}) {
+  const db = options.db || pool;
+  const now = options.now || new Date();
+  const row = await loadBuilderProspectWithProfile(db, prospectId);
+  if (!row) {
+    const err = new Error('Builder prospect not found');
+    err.code = 'NOT_FOUND';
+    throw err;
+  }
+
+  const followupMap = await loadOpenFollowupEvents(db);
+  const profile = row.profile_id
+    ? {
+        estimated_fit_score: row.estimated_fit_score,
+        last_researched_at: row.profile_last_researched_at,
+      }
+    : null;
+  const openFollowupEvent = followupMap.has(row.id)
+    ? { payload: followupMap.get(row.id).payload }
+    : null;
+
+  const scoreResult = computeScoresForBuilder(row, profile, openFollowupEvent, now);
+  const next_best_action = buildTargetAction(row, profile, scoreResult);
+  const saved = await upsertTargetScore(row.id, { ...scoreResult, next_best_action }, db);
+
+  return {
+    prospect_id: row.id,
+    builder_status: row.builder_status || 'prospect',
+    score_kind: scoreResult.score_kind,
+    target_score: scoreResult.target_score,
+    target_band: scoreResult.target_band,
+    founder_priority_score: scoreResult.founder_priority_score,
+    founder_priority_band: scoreResult.founder_priority_band,
+    partner_value_score: scoreResult.partner_value_score,
+    partner_value_band: scoreResult.partner_value_band,
+    next_best_action,
+    calculated_at: saved.calculated_at,
+  };
+}
+
 module.exports = {
   refreshBuilderTargetScores,
+  refreshBuilderTargetScoreForProspect,
   upsertTargetScore,
   loadBuilderProspectsWithProfiles,
+  loadBuilderProspectWithProfile,
   computeScoresForBuilder,
 };
