@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8g2" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr9a" />
 </head>
 <body>
   <div class="app">
@@ -36,6 +36,54 @@
 
       <div class="content bi-content">
         <div id="bi-msg" class="bi-msg" style="display:none;"></div>
+
+        <section class="bi-discovery-engine" id="bi-discovery-engine">
+          <div class="bi-section-header-row">
+            <div>
+              <h2>Builder Discovery</h2>
+              <p class="bi-section-hint">Find new Adelaide / SA builders — paste candidates, review, then import selected into Builder Intelligence.</p>
+            </div>
+          </div>
+          <div class="bi-discovery-form bi-workflow-grid">
+            <div class="bi-field"><span class="bi-field-label">Search query</span><input type="text" id="bi-disc-query" placeholder="custom home builder Adelaide" /></div>
+            <div class="bi-field"><span class="bi-field-label">Location</span><input type="text" id="bi-disc-location" placeholder="Burnside SA" /></div>
+            <div class="bi-field"><span class="bi-field-label">Source</span><select id="bi-disc-source"></select></div>
+            <div class="bi-field bi-field-full">
+              <span class="bi-field-label">Seed candidates JSON</span>
+              <textarea id="bi-disc-seed-json" rows="6" placeholder='[{"company_name":"Example Custom Homes","website":"https://example.com.au","phone":"08 1234 5678","location":"Adelaide SA"}]'></textarea>
+              <p class="bi-section-hint">Paste Google results, directory exports, or manually collected builders. Required for manual seed.</p>
+            </div>
+            <div class="bi-field bi-field-full bi-discovery-form-actions">
+              <button type="button" id="bi-btn-disc-run" class="bi-btn primary">Run Discovery</button>
+              <span id="bi-disc-run-status" class="bi-disc-status"></span>
+            </div>
+          </div>
+          <div id="bi-disc-run-meta" class="bi-disc-run-meta" hidden></div>
+          <div class="bi-discovery-toolbar" id="bi-disc-toolbar" hidden>
+            <button type="button" id="bi-btn-disc-import-selected" class="bi-btn primary">Import Selected</button>
+            <button type="button" id="bi-btn-disc-dismiss-selected" class="bi-btn">Dismiss Selected</button>
+          </div>
+          <div class="bi-discovery-table-wrap">
+            <table class="bi-discovery-table" id="bi-disc-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="bi-disc-select-all" title="Select all importable" /></th>
+                  <th>Company</th>
+                  <th>Website</th>
+                  <th>Phone</th>
+                  <th>Location</th>
+                  <th>Confidence</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bi-disc-candidates">
+                <tr><td colspan="9" class="bi-empty-cell">Run discovery to see candidates.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <section class="bi-top-targets" id="bi-top-targets">
           <div class="bi-top-targets-header">
@@ -220,6 +268,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8g2"></script>
+  <script src="/js/builder-intelligence.js?v=pr9a"></script>
 </body>
 </html>

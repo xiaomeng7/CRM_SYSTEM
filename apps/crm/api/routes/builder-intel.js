@@ -76,6 +76,7 @@ function safeErrorMessage(err) {
   const code = err.code;
   if (code === 'INVALID_INPUT') return err.message;
   if (code === 'NOT_FOUND') return 'Builder prospect not found';
+  if (code === 'DISCOVERY_FAILED') return err.message;
   const msg = String(err.message || err);
   if (/relation .* does not exist/i.test(msg)) {
     return 'Database migration required (071_builder_target_scores or earlier)';
@@ -92,6 +93,7 @@ function safeErrorMessage(err) {
 function statusFromError(err) {
   if (err.code === 'INVALID_INPUT') return 400;
   if (err.code === 'NOT_FOUND') return 404;
+  if (err.code === 'DISCOVERY_FAILED') return 400;
   return 500;
 }
 
@@ -118,6 +120,11 @@ router.get('/prospects/enums', (_req, res) => {
       { value: 'network', label: 'Network' },
       { value: 'website', label: 'Website' },
       { value: 'manual', label: 'Manual' },
+      { value: 'discovery', label: 'Discovery Import' },
+    ],
+    discovery_run_sources: [
+      { value: 'manual_seed', label: 'Manual seed (paste JSON)' },
+      { value: 'web_disabled', label: 'Web search (disabled)' },
     ],
     fit_levels: FIT_LEVELS,
   });
@@ -359,6 +366,111 @@ router.post('/prospects/:id/notes', async (req, res) => {
     res.json({ ok: true, prospect });
   } catch (err) {
     console.error('[builder-intel POST note]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+// --- Builder Discovery (PR9A) ---
+
+const {
+  createDiscoveryRun,
+  listDiscoveryRuns,
+  getDiscoveryRunById,
+  importDiscoveryCandidate,
+  importSelectedCandidates,
+  dismissDiscoveryCandidate,
+  dismissSelectedCandidates,
+} = require('../../services/builder/discovery/builderDiscoveryService');
+const { isWebDiscoveryEnabled } = require('../../services/builder/discovery/searchEngineDiscovery');
+
+router.get('/discovery/runs', async (req, res) => {
+  try {
+    const result = await listDiscoveryRuns({ limit: req.query.limit });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET discovery/runs]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/discovery/runs/:id', async (req, res) => {
+  try {
+    const result = await getDiscoveryRunById(req.params.id);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET discovery/runs/:id]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/discovery/run', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const body = req.body || {};
+    const result = await createDiscoveryRun({
+      query: body.query,
+      location: body.location,
+      source: body.source || 'manual_seed',
+      seed_candidates: body.seed_candidates || [],
+    });
+    res.status(201).json({ ok: true, ...result, web_discovery_enabled: isWebDiscoveryEnabled() });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/run]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/discovery/candidates/:id/import', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const result = await importDiscoveryCandidate(req.params.id);
+    res.status(201).json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/candidates/:id/import]', err);
+    const status =
+      err.code === 'DUPLICATE' || err.code === 'ALREADY_IMPORTED' || err.code === 'DISMISSED'
+        ? 409
+        : statusFromError(err);
+    res.status(status).json({
+      ok: false,
+      error: safeErrorMessage(err),
+      code: err.code,
+      matched_prospect_id: err.matched_prospect_id || null,
+    });
+  }
+});
+
+router.post('/discovery/candidates/import-selected', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const ids = req.body?.candidate_ids || [];
+    const result = await importSelectedCandidates(ids);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/candidates/import-selected]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/discovery/candidates/:id/dismiss', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const candidate = await dismissDiscoveryCandidate(req.params.id);
+    res.json({ ok: true, candidate });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/candidates/:id/dismiss]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/discovery/candidates/dismiss-selected', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const ids = req.body?.candidate_ids || [];
+    const result = await dismissSelectedCandidates(ids);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/candidates/dismiss-selected]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
   }
 });

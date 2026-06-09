@@ -7,6 +7,8 @@
   var currentProspect = null;
   var currentProfile = null;
   var debounceTimer = null;
+  var discoveryCandidates = [];
+  var currentDiscoveryRunId = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -404,6 +406,10 @@
         fillSelect('bi-relationship_level', j.relationship_levels || [], null);
         fillSelect('bi-timing_status', j.timing_statuses);
         fillSelect('bi-opportunity_potential', j.founder_opportunity_potentials || j.opportunity_potentials);
+        fillSelect('bi-disc-source', j.discovery_run_sources || [], null);
+        if ($('bi-disc-source') && !$('bi-disc-source').value) {
+          $('bi-disc-source').value = 'manual_seed';
+        }
         if ($('bi-add-source') && !$('bi-add-source').value) {
           $('bi-add-source').value = 'google_search';
         }
@@ -736,6 +742,260 @@
       });
   }
 
+  function parseSeedJson() {
+    var raw = ($('bi-disc-seed-json') && $('bi-disc-seed-json').value) || '';
+    if (!raw.trim()) return [];
+    try {
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) throw new Error('Seed JSON must be an array');
+      return parsed;
+    } catch (e) {
+      throw new Error('Invalid seed JSON: ' + (e.message || 'parse error'));
+    }
+  }
+
+  function setDiscoveryStatus(text) {
+    var el = $('bi-disc-run-status');
+    if (el) el.textContent = text || '';
+  }
+
+  function renderDiscoveryRunMeta(run, extra) {
+    var el = $('bi-disc-run-meta');
+    if (!el || !run) {
+      if (el) el.hidden = true;
+      return;
+    }
+    el.hidden = false;
+    el.innerHTML =
+      '<strong>Run:</strong> ' +
+      esc(run.query) +
+      (run.location ? ' · ' + esc(run.location) : '') +
+      ' · ' +
+      esc(run.status) +
+      ' · ' +
+      String(run.total_found || 0) +
+      ' found · ' +
+      String(run.imported_count || 0) +
+      ' imported' +
+      (extra ? ' · ' + esc(extra) : '');
+  }
+
+  function discoveryStatusClass(status) {
+    return 'bi-disc-status-tag ' + (status || 'candidate');
+  }
+
+  function canSelectCandidate(c) {
+    return c.status === 'candidate';
+  }
+
+  function renderDiscoveryCandidates(candidates) {
+    discoveryCandidates = candidates || [];
+    var tbody = $('bi-disc-candidates');
+    var toolbar = $('bi-disc-toolbar');
+    if (!tbody) return;
+
+    if (!discoveryCandidates.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="9" class="bi-empty-cell">No candidates in this run.</td></tr>';
+      if (toolbar) toolbar.hidden = true;
+      return;
+    }
+
+    if (toolbar) toolbar.hidden = false;
+    tbody.innerHTML = discoveryCandidates
+      .map(function (c) {
+        var selectable = canSelectCandidate(c);
+        return (
+          '<tr data-candidate-id="' +
+          esc(c.id) +
+          '"><td>' +
+          (selectable
+            ? '<input type="checkbox" class="bi-disc-check" data-id="' + esc(c.id) + '" />'
+            : '') +
+          '</td><td>' +
+          esc(c.company_name) +
+          '</td><td>' +
+          (c.website
+            ? '<a href="' + esc(c.website) + '" target="_blank" rel="noopener">' + esc(c.website) + '</a>'
+            : '—') +
+          '</td><td>' +
+          esc(c.phone || '—') +
+          '</td><td>' +
+          esc(c.location || c.suburb || '—') +
+          '</td><td>' +
+          String(c.confidence_score != null ? c.confidence_score : '—') +
+          '</td><td>' +
+          esc(labelize(c.suggested_builder_type)) +
+          '</td><td><span class="' +
+          discoveryStatusClass(c.status) +
+          '">' +
+          esc(c.status) +
+          '</span></td><td class="bi-disc-actions">' +
+          (selectable
+            ? '<button type="button" class="bi-btn bi-disc-import-one" data-id="' +
+              esc(c.id) +
+              '">Import</button><button type="button" class="bi-btn bi-disc-dismiss-one" data-id="' +
+              esc(c.id) +
+              '">Dismiss</button>'
+            : '—') +
+          '</td></tr>'
+        );
+      })
+      .join('');
+
+    bindDiscoveryRowActions(tbody);
+  }
+
+  function bindDiscoveryRowActions(container) {
+    container.querySelectorAll('.bi-disc-import-one').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        importDiscoveryCandidates([btn.getAttribute('data-id')]);
+      });
+    });
+    container.querySelectorAll('.bi-disc-dismiss-one').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        dismissDiscoveryCandidates([btn.getAttribute('data-id')]);
+      });
+    });
+  }
+
+  function getSelectedDiscoveryIds() {
+    return Array.prototype.slice
+      .call(document.querySelectorAll('.bi-disc-check:checked'))
+      .map(function (el) {
+        return el.getAttribute('data-id');
+      })
+      .filter(Boolean);
+  }
+
+  function reloadDiscoveryRun() {
+    if (!currentDiscoveryRunId) return Promise.resolve();
+    return fetch('/api/builder-intel/discovery/runs/' + encodeURIComponent(currentDiscoveryRunId))
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Failed to load run');
+        renderDiscoveryRunMeta(j.run);
+        renderDiscoveryCandidates(j.candidates || []);
+      });
+  }
+
+  function runDiscovery() {
+    var query = ($('bi-disc-query') && $('bi-disc-query').value) || '';
+    var location = ($('bi-disc-location') && $('bi-disc-location').value) || '';
+    var source = ($('bi-disc-source') && $('bi-disc-source').value) || 'manual_seed';
+    var btn = $('bi-btn-disc-run');
+
+    if (!query.trim()) {
+      showMsg('Enter a search query.', true);
+      return;
+    }
+
+    var seedCandidates = [];
+    if (source === 'manual_seed') {
+      try {
+        seedCandidates = parseSeedJson();
+      } catch (e) {
+        showMsg(e.message, true);
+        return;
+      }
+      if (!seedCandidates.length) {
+        showMsg('Paste seed candidates JSON for manual seed discovery.', true);
+        return;
+      }
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Running…';
+    }
+    setDiscoveryStatus('Creating discovery run…');
+
+    fetch('/api/builder-intel/discovery/run', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({
+        query: query.trim(),
+        location: location.trim(),
+        source: source,
+        seed_candidates: seedCandidates,
+      }),
+    })
+      .then(function (r) {
+        return r.json().then(function (j) {
+          return { ok: r.ok, body: j };
+        });
+      })
+      .then(function (res) {
+        if (!res.body.ok) throw new Error(res.body.error || 'Discovery failed');
+        currentDiscoveryRunId = res.body.run && res.body.run.id;
+        var extra = res.body.web_discovery_disabled ? 'web search disabled' : null;
+        renderDiscoveryRunMeta(res.body.run, extra);
+        renderDiscoveryCandidates(res.body.candidates || []);
+        setDiscoveryStatus('Discovery complete.');
+        showMsg('Discovery run completed.', false);
+      })
+      .catch(function (e) {
+        setDiscoveryStatus('');
+        showMsg(e.message || 'Discovery failed.', true);
+      })
+      .finally(function () {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Run Discovery';
+        }
+      });
+  }
+
+  function importDiscoveryCandidates(ids) {
+    if (!ids || !ids.length) {
+      showMsg('Select candidates to import.', true);
+      return Promise.resolve();
+    }
+    return fetch('/api/builder-intel/discovery/candidates/import-selected', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({ candidate_ids: ids }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Import failed');
+        var imported = j.imported_count || 0;
+        var failed = (j.errors && j.errors.length) || 0;
+        showMsg('Imported ' + imported + ' builder(s)' + (failed ? ' · ' + failed + ' skipped' : '') + '.', false);
+        return Promise.all([reloadDiscoveryRun(), loadList()]);
+      })
+      .catch(function (e) {
+        showMsg(e.message, true);
+      });
+  }
+
+  function dismissDiscoveryCandidates(ids) {
+    if (!ids || !ids.length) {
+      showMsg('Select candidates to dismiss.', true);
+      return Promise.resolve();
+    }
+    return fetch('/api/builder-intel/discovery/candidates/dismiss-selected', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({ candidate_ids: ids }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Dismiss failed');
+        showMsg('Dismissed ' + (j.count || 0) + ' candidate(s).', false);
+        return reloadDiscoveryRun();
+      })
+      .catch(function (e) {
+        showMsg(e.message, true);
+      });
+  }
+
   function bindEvents() {
     $('bi-btn-refresh').addEventListener('click', function () {
       loadList();
@@ -771,6 +1031,29 @@
       searchEl.addEventListener('input', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(loadList, 300);
+      });
+    }
+    var discRunBtn = $('bi-btn-disc-run');
+    if (discRunBtn) discRunBtn.addEventListener('click', runDiscovery);
+    var discImportBtn = $('bi-btn-disc-import-selected');
+    if (discImportBtn) {
+      discImportBtn.addEventListener('click', function () {
+        importDiscoveryCandidates(getSelectedDiscoveryIds());
+      });
+    }
+    var discDismissBtn = $('bi-btn-disc-dismiss-selected');
+    if (discDismissBtn) {
+      discDismissBtn.addEventListener('click', function () {
+        dismissDiscoveryCandidates(getSelectedDiscoveryIds());
+      });
+    }
+    var discSelectAll = $('bi-disc-select-all');
+    if (discSelectAll) {
+      discSelectAll.addEventListener('change', function () {
+        var checked = discSelectAll.checked;
+        document.querySelectorAll('.bi-disc-check').forEach(function (el) {
+          el.checked = checked;
+        });
       });
     }
   }
