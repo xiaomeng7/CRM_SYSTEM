@@ -37,9 +37,15 @@ function buildJobLabel(row) {
   return null;
 }
 
+function resolveReferenceNumber(row) {
+  const job = row.job_number && String(row.job_number).trim();
+  const inv = row.invoice_number && String(row.invoice_number).trim();
+  return job || inv || null;
+}
+
 function resolveJobNumber(row) {
-  const num = row.job_number && String(row.job_number).trim();
-  if (num) return num;
+  const ref = resolveReferenceNumber(row);
+  if (ref) return ref;
   if (row.servicem8_job_uuid) {
     return `SM8-${String(row.servicem8_job_uuid).slice(0, 8)}`;
   }
@@ -91,9 +97,6 @@ router.get('/outstanding-details', async (req, res) => {
       const jobNumber = resolveJobNumber(r);
       const jobSite = buildJobSite(r);
       const jobLabel = buildJobLabel(r);
-      const invoiceNumber =
-        r.invoice_number ||
-        (r.servicem8_invoice_uuid ? `SM8-${String(r.servicem8_invoice_uuid).slice(0, 8)}` : null);
       const dueDate = r.due_date
         ? String(r.due_date).slice(0, 10)
         : r.invoice_date
@@ -101,7 +104,7 @@ router.get('/outstanding-details', async (req, res) => {
           : null;
       return {
         id: r.id,
-        invoice_number: invoiceNumber,
+        invoice_number: jobNumber,
         customer: r.customer || '—',
         amount: parseFloat(r.amount),
         due_date: dueDate,

@@ -57,7 +57,7 @@ async function main() {
     if (arr.length > 0) {
       const first = arr[0];
       console.log('   First item keys:', sampleKeys(first));
-      const invoiceLike = ['total_invoice_amount', 'invoice_total', 'invoice_number', 'date_invoiced', 'invoice_date', 'amount', 'total', 'invoice_status'];
+      const invoiceLike = ['total_invoice_amount', 'invoice_total', 'invoice_number', 'generated_job_id', 'date_invoiced', 'invoice_date', 'amount', 'total', 'invoice_status'];
       const found = invoiceLike.filter((k) => first[k] !== undefined);
       if (found.length) console.log('   Invoice-like fields on job:', found.join(', '));
     }

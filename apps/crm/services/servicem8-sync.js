@@ -15,6 +15,48 @@ const EXTERNAL_ENTITY_TYPE = 'company';
 const SYNC_ADVISORY_LOCK_ID = 8273647123; // fixed bigint for pg advisory lock (servicem8 sync)
 const PAID_INVOICE_STATUSES = new Set(['paid', 'complete', 'completed', 'closed']);
 
+/** ServiceM8 exposes the human job number as generated_job_id (not job_number). */
+function extractJobNumber(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const candidates = [
+    raw.generated_job_id,
+    raw.generated_job_number,
+    raw.job_number,
+    raw.jobNumber,
+    raw.reference,
+  ];
+  for (const c of candidates) {
+    if (c == null) continue;
+    const s = String(c).trim();
+    if (s) return s;
+  }
+  return null;
+}
+
+function extractJobAddress(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const line = (raw.job_address || raw.address || raw.address_street || raw.site_address || raw.siteAddress || '').trim();
+  return line || null;
+}
+
+/** BHT: invoice reference matches ServiceM8 job number when no separate invoice number exists. */
+async function backfillInvoiceNumbersFromJobs(db, dryRun) {
+  if (dryRun) return { invoices_backfilled: 0 };
+  const r = await db.query(
+    `UPDATE invoices i
+     SET invoice_number = j.job_number,
+         updated_at = NOW()
+     FROM jobs j
+     WHERE j.job_number IS NOT NULL AND TRIM(j.job_number) <> ''
+       AND (i.invoice_number IS NULL OR TRIM(i.invoice_number) = '')
+       AND (
+         (i.job_id IS NOT NULL AND i.job_id = j.id)
+         OR (i.servicem8_job_uuid IS NOT NULL AND i.servicem8_job_uuid = j.servicem8_job_uuid)
+       )`
+  );
+  return { invoices_backfilled: r.rowCount || 0 };
+}
+
 function normalizePhone(phone) {
   if (!phone || typeof phone !== 'string') return null;
   return phone.replace(/\D/g, '').trim() || null;
@@ -429,7 +471,10 @@ async function upsertInvoiceFromJob(db, jobRaw, accountId, jobId, dryRun, option
     : (jobRaw.invoice_total != null ? parseFloat(jobRaw.invoice_total)
       : (jobRaw.invoice_amount != null ? parseFloat(jobRaw.invoice_amount)
         : (jobRaw.amount != null ? parseFloat(jobRaw.amount) : null)));
-  const invoice_number = (jobRaw.invoice_number || jobRaw.invoiceNumber || jobRaw.invoice_ref || '').trim() || null;
+  const invoice_number =
+    (jobRaw.invoice_number || jobRaw.invoiceNumber || jobRaw.invoice_ref || '').trim() ||
+    extractJobNumber(jobRaw) ||
+    null;
   const invoice_date = parseDate(jobRaw.date_invoiced || jobRaw.invoice_date || jobRaw.invoice_date_date || jobRaw.date || jobRaw.job_date || jobRaw.completed_at);
   const due_date = parseDate(jobRaw.invoice_due_date || jobRaw.due_date || jobRaw.payment_due_date) || null;
   const status = (jobRaw.invoice_status || jobRaw.invoice_status_name || jobRaw.status || '').trim() || null;
@@ -491,10 +536,10 @@ async function syncJobsFromServiceM8(options = {}) {
       if (!accountId) { stats.jobs_skipped_no_account++; continue; }
 
       const description = (j.description || j.notes || j.diary_notes || '').trim() || null;
-      const address_line = (j.address || j.address_street || j.site_address || j.siteAddress || '').trim() || null;
+      const address_line = extractJobAddress(j);
       const suburb = (j.city || j.suburb || j.address_suburb || j.addressSuburb || '').trim() || null;
       const status = (j.status || j.status_name || j.statusName || '').trim() || null;
-      const job_number = (j.job_number || j.jobNumber || j.reference || '').trim() || null;
+      const job_number = extractJobNumber(j);
       const jobDate = parseDate(j.date || j.job_date || j.scheduled_start_date || j.scheduled_start || j.created_at);
       const completedAt = parseDate(j.completed_date || j.completed_at || j.finish_date);
       const contactId = null;
@@ -602,7 +647,17 @@ async function syncInvoicesFromServiceM8(options = {}) {
         ? await db.query(`SELECT source_opportunity_id FROM jobs WHERE id = $1`, [jobId]).then((r) => r.rows[0]?.source_opportunity_id || null)
         : null;
 
-      const invoice_number = (inv.invoice_number || inv.invoiceNumber || inv.number || '').trim() || null;
+      const invoice_number =
+        (inv.invoice_number || inv.invoiceNumber || inv.number || '').trim() ||
+        (jobId
+          ? await db
+              .query(`SELECT job_number FROM jobs WHERE id = $1`, [jobId])
+              .then((r) => r.rows[0]?.job_number || null)
+          : jobUuid
+            ? await db
+                .query(`SELECT job_number FROM jobs WHERE servicem8_job_uuid = $1`, [jobUuid])
+                .then((r) => r.rows[0]?.job_number || null)
+            : null);
       const amount = inv.total != null ? parseFloat(inv.total) : (inv.amount != null ? parseFloat(inv.amount) : null);
       const invoice_date = parseDate(inv.date || inv.invoice_date || inv.created_at);
       const due_date = parseDate(inv.due_date || inv.due_date_date || inv.payment_due_date) || null;
@@ -951,6 +1006,14 @@ async function syncAllFromServiceM8(options = {}) {
     stats.opportunities_updated = s6.opportunities_updated || 0;
     stats.errors += s6.errors || 0;
 
+    if (!dryRun) {
+      const backfill = await backfillInvoiceNumbersFromJobs(db, dryRun);
+      stats.invoices_backfilled = backfill.invoices_backfilled || 0;
+      if (backfill.invoices_backfilled && log) {
+        log(`Invoices: backfilled ${backfill.invoices_backfilled} reference(s) from job numbers`);
+      }
+    }
+
     if (runId) await finishSyncRun(db, runId, stats, stats.errors > 0 ? 'completed_with_errors' : 'completed');
     if (!skipLock) await releaseSyncLock(db).catch(() => {});
     return stats;
@@ -1045,6 +1108,9 @@ module.exports = {
   syncAllFromServiceM8,
   syncAllHistoryFromServiceM8,
   ensureServiceM8LinkForAccount,
+  extractJobNumber,
+  extractJobAddress,
+  backfillInvoiceNumbersFromJobs,
   SYSTEM,
   EXTERNAL_ENTITY_TYPE,
 };
