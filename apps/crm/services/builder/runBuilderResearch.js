@@ -9,6 +9,7 @@ const { upsertBuilderProfile, rowToProfile, rowToResearchRun } = require('./buil
 const { fetchBuilderWebsite } = require('./research/fetchBuilderWebsite');
 const { extractWebsiteText } = require('./research/extractWebsiteText');
 const { analyzeBuilderWebsite, fitPriorityFromScore } = require('./research/analyzeBuilderWebsite');
+const { inferProspectFieldsFromResearch } = require('./inferProspectFieldsFromResearch');
 
 const SOURCE = 'website_fetch';
 
@@ -65,14 +66,33 @@ async function finishRun(runId, fields, db) {
 }
 
 async function updateProspectAfterResearch(prospectId, analysis, db) {
-  const fit_priority = fitPriorityFromScore(analysis.estimated_fit_score);
+  const inferred = inferProspectFieldsFromResearch({
+    ...analysis,
+    fit_priority: analysis.fit_priority || fitPriorityFromScore(analysis.estimated_fit_score),
+  });
+
   const r = await db.query(
     `UPDATE b2b_prospects SET
-       research_status = 'researched',
-       fit_priority = $2
-     WHERE id = $1 AND prospect_type = $3
-     RETURNING id, research_status, fit_priority, relationship_stage`,
-    [prospectId, fit_priority, PROSPECT_TYPE_BUILDER]
+       research_status = $2,
+       fit_priority = $3,
+       builder_type = $4,
+       project_focus = $5,
+       target_suburbs = COALESCE($6, target_suburbs),
+       opportunity_potential = $7,
+       relationship_stage = $8
+     WHERE id = $1 AND prospect_type = $9
+     RETURNING *`,
+    [
+      prospectId,
+      inferred.research_status,
+      inferred.fit_priority,
+      inferred.builder_type,
+      inferred.project_focus,
+      inferred.target_suburbs,
+      inferred.opportunity_potential,
+      inferred.relationship_stage,
+      PROSPECT_TYPE_BUILDER,
+    ]
   );
   return r.rows[0];
 }

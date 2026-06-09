@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8e3debug" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8f" />
 </head>
 <body>
   <div class="app">
@@ -26,7 +26,7 @@
       <header class="header">
         <div>
           <h1 style="margin:0;font-size:1.1rem;">Builder Intelligence</h1>
-          <p class="bi-subtitle">Adelaide / SA builder prospect database — manual pipeline (PR8A)</p>
+          <p class="bi-subtitle">Builder discovery platform — find, research, then build relationships</p>
         </div>
         <div class="bi-header-actions">
           <input type="password" id="bi-secret" placeholder="API secret (writes)" autocomplete="off" class="bi-secret-input" />
@@ -71,51 +71,50 @@
           </div>
         </section>
 
-        <div class="bi-stats" id="bi-stats"></div>
-
-        <div class="bi-toolbar">
-          <input type="search" id="bi-search" placeholder="Search company, suburb, website…" class="bi-filter-input" />
-          <select id="bi-filter-stage" class="bi-filter-select">
-            <option value="">All stages</option>
-          </select>
-          <select id="bi-filter-type" class="bi-filter-select">
-            <option value="">All builder types</option>
-          </select>
-          <select id="bi-filter-priority" class="bi-filter-select">
-            <option value="">All priorities</option>
-          </select>
-          <select id="bi-filter-research" class="bi-filter-select">
-            <option value="">All research</option>
-          </select>
-          <button type="button" id="bi-btn-refresh" class="bi-btn">Refresh</button>
-        </div>
-
-        <div class="bi-table-wrap">
-          <table class="bi-table" id="bi-table">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Type</th>
-                <th>Focus</th>
-                <th>Priority</th>
-                <th>Stage</th>
-                <th>Research</th>
-                <th>Next follow-up</th>
-                <th>Last contact</th>
-              </tr>
-            </thead>
-            <tbody id="bi-tbody">
-              <tr><td colspan="9" class="bi-empty">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="bi-meta" id="bi-total"></p>
+        <section class="bi-all-builders">
+          <div class="bi-section-header-row">
+            <h2>All Builders</h2>
+            <div class="bi-toolbar bi-toolbar-inline">
+              <input type="search" id="bi-search" placeholder="Search company, website…" class="bi-filter-input" />
+              <select id="bi-filter-priority" class="bi-filter-select">
+                <option value="">All priorities</option>
+              </select>
+              <select id="bi-filter-research" class="bi-filter-select">
+                <option value="">All research</option>
+              </select>
+              <button type="button" id="bi-btn-refresh" class="bi-btn">Refresh</button>
+            </div>
+          </div>
+          <div id="bi-builder-cards" class="bi-builder-cards">
+            <p class="bi-empty">Loading builders…</p>
+          </div>
+          <p class="bi-meta" id="bi-total"></p>
+        </section>
       </div>
     </main>
   </div>
 
-  <!-- Detail / edit panel -->
+  <!-- Add Builder — discovery-first (30 seconds) -->
+  <div id="bi-add-overlay" class="bi-panel-overlay bi-add-overlay" hidden>
+    <div class="bi-panel bi-add-panel">
+      <div class="bi-panel-header">
+        <h2>Add Builder</h2>
+        <button type="button" id="bi-add-close" class="bi-btn">Close</button>
+      </div>
+      <form id="bi-add-form" class="bi-form bi-add-form">
+        <p class="bi-add-hint">Enter company and website — we research the rest automatically.</p>
+        <label>Company name *<input type="text" id="bi-add-company_name" required placeholder="KCW Build" /></label>
+        <label>Website *<input type="url" id="bi-add-website" required placeholder="https://kcwbuild.com.au" /></label>
+        <label>Source<select id="bi-add-source"></select></label>
+        <div class="bi-form-actions">
+          <button type="submit" class="bi-btn primary" id="bi-btn-save-research">Save &amp; Research</button>
+        </div>
+        <p id="bi-add-status" class="bi-research-meta" style="display:none;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Builder detail -->
   <div id="bi-panel" class="bi-panel-overlay" hidden>
     <div class="bi-panel">
       <div class="bi-panel-header">
@@ -123,144 +122,113 @@
         <button type="button" id="bi-panel-close" class="bi-btn">Close</button>
       </div>
       <div class="bi-panel-body">
-      <form id="bi-form" class="bi-form">
         <input type="hidden" id="bi-id" />
-        <div class="bi-form-grid">
-          <label>Company name *<input type="text" id="bi-company_name" required /></label>
-          <label>Website<input type="url" id="bi-website" placeholder="https://" /></label>
-          <label>Suburb<input type="text" id="bi-suburb" placeholder="e.g. Unley" /></label>
-          <label>Target suburbs<input type="text" id="bi-target_suburbs" placeholder="Comma-separated" /></label>
-          <label>Builder type<select id="bi-builder_type"></select></label>
-          <label>Project focus<select id="bi-project_focus"></select></label>
-          <label>Fit priority<select id="bi-fit_priority"></select></label>
-          <label>Research status<select id="bi-research_status"></select></label>
-          <label>Relationship stage<select id="bi-relationship_stage"></select></label>
-          <label>Builder status<select id="bi-builder_status"></select></label>
-          <label>Relationship strength<select id="bi-relationship_strength"></select></label>
-          <label>Opportunity potential<select id="bi-opportunity_potential"></select></label>
-          <label>Timing status<select id="bi-timing_status"></select></label>
-          <label>Decision maker<input type="text" id="bi-decision_maker_name" /></label>
-          <label>DM role<input type="text" id="bi-decision_maker_role" placeholder="Director, Estimator…" /></label>
-          <label>Contact name<input type="text" id="bi-contact_name" /></label>
-          <label>Phone<input type="tel" id="bi-phone" /></label>
-          <label>Email<input type="email" id="bi-email" /></label>
-          <label>Source<select id="bi-source">
-            <option value="manual">manual</option>
-            <option value="google_maps">google_maps</option>
-            <option value="referral">referral</option>
-            <option value="csv_import">csv_import</option>
-            <option value="website">website</option>
-            <option value="network">network</option>
-          </select></label>
-          <label>Source detail<input type="text" id="bi-source_detail" /></label>
-          <label>Next follow-up<input type="datetime-local" id="bi-next_followup_at" /></label>
-          <label class="bi-full">Qualification notes<textarea id="bi-qualification_notes" rows="2"></textarea></label>
-          <label class="bi-full">Founder notes<textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event, interested in smart homes, calls back quickly…"></textarea></label>
-          <div id="bi-relationship-score" class="bi-relationship-score" hidden>
-            <div class="bi-relationship-score-label" id="bi-relationship-score-label">Relationship Score</div>
-            <div class="bi-relationship-score-row">
-              <strong id="bi-relationship-score-value">—</strong>
-              <span class="bi-band" id="bi-relationship-score-band">—</span>
+
+        <div id="bi-summary-card" class="bi-summary-card">
+          <h3 id="bi-summary-company">—</h3>
+          <p id="bi-summary-focus" class="bi-summary-focus">—</p>
+          <p id="bi-summary-fit" class="bi-summary-fit">Fit Score —</p>
+          <p class="bi-summary-action"><span>Suggested Action:</span> <strong id="bi-summary-action">—</strong></p>
+          <p class="bi-summary-status"><span>Status:</span> <strong id="bi-summary-status">—</strong></p>
+        </div>
+
+        <div id="bi-relationship-score" class="bi-relationship-score" hidden>
+          <div class="bi-relationship-score-label" id="bi-relationship-score-label">Relationship Score</div>
+          <div class="bi-relationship-score-row">
+            <strong id="bi-relationship-score-value">—</strong>
+            <span class="bi-band" id="bi-relationship-score-band">—</span>
+          </div>
+          <p class="bi-relationship-score-hint" id="bi-relationship-score-hint"></p>
+        </div>
+
+        <section class="bi-detail-section" id="bi-research-results-section">
+          <h3>Research Results</h3>
+          <p class="bi-section-hint">Populated automatically from website research.</p>
+          <dl class="bi-readonly-grid" id="bi-research-results">
+            <dt>Builder Type</dt><dd id="bi-ro-builder_type">—</dd>
+            <dt>Focus</dt><dd id="bi-ro-project_focus">—</dd>
+            <dt>Fit Score</dt><dd id="bi-ro-fit_score">—</dd>
+            <dt>Priority</dt><dd id="bi-ro-fit_priority">—</dd>
+            <dt>Target Suburbs</dt><dd id="bi-ro-target_suburbs">—</dd>
+            <dt>Source</dt><dd id="bi-ro-research_source">—</dd>
+          </dl>
+          <div id="bi-fit-snapshot" class="bi-fit-snapshot">
+            <p id="bi-founder-summary" class="bi-founder-summary"></p>
+            <div class="bi-snapshot-block">
+              <h4>Why Better Home Fits</h4>
+              <ul id="bi-why-bht-fit" class="bi-snapshot-list"></ul>
             </div>
-            <p class="bi-relationship-score-hint" id="bi-relationship-score-hint"></p>
+            <div class="bi-snapshot-block">
+              <h4>Opportunity</h4>
+              <ul id="bi-opportunity-summary" class="bi-snapshot-list"></ul>
+            </div>
+            <details id="bi-score-breakdown-details" class="bi-score-breakdown">
+              <summary>Score breakdown</summary>
+              <ul id="bi-score-breakdown-list" class="bi-breakdown-list"></ul>
+            </details>
           </div>
-          <label class="bi-full">Notes<textarea id="bi-notes" rows="3"></textarea></label>
-        </div>
-        <div class="bi-form-actions">
-          <button type="submit" class="bi-btn primary" id="bi-btn-save">Save</button>
-        </div>
-      </form>
+          <div class="bi-research-actions">
+            <button type="button" id="bi-btn-run-research" class="bi-btn">Re-run Website Research</button>
+          </div>
+          <p id="bi-research-status" class="bi-research-meta" style="display:none;"></p>
+          <div id="bi-profile-error" class="bi-profile-error" style="display:none;"></div>
+          <div id="bi-research-runs" class="bi-research-runs"></div>
+        </section>
 
-      <div id="bi-research-section" class="bi-research-section bi-section-hidden" aria-label="Research Profile">
-        <div class="bi-section-divider">
-          <h3>Research Profile</h3>
-          <p class="bi-research-hint">Run website research or edit profile manually.</p>
-        </div>
+        <section class="bi-detail-section" id="bi-contact-discovery-section">
+          <h3>Contact Discovery</h3>
+          <p class="bi-section-hint">Fill when known — not required to add a builder.</p>
+          <form id="bi-form" class="bi-form">
+            <div class="bi-form-grid bi-form-grid-2">
+              <label>Decision maker<input type="text" id="bi-decision_maker_name" placeholder="Unknown" /></label>
+              <label>Role<input type="text" id="bi-decision_maker_role" placeholder="Director, Estimator…" /></label>
+              <label>Phone<input type="tel" id="bi-phone" /></label>
+              <label>Email<input type="email" id="bi-email" /></label>
+              <label>Contact name<input type="text" id="bi-contact_name" /></label>
+              <label>Suburb<input type="text" id="bi-suburb" placeholder="e.g. Unley" /></label>
+            </div>
+          </form>
+        </section>
 
-        <div id="bi-profile-error" class="bi-profile-error" style="display:none;"></div>
+        <section class="bi-detail-section" id="bi-relationship-section">
+          <h3>Relationship</h3>
+          <div class="bi-form-grid bi-form-grid-2">
+            <label>Builder status<select id="bi-builder_status"></select></label>
+            <label>Relationship strength<select id="bi-relationship_strength"></select></label>
+            <label class="bi-full">Founder notes<textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event…"></textarea></label>
+            <label class="bi-full">Notes<textarea id="bi-notes" rows="2"></textarea></label>
+          </div>
+          <div class="bi-form-actions">
+            <button type="button" id="bi-btn-save" class="bi-btn primary">Save</button>
+          </div>
+        </section>
 
-        <div id="bi-fit-snapshot" class="bi-fit-snapshot">
-          <h3 class="bi-snapshot-title">Builder Fit Snapshot</h3>
-          <div class="bi-snapshot-score-row">
-            <span>Website Fit Score: <strong id="bi-snapshot-score">—</strong></span>
-            <span>Website Fit Band: <strong id="bi-snapshot-band" class="bi-band">—</strong></span>
-          </div>
-          <p id="bi-founder-summary" class="bi-founder-summary"></p>
-          <div class="bi-snapshot-block">
-            <h4>Why Better Home Fits</h4>
-            <ul id="bi-why-bht-fit" class="bi-snapshot-list"></ul>
-          </div>
-          <div class="bi-snapshot-block">
-            <h4>Opportunity</h4>
-            <ul id="bi-opportunity-summary" class="bi-snapshot-list"></ul>
-          </div>
-          <div class="bi-snapshot-action">
-            <span class="bi-snapshot-action-label">Recommended Action</span>
-            <strong id="bi-recommended-action">—</strong>
-          </div>
-          <details id="bi-score-breakdown-details" class="bi-score-breakdown">
-            <summary>Score breakdown (auditable)</summary>
-            <ul id="bi-score-breakdown-list" class="bi-breakdown-list"></ul>
-          </details>
-        </div>
-
-        <div class="bi-score-banner" id="bi-score-banner">
-          <div class="bi-score-banner-item">
-            <span class="bi-score-label">Estimated Fit Score</span>
-            <strong id="bi-score-display">—</strong>
-          </div>
-          <div class="bi-score-banner-item">
-            <span class="bi-score-label">Research Source</span>
-            <strong id="bi-research_source_display">—</strong>
-          </div>
-          <div class="bi-score-banner-item">
-            <span class="bi-score-label">Last Researched</span>
-            <strong id="bi-last_researched_display">—</strong>
-          </div>
+        <div id="bi-note-section" class="bi-note-section">
+          <h3>Add note</h3>
+          <textarea id="bi-new-note" rows="2" placeholder="Timestamped note…"></textarea>
+          <button type="button" id="bi-btn-add-note" class="bi-btn">Add note</button>
+          <div id="bi-outreach" class="bi-outreach"></div>
         </div>
 
-        <div class="bi-research-actions bi-research-actions-top">
-          <button type="button" id="bi-btn-run-research" class="bi-btn primary">Run Website Research</button>
-          <button type="button" id="bi-btn-mark-researched" class="bi-btn">Mark as Researched</button>
-        </div>
-        <p id="bi-research-status" class="bi-research-meta" style="display:none;"></p>
-
-        <p class="bi-research-meta" id="bi-profile-meta">No research profile yet.</p>
-
-        <form id="bi-profile-form" class="bi-form">
-          <div class="bi-form-grid">
-            <label class="bi-full">Profile summary<textarea id="bi-profile_summary" rows="3" placeholder="What does this builder do?"></textarea></label>
-            <label class="bi-full">Builder focus<textarea id="bi-builder_focus" rows="2" placeholder="Luxury custom homes, architect-led…"></textarea></label>
-            <label>Project types<input type="text" id="bi-project_types" placeholder="Comma-separated" /></label>
-            <label>Target suburbs (profile)<input type="text" id="bi-profile_target_suburbs" placeholder="Comma-separated" /></label>
-            <label>Quality signals<input type="text" id="bi-quality_signals" placeholder="Comma-separated" /></label>
-            <label>Risk signals<input type="text" id="bi-risk_signals" placeholder="Comma-separated" /></label>
-            <label class="bi-full">Ideal contact angle<textarea id="bi-ideal_contact_angle" rows="2"></textarea></label>
-            <label>Smart home fit<select id="bi-smart_home_fit"></select></label>
-            <label>Architectural fit<select id="bi-architectural_fit"></select></label>
-            <label>Luxury fit<select id="bi-luxury_fit"></select></label>
-            <label>Estimated fit score<input type="number" id="bi-estimated_fit_score" min="0" max="100" placeholder="0–100" /></label>
-            <label>Last researched (field)<span id="bi-last_researched_at" class="bi-readonly">—</span></label>
-          </div>
-          <div id="bi-signals-display" class="bi-signals-display"></div>
-          <div class="bi-form-actions bi-research-actions">
-            <button type="submit" class="bi-btn primary">Save Research Profile</button>
-          </div>
-        </form>
-
-        <div id="bi-research-runs" class="bi-research-runs"></div>
-      </div>
-
-      <div id="bi-note-section" class="bi-note-section bi-section-hidden">
-        <h3>Add note</h3>
-        <textarea id="bi-new-note" rows="2" placeholder="Timestamped note appended to Notes…"></textarea>
-        <button type="button" id="bi-btn-add-note" class="bi-btn">Add note</button>
-        <div id="bi-outreach" class="bi-outreach"></div>
-      </div>
+        <!-- Legacy hidden fields for JS compatibility -->
+        <input type="hidden" id="bi-company_name" />
+        <input type="hidden" id="bi-website" />
+        <input type="hidden" id="bi-target_suburbs" />
+        <input type="hidden" id="bi-builder_type" />
+        <input type="hidden" id="bi-project_focus" />
+        <input type="hidden" id="bi-fit_priority" />
+        <input type="hidden" id="bi-research_status" />
+        <input type="hidden" id="bi-relationship_stage" />
+        <input type="hidden" id="bi-opportunity_potential" />
+        <input type="hidden" id="bi-timing_status" />
+        <input type="hidden" id="bi-source" />
+        <input type="hidden" id="bi-source_detail" />
+        <input type="hidden" id="bi-next_followup_at" />
+        <input type="hidden" id="bi-qualification_notes" />
       </div>
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8e3debug"></script>
+  <script src="/js/builder-intelligence.js?v=pr8f"></script>
 </body>
 </html>

@@ -17,6 +17,7 @@ const {
   TIMING_STATUSES,
   BUILDER_STATUSES,
 } = require('./builderProspectConstants');
+const { applyRelationshipDerivation } = require('./builderRelationshipDerivation');
 
 const MAX_LIMIT = 200;
 const DEFAULT_LIMIT = 100;
@@ -150,31 +151,32 @@ function normalizeBuilderInput(data, { isCreate = false } = {}) {
   return out;
 }
 
-function buildListQuery(filters = {}) {
-  const conditions = [`prospect_type = $1`];
+function buildListQuery(filters = {}, { tableAlias = '' } = {}) {
+  const p = tableAlias ? `${tableAlias}.` : '';
+  const conditions = [`${p}prospect_type = $1`];
   const params = [PROSPECT_TYPE_BUILDER];
 
   if (filters.relationship_stage) {
     params.push(filters.relationship_stage);
-    conditions.push(`relationship_stage = $${params.length}`);
+    conditions.push(`${p}relationship_stage = $${params.length}`);
   }
   if (filters.builder_type) {
     params.push(filters.builder_type);
-    conditions.push(`builder_type = $${params.length}`);
+    conditions.push(`${p}builder_type = $${params.length}`);
   }
   if (filters.fit_priority) {
     params.push(filters.fit_priority);
-    conditions.push(`fit_priority = $${params.length}`);
+    conditions.push(`${p}fit_priority = $${params.length}`);
   }
   if (filters.research_status) {
     params.push(filters.research_status);
-    conditions.push(`research_status = $${params.length}`);
+    conditions.push(`${p}research_status = $${params.length}`);
   }
   if (filters.search) {
     params.push(`%${filters.search}%`);
     const n = params.length;
     conditions.push(
-      `(company_name ILIKE $${n} OR suburb ILIKE $${n} OR website ILIKE $${n} OR decision_maker_name ILIKE $${n} OR contact_name ILIKE $${n} OR email ILIKE $${n})`
+      `(${p}company_name ILIKE $${n} OR ${p}suburb ILIKE $${n} OR ${p}website ILIKE $${n} OR ${p}decision_maker_name ILIKE $${n} OR ${p}contact_name ILIKE $${n} OR ${p}email ILIKE $${n})`
     );
   }
 
@@ -184,24 +186,39 @@ function buildListQuery(filters = {}) {
 
 async function listBuilderProspects(filters = {}, options = {}) {
   const db = options.db || pool;
-  const { where, params } = buildListQuery(filters);
+  const { where, params } = buildListQuery(filters, { tableAlias: 'p' });
+  const { where: countWhere, params: countParamsBase } = buildListQuery(filters);
   const limit = parseLimit(filters.limit);
   const offset = Math.max(0, parseInt(filters.offset, 10) || 0);
 
   const listParams = [...params, limit, offset];
-  const countParams = [...params];
+  const countParams = [...countParamsBase];
 
   const [rows, countRow, stageStats] = await Promise.all([
     db.query(
-      `SELECT * FROM b2b_prospects ${where}
+      `SELECT
+         p.*,
+         bp.estimated_fit_score,
+         bp.builder_focus,
+         bp.recommended_founder_action,
+         ts.next_best_action AS suggested_action,
+         ts.target_score,
+         ts.target_band,
+         ts.founder_priority_score,
+         ts.partner_value_score,
+         ts.score_kind
+       FROM b2b_prospects p
+       LEFT JOIN builder_profiles bp ON bp.prospect_id = p.id
+       LEFT JOIN builder_target_scores ts ON ts.prospect_id = p.id
+       ${where}
        ORDER BY
-         CASE fit_priority WHEN 'high' THEN 0 WHEN 'medium' THEN 1 WHEN 'low' THEN 2 ELSE 3 END,
-         next_followup_at ASC NULLS LAST,
-         created_at DESC
+         CASE p.fit_priority WHEN 'high' THEN 0 WHEN 'medium' THEN 1 WHEN 'low' THEN 2 ELSE 3 END,
+         p.next_followup_at ASC NULLS LAST,
+         p.created_at DESC
        LIMIT $${listParams.length - 1} OFFSET $${listParams.length}`,
       listParams
     ),
-    db.query(`SELECT COUNT(*)::int AS cnt FROM b2b_prospects ${where}`, countParams),
+    db.query(`SELECT COUNT(*)::int AS cnt FROM b2b_prospects ${countWhere}`, countParams),
     db.query(
       `SELECT relationship_stage, COUNT(*)::int AS cnt
        FROM b2b_prospects
@@ -342,7 +359,10 @@ async function createBuilderProspect(data, options = {}) {
 async function updateBuilderProspect(id, data, options = {}) {
   const db = options.db || pool;
   const existing = await db.query(
-    `SELECT id FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
+    `SELECT p.*, bp.estimated_fit_score
+     FROM b2b_prospects p
+     LEFT JOIN builder_profiles bp ON bp.prospect_id = p.id
+     WHERE p.id = $1 AND p.prospect_type = $2`,
     [id, PROSPECT_TYPE_BUILDER]
   );
   if (!existing.rows[0]) {
@@ -358,7 +378,8 @@ async function updateBuilderProspect(id, data, options = {}) {
     throw err;
   }
 
-  const updates = normalizeBuilderInput(picked);
+  let updates = normalizeBuilderInput(picked);
+  updates = applyRelationshipDerivation(updates, existing.rows[0]);
   if (!Object.keys(updates).length) {
     const err = new Error('No valid fields to update');
     err.code = 'INVALID_INPUT';

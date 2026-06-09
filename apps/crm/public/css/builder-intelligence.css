@@ -769,3 +769,165 @@
 .bi-band.B { background: #cfe2ff; color: #084298; }
 .bi-band.C { background: #fff3cd; color: #664d03; }
 .bi-band.D { background: #e2e3e5; color: #41464b; }
+
+/* PR8F — discovery-first */
+.bi-section-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.bi-section-header-row h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.bi-toolbar-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.bi-builder-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+.bi-builder-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.bi-builder-card:hover {
+  border-color: #0d6efd;
+}
+
+.bi-card-company {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.bi-card-focus {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.bi-card-fit {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bi-card-action,
+.bi-card-status {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+}
+
+.bi-card-action span,
+.bi-card-status span {
+  color: var(--muted);
+}
+
+.bi-add-panel {
+  max-width: 420px;
+  width: 100%;
+  margin: auto;
+  align-self: center;
+}
+
+.bi-add-overlay {
+  align-items: center;
+  justify-content: center;
+}
+
+.bi-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bi-add-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.bi-summary-card {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #c5daf5;
+  background: linear-gradient(180deg, #f0f7ff 0%, #fff 100%);
+}
+
+.bi-summary-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.bi-summary-focus {
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.bi-summary-fit {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.bi-summary-action,
+.bi-summary-status {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+}
+
+.bi-detail-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.bi-detail-section h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.bi-readonly-grid {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 0.35rem 0.75rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.85rem;
+}
+
+.bi-readonly-grid dt {
+  color: var(--muted);
+  margin: 0;
+}
+
+.bi-readonly-grid dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.bi-form-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.bi-empty-inline {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+}

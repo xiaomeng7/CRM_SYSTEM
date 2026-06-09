@@ -48,6 +48,10 @@ const {
   refreshBuilderTargetScores,
   refreshBuilderTargetScoreForProspect,
 } = require('../../services/builder/targetSelection/refreshBuilderTargetScores');
+const {
+  FOUNDER_BUILDER_STATUSES,
+  FOUNDER_RELATIONSHIP_STRENGTHS,
+} = require('../../services/builder/builderRelationshipDerivation');
 
 function requireAdminSecret(req, res) {
   const secret = process.env.ADMIN_SECRET || process.env.SYNC_SECRET;
@@ -100,6 +104,16 @@ router.get('/prospects/enums', (_req, res) => {
     opportunity_potentials: OPPORTUNITY_POTENTIALS,
     timing_statuses: TIMING_STATUSES,
     builder_statuses: BUILDER_STATUSES,
+    founder_builder_statuses: FOUNDER_BUILDER_STATUSES,
+    founder_relationship_strengths: FOUNDER_RELATIONSHIP_STRENGTHS,
+    discovery_sources: [
+      { value: 'google_search', label: 'Google Search' },
+      { value: 'google_maps', label: 'Google Maps' },
+      { value: 'referral', label: 'Referral' },
+      { value: 'network', label: 'Network' },
+      { value: 'website', label: 'Website' },
+      { value: 'manual', label: 'Manual' },
+    ],
     fit_levels: FIT_LEVELS,
   });
 });
@@ -258,8 +272,49 @@ router.get('/prospects/:id', async (req, res) => {
 router.post('/prospects', async (req, res) => {
   if (!requireAdminSecret(req, res)) return;
   try {
-    const prospect = await createBuilderProspect(req.body || {});
-    res.status(201).json({ ok: true, prospect });
+    const body = req.body || {};
+    const website = body.website != null ? String(body.website).trim() : '';
+    if (!website) {
+      return res.status(400).json({ ok: false, error: 'website required' });
+    }
+
+    const autoResearch =
+      body.auto_research !== false &&
+      req.query.auto_research !== 'false' &&
+      req.query.research !== 'false';
+
+    const prospect = await createBuilderProspect({
+      company_name: body.company_name,
+      website,
+      source: body.source || 'manual',
+      research_status: autoResearch ? 'researching' : 'not_started',
+      relationship_stage: 'discovered',
+      builder_status: 'prospect',
+    });
+
+    let research = null;
+    let research_error = null;
+    let target_scores = null;
+
+    if (autoResearch) {
+      try {
+        const { runBuilderResearch } = require('../../services/builder/runBuilderResearch');
+        research = await runBuilderResearch(prospect.id);
+        target_scores = await refreshBuilderTargetScoreForProspect(prospect.id);
+      } catch (researchErr) {
+        console.error('[builder-intel POST prospect] auto-research failed:', researchErr);
+        research_error = safeErrorMessage(researchErr);
+      }
+    }
+
+    const full = await getBuilderProspectById(prospect.id);
+    res.status(201).json({
+      ok: true,
+      prospect: full || prospect,
+      research,
+      research_error,
+      target_scores: target_scores || full?.target_scores || null,
+    });
   } catch (err) {
     console.error('[builder-intel POST prospect]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
