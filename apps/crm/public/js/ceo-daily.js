@@ -1,8 +1,33 @@
 /**
- * CEO Daily View — loads owner-dashboard, campaign-roi, and draft ad counts.
+ * Founder Attention Console — CEO Daily + operational events attention feed.
  */
 (function () {
+  var SECRET_KEY = 'ceo_daily_secret';
+  var FA_DISPLAY_LIMIT = 5;
+  var FA_FETCH_LIMIT = 20;
+
   function $(id) { return document.getElementById(id); }
+
+  function getSecret() {
+    try {
+      return sessionStorage.getItem(SECRET_KEY) || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function setSecret(s) {
+    try {
+      if (s) sessionStorage.setItem(SECRET_KEY, s);
+      else sessionStorage.removeItem(SECRET_KEY);
+    } catch (e) {}
+  }
+
+  function secretHeaders() {
+    var s = getSecret().trim();
+    if (!s) return {};
+    return { 'x-sync-secret': s };
+  }
 
   function escHtml(s) {
     if (s == null) return '';
@@ -61,13 +86,58 @@
     return map[kind] || kind || '—';
   }
 
-  function fetchJson(url) {
-    return fetch(url).then(function (r) {
+  function fetchJson(url, options) {
+    options = options || {};
+    var headers = Object.assign({ Accept: 'application/json' }, options.headers || {}, secretHeaders());
+    if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return fetch(url, Object.assign({}, options, { headers: headers })).then(function (r) {
       return r.json().then(function (j) {
         if (!r.ok) throw new Error(j.error || j.message || r.statusText);
         return j;
       });
     });
+  }
+
+  var syncInFlight = false;
+
+  function setActionButtonsDisabled(disabled) {
+    var refreshBtn = $('ceo-refresh');
+    var syncBtn = $('ceo-sync-sm8');
+    if (refreshBtn) refreshBtn.disabled = disabled;
+    if (syncBtn) syncBtn.disabled = disabled;
+  }
+
+  function syncServiceM8() {
+    if (syncInFlight) return Promise.resolve();
+    syncInFlight = true;
+    setActionButtonsDisabled(true);
+    var syncBtn = $('ceo-sync-sm8');
+    var prevLabel = syncBtn ? syncBtn.textContent : '';
+    if (syncBtn) syncBtn.textContent = 'Syncing…';
+    showMsg('Syncing ServiceM8 (incremental)…', false);
+
+    return fetchJson('/api/admin/actions/sync-servicem8', {
+      method: 'POST',
+      body: JSON.stringify({ mode: 'incremental' }),
+    })
+      .then(function (json) {
+        if (json.locked) {
+          showMsg(json.message || 'Another sync is already running — showing cached data.', false);
+        } else {
+          showMsg(json.message || 'ServiceM8 sync completed.', false);
+        }
+        return Promise.all([loadDashboard(true), loadFounderAttention()]);
+      })
+      .catch(function (e) {
+        showMsg(e.message || String(e), true);
+      })
+      .finally(function () {
+        syncInFlight = false;
+        setActionButtonsDisabled(false);
+        if (syncBtn) syncBtn.textContent = prevLabel || 'Sync ServiceM8';
+      });
   }
 
   function showMsg(text, isErr) {
@@ -77,6 +147,295 @@
     el.style.display = 'block';
     el.textContent = text;
     el.className = 'growth-msg ' + (isErr ? 'err' : 'ok');
+  }
+
+  function severityClass(severity) {
+    var s = (severity || 'low').toLowerCase();
+    if (s === 'critical') return 'critical';
+    if (s === 'high') return 'high';
+    if (s === 'medium') return 'medium';
+    return 'low';
+  }
+
+  function renderFounderAttention(events, metaText) {
+    var listEl = $('fa-list');
+    var metaEl = $('fa-panel-meta');
+    if (metaEl && metaText) metaEl.textContent = metaText;
+    if (!listEl) return;
+
+    if (!events || !events.length) {
+      listEl.innerHTML =
+        '<div class="fa-empty">No open attention items. Run <code>job:operational-detectors</code> after sync, or everything is clear.</div>';
+      return;
+    }
+
+    listEl.innerHTML = events
+      .slice(0, FA_DISPLAY_LIMIT)
+      .map(function (ev) {
+        var sev = severityClass(ev.severity);
+        var score = ev.effective_attention_score != null ? ev.effective_attention_score : ev.attention_score;
+        var payloadJson = JSON.stringify(ev.payload || {}, null, 2);
+        return (
+          '<article class="fa-item fa-sev-' +
+          sev +
+          '" data-event-id="' +
+          escHtml(ev.id) +
+          '">' +
+          '<div class="fa-item-head" role="button" tabindex="0" aria-expanded="false">' +
+          '<span class="fa-score">[' +
+          escHtml(String(score != null ? score : '—')) +
+          ']</span>' +
+          '<span class="fa-sev-badge ' +
+          sev +
+          '">' +
+          escHtml((ev.severity || 'low').toUpperCase()) +
+          '</span>' +
+          '<div class="fa-item-main">' +
+          '<div class="fa-item-title">' +
+          escHtml(ev.title || '—') +
+          '</div>' +
+          (ev.summary
+            ? '<div class="fa-item-summary">' + escHtml(ev.summary) + '</div>'
+            : '') +
+          '<div class="fa-item-detected">Detected ' +
+          escHtml(fmtDateTime(ev.detected_at)) +
+          '</div>' +
+          '</div>' +
+          '</div>' +
+          '<div class="fa-item-detail">' +
+          '<div class="fa-suggested-title">Suggested Actions</div>' +
+          '<div class="fa-suggested-actions" data-event-id="' +
+          escHtml(ev.id) +
+          '"><div class="fa-empty">Expand to load actions…</div></div>' +
+          '<pre class="fa-payload">' +
+          escHtml(payloadJson) +
+          '</pre>' +
+          '<div class="fa-actions">' +
+          '<button type="button" class="btn btn-sm btn-primary fa-btn-resolve" data-event-id="' +
+          escHtml(ev.id) +
+          '">Resolve</button>' +
+          '<button type="button" class="btn btn-sm fa-btn-dismiss" data-event-id="' +
+          escHtml(ev.id) +
+          '">Dismiss</button>' +
+          '</div>' +
+          '</div>' +
+          '</article>'
+        );
+      })
+      .join('');
+  }
+
+  function loadFounderAttention() {
+    var listEl = $('fa-list');
+    var metaEl = $('fa-panel-meta');
+    if (listEl) {
+      listEl.innerHTML = '<div class="fa-empty">Loading attention events…</div>';
+    }
+    return fetchJson('/api/operational-events/attention?status=open&limit=' + FA_FETCH_LIMIT)
+      .then(function (data) {
+        var events = data.events || [];
+        var meta =
+          events.length > 0
+            ? 'Top ' +
+              Math.min(FA_DISPLAY_LIMIT, events.length) +
+              ' of ' +
+              events.length +
+              ' open (ranked by effective score)'
+            : 'No open operational events';
+        renderFounderAttention(events, meta);
+        return events;
+      })
+      .catch(function (e) {
+        if (listEl) {
+          listEl.innerHTML =
+            '<div class="fa-empty">' +
+            escHtml(e.message || 'Could not load attention events') +
+            '</div>';
+        }
+        if (metaEl) metaEl.textContent = 'Unavailable';
+      });
+  }
+
+  function actionStatusLabel(status) {
+    return (status || 'pending').toUpperCase();
+  }
+
+  function renderEventActions(container, actions) {
+    if (!container) return;
+    if (!actions || !actions.length) {
+      container.innerHTML =
+        '<div class="fa-empty">No suggested actions for this event type.</div>';
+      return;
+    }
+    container.innerHTML =
+      '<ul class="fa-action-list">' +
+      actions
+        .map(function (a) {
+          var terminal =
+            a.status === 'completed' || a.status === 'dismissed' || a.status === 'approved';
+          var rowClass = 'fa-action-row' + (terminal ? ' done' : '');
+          var btns = '';
+          if (a.status === 'pending') {
+            btns =
+              '<button type="button" class="btn btn-sm btn-primary fa-btn-action-approve" data-action-id="' +
+              escHtml(a.id) +
+              '">Approve</button>' +
+              '<button type="button" class="btn btn-sm fa-btn-action-complete" data-action-id="' +
+              escHtml(a.id) +
+              '">Complete</button>' +
+              '<button type="button" class="btn btn-sm fa-btn-action-dismiss" data-action-id="' +
+              escHtml(a.id) +
+              '">Dismiss</button>';
+          } else if (a.status === 'approved') {
+            btns =
+              '<button type="button" class="btn btn-sm fa-btn-action-complete" data-action-id="' +
+              escHtml(a.id) +
+              '">Complete</button>' +
+              '<button type="button" class="btn btn-sm fa-btn-action-dismiss" data-action-id="' +
+              escHtml(a.id) +
+              '">Dismiss</button>';
+          }
+          return (
+            '<li class="' +
+            rowClass +
+            '" data-action-id="' +
+            escHtml(a.id) +
+            '">' +
+            '<div class="fa-action-title">' +
+            escHtml(a.title) +
+            '<span class="fa-action-status ' +
+            escHtml(a.status) +
+            '">' +
+            escHtml(actionStatusLabel(a.status)) +
+            '</span></div>' +
+            (a.description ? '<div class="fa-action-desc">' + escHtml(a.description) + '</div>' : '') +
+            '<div class="fa-action-meta">Priority ' +
+            escHtml(String(a.priority)) +
+            ' · ' +
+            escHtml(a.action_type) +
+            '</div>' +
+            (btns ? '<div class="fa-action-btns">' + btns + '</div>' : '') +
+            '</li>'
+          );
+        })
+        .join('') +
+      '</ul>';
+  }
+
+  function loadEventActions(eventId, container, forceRefresh) {
+    if (!eventId || !container) return Promise.resolve();
+    container.innerHTML = '<div class="fa-empty">Loading suggested actions…</div>';
+    var url =
+      '/api/operational-actions/' +
+      encodeURIComponent(eventId) +
+      (forceRefresh ? '?refresh=1' : '');
+    return fetchJson(url)
+      .then(function (data) {
+        renderEventActions(container, data.actions || []);
+      })
+      .catch(function (e) {
+        container.innerHTML =
+          '<div class="fa-empty">' + escHtml(e.message || 'Could not load actions') + '</div>';
+      });
+  }
+
+  function updateActionStatus(actionId, status, eventId) {
+    if (!actionId) return Promise.resolve();
+    var secretInput = $('ceo-secret');
+    if (secretInput) setSecret(secretInput.value.trim());
+    return fetchJson('/api/operational-actions/' + encodeURIComponent(actionId) + '/status', {
+      method: 'POST',
+      body: JSON.stringify({ status: status }),
+    })
+      .then(function () {
+        showMsg('Action marked ' + status + '.', false);
+        if (eventId) {
+          var article = document.querySelector('.fa-item[data-event-id="' + eventId + '"]');
+          var container = article ? article.querySelector('.fa-suggested-actions') : null;
+          if (container) return loadEventActions(eventId, container, false);
+        }
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Could not update action', true);
+      });
+  }
+
+  function toggleAttentionItem(article) {
+    if (!article) return;
+    var expanded = article.classList.toggle('expanded');
+    var head = article.querySelector('.fa-item-head');
+    if (head) head.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    if (expanded) {
+      var eventId = article.getAttribute('data-event-id');
+      var container = article.querySelector('.fa-suggested-actions');
+      var loaded = article.getAttribute('data-actions-loaded') === '1';
+      loadEventActions(eventId, container, !loaded).then(function () {
+        article.setAttribute('data-actions-loaded', '1');
+      });
+    }
+  }
+
+  function resolveAttentionEvent(eventId, status) {
+    if (!eventId) return Promise.resolve();
+    var secretInput = $('ceo-secret');
+    if (secretInput) setSecret(secretInput.value.trim());
+    return fetchJson('/api/operational-events/' + encodeURIComponent(eventId) + '/resolve', {
+      method: 'POST',
+      body: JSON.stringify({ status: status }),
+    })
+      .then(function () {
+        showMsg('Event ' + status + '.', false);
+        return loadFounderAttention();
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Could not update event', true);
+      });
+  }
+
+  function bindFounderAttentionEvents() {
+    var listEl = $('fa-list');
+    if (!listEl || listEl._faBound) return;
+    listEl._faBound = true;
+
+    listEl.addEventListener('click', function (e) {
+      var approveBtn = e.target.closest('.fa-btn-action-approve');
+      var completeBtn = e.target.closest('.fa-btn-action-complete');
+      var actionDismissBtn = e.target.closest('.fa-btn-action-dismiss');
+      if (approveBtn || completeBtn || actionDismissBtn) {
+        e.stopPropagation();
+        var actionId = (approveBtn || completeBtn || actionDismissBtn).getAttribute('data-action-id');
+        var article = e.target.closest('.fa-item');
+        var eventId = article ? article.getAttribute('data-event-id') : null;
+        var st = approveBtn ? 'approved' : completeBtn ? 'completed' : 'dismissed';
+        updateActionStatus(actionId, st, eventId);
+        return;
+      }
+      var resolveBtn = e.target.closest('.fa-btn-resolve');
+      var dismissBtn = e.target.closest('.fa-btn-dismiss');
+      if (resolveBtn) {
+        e.stopPropagation();
+        resolveAttentionEvent(resolveBtn.getAttribute('data-event-id'), 'resolved');
+        return;
+      }
+      if (dismissBtn) {
+        e.stopPropagation();
+        resolveAttentionEvent(dismissBtn.getAttribute('data-event-id'), 'dismissed');
+        return;
+      }
+      var head = e.target.closest('.fa-item-head');
+      if (head) {
+        toggleAttentionItem(head.closest('.fa-item'));
+      }
+    });
+
+    listEl.addEventListener('keydown', function (e) {
+      var head = e.target.closest('.fa-item-head');
+      if (!head) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleAttentionItem(head.closest('.fa-item'));
+      }
+    });
   }
 
   function loadCashflowIntelligence() {
@@ -333,8 +692,8 @@
         }
         body.innerHTML =
           '<table class="ceo-modal-table"><thead><tr>' +
-          '<th>Invoice</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th>' +
-          '<th>Job #</th><th>Site / address</th>' +
+          '<th>Job #</th><th>Customer</th><th>Amount</th><th>Due</th><th>Overdue</th>' +
+          '<th>Site / address</th>' +
           '</tr></thead><tbody>' +
           data.invoices
             .map(function (inv) {
@@ -342,24 +701,23 @@
               if (inv.due_date_is_invoice_date && inv.due_date) {
                 dueCell = inv.due_date + ' (inv.)';
               }
+              var ref = inv.job_number || inv.invoice_number || '—';
               return (
                 '<tr>' +
-                '<td>' + escHtml(inv.invoice_number || '—') + '</td>' +
+                '<td><strong>' + escHtml(ref) + '</strong></td>' +
                 '<td>' + escHtml(inv.customer || '—') + '</td>' +
                 '<td>' + escHtml(fmtMoney(inv.amount)) + '</td>' +
                 '<td>' + escHtml(dueCell) + '</td>' +
                 '<td>' +
                 escHtml(inv.days_overdue != null ? inv.days_overdue + 'd' : '—') +
                 '</td>' +
-                '<td><strong>' + escHtml(inv.job_number || '—') + '</strong></td>' +
                 '<td>' + escHtml(inv.job_site || inv.job_label || '—') + '</td>' +
                 '</tr>'
               );
             })
             .join('') +
           '</tbody></table>' +
-          '<p class="cf-empty-hint" style="margin-top:0.75rem;">Job # and site from ServiceM8 sync. ' +
-          'SM8- prefix = reference when official number missing. Run sync if fields are blank.</p>';
+          '<p class="cf-empty-hint" style="margin-top:0.75rem;">Job # matches ServiceM8 invoice reference. Run Sync ServiceM8 if blank.</p>';
       })
       .catch(function (e) {
         body.innerHTML =
@@ -375,9 +733,9 @@
     }
   }
 
-  function load() {
-    showMsg('');
-    Promise.all([
+  function loadDashboard(silent) {
+    if (!silent) showMsg('');
+    return Promise.all([
       fetchJson('/api/owner-dashboard'),
       fetchJson('/api/dashboard/campaign-roi'),
       fetchJson('/api/ad-variants/review?status=draft&limit=100'),
@@ -398,7 +756,14 @@
       if (el) el.textContent = 'Updated ' + new Date().toLocaleTimeString('en-AU');
     }).catch(function (e) {
       showMsg(e.message || String(e), true);
+    }).then(function () {
+      return loadCashflowIntelligence();
     });
+  }
+
+  function load() {
+    loadFounderAttention();
+    loadDashboard(false);
   }
 
   function renderMetrics(dash) {
@@ -545,11 +910,29 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    var secretInput = $('ceo-secret');
+    if (secretInput) {
+      secretInput.value = getSecret();
+      secretInput.addEventListener('change', function () {
+        setSecret(secretInput.value.trim());
+      });
+      secretInput.addEventListener('blur', function () {
+        setSecret(secretInput.value.trim());
+      });
+    }
+
     var refreshBtn = $('ceo-refresh');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', function () {
         load();
-        loadCashflowIntelligence();
+      });
+    }
+
+    var syncBtn = $('ceo-sync-sm8');
+    if (syncBtn) {
+      syncBtn.addEventListener('click', function () {
+        if (secretInput) setSecret(secretInput.value.trim());
+        syncServiceM8();
       });
     }
     var outCard = $('card-outstanding');
@@ -570,7 +953,7 @@
         if (e.target === backdrop) closeOutstandingModal();
       });
     }
+    bindFounderAttentionEvents();
     load();
-    loadCashflowIntelligence();
   });
 })();

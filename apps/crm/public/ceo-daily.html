@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CEO Daily — BHT CRM</title>
+  <title>Founder Attention Console — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
   <style>
     .ceo-attention {
@@ -159,6 +159,139 @@
       text-align: left;
     }
     .ceo-modal-table th { color: var(--muted); font-weight: 600; font-size: 0.72rem; }
+
+    /* Founder Attention Console (PR7C) */
+    .fa-panel {
+      border: 2px solid #212529;
+      border-radius: 8px;
+      background: #fff;
+      padding: 1rem 1.1rem 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .fa-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .fa-panel-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .fa-panel-meta { font-size: 0.78rem; color: var(--muted); }
+    .fa-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .fa-item {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .fa-item.fa-sev-critical { border-left: 4px solid #dc3545; }
+    .fa-item.fa-sev-high { border-left: 4px solid #fd7e14; }
+    .fa-item.fa-sev-medium { border-left: 4px solid #ffc107; }
+    .fa-item.fa-sev-low { border-left: 4px solid #adb5bd; }
+    .fa-item-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.65rem 0.75rem;
+      cursor: pointer;
+    }
+    .fa-item-head:hover { background: var(--bg); }
+    .fa-score {
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      min-width: 2.5rem;
+      color: var(--text);
+    }
+    .fa-sev-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.45rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      margin-top: 0.1rem;
+    }
+    .fa-sev-badge.critical { background: #f8d7da; color: #842029; }
+    .fa-sev-badge.high { background: #ffe5d0; color: #984c0c; }
+    .fa-sev-badge.medium { background: #fff3cd; color: #664d03; }
+    .fa-sev-badge.low { background: #e9ecef; color: #495057; }
+    .fa-item-main { flex: 1; min-width: 0; }
+    .fa-item-title { font-size: 0.95rem; font-weight: 600; line-height: 1.35; }
+    .fa-item-summary {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      line-height: 1.45;
+      white-space: pre-line;
+    }
+    .fa-item-detected { font-size: 0.72rem; color: var(--muted); margin-top: 0.35rem; }
+    .fa-item-detail {
+      display: none;
+      padding: 0 0.75rem 0.75rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .fa-item.expanded .fa-item-detail { display: block; }
+    .fa-payload {
+      font-size: 0.72rem;
+      margin: 0.65rem 0 0.5rem;
+      padding: 0.5rem 0.65rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 12rem;
+    }
+    .fa-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .fa-actions .btn { font-size: 0.78rem; }
+    .fa-suggested-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin: 0.65rem 0 0.4rem;
+    }
+    .fa-action-list { list-style: none; margin: 0; padding: 0; }
+    .fa-action-row {
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+    .fa-action-row:last-child { border-bottom: none; }
+    .fa-action-row.done { opacity: 0.65; }
+    .fa-action-title { font-weight: 600; line-height: 1.35; }
+    .fa-action-desc { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+    .fa-action-meta { font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
+    .fa-action-btns { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.35rem; }
+    .fa-action-btns .btn { font-size: 0.72rem; padding: 0.15rem 0.45rem; }
+    .fa-action-status {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 0.35rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+      background: #e9ecef;
+    }
+    .fa-action-status.approved { background: #cff4fc; color: #055160; }
+    .fa-action-status.completed { background: #d1e7dd; color: #0f5132; }
+    .fa-action-status.dismissed { background: #e9ecef; color: #6c757d; }
+    .fa-empty {
+      font-size: 0.88rem;
+      color: var(--muted);
+      padding: 0.5rem 0;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -174,6 +307,7 @@
         <a href="/opportunities.html">Opportunities</a>
         <a href="/contacts.html">Contacts</a>
         <a href="/tasks.html">Tasks</a>
+        <a href="/builder-intelligence.html">Builder Intelligence</a>
         <a href="/b2b-prospects.html">B2B Prospects</a>
         <a href="/inspection-review.html">Inspection Review</a>
         <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
@@ -186,14 +320,33 @@
     </aside>
     <main class="main">
       <header class="header" style="justify-content:space-between;">
-        <span style="font-weight:600;">CEO Daily View</span>
-        <div style="display:flex;align-items:center;gap:1rem;">
+        <span style="font-weight:600;">Founder Attention Console</span>
+        <div style="display:flex;align-items:center;gap:0.65rem;flex-wrap:wrap;">
+          <input
+            type="password"
+            id="ceo-secret"
+            autocomplete="off"
+            placeholder="Admin secret"
+            title="Only needed when SYNC_SECRET / ADMIN_SECRET is configured"
+            style="width:7.5rem;font-size:0.78rem;padding:0.2rem 0.45rem;border:1px solid var(--border);border-radius:4px;"
+          />
           <span id="ceo-last-updated" style="font-size:0.8rem;color:var(--muted);"></span>
           <button type="button" class="btn btn-sm" id="ceo-refresh">Refresh</button>
+          <button type="button" class="btn btn-sm btn-primary" id="ceo-sync-sm8">Sync ServiceM8</button>
         </div>
       </header>
       <div class="content">
         <div id="ceo-msg" style="display:none;" class="growth-msg"></div>
+
+        <section id="founder-attention-panel" class="fa-panel" aria-labelledby="fa-panel-title">
+          <div class="fa-panel-header">
+            <h2 id="fa-panel-title" class="fa-panel-title">Today's Attention</h2>
+            <span id="fa-panel-meta" class="fa-panel-meta">Loading…</span>
+          </div>
+          <div id="fa-list" class="fa-list">
+            <div class="fa-empty">Loading attention events…</div>
+          </div>
+        </section>
 
         <!-- 5 metric cards -->
         <div class="owner-cards" style="margin-bottom:1.5rem;">

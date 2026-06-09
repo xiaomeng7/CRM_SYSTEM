@@ -1,0 +1,325 @@
+/**
+ * Builder profile + research runs service (PR8C).
+ */
+
+const { pool } = require('../../lib/db');
+const { PROSPECT_TYPE_BUILDER } = require('./builderProspectConstants');
+const {
+  FIT_LEVELS,
+  RESEARCH_RUN_STATUSES,
+  PROFILE_UPDATE_FIELDS,
+} = require('./builderProfileConstants');
+
+function assertEnum(value, allowed, fieldName) {
+  if (value == null || value === '') return null;
+  const v = String(value).trim();
+  if (!allowed.includes(v)) {
+    const err = new Error(`Invalid ${fieldName}: ${v}`);
+    err.code = 'INVALID_INPUT';
+    throw err;
+  }
+  return v;
+}
+
+function trimOrNull(value) {
+  if (value == null) return null;
+  const s = String(value).trim();
+  return s === '' ? null : s;
+}
+
+function parseStringArray(value) {
+  if (value == null) return undefined;
+  if (Array.isArray(value)) {
+    return value.map((s) => String(s).trim()).filter(Boolean);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/[,;\n]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function parseFitScore(value) {
+  if (value == null || value === '') return null;
+  const n = parseInt(value, 10);
+  if (!Number.isFinite(n) || n < 0 || n > 100) {
+    const err = new Error('estimated_fit_score must be 0–100');
+    err.code = 'INVALID_INPUT';
+    throw err;
+  }
+  return n;
+}
+
+function rowToProfile(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    prospect_id: row.prospect_id,
+    profile_summary: row.profile_summary || null,
+    builder_focus: row.builder_focus || null,
+    project_types: row.project_types || [],
+    target_suburbs: row.target_suburbs || [],
+    quality_signals: row.quality_signals || [],
+    risk_signals: row.risk_signals || [],
+    ideal_contact_angle: row.ideal_contact_angle || null,
+    smart_home_fit: row.smart_home_fit || 'unknown',
+    architectural_fit: row.architectural_fit || 'unknown',
+    luxury_fit: row.luxury_fit || 'unknown',
+    estimated_fit_score:
+      row.estimated_fit_score != null ? Number(row.estimated_fit_score) : null,
+    research_source: row.research_source || 'manual',
+    last_researched_at: row.last_researched_at || null,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+function rowToResearchRun(row) {
+  if (!row) return null;
+  let payload = row.payload;
+  if (payload != null && typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload);
+    } catch (_) {
+      payload = {};
+    }
+  }
+  return {
+    id: row.id,
+    prospect_id: row.prospect_id,
+    status: row.status,
+    source: row.source,
+    input_url: row.input_url || null,
+    summary: row.summary || null,
+    error_message: row.error_message || null,
+    payload: payload || {},
+    started_at: row.started_at,
+    finished_at: row.finished_at || null,
+  };
+}
+
+async function assertBuilderProspect(prospectId, db) {
+  const r = await db.query(
+    `SELECT id, research_status FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
+    [prospectId, PROSPECT_TYPE_BUILDER]
+  );
+  if (!r.rows[0]) {
+    const err = new Error('Builder prospect not found');
+    err.code = 'NOT_FOUND';
+    throw err;
+  }
+  return r.rows[0];
+}
+
+async function syncProspectResearchStatus(prospectId, researchStatus, db) {
+  if (researchStatus !== 'not_started') return null;
+  const r = await db.query(
+    `UPDATE b2b_prospects SET research_status = 'researched'
+     WHERE id = $1 AND prospect_type = $2 AND research_status = 'not_started'
+     RETURNING id, research_status`,
+    [prospectId, PROSPECT_TYPE_BUILDER]
+  );
+  return r.rows[0] || null;
+}
+
+async function markProspectResearched(prospectId, db) {
+  const r = await db.query(
+    `UPDATE b2b_prospects SET research_status = 'researched'
+     WHERE id = $1 AND prospect_type = $2
+     RETURNING id, research_status`,
+    [prospectId, PROSPECT_TYPE_BUILDER]
+  );
+  return r.rows[0] || null;
+}
+
+function normalizeProfileInput(data) {
+  const out = {};
+
+  if (data.profile_summary !== undefined) out.profile_summary = trimOrNull(data.profile_summary);
+  if (data.builder_focus !== undefined) out.builder_focus = trimOrNull(data.builder_focus);
+  if (data.ideal_contact_angle !== undefined) {
+    out.ideal_contact_angle = trimOrNull(data.ideal_contact_angle);
+  }
+  if (data.research_source !== undefined) {
+    out.research_source = trimOrNull(data.research_source) || 'manual';
+  }
+
+  const arrayFields = ['project_types', 'target_suburbs', 'quality_signals', 'risk_signals'];
+  for (const key of arrayFields) {
+    if (data[key] !== undefined) out[key] = parseStringArray(data[key]);
+  }
+
+  const fitFields = ['smart_home_fit', 'architectural_fit', 'luxury_fit'];
+  for (const key of fitFields) {
+    if (data[key] !== undefined) {
+      out[key] = assertEnum(data[key], FIT_LEVELS, key) || 'unknown';
+    }
+  }
+
+  if (data.estimated_fit_score !== undefined) {
+    out.estimated_fit_score = parseFitScore(data.estimated_fit_score);
+  }
+
+  return out;
+}
+
+async function getBuilderProfile(prospectId, options = {}) {
+  const db = options.db || pool;
+  await assertBuilderProspect(prospectId, db);
+  const r = await db.query(`SELECT * FROM builder_profiles WHERE prospect_id = $1`, [prospectId]);
+  return rowToProfile(r.rows[0]);
+}
+
+async function upsertBuilderProfile(prospectId, data, options = {}) {
+  const db = options.db || pool;
+  const prospect = await assertBuilderProspect(prospectId, db);
+  const markResearched = Boolean(data?.mark_researched);
+  const input = normalizeProfileInput(data || {});
+
+  if (!Object.keys(input).length && !markResearched) {
+    const err = new Error('No valid profile fields to save');
+    err.code = 'INVALID_INPUT';
+    throw err;
+  }
+
+  const now = new Date();
+  const existing = await db.query(`SELECT id FROM builder_profiles WHERE prospect_id = $1`, [
+    prospectId,
+  ]);
+
+  let profile;
+  if (existing.rows[0]) {
+    const fields = { ...input };
+    if (Object.keys(input).length || markResearched) {
+      fields.last_researched_at = now;
+    }
+    if (!Object.keys(fields).length) {
+      const r = await db.query(`SELECT * FROM builder_profiles WHERE prospect_id = $1`, [
+        prospectId,
+      ]);
+      profile = rowToProfile(r.rows[0]);
+    } else {
+      const keys = Object.keys(fields);
+      const setClauses = keys.map((k, i) => `${k} = $${i + 2}`);
+      const values = [prospectId, ...keys.map((k) => fields[k])];
+
+      const r = await db.query(
+        `UPDATE builder_profiles SET ${setClauses.join(', ')}
+         WHERE prospect_id = $1 RETURNING *`,
+        values
+      );
+      profile = rowToProfile(r.rows[0]);
+    }
+  } else {
+    const fields = {
+      profile_summary: input.profile_summary ?? null,
+      builder_focus: input.builder_focus ?? null,
+      project_types: input.project_types ?? [],
+      target_suburbs: input.target_suburbs ?? [],
+      quality_signals: input.quality_signals ?? [],
+      risk_signals: input.risk_signals ?? [],
+      ideal_contact_angle: input.ideal_contact_angle ?? null,
+      smart_home_fit: input.smart_home_fit ?? 'unknown',
+      architectural_fit: input.architectural_fit ?? 'unknown',
+      luxury_fit: input.luxury_fit ?? 'unknown',
+      estimated_fit_score: input.estimated_fit_score ?? null,
+      research_source: input.research_source ?? 'manual',
+      last_researched_at: now,
+    };
+
+    const r = await db.query(
+      `INSERT INTO builder_profiles (
+         prospect_id, profile_summary, builder_focus, project_types, target_suburbs,
+         quality_signals, risk_signals, ideal_contact_angle,
+         smart_home_fit, architectural_fit, luxury_fit, estimated_fit_score,
+         research_source, last_researched_at
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+       RETURNING *`,
+      [
+        prospectId,
+        fields.profile_summary,
+        fields.builder_focus,
+        fields.project_types,
+        fields.target_suburbs,
+        fields.quality_signals,
+        fields.risk_signals,
+        fields.ideal_contact_angle,
+        fields.smart_home_fit,
+        fields.architectural_fit,
+        fields.luxury_fit,
+        fields.estimated_fit_score,
+        fields.research_source,
+        fields.last_researched_at,
+      ]
+    );
+    profile = rowToProfile(r.rows[0]);
+  }
+
+  let prospectUpdate = null;
+  if (markResearched) {
+    prospectUpdate = await markProspectResearched(prospectId, db);
+  } else if (prospect.research_status === 'not_started') {
+    prospectUpdate = await syncProspectResearchStatus(prospectId, prospect.research_status, db);
+  }
+
+  return { profile, prospect_research_status: prospectUpdate?.research_status || null };
+}
+
+async function listResearchRuns(prospectId, options = {}) {
+  const db = options.db || pool;
+  await assertBuilderProspect(prospectId, db);
+  const limit = Math.min(100, Math.max(1, parseInt(options.limit, 10) || 50));
+  const r = await db.query(
+    `SELECT * FROM builder_research_runs
+     WHERE prospect_id = $1
+     ORDER BY started_at DESC
+     LIMIT $2`,
+    [prospectId, limit]
+  );
+  return r.rows.map(rowToResearchRun);
+}
+
+async function createManualResearchRun(prospectId, data, options = {}) {
+  const db = options.db || pool;
+  await assertBuilderProspect(prospectId, db);
+
+  const summary = trimOrNull(data?.summary);
+  if (!summary) {
+    const err = new Error('summary required');
+    err.code = 'INVALID_INPUT';
+    throw err;
+  }
+
+  let payload = data?.payload;
+  if (payload == null) payload = {};
+  if (typeof payload !== 'object' || Array.isArray(payload)) {
+    const err = new Error('payload must be an object');
+    err.code = 'INVALID_INPUT';
+    throw err;
+  }
+
+  const now = new Date();
+  const r = await db.query(
+    `INSERT INTO builder_research_runs (
+       prospect_id, status, source, input_url, summary, payload, started_at, finished_at
+     ) VALUES ($1, 'completed', 'manual', $2, $3, $4::jsonb, $5, $5)
+     RETURNING *`,
+    [prospectId, trimOrNull(data?.input_url), summary, JSON.stringify(payload), now]
+  );
+
+  return rowToResearchRun(r.rows[0]);
+}
+
+module.exports = {
+  getBuilderProfile,
+  upsertBuilderProfile,
+  listResearchRuns,
+  createManualResearchRun,
+  normalizeProfileInput,
+  parseStringArray,
+  rowToProfile,
+  rowToResearchRun,
+  PROFILE_UPDATE_FIELDS,
+};
