@@ -20,7 +20,7 @@ const {
 const { buildTargetAction } = require('../services/builder/targetSelection/buildTargetAction');
 const { refreshBuilderTargetScores } = require('../services/builder/targetSelection/refreshBuilderTargetScores');
 const { getTopBuilderTargets } = require('../services/builder/targetSelection/getTopBuilderTargets');
-const { getStrategicBuilders } = require('../services/builder/targetSelection/getStrategicBuilders');
+const { getStrategicPartners } = require('../services/builder/targetSelection/getStrategicPartners');
 const {
   runBuilderPriorityDetector,
   eventKeyForProspect,
@@ -47,6 +47,7 @@ async function ensureMigrations() {
     '../database/070_builder_research_profiles.sql',
     '../database/071_builder_target_scores.sql',
     '../database/073_builder_relationship_intelligence.sql',
+    '../database/074_builder_segmentation.sql',
     '../database/066_operational_events.sql',
     '../database/067_operational_events_event_key.sql',
     '../database/068_operational_event_actions.sql',
@@ -178,10 +179,12 @@ async function testRankingAndStrategic() {
   await upsertBuilderProfile(relational.id, { estimated_fit_score: 78, research_source: 'manual' });
 
   const strategic = await createBuilderProspect({
-    company_name: `${TEST_PREFIX} Strategic Builder`,
-    relationship_stage: 'discovered',
-    relationship_strength: 'met_once',
+    company_name: `${TEST_PREFIX} Strategic Partner Co`,
+    relationship_stage: 'qualified',
+    relationship_strength: 'known',
+    timing_status: 'growth_mode',
     opportunity_potential: 'strategic',
+    builder_status: 'strategic_partner',
     research_status: 'researched',
   });
   createdProspectIds.push(strategic.id);
@@ -207,10 +210,10 @@ async function testRankingAndStrategic() {
     'relationship/timing outranks cold high fit'
   );
 
-  const { builders } = await getStrategicBuilders({ limit: 10 });
-  const strategicRow = builders.find((b) => b.company_name.includes('Strategic'));
-  assert(strategicRow, 'strategic builder listed');
-  assert(strategicRow.opportunity_potential === 'strategic', 'strategic flag');
+  const { partners: strategicPartners } = await getStrategicPartners({ limit: 10 });
+  const strategicRow = strategicPartners.find((p) => p.company_name.includes('Strategic'));
+  assert(strategicRow, 'strategic partner listed');
+  assert(strategicRow.builder_status === 'strategic_partner', 'strategic status');
   console.log('top:', testTargets[0].company_name, testTargets[0].founder_priority_score);
 }
 
@@ -220,13 +223,15 @@ async function testBuilderPriorityEvent() {
   const prospect = await createBuilderProspect({
     company_name: `${TEST_PREFIX} Priority Event`,
     relationship_stage: 'qualified',
-    relationship_strength: 'known',
+    relationship_strength: 'trusted_partner',
     timing_status: 'growth_mode',
-    opportunity_potential: 'strategic',
+    builder_status: 'prospect',
     research_status: 'researched',
+    last_contacted_at: daysAgo(5),
+    next_followup_at: daysAgo(35),
   });
   createdProspectIds.push(prospect.id);
-  await upsertBuilderProfile(prospect.id, { estimated_fit_score: 88, research_source: 'manual' });
+  await upsertBuilderProfile(prospect.id, { estimated_fit_score: 95, research_source: 'manual' });
 
   await refreshBuilderTargetScores({ now: NOW, runDetector: false, log: () => {} });
   const stats = await runBuilderPriorityDetector({ now: NOW, log: () => {} });
@@ -241,7 +246,7 @@ async function testBuilderPriorityEvent() {
   );
   assert(ev.rows[0], 'event exists');
   assert(ev.rows[0].event_type === EVENT_TYPE, 'builder_priority type');
-  assert(ev.rows[0].title.includes('Strategic Builder'), 'strategic title');
+  assert(ev.rows[0].title.includes('Top Prospect Priority'), 'prospect priority title');
 
   const actions = await generateEventActions({
     id: ev.rows[0].id,

@@ -29,6 +29,8 @@ async function getTopBuilderTargets(filters = {}, options = {}) {
     conditions.push(`p.relationship_stage NOT IN ('inactive', 'not_fit')`);
   }
 
+  conditions.push(`COALESCE(p.builder_status, 'prospect') = 'prospect'`);
+
   if (filters.band) {
     params.push(String(filters.band).trim().toUpperCase());
     conditions.push(`COALESCE(ts.founder_priority_band, ts.target_band) = $${params.length}`);
@@ -59,6 +61,7 @@ async function getTopBuilderTargets(filters = {}, options = {}) {
        p.relationship_strength,
        p.opportunity_potential,
        p.timing_status,
+       p.builder_status,
        p.fit_priority,
        p.research_status,
        p.last_contacted_at,

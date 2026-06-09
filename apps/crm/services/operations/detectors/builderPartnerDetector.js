@@ -1,70 +1,70 @@
 /**
- * Builder Priority Detector (PR8E.1).
- * Creates builder_priority events for Band A builders OR strategic opportunity builders.
+ * Builder Partner Detector (PR8E.3).
+ * Creates builder_partner events for strategic_partner builders needing attention.
  */
 
 const { pool } = require('../../../lib/db');
 const { BUILDER_ENTITY_TYPE } = require('../../builder/builderProspectConstants');
-const { PRIORITY_EVENT_THRESHOLD } = require('../../builder/targetSelection/calculateFounderPriorityScore');
+const { daysSinceContact } = require('../../builder/targetSelection/actionHelpers');
 const { upsertOperationalEvent } = require('../upsertOperationalEvent');
 const { closeStaleDetectorEvents } = require('../closeResolvedEvents');
 
-const EVENT_TYPE = 'builder_priority';
-const SOURCE = 'builder_priority_detector';
+const EVENT_TYPE = 'builder_partner';
+const SOURCE = 'builder_partner_detector';
+const CONTACT_IDLE_DAYS = 60;
 
 function eventKeyForProspect(prospectId) {
-  return `builder_priority:prospect:${prospectId}`;
+  return `builder_partner:prospect:${prospectId}`;
+}
+
+function needsPartnerAttention(prospect, now) {
+  const daysIdle = daysSinceContact(prospect.last_contacted_at, now);
+  if (daysIdle != null && daysIdle > CONTACT_IDLE_DAYS) return true;
+  const timing = prospect.timing_status || 'unknown';
+  return timing === 'active_project' || timing === 'quoting_projects';
 }
 
 function buildTitle(prospect) {
   const name = prospect.company_name || 'Builder';
-  return `Top Prospect Priority: ${name}`;
+  return `Strategic Partner Requires Attention: ${name}`;
 }
 
 function buildSummary(prospect, row) {
-  const score = row.founder_priority_score ?? row.target_score;
-  const band = row.founder_priority_band ?? row.target_band;
+  const daysIdle = daysSinceContact(prospect.last_contacted_at);
   const lines = [
-    `Priority score ${score}/100 (${band})`,
+    `${prospect.company_name || 'Builder'} has active projects and should be contacted.`,
+    row.partner_value_score != null
+      ? `Partner value ${row.partner_value_score}/100 (${row.partner_value_band || '—'})`
+      : null,
     row.next_best_action ? `Recommended: ${row.next_best_action}` : null,
-    prospect.relationship_strength
-      ? `Relationship: ${prospect.relationship_strength.replace(/_/g, ' ')}`
+    daysIdle != null ? `Last contact: ${daysIdle} days ago` : 'No contact logged',
+    prospect.timing_status && prospect.timing_status !== 'unknown'
+      ? `Timing: ${prospect.timing_status.replace(/_/g, ' ')}`
       : null,
-    prospect.opportunity_potential && prospect.opportunity_potential !== 'unknown'
-      ? `Opportunity: ${prospect.opportunity_potential}`
-      : null,
-    'Builder should be contacted this week.',
   ].filter(Boolean);
   return lines.join('\n');
 }
 
-async function loadPriorityCandidates(db, threshold = PRIORITY_EVENT_THRESHOLD) {
+async function loadPartnerCandidates(db) {
   const r = await db.query(
     `SELECT
        ts.prospect_id,
-       ts.target_score,
-       ts.target_band,
-       ts.founder_priority_score,
-       ts.founder_priority_band,
+       ts.partner_value_score,
+       ts.partner_value_band,
        ts.next_best_action,
-       ts.founder_priority_breakdown,
-       ts.score_breakdown,
        p.company_name,
        p.suburb,
        p.website,
-       p.relationship_stage,
+       p.builder_status,
        p.relationship_strength,
        p.opportunity_potential,
        p.timing_status,
-       p.builder_type,
-       p.fit_priority
-     FROM builder_target_scores ts
-     INNER JOIN b2b_prospects p ON p.id = ts.prospect_id
+       p.last_contacted_at
+     FROM b2b_prospects p
+     LEFT JOIN builder_target_scores ts ON ts.prospect_id = p.id
      WHERE p.prospect_type = 'builder'
-       AND COALESCE(p.builder_status, 'prospect') = 'prospect'
-       AND p.relationship_stage NOT IN ('inactive', 'not_fit')
-       AND COALESCE(ts.founder_priority_score, ts.target_score) >= $1`,
-    [threshold]
+       AND p.builder_status = 'strategic_partner'
+       AND p.relationship_stage NOT IN ('inactive', 'not_fit')`
   );
   return r.rows;
 }
@@ -74,17 +74,17 @@ async function loadPriorityCandidates(db, threshold = PRIORITY_EVENT_THRESHOLD) 
  * @param {import('pg').Pool|import('pg').PoolClient} [options.db]
  * @param {boolean} [options.dryRun]
  * @param {function} [options.log]
- * @param {number} [options.threshold]
  */
-async function runBuilderPriorityDetector(options = {}) {
+async function runBuilderPartnerDetector(options = {}) {
   const db = options.db || pool;
   const dryRun = Boolean(options.dryRun);
   const log = options.log || (() => {});
-  const threshold = options.threshold ?? PRIORITY_EVENT_THRESHOLD;
+  const now = options.now || new Date();
 
-  const rows = await loadPriorityCandidates(db, threshold);
+  const rows = await loadPartnerCandidates(db);
   const stats = {
     scanned: rows.length,
+    eligible: 0,
     upserted: 0,
     created: 0,
     updated: 0,
@@ -95,27 +95,28 @@ async function runBuilderPriorityDetector(options = {}) {
   const activeKeys = [];
 
   for (const row of rows) {
-    const event_key = eventKeyForProspect(row.prospect_id);
-    activeKeys.push(event_key);
-
     const prospect = {
       company_name: row.company_name,
       suburb: row.suburb,
       website: row.website,
-      relationship_stage: row.relationship_stage,
+      builder_status: row.builder_status,
       relationship_strength: row.relationship_strength,
       opportunity_potential: row.opportunity_potential,
       timing_status: row.timing_status,
+      last_contacted_at: row.last_contacted_at,
     };
 
-    const score = row.founder_priority_score ?? row.target_score;
-    const band = row.founder_priority_band ?? row.target_band;
+    if (!needsPartnerAttention(prospect, now)) continue;
+    stats.eligible++;
+
+    const event_key = eventKeyForProspect(row.prospect_id);
+    activeKeys.push(event_key);
 
     const eventInput = {
       event_key,
       event_type: EVENT_TYPE,
-      severity: row.opportunity_potential === 'strategic' ? 'high' : 'medium',
-      attention_score: Number(score),
+      severity: 'high',
+      attention_score: Number(row.partner_value_score || 85),
       source: SOURCE,
       entity_type: BUILDER_ENTITY_TYPE,
       entity_id: row.prospect_id,
@@ -124,19 +125,19 @@ async function runBuilderPriorityDetector(options = {}) {
       payload: {
         prospect_id: row.prospect_id,
         company_name: row.company_name,
-        founder_priority_score: score,
-        founder_priority_band: band,
+        builder_status: row.builder_status,
+        partner_value_score: row.partner_value_score,
+        partner_value_band: row.partner_value_band,
         next_best_action: row.next_best_action,
         relationship_strength: row.relationship_strength,
-        opportunity_potential: row.opportunity_potential,
         timing_status: row.timing_status,
-        strategic: row.opportunity_potential === 'strategic',
+        days_since_contact: daysSinceContact(row.last_contacted_at, now),
       },
-      detected_at: options.now || new Date(),
+      detected_at: now,
     };
 
     if (dryRun) {
-      log(`[dry-run] ${event_key} score=${score}`);
+      log(`[dry-run] ${event_key}`);
       stats.upserted++;
       continue;
     }
@@ -158,15 +159,16 @@ async function runBuilderPriorityDetector(options = {}) {
   }
 
   log(
-    `Builder priority: candidates=${stats.scanned} upserted=${stats.upserted} closed_stale=${stats.closed_stale}`
+    `Builder partners: scanned=${stats.scanned} eligible=${stats.eligible} upserted=${stats.upserted} closed_stale=${stats.closed_stale}`
   );
 
   return stats;
 }
 
 module.exports = {
-  runBuilderPriorityDetector,
+  runBuilderPartnerDetector,
   eventKeyForProspect,
+  needsPartnerAttention,
   EVENT_TYPE,
-  PRIORITY_EVENT_THRESHOLD,
+  CONTACT_IDLE_DAYS,
 };

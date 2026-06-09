@@ -124,57 +124,91 @@
       });
   }
 
-  function loadStrategicBuilders() {
+  function loadStrategicPartners() {
     var listEl = $('bi-strategic-list');
-    if (listEl) listEl.innerHTML = '<p class="bi-empty">Loading strategic builders…</p>';
+    if (listEl) listEl.innerHTML = '<p class="bi-empty">Loading strategic partners…</p>';
 
-    return fetch('/api/builder-intel/strategic-builders?limit=10')
+    return fetch('/api/builder-intel/strategic-partners?limit=10')
       .then(function (r) {
         return r.json();
       })
       .then(function (j) {
-        if (!j.ok) throw new Error(j.error || 'Failed to load strategic builders');
-        renderStrategicBuilders(j.builders || []);
+        if (!j.ok) throw new Error(j.error || 'Failed to load strategic partners');
+        renderPartnerCards(j.partners || j.builders || [], 'bi-strategic-list', 'strategic');
       })
       .catch(function (e) {
         if (listEl) {
           listEl.innerHTML =
-            '<p class="bi-empty">' + esc(e.message || 'No strategic builders marked yet') + '</p>';
+            '<p class="bi-empty">' + esc(e.message || 'No strategic partners yet') + '</p>';
         }
       });
   }
 
-  function renderStrategicBuilders(builders) {
-    var listEl = $('bi-strategic-list');
+  function loadActivePartners() {
+    var listEl = $('bi-active-list');
+    if (listEl) listEl.innerHTML = '<p class="bi-empty">Loading active partners…</p>';
+
+    return fetch('/api/builder-intel/active-partners?limit=10')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Failed to load active partners');
+        renderPartnerCards(j.partners || [], 'bi-active-list', 'active');
+      })
+      .catch(function (e) {
+        if (listEl) {
+          listEl.innerHTML =
+            '<p class="bi-empty">' + esc(e.message || 'No active partners yet') + '</p>';
+        }
+      });
+  }
+
+  function renderPartnerCards(partners, listId, kind) {
+    var listEl = $(listId);
     if (!listEl) return;
-    if (!builders.length) {
-      listEl.innerHTML =
-        '<p class="bi-empty">No strategic builders. Set Opportunity Potential to strategic in a builder profile.</p>';
+    var emptyMsg =
+      kind === 'strategic'
+        ? 'No strategic partners. Set Builder Status to strategic partner.'
+        : 'No active partners. Set Builder Status to active partner.';
+    if (!partners.length) {
+      listEl.innerHTML = '<p class="bi-empty">' + emptyMsg + '</p>';
       return;
     }
-    listEl.innerHTML = builders
-      .map(function (b) {
+    listEl.innerHTML = partners
+      .map(function (p) {
+        var score = p.partner_value_score != null ? p.partner_value_score : '—';
+        var band = p.partner_value_band || '—';
         return (
-          '<div class="bi-target-card bi-strategic-card" data-id="' +
-          esc(b.prospect_id) +
+          '<div class="bi-target-card bi-partner-card" data-id="' +
+          esc(p.prospect_id) +
           '">' +
-          '<div class="bi-target-rank">★</div>' +
+          '<div class="bi-target-rank">' +
+          (kind === 'strategic' ? '★' : '◆') +
+          '</div>' +
           '<div>' +
           '<div class="bi-target-name">' +
-          esc(b.company_name) +
+          esc(p.company_name) +
           '</div>' +
           '<div class="bi-target-meta">' +
-          esc(labelize(b.relationship_strength)) +
-          (b.founder_priority_score != null
-            ? ' · Priority ' + esc(String(b.founder_priority_score))
-            : '') +
+          esc(labelize(p.relationship_strength)) +
+          ' · ' +
+          esc(labelize(p.timing_status)) +
+          (p.last_contacted_at ? ' · Last ' + esc(fmtDate(p.last_contacted_at)) : '') +
           '</div>' +
           '<div class="bi-target-action">' +
-          esc(b.next_best_action || 'Review Builder') +
+          esc(p.next_best_action || 'Review Partner') +
           '</div>' +
           '</div>' +
           '<div class="bi-target-scorebox">' +
-          '<span class="bi-badge strategic">Strategic</span>' +
+          '<div class="bi-target-score">' +
+          esc(String(score)) +
+          '</div>' +
+          '<span class="bi-band ' +
+          bandClass(band) +
+          '">' +
+          esc(band) +
+          '</span>' +
           '</div>' +
           '</div>'
         );
@@ -186,6 +220,14 @@
         openDetail(card.getAttribute('data-id'));
       });
     });
+  }
+
+  function loadStrategicBuilders() {
+    return loadStrategicPartners();
+  }
+
+  function renderStrategicBuilders(builders) {
+    renderPartnerCards(builders, 'bi-strategic-list', 'strategic');
   }
 
   function renderTargets(targets) {
@@ -254,7 +296,7 @@
         if (!j.ok) throw new Error(j.error || 'Recalculate failed');
         renderTargets(j.targets || []);
         showMsg('Founder priority scores recalculated.', false);
-        return Promise.all([loadList(), loadStrategicBuilders()]);
+        return Promise.all([loadList(), loadStrategicPartners(), loadActivePartners()]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Recalculate failed — check API secret.', true);
@@ -310,6 +352,7 @@
         fillSelect('bi-fit_priority', j.fit_priorities);
         fillSelect('bi-research_status', j.research_statuses);
         fillSelect('bi-relationship_stage', j.relationship_stages);
+        fillSelect('bi-builder_status', j.builder_statuses);
         fillSelect('bi-relationship_strength', j.relationship_strengths);
         fillSelect('bi-opportunity_potential', j.opportunity_potentials);
         fillSelect('bi-timing_status', j.timing_statuses);
@@ -607,6 +650,7 @@
         $('bi-fit_priority').value = 'unknown';
         $('bi-research_status').value = 'not_started';
         $('bi-relationship_stage').value = 'discovered';
+        $('bi-builder_status').value = 'prospect';
         $('bi-relationship_strength').value = 'unknown';
         $('bi-opportunity_potential').value = 'unknown';
         $('bi-timing_status').value = 'unknown';
@@ -631,6 +675,7 @@
     $('bi-fit_priority').value = p.fit_priority || 'unknown';
     $('bi-research_status').value = p.research_status || 'not_started';
     $('bi-relationship_stage').value = p.relationship_stage || 'discovered';
+    $('bi-builder_status').value = p.builder_status || 'prospect';
     $('bi-relationship_strength').value = p.relationship_strength || 'unknown';
     $('bi-opportunity_potential').value = p.opportunity_potential || 'unknown';
     $('bi-timing_status').value = p.timing_status || 'unknown';
@@ -658,6 +703,7 @@
       fit_priority: $('bi-fit_priority').value,
       research_status: $('bi-research_status').value,
       relationship_stage: $('bi-relationship_stage').value,
+      builder_status: $('bi-builder_status').value,
       relationship_strength: $('bi-relationship_strength').value,
       opportunity_potential: $('bi-opportunity_potential').value,
       timing_status: $('bi-timing_status').value,
@@ -1070,7 +1116,8 @@
     $('bi-btn-refresh').addEventListener('click', function () {
       loadList();
       loadTargets();
-      loadStrategicBuilders();
+      loadStrategicPartners();
+      loadActivePartners();
     });
     $('bi-btn-recalc-targets').addEventListener('click', recalculateTargets);
     var bandFilter = $('bi-target-band');
@@ -1104,7 +1151,7 @@
 
   loadEnums()
     .then(function () {
-      return Promise.all([loadList(), loadTargets(), loadStrategicBuilders()]);
+      return Promise.all([loadList(), loadTargets(), loadStrategicPartners(), loadActivePartners()]);
     })
     .then(bindEvents)
     .catch(function (e) {

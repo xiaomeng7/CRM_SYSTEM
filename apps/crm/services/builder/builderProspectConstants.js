@@ -55,6 +55,13 @@ const RELATIONSHIP_STRENGTHS = [
 
 const OPPORTUNITY_POTENTIALS = ['unknown', 'low', 'medium', 'high', 'strategic'];
 
+const BUILDER_STATUSES = [
+  'prospect',
+  'active_partner',
+  'strategic_partner',
+  'inactive_partner',
+];
+
 const TIMING_STATUSES = [
   'unknown',
   'active_project',
@@ -88,6 +95,7 @@ const BUILDER_CREATE_FIELDS = [
   'opportunity_potential',
   'timing_status',
   'founder_notes',
+  'builder_status',
 ];
 
 const BUILDER_UPDATE_FIELDS = [
@@ -109,6 +117,7 @@ module.exports = {
   RELATIONSHIP_STRENGTHS,
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
+  BUILDER_STATUSES,
   BUILDER_CREATE_FIELDS,
   BUILDER_UPDATE_FIELDS,
   BUILDER_ENTITY_TYPE,

@@ -584,6 +584,23 @@
   margin-top: 0.5rem;
 }
 
+.bi-active-partners {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  background: #f0faf4;
+  border: 1px solid #c5e8d0;
+  border-radius: 8px;
+}
+
+.bi-active-partners h2 {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+}
+
+.bi-partner-card .bi-target-rank {
+  color: #2d6a4f;
+}
+
 .bi-strategic-builders {
   margin-bottom: 1.25rem;
   padding: 0.85rem 1rem;

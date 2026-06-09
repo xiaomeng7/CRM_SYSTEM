@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8e1" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8e3" />
 </head>
 <body>
   <div class="app">
@@ -55,11 +55,19 @@
           </div>
         </section>
 
-        <section class="bi-strategic-builders" id="bi-strategic-builders">
-          <h2>Strategic Builders</h2>
-          <p class="bi-section-hint">Marked strategic — always visible regardless of score.</p>
+        <section class="bi-strategic-builders" id="bi-strategic-partners">
+          <h2>Strategic Partners</h2>
+          <p class="bi-section-hint">Long-term trusted partners — relationship management, not prospecting.</p>
           <div id="bi-strategic-list" class="bi-targets-list">
-            <p class="bi-empty">Loading strategic builders…</p>
+            <p class="bi-empty">Loading strategic partners…</p>
+          </div>
+        </section>
+
+        <section class="bi-active-partners" id="bi-active-partners">
+          <h2>Active Partners</h2>
+          <p class="bi-section-hint">Builders we work with — manage pipeline and relationships.</p>
+          <div id="bi-active-list" class="bi-targets-list">
+            <p class="bi-empty">Loading active partners…</p>
           </div>
         </section>
 
@@ -127,6 +135,7 @@
           <label>Fit priority<select id="bi-fit_priority"></select></label>
           <label>Research status<select id="bi-research_status"></select></label>
           <label>Relationship stage<select id="bi-relationship_stage"></select></label>
+          <label>Builder status<select id="bi-builder_status"></select></label>
           <label>Relationship strength<select id="bi-relationship_strength"></select></label>
           <label>Opportunity potential<select id="bi-opportunity_potential"></select></label>
           <label>Timing status<select id="bi-timing_status"></select></label>
@@ -244,6 +253,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8e1"></script>
+  <script src="/js/builder-intelligence.js?v=pr8e3"></script>
 </body>
 </html>

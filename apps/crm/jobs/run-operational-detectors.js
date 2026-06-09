@@ -13,6 +13,7 @@ const { runCollectionsRiskDetector } = require('../services/operations/detectors
 const { runBuilderFollowupDetector } = require('../services/operations/detectors/builderFollowupDetector');
 const { refreshBuilderTargetScores } = require('../services/builder/targetSelection/refreshBuilderTargetScores');
 const { runBuilderPriorityDetector } = require('../services/operations/detectors/builderPriorityDetector');
+const { runBuilderPartnerDetector } = require('../services/operations/detectors/builderPartnerDetector');
 
 function parseArgs(argv) {
   const out = { dryRun: false };
@@ -58,6 +59,14 @@ async function main() {
 
   console.log('\n=== Builder Priority ===');
   console.log(JSON.stringify(builderPriority, null, 2));
+
+  const builderPartner = await runBuilderPartnerDetector({
+    dryRun: args.dryRun,
+    log: console.log,
+  });
+
+  console.log('\n=== Builder Partner ===');
+  console.log(JSON.stringify(builderPartner, null, 2));
 
   // Future: cashflowRiskDetector(), leadDetector()
 

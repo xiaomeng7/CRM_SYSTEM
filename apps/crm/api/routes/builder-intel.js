@@ -38,10 +38,12 @@ const {
   RELATIONSHIP_STRENGTHS,
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
+  BUILDER_STATUSES,
 } = require('../../services/builder/builderProspectConstants');
 const { FIT_LEVELS } = require('../../services/builder/builderProfileConstants');
 const { getTopBuilderTargets } = require('../../services/builder/targetSelection/getTopBuilderTargets');
-const { getStrategicBuilders } = require('../../services/builder/targetSelection/getStrategicBuilders');
+const { getStrategicPartners } = require('../../services/builder/targetSelection/getStrategicPartners');
+const { getActivePartners } = require('../../services/builder/targetSelection/getActivePartners');
 const { refreshBuilderTargetScores } = require('../../services/builder/targetSelection/refreshBuilderTargetScores');
 
 function requireAdminSecret(req, res) {
@@ -94,14 +96,36 @@ router.get('/prospects/enums', (_req, res) => {
     relationship_strengths: RELATIONSHIP_STRENGTHS,
     opportunity_potentials: OPPORTUNITY_POTENTIALS,
     timing_statuses: TIMING_STATUSES,
+    builder_statuses: BUILDER_STATUSES,
     fit_levels: FIT_LEVELS,
   });
 });
 
+router.get('/strategic-partners', async (req, res) => {
+  try {
+    const result = await getStrategicPartners({ limit: req.query.limit });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET strategic-partners]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/active-partners', async (req, res) => {
+  try {
+    const result = await getActivePartners({ limit: req.query.limit });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET active-partners]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+/** @deprecated use /strategic-partners */
 router.get('/strategic-builders', async (req, res) => {
   try {
-    const result = await getStrategicBuilders({ limit: req.query.limit });
-    res.json({ ok: true, ...result });
+    const result = await getStrategicPartners({ limit: req.query.limit });
+    res.json({ ok: true, partners: result.partners, builders: result.partners, count: result.count });
   } catch (err) {
     console.error('[builder-intel GET strategic-builders]', err);
     res.status(500).json({ ok: false, error: safeErrorMessage(err) });

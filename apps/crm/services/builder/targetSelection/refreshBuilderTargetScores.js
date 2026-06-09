@@ -1,13 +1,18 @@
 /**
- * Refresh builder target scores + founder priority scores (PR8E / PR8E.1).
+ * Refresh builder scores — prospect priority vs partner value (PR8E.3).
  */
 
 const { pool } = require('../../../lib/db');
 const { PROSPECT_TYPE_BUILDER } = require('../builderProspectConstants');
 const { calculateBuilderTargetScore } = require('./calculateBuilderTargetScore');
 const { calculateFounderPriorityScore } = require('./calculateFounderPriorityScore');
+const {
+  calculatePartnerValueScore,
+  isPartnerBuilderStatus,
+} = require('./calculatePartnerValueScore');
 const { buildTargetAction } = require('./buildTargetAction');
 const { runBuilderPriorityDetector } = require('../../operations/detectors/builderPriorityDetector');
+const { runBuilderPartnerDetector } = require('../../operations/detectors/builderPartnerDetector');
 
 async function loadBuilderProspectsWithProfiles(db) {
   const r = await db.query(
@@ -60,8 +65,12 @@ async function upsertTargetScore(prospectId, data, db) {
        founder_priority_score,
        founder_priority_band,
        founder_priority_breakdown,
+       partner_value_score,
+       partner_value_band,
+       partner_value_breakdown,
+       score_kind,
        calculated_at
-     ) VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8::jsonb, NOW())
+     ) VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7,$8::jsonb,$9,$10,$11::jsonb,$12,NOW())
      ON CONFLICT (prospect_id) DO UPDATE SET
        target_score = EXCLUDED.target_score,
        target_band = EXCLUDED.target_band,
@@ -70,6 +79,10 @@ async function upsertTargetScore(prospectId, data, db) {
        founder_priority_score = EXCLUDED.founder_priority_score,
        founder_priority_band = EXCLUDED.founder_priority_band,
        founder_priority_breakdown = EXCLUDED.founder_priority_breakdown,
+       partner_value_score = EXCLUDED.partner_value_score,
+       partner_value_band = EXCLUDED.partner_value_band,
+       partner_value_breakdown = EXCLUDED.partner_value_breakdown,
+       score_kind = EXCLUDED.score_kind,
        calculated_at = NOW()
      RETURNING *`,
     [
@@ -78,12 +91,64 @@ async function upsertTargetScore(prospectId, data, db) {
       data.target_band,
       data.next_best_action,
       JSON.stringify(data.score_breakdown),
-      data.founder_priority_score,
-      data.founder_priority_band,
-      JSON.stringify(data.founder_priority_breakdown),
+      data.founder_priority_score ?? null,
+      data.founder_priority_band ?? null,
+      data.founder_priority_breakdown ? JSON.stringify(data.founder_priority_breakdown) : null,
+      data.partner_value_score ?? null,
+      data.partner_value_band ?? null,
+      data.partner_value_breakdown ? JSON.stringify(data.partner_value_breakdown) : null,
+      data.score_kind ?? null,
     ]
   );
   return r.rows[0];
+}
+
+function computeScoresForBuilder(row, profile, openFollowupEvent, now) {
+  const legacyScore = calculateBuilderTargetScore({
+    prospect: row,
+    profile,
+    openFollowupEvent,
+    now,
+  });
+
+  const builderStatus = row.builder_status || 'prospect';
+
+  if (isPartnerBuilderStatus(builderStatus)) {
+    const partnerScore = calculatePartnerValueScore({ prospect: row, profile, now });
+    return {
+      ...partnerScore,
+      founder_priority_score: null,
+      founder_priority_band: null,
+      founder_priority_breakdown: null,
+      target_score: partnerScore.partner_value_score,
+      target_band: partnerScore.partner_value_band,
+      score_breakdown: {
+        legacy: legacyScore.score_breakdown,
+        partner_value: partnerScore.partner_value_breakdown,
+      },
+    };
+  }
+
+  const priorityScore = calculateFounderPriorityScore({
+    prospect: row,
+    profile,
+    openFollowupEvent,
+    now,
+  });
+
+  return {
+    ...priorityScore,
+    partner_value_score: null,
+    partner_value_band: null,
+    partner_value_breakdown: null,
+    score_kind: 'prospect_priority',
+    target_score: priorityScore.founder_priority_score,
+    target_band: priorityScore.founder_priority_band,
+    score_breakdown: {
+      legacy: legacyScore.score_breakdown,
+      founder_priority: priorityScore.founder_priority_breakdown,
+    },
+  };
 }
 
 /**
@@ -104,7 +169,10 @@ async function refreshBuilderTargetScores(options = {}) {
     scanned: prospects.length,
     upserted: 0,
     bands: { A: 0, B: 0, C: 0, D: 0 },
+    prospects: 0,
+    partners: 0,
     detector: null,
+    partner_detector: null,
   };
 
   for (const row of prospects) {
@@ -119,45 +187,28 @@ async function refreshBuilderTargetScores(options = {}) {
       ? { payload: followupMap.get(row.id).payload }
       : null;
 
-    const legacyScore = calculateBuilderTargetScore({
-      prospect: row,
-      profile,
-      openFollowupEvent,
-      now,
-    });
-
-    const priorityScore = calculateFounderPriorityScore({
-      prospect: row,
-      profile,
-      openFollowupEvent,
-      now,
-    });
-
-    const scoreResult = {
-      ...priorityScore,
-      target_score: priorityScore.founder_priority_score,
-      target_band: priorityScore.founder_priority_band,
-      score_breakdown: {
-        legacy: legacyScore.score_breakdown,
-        founder_priority: priorityScore.founder_priority_breakdown,
-      },
-    };
-
+    const scoreResult = computeScoresForBuilder(row, profile, openFollowupEvent, now);
     const next_best_action = buildTargetAction(row, profile, scoreResult);
 
     await upsertTargetScore(row.id, { ...scoreResult, next_best_action }, db);
 
     stats.upserted++;
-    stats.bands[priorityScore.founder_priority_band] =
-      (stats.bands[priorityScore.founder_priority_band] || 0) + 1;
+    const band = scoreResult.target_band || 'D';
+    stats.bands[band] = (stats.bands[band] || 0) + 1;
+    if (isPartnerBuilderStatus(row.builder_status || 'prospect')) {
+      stats.partners++;
+    } else {
+      stats.prospects++;
+    }
   }
 
   log(
-    `Founder priority refreshed: scanned=${stats.scanned} bands A=${stats.bands.A} B=${stats.bands.B} C=${stats.bands.C} D=${stats.bands.D}`
+    `Scores refreshed: scanned=${stats.scanned} prospects=${stats.prospects} partners=${stats.partners} bands A=${stats.bands.A} B=${stats.bands.B} C=${stats.bands.C} D=${stats.bands.D}`
   );
 
   if (options.runDetector !== false) {
     stats.detector = await runBuilderPriorityDetector({ db, now, log });
+    stats.partner_detector = await runBuilderPartnerDetector({ db, now, log });
   }
 
   return stats;
@@ -167,4 +218,5 @@ module.exports = {
   refreshBuilderTargetScores,
   upsertTargetScore,
   loadBuilderProspectsWithProfiles,
+  computeScoresForBuilder,
 };

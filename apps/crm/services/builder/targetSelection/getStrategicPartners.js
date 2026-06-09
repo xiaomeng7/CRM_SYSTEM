@@ -1,5 +1,5 @@
 /**
- * Strategic builders — opportunity_potential = strategic (PR8E.1).
+ * Strategic partners — builder_status = strategic_partner (PR8E.3).
  */
 
 const { pool } = require('../../../lib/db');
@@ -14,15 +14,9 @@ function parseLimit(raw) {
   return Math.min(n, MAX_LIMIT);
 }
 
-async function getStrategicBuilders(filters = {}, options = {}) {
+async function getStrategicPartners(filters = {}, options = {}) {
   const db = options.db || pool;
   const limit = parseLimit(filters.limit);
-  const conditions = [
-    `p.prospect_type = $1`,
-    `p.opportunity_potential = 'strategic'`,
-    `p.relationship_stage NOT IN ('inactive', 'not_fit')`,
-  ];
-  const params = [PROSPECT_TYPE_BUILDER, limit];
 
   const r = await db.query(
     `SELECT
@@ -30,49 +24,57 @@ async function getStrategicBuilders(filters = {}, options = {}) {
        p.company_name,
        p.website,
        p.suburb,
-       p.builder_type,
+       p.builder_status,
        p.relationship_strength,
        p.opportunity_potential,
        p.timing_status,
        p.last_contacted_at,
        bp.estimated_fit_score,
-       ts.founder_priority_score,
-       ts.founder_priority_band,
+       ts.partner_value_score,
+       ts.partner_value_band,
        ts.next_best_action
      FROM b2b_prospects p
      LEFT JOIN builder_profiles bp ON bp.prospect_id = p.id
      LEFT JOIN builder_target_scores ts ON ts.prospect_id = p.id
-     WHERE ${conditions.join(' AND ')}
+     WHERE p.prospect_type = $1
+       AND p.builder_status = 'strategic_partner'
+       AND p.relationship_stage NOT IN ('inactive', 'not_fit')
      ORDER BY
-       ts.founder_priority_score DESC NULLS LAST,
-       bp.estimated_fit_score DESC NULLS LAST,
+       ts.partner_value_score DESC NULLS LAST,
        p.company_name ASC
      LIMIT $2`,
-    params
+    [PROSPECT_TYPE_BUILDER, limit]
   );
 
-  const builders = r.rows.map((row, index) => ({
+  const partners = r.rows.map((row, index) => ({
     rank: index + 1,
     prospect_id: row.prospect_id,
     company_name: row.company_name,
     website: row.website,
     suburb: row.suburb,
-    builder_type: row.builder_type,
+    builder_status: row.builder_status,
     relationship_strength: row.relationship_strength,
     opportunity_potential: row.opportunity_potential,
     timing_status: row.timing_status,
     estimated_fit_score: row.estimated_fit_score != null ? Number(row.estimated_fit_score) : null,
-    founder_priority_score:
-      row.founder_priority_score != null ? Number(row.founder_priority_score) : null,
-    founder_priority_band: row.founder_priority_band || null,
+    partner_value_score:
+      row.partner_value_score != null ? Number(row.partner_value_score) : null,
+    partner_value_band: row.partner_value_band || null,
     next_best_action: row.next_best_action || null,
     last_contacted_at: row.last_contacted_at,
   }));
 
-  return { builders, count: builders.length };
+  return { partners, count: partners.length };
+}
+
+/** @deprecated use getStrategicPartners */
+async function getStrategicBuilders(filters, options) {
+  const result = await getStrategicPartners(filters, options);
+  return { builders: result.partners, count: result.count };
 }
 
 module.exports = {
+  getStrategicPartners,
   getStrategicBuilders,
   DEFAULT_LIMIT,
   MAX_LIMIT,

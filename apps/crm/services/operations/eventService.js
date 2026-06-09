@@ -21,6 +21,7 @@ const EXAMPLE_EVENT_TYPES = [
   'builder_meeting_needed',
   'builder_target',
   'builder_priority',
+  'builder_partner',
   'sync_issue',
   'data_quality_issue',
   'operational_load',
@@ -34,6 +35,7 @@ const BUILDER_EVENT_TYPES = [
   'builder_meeting_needed',
   'builder_target',
   'builder_priority',
+  'builder_partner',
 ];
 
 const MAX_LIST_LIMIT = 100;

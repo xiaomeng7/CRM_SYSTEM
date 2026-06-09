@@ -165,6 +165,7 @@ function calculateFounderPriorityScore(input) {
     founder_priority_score,
     founder_priority_band,
     founder_priority_breakdown,
+    score_kind: 'prospect_priority',
   };
 }
 

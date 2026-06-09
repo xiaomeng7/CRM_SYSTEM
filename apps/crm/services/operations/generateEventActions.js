@@ -15,6 +15,7 @@ const { generateCashflowActions } = require('./actionGenerators/cashflowActionGe
 const { generateBuilderFollowupActions } = require('./actionGenerators/builderFollowupActionGenerator');
 const { generateBuilderTargetActions } = require('./actionGenerators/builderTargetActionGenerator');
 const { generateBuilderPriorityActions } = require('./actionGenerators/builderPriorityActionGenerator');
+const { generateBuilderPartnerActions } = require('./actionGenerators/builderPartnerActionGenerator');
 
 const GENERATORS = {
   collections_risk: generateCollectionsActions,
@@ -22,6 +23,7 @@ const GENERATORS = {
   builder_followup: generateBuilderFollowupActions,
   builder_target: generateBuilderTargetActions,
   builder_priority: generateBuilderPriorityActions,
+  builder_partner: generateBuilderPartnerActions,
 };
 
 /**

@@ -15,6 +15,7 @@ const {
   RELATIONSHIP_STRENGTHS,
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
+  BUILDER_STATUSES,
 } = require('./builderProspectConstants');
 
 const MAX_LIMIT = 200;
@@ -131,6 +132,11 @@ function normalizeBuilderInput(data, { isCreate = false } = {}) {
   if (data.founder_notes !== undefined) {
     out.founder_notes = trimOrNull(data.founder_notes);
   }
+  if (data.builder_status !== undefined || isCreate) {
+    out.builder_status =
+      assertEnum(data.builder_status, BUILDER_STATUSES, 'builder_status') ||
+      (isCreate ? 'prospect' : null);
+  }
 
   if (data.next_followup_at !== undefined || isCreate) {
     out.next_followup_at =
@@ -244,6 +250,7 @@ async function createBuilderProspect(data, options = {}) {
        builder_type, project_focus, target_suburbs, fit_priority,
        research_status, relationship_stage,
        relationship_strength, opportunity_potential, timing_status, founder_notes,
+       builder_status,
        decision_maker_name, decision_maker_role, qualification_notes,
        next_followup_at
      ) VALUES (
@@ -251,9 +258,9 @@ async function createBuilderProspect(data, options = {}) {
        $8,$9,$10,$11,
        $12,$13,$14,$15,
        $16,$17,
-       $18,$19,$20,$21,
-       $22,$23,$24,
-       $25
+       $18,$19,$20,$21,$22,
+       $23,$24,$25,
+       $26
      ) RETURNING *`,
     [
       input.company_name,
@@ -277,6 +284,7 @@ async function createBuilderProspect(data, options = {}) {
       input.opportunity_potential ?? 'unknown',
       input.timing_status ?? 'unknown',
       input.founder_notes ?? null,
+      input.builder_status ?? 'prospect',
       input.decision_maker_name,
       input.decision_maker_role,
       input.qualification_notes,
