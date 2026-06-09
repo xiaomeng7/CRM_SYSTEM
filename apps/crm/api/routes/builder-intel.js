@@ -39,6 +39,7 @@ const {
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
   BUILDER_STATUSES,
+  DISCOVERY_CREATE_DEFAULTS,
 } = require('../../services/builder/builderProspectConstants');
 const { FIT_LEVELS } = require('../../services/builder/builderProfileConstants');
 const { getTopBuilderTargets } = require('../../services/builder/targetSelection/getTopBuilderTargets');
@@ -287,9 +288,12 @@ router.post('/prospects', async (req, res) => {
       company_name: body.company_name,
       website,
       source: body.source || 'manual',
-      research_status: autoResearch ? 'researching' : 'not_started',
-      relationship_stage: 'discovered',
-      builder_status: 'prospect',
+      research_status: autoResearch ? 'researching' : DISCOVERY_CREATE_DEFAULTS.research_status,
+      relationship_stage: DISCOVERY_CREATE_DEFAULTS.relationship_stage,
+      builder_status: DISCOVERY_CREATE_DEFAULTS.builder_status,
+      relationship_strength: DISCOVERY_CREATE_DEFAULTS.relationship_strength,
+      opportunity_potential: DISCOVERY_CREATE_DEFAULTS.opportunity_potential,
+      timing_status: DISCOVERY_CREATE_DEFAULTS.timing_status,
     });
 
     let research = null;

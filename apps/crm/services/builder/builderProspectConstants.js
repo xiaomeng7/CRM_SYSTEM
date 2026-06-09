@@ -107,6 +107,16 @@ const BUILDER_UPDATE_FIELDS = [
 /** Future operational_events entity_type for builder prospects */
 const BUILDER_ENTITY_TYPE = 'b2b_prospect';
 
+/** Safe defaults when founder adds a builder (PR8F). */
+const DISCOVERY_CREATE_DEFAULTS = {
+  builder_status: 'prospect',
+  relationship_strength: 'unknown',
+  opportunity_potential: 'medium',
+  timing_status: 'unknown',
+  relationship_stage: 'discovered',
+  research_status: 'not_started',
+};
+
 module.exports = {
   PROSPECT_TYPE_BUILDER,
   BUILDER_TYPES,
@@ -121,4 +131,5 @@ module.exports = {
   BUILDER_CREATE_FIELDS,
   BUILDER_UPDATE_FIELDS,
   BUILDER_ENTITY_TYPE,
+  DISCOVERY_CREATE_DEFAULTS,
 };

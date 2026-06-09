@@ -268,6 +268,8 @@
       suburb: $('bi-suburb').value,
       builder_status: $('bi-builder_status').value,
       relationship_strength: $('bi-relationship_strength').value,
+      timing_status: $('bi-timing_status').value,
+      opportunity_potential: $('bi-opportunity_potential').value,
       founder_notes: $('bi-founder_notes').value,
       notes: $('bi-notes').value,
     };
@@ -469,6 +471,8 @@
           j.founder_relationship_strengths || j.relationship_strengths,
           null
         );
+        fillSelect('bi-timing_status', j.timing_statuses);
+        fillSelect('bi-opportunity_potential', j.opportunity_potentials);
         if ($('bi-add-source') && !$('bi-add-source').value) {
           $('bi-add-source').value = 'google_search';
         }
@@ -823,6 +827,12 @@
     $('bi-add-overlay').addEventListener('click', function (e) {
       if (e.target === $('bi-add-overlay')) closeAddModal();
     });
+    var addDialog = document.querySelector('.bi-add-dialog');
+    if (addDialog) {
+      addDialog.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+    }
     ['bi-filter-priority', 'bi-filter-research'].forEach(function (id) {
       var el = $(id);
       if (el) el.addEventListener('change', loadList);

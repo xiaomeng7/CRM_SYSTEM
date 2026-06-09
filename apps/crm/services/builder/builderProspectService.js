@@ -16,6 +16,7 @@ const {
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
   BUILDER_STATUSES,
+  DISCOVERY_CREATE_DEFAULTS,
 } = require('./builderProspectConstants');
 const { applyRelationshipDerivation } = require('./builderRelationshipDerivation');
 
@@ -123,7 +124,7 @@ function normalizeBuilderInput(data, { isCreate = false } = {}) {
   if (data.opportunity_potential !== undefined || isCreate) {
     out.opportunity_potential =
       assertEnum(data.opportunity_potential, OPPORTUNITY_POTENTIALS, 'opportunity_potential') ||
-      (isCreate ? 'unknown' : null);
+      (isCreate ? DISCOVERY_CREATE_DEFAULTS.opportunity_potential : null);
   }
   if (data.timing_status !== undefined || isCreate) {
     out.timing_status =
@@ -342,9 +343,9 @@ async function createBuilderProspect(data, options = {}) {
       input.fit_priority,
       input.research_status,
       input.relationship_stage,
-      input.relationship_strength ?? 'unknown',
-      input.opportunity_potential ?? 'unknown',
-      input.timing_status ?? 'unknown',
+      input.relationship_strength ?? DISCOVERY_CREATE_DEFAULTS.relationship_strength,
+      input.opportunity_potential ?? DISCOVERY_CREATE_DEFAULTS.opportunity_potential,
+      input.timing_status ?? DISCOVERY_CREATE_DEFAULTS.timing_status,
       input.founder_notes ?? null,
       input.builder_status ?? 'prospect',
       input.decision_maker_name,

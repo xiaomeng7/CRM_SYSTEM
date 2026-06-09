@@ -53,6 +53,7 @@
     "test:builder-segmentation": "node scripts/test-builder-segmentation.js",
     "test:builder-segmentation-debug": "node scripts/test-builder-segmentation-debug.js",
     "test:builder-discovery-workflow": "node scripts/test-builder-discovery-workflow.js",
+    "test:builder-discovery-flow-regression": "node scripts/test-builder-discovery-flow-regression.js",
     "db:operational-events-migration": "node scripts/run-operational-events-migration.js",
     "db:operational-events-lifecycle-migration": "node scripts/run-operational-events-lifecycle-migration.js",
     "test:operational-event-lifecycle": "node scripts/test-operational-event-lifecycle.js",

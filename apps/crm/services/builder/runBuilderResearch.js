@@ -77,10 +77,8 @@ async function updateProspectAfterResearch(prospectId, analysis, db) {
        fit_priority = $3,
        builder_type = $4,
        project_focus = $5,
-       target_suburbs = COALESCE($6, target_suburbs),
-       opportunity_potential = $7,
-       relationship_stage = $8
-     WHERE id = $1 AND prospect_type = $9
+       target_suburbs = COALESCE($6, target_suburbs)
+     WHERE id = $1 AND prospect_type = $7
      RETURNING *`,
     [
       prospectId,
@@ -89,8 +87,6 @@ async function updateProspectAfterResearch(prospectId, analysis, db) {
       inferred.builder_type,
       inferred.project_focus,
       inferred.target_suburbs,
-      inferred.opportunity_potential,
-      inferred.relationship_stage,
       PROSPECT_TYPE_BUILDER,
     ]
   );

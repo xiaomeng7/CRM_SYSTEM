@@ -64,7 +64,7 @@ function testInferFromResearch() {
   assert(inferred.research_status === 'researched', 'researched');
   assert(inferred.builder_type === 'architectural_homes', 'builder type');
   assert(inferred.project_focus === 'architectural_new_build', 'project focus');
-  assert(inferred.opportunity_potential === 'strategic', 'opportunity strategic');
+  assert(inferred.opportunity_potential === undefined, 'opportunity not in research infer');
   assert(inferred.target_suburbs.includes('Unley'), 'target suburbs');
   assert(builderTypeFromAnalysis({ builder_focus: 'custom homes' }) === 'custom_homes', 'custom homes type');
   console.log('infer OK');

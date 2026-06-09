@@ -56,8 +56,6 @@ function inferProspectFieldsFromResearch(analysis) {
     builder_type: builderTypeFromAnalysis(analysis),
     project_focus: projectFocusFromAnalysis(analysis),
     target_suburbs: targetSuburbsFromAnalysis(analysis),
-    opportunity_potential: opportunityFromFitScore(score),
-    relationship_stage: 'qualified',
   };
 }
 

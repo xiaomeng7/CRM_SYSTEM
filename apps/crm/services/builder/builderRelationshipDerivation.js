@@ -77,17 +77,19 @@ function applyRelationshipDerivation(updates, context = {}) {
   }
 
   if (
-    updates.builder_status !== undefined ||
-    updates.relationship_strength !== undefined ||
-    updates.research_status !== undefined
+    updates.relationship_stage === undefined &&
+    (updates.builder_status !== undefined ||
+      updates.relationship_strength !== undefined ||
+      updates.research_status !== undefined)
   ) {
     out.relationship_stage = deriveRelationshipStage(builderStatus, strength, researchStatus);
   }
 
   if (
-    updates.builder_status !== undefined ||
-    updates.fit_priority !== undefined ||
-    updates.relationship_strength !== undefined
+    updates.opportunity_potential === undefined &&
+    (updates.builder_status !== undefined ||
+      updates.fit_priority !== undefined ||
+      updates.relationship_strength !== undefined)
   ) {
     out.opportunity_potential = deriveOpportunityPotential(
       builderStatus,

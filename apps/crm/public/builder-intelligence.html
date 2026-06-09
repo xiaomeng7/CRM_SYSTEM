@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8f" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr8f1" />
 </head>
 <body>
   <div class="app">
@@ -94,22 +94,22 @@
     </main>
   </div>
 
-  <!-- Add Builder — discovery-first (30 seconds) -->
-  <div id="bi-add-overlay" class="bi-panel-overlay bi-add-overlay" hidden>
-    <div class="bi-panel bi-add-panel">
-      <div class="bi-panel-header">
-        <h2>Add Builder</h2>
+  <!-- Add Builder — narrow modal, separate from edit drawer -->
+  <div id="bi-add-overlay" class="bi-add-overlay" hidden>
+    <div class="bi-add-dialog" role="dialog" aria-labelledby="bi-add-title">
+      <div class="bi-add-header">
+        <h2 id="bi-add-title">Add Builder</h2>
         <button type="button" id="bi-add-close" class="bi-btn">Close</button>
       </div>
-      <form id="bi-add-form" class="bi-form bi-add-form">
+      <form id="bi-add-form" class="bi-add-form">
         <p class="bi-add-hint">Enter company and website — we research the rest automatically.</p>
-        <label>Company name *<input type="text" id="bi-add-company_name" required placeholder="KCW Build" /></label>
-        <label>Website *<input type="url" id="bi-add-website" required placeholder="https://kcwbuild.com.au" /></label>
-        <label>Source<select id="bi-add-source"></select></label>
-        <div class="bi-form-actions">
-          <button type="submit" class="bi-btn primary" id="bi-btn-save-research">Save &amp; Research</button>
+        <label class="bi-add-field">Company name *<input type="text" id="bi-add-company_name" required placeholder="KCW Build" /></label>
+        <label class="bi-add-field">Website *<input type="url" id="bi-add-website" required placeholder="https://kcwbuild.com.au" /></label>
+        <label class="bi-add-field">Source<select id="bi-add-source"></select></label>
+        <div class="bi-add-actions">
+          <button type="submit" class="bi-btn primary bi-add-submit" id="bi-btn-save-research">Save &amp; Research</button>
         </div>
-        <p id="bi-add-status" class="bi-research-meta" style="display:none;"></p>
+        <p id="bi-add-status" class="bi-add-status" style="display:none;"></p>
       </form>
     </div>
   </div>
@@ -195,6 +195,8 @@
           <div class="bi-form-grid bi-form-grid-2">
             <label>Builder status<select id="bi-builder_status"></select></label>
             <label>Relationship strength<select id="bi-relationship_strength"></select></label>
+            <label>Timing status<select id="bi-timing_status"></select></label>
+            <label>Opportunity potential<select id="bi-opportunity_potential"></select></label>
             <label class="bi-full">Founder notes<textarea id="bi-founder_notes" rows="3" placeholder="Met at HIA event…"></textarea></label>
             <label class="bi-full">Notes<textarea id="bi-notes" rows="2"></textarea></label>
           </div>
@@ -219,8 +221,6 @@
         <input type="hidden" id="bi-fit_priority" />
         <input type="hidden" id="bi-research_status" />
         <input type="hidden" id="bi-relationship_stage" />
-        <input type="hidden" id="bi-opportunity_potential" />
-        <input type="hidden" id="bi-timing_status" />
         <input type="hidden" id="bi-source" />
         <input type="hidden" id="bi-source_detail" />
         <input type="hidden" id="bi-next_followup_at" />
@@ -229,6 +229,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr8f"></script>
+  <script src="/js/builder-intelligence.js?v=pr8f1"></script>
 </body>
 </html>

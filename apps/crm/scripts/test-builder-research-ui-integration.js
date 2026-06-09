@@ -22,6 +22,7 @@ function read(file) {
 
 function testHtmlDiscovery(html) {
   console.log('\n=== HTML: discovery-first layout ===\n');
+  assert(html.includes('bi-add-dialog'), 'add builder dialog');
   assert(html.includes('bi-add-form'), 'add builder form');
   assert(html.includes('bi-builder-cards'), 'builder cards grid');
   assert(html.includes('Contact Discovery'), 'contact discovery section');
