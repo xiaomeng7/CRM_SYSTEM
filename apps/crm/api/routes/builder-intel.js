@@ -44,7 +44,7 @@ const {
 } = require('../../services/builder/builderProspectConstants');
 const { relationshipLevelOptions } = require('../../services/builder/relationshipLevelMapping');
 const { listProviders } = require('../../services/builder/discovery/providers/providerRegistry');
-const { isSerpApiConfigured } = require('../../services/builder/discovery/providers/serpApiProvider');
+const { isSerpApiConfigured, getSerpApiStatus } = require('../../config/builder-discovery');
 const {
   generateRecommendedSearches,
   generateQuickSearches,
@@ -139,6 +139,7 @@ router.get('/prospects/enums', (_req, res) => {
       })),
     discovery_providers: listProviders(),
     serpapi_configured: isSerpApiConfigured(),
+    serpapi_status: getSerpApiStatus(),
     fit_levels: FIT_LEVELS,
   });
 });
@@ -425,6 +426,7 @@ router.get('/discovery/quick-searches', async (_req, res) => {
       suburbs: categories[0]?.searches?.map((s) => s.suburb) || [],
       count: quick.length,
       serpapi_configured: isSerpApiConfigured(),
+      serpapi_status: getSerpApiStatus(),
     });
   } catch (err) {
     console.error('[builder-intel GET discovery/quick-searches]', err);

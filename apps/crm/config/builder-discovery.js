@@ -3,11 +3,29 @@
  * API keys are read from env at runtime — never stored here.
  */
 
+function isTruthyEnv(value) {
+  if (value == null) return false;
+  const v = String(value).trim().toLowerCase();
+  return v === 'true' || v === '1' || v === 'yes';
+}
+
 function isSerpApiConfigured() {
   return (
-    process.env.BUILDER_DISCOVERY_SERPAPI_ENABLED === 'true' &&
+    isTruthyEnv(process.env.BUILDER_DISCOVERY_SERPAPI_ENABLED) &&
     Boolean(process.env.SERPAPI_API_KEY && String(process.env.SERPAPI_API_KEY).trim())
   );
+}
+
+/** Safe runtime diagnostic — never exposes API key. */
+function getSerpApiStatus() {
+  const flag = process.env.BUILDER_DISCOVERY_SERPAPI_ENABLED;
+  const keyPresent = Boolean(process.env.SERPAPI_API_KEY && String(process.env.SERPAPI_API_KEY).trim());
+  return {
+    configured: isSerpApiConfigured(),
+    enable_flag_present: flag != null && String(flag).trim() !== '',
+    enable_flag_truthy: isTruthyEnv(flag),
+    api_key_present: keyPresent,
+  };
 }
 
 function resolveProviderEnabled(name) {
@@ -44,5 +62,6 @@ module.exports = {
   default_limit: 25,
   serpapi_max_results: 20,
   isSerpApiConfigured,
+  getSerpApiStatus,
   resolveProviderEnabled,
 };
