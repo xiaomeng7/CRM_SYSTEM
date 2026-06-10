@@ -67,6 +67,7 @@
     "test:builder-discovery-cleanup": "node scripts/test-builder-discovery-cleanup.js",
     "test:builder-discovery-guidance": "node scripts/test-builder-discovery-guidance.js",
     "test:builder-pipeline": "node scripts/test-builder-pipeline.js",
+    "test:unified-sidebar": "node scripts/test-unified-sidebar.js",
     "db:operational-events-migration": "node scripts/run-operational-events-migration.js",
     "db:operational-events-lifecycle-migration": "node scripts/run-operational-events-lifecycle-migration.js",
     "test:operational-event-lifecycle": "node scripts/test-operational-event-lifecycle.js",

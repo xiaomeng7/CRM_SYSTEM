@@ -12,28 +12,10 @@
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo">BHT Revenue OS</div>
-      <nav>
-        <a href="/ceo-daily.html">CEO Daily</a>
-        <a href="/">Dashboard</a>
-        <a href="/leads.html">Leads</a>
-        <a href="/opportunities.html">Opportunities</a>
-        <a href="/contacts.html">Contacts</a>
-        <a href="/tasks.html">Tasks</a>
-        <a href="/b2b-prospects.html">B2B Prospects</a>
-        <a href="/inspection-review.html" class="active">Inspection Review</a>
-        <a href="/reactivation-dashboard.html">客户激活仪表盘</a>
-        <a href="/reply-inbox.html">Reply Inbox</a>
-        <a href="/reactivation-queue.html">SMS Campaign</a>
-        <a href="/data-maintenance.html">Data Maintenance</a>
-        <a href="/growth-console.html">Growth Ops</a>
-        <a href="/admin-console.html">Admin Console</a>
-      </nav>
-    </aside>
+    <aside class="sidebar" id="app-sidebar"></aside>
     <main class="main" style="background:#f1f5f9;">
       <header class="header">Internal CRM</header>
-      <div id="ir-root" style="height:calc(100vh - 48px); overflow:hidden;"></div>
+      <div id="ir-root" style="overflow:hidden;"></div>
     </main>
   </div>
 
@@ -717,5 +699,6 @@
 
     ReactDOM.createRoot(document.getElementById('ir-root')).render(<InspectionReviewApp />);
   </script>
+  <script src="/js/sidebar.js"></script>
 </body>
 </html>
