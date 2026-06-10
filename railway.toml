@@ -8,5 +8,5 @@ buildCommand = "pnpm install"
 
 [deploy]
 # Idempotent migrations before each deploy (bank/cashflow + builder discovery quality).
-releaseCommand = "pnpm --filter @bht/crm run db:bank-cashflow-migrations && pnpm --filter @bht/crm run db:builder-discovery-migration && pnpm --filter @bht/crm run db:builder-discovery-quality-migration && pnpm --filter @bht/crm run db:builder-discovery-cleanup-migration && pnpm --filter @bht/crm run db:builder-pipeline-migration"
+releaseCommand = "pnpm --filter @bht/crm run db:bank-cashflow-migrations && pnpm --filter @bht/crm run db:builder-discovery-migration && pnpm --filter @bht/crm run db:builder-discovery-quality-migration && pnpm --filter @bht/crm run db:builder-discovery-cleanup-migration && pnpm --filter @bht/crm run db:builder-pipeline-migration && pnpm --filter @bht/crm run db:builder-contact-discovery-migration"
 startCommand = "pnpm --filter @bht/crm start"

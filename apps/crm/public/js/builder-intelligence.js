@@ -16,6 +16,8 @@
   var serpApiEnabled = false;
   var pipelineSummary = null;
   var pipelineSections = [];
+  var currentContacts = [];
+  var selectedContactId = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -213,8 +215,27 @@
       '</div>';
   }
 
+  function formatRecommendedContactLine(contact) {
+    if (!contact) return '';
+    var parts = [];
+    if (contact.name) parts.push(contact.name);
+    if (contact.role) parts.push(contact.role);
+    var channels = [];
+    if (contact.phone) channels.push(contact.phone);
+    if (contact.email) channels.push(contact.email);
+    var line = parts.join(' · ');
+    if (channels.length) line += (line ? ' — ' : '') + channels.join(' / ');
+    return line || 'Contact candidate found';
+  }
+
   function renderPipelineCard(p) {
     var fit = p.estimated_fit_score != null ? 'Fit ' + p.estimated_fit_score : 'Not researched';
+    var rec = p.recommended_contact;
+    var recLine = rec
+      ? '<p class="bi-card-contact"><span>Recommended:</span> <strong>' +
+        esc(formatRecommendedContactLine(rec)) +
+        '</strong></p>'
+      : '';
     return (
       '<article class="bi-builder-card bi-pipeline-card" data-id="' +
       esc(p.id) +
@@ -224,7 +245,9 @@
       esc(focusLineForProspect(p)) +
       '</p><p class="bi-card-fit">' +
       esc(fit) +
-      '</p><p class="bi-card-action"><span>Next:</span> <strong>' +
+      '</p>' +
+      recLine +
+      '<p class="bi-card-action"><span>Next:</span> <strong>' +
       esc(p.pipeline_next_action || suggestedActionForProspect(p)) +
       '</strong></p><p class="bi-card-status"><span>Stage:</span> <strong>' +
       esc(p.pipeline_stage_label || labelize(p.pipeline_stage)) +
@@ -247,6 +270,10 @@
               section.builders.map(renderPipelineCard).join('') +
               '</div>'
             : '<p class="bi-empty-inline">No builders in this stage.</p>';
+        var toolbar =
+          section.id === 'contact_discovery'
+            ? '<div class="bi-pipeline-stage-toolbar"><button type="button" class="bi-btn bi-btn-stage-batch-contact" data-stage="contact_discovery">Batch Run Contact Discovery</button></div>'
+            : '';
         return (
           '<section class="bi-pipeline-stage" id="bi-pipeline-stage-' +
           esc(section.id) +
@@ -255,12 +282,216 @@
           '</h3><span class="bi-pipeline-stage-count">' +
           esc(String(section.count)) +
           '</span></div>' +
+          toolbar +
           cards +
           '</section>'
         );
       })
       .join('');
     bindCardClicks(el);
+    el.querySelectorAll('.bi-btn-stage-batch-contact').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        batchContactDiscovery();
+      });
+    });
+  }
+
+  function renderRecommendedContactCard(contact) {
+    var el = $('bi-recommended-contact');
+    var confirmBtn = $('bi-btn-confirm-contact');
+    if (!el) return;
+    if (!contact) {
+      el.innerHTML = '<p class="bi-empty-inline">No recommended contact yet. Run contact discovery.</p>';
+      if (confirmBtn) confirmBtn.hidden = true;
+      selectedContactId = null;
+      return;
+    }
+    selectedContactId = contact.id;
+    el.innerHTML =
+      '<div class="bi-recommended-contact-inner"><div class="bi-recommended-contact-label">Recommended Contact</div><div class="bi-recommended-contact-name">' +
+      esc(contact.name || 'Unknown name') +
+      '</div><div class="bi-recommended-contact-meta">' +
+      esc([contact.role, contact.phone, contact.email].filter(Boolean).join(' · ') || 'No direct channel yet') +
+      '</div><div class="bi-recommended-contact-reason">' +
+      esc(contact.reason || '') +
+      '</div><div class="bi-recommended-contact-confidence">Confidence: <strong>' +
+      esc(contact.confidence_band || 'low') +
+      '</strong> (' +
+      esc(String(contact.confidence_score || 0)) +
+      ')</div></div>';
+    if (confirmBtn) {
+      confirmBtn.hidden = Boolean(contact.founder_confirmed);
+      confirmBtn.textContent = contact.founder_confirmed ? 'Contact Confirmed' : 'Founder Confirm Contact';
+      confirmBtn.disabled = Boolean(contact.founder_confirmed);
+    }
+  }
+
+  function renderContactCandidates(contacts) {
+    var el = $('bi-contact-candidates');
+    if (!el) return;
+    currentContacts = contacts || [];
+    if (!currentContacts.length) {
+      el.innerHTML = '';
+      return;
+    }
+    el.innerHTML =
+      '<h4 class="bi-runs-heading">All candidates</h4>' +
+      currentContacts
+        .map(function (c) {
+          return (
+            '<div class="bi-contact-candidate' +
+            (c.is_recommended ? ' recommended' : '') +
+            '" data-contact-id="' +
+            esc(c.id) +
+            '"><div><strong>' +
+            esc(c.name || 'Unknown') +
+            '</strong> · ' +
+            esc(c.role || 'Role unknown') +
+            '</div><div class="bi-contact-candidate-meta">' +
+            esc([c.phone, c.email].filter(Boolean).join(' · ') || 'No phone/email') +
+            '</div><div class="bi-contact-candidate-reason">' +
+            esc(c.reason || '') +
+            '</div></div>'
+          );
+        })
+        .join('');
+    el.querySelectorAll('[data-contact-id]').forEach(function (row) {
+      row.addEventListener('click', function () {
+        var id = row.getAttribute('data-contact-id');
+        var contact = currentContacts.find(function (c) {
+          return c.id === id;
+        });
+        if (contact) renderRecommendedContactCard(contact);
+      });
+    });
+  }
+
+  function loadBuilderContacts(id) {
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/contacts')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Failed to load contacts');
+        renderContactCandidates(j.contacts || []);
+        renderRecommendedContactCard(j.recommended_contact || null);
+      })
+      .catch(function () {
+        renderContactCandidates([]);
+        renderRecommendedContactCard(null);
+      });
+  }
+
+  function runContactDiscoveryForCurrent() {
+    var id = $('bi-id') && $('bi-id').value;
+    var btn = $('bi-btn-run-contact-discovery');
+    var statusEl = $('bi-contact-discovery-status');
+    if (!id) return;
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Discovering…';
+    }
+    if (statusEl) statusEl.textContent = 'Scanning website, research snippets, and public search…';
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/contact-discovery/run', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({}),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Contact discovery failed');
+        renderContactCandidates(j.contacts || []);
+        renderRecommendedContactCard(j.recommended_contact || null);
+        showMsg('Found ' + (j.contacts ? j.contacts.length : 0) + ' contact candidate(s).', false);
+        return loadPipeline();
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Contact discovery failed.', true);
+      })
+      .finally(function () {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Run Contact Discovery';
+        }
+        if (statusEl) statusEl.textContent = '';
+      });
+  }
+
+  function confirmRecommendedContact() {
+    var prospectId = $('bi-id') && $('bi-id').value;
+    if (!prospectId || !selectedContactId) {
+      showMsg('Select a recommended contact first.', true);
+      return;
+    }
+    var btn = $('bi-btn-confirm-contact');
+    if (btn) btn.disabled = true;
+    return fetch(
+      '/api/builder-intel/prospects/' +
+        encodeURIComponent(prospectId) +
+        '/contacts/' +
+        encodeURIComponent(selectedContactId) +
+        '/confirm',
+      {
+        method: 'POST',
+        headers: secretHeaders(),
+        body: JSON.stringify({}),
+      }
+    )
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Confirm failed');
+        if (j.prospect) {
+          currentProspect = j.prospect;
+          fillDetailForm(j.prospect);
+          renderRecommendedAction(j.prospect, currentProfile);
+        }
+        renderRecommendedContactCard(j.contact || null);
+        showMsg('Contact confirmed. Builder moved to Ready To Contact.', false);
+        return Promise.all([loadPipeline(), loadBuilderContacts(prospectId)]);
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Confirm failed.', true);
+      })
+      .finally(function () {
+        if (btn) btn.disabled = false;
+      });
+  }
+
+  function batchContactDiscovery() {
+    var btn = $('bi-btn-batch-contact-discovery');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Running batch…';
+    }
+    return fetch('/api/builder-intel/contact-discovery/batch', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({ limit: 10 }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Batch contact discovery failed');
+        var ok = (j.results || []).length;
+        var failed = (j.errors || []).length;
+        showMsg('Batch contact discovery finished · ' + ok + ' ok' + (failed ? ' · ' + failed + ' failed' : '') + '.', false);
+        return loadPipeline();
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Batch contact discovery failed.', true);
+      })
+      .finally(function () {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Batch Run Contact Discovery';
+        }
+      });
   }
 
   function loadPipeline() {
@@ -828,6 +1059,7 @@
         renderOutreach(j.prospect.outreach_log);
         $('bi-new-note').value = '';
         loadPipelineActivity(id);
+        loadBuilderContacts(id);
         return loadProfileAndRuns(id);
       })
       .catch(function (e) {
@@ -1795,6 +2027,12 @@
     if (pipelineRefreshBtn) {
       pipelineRefreshBtn.addEventListener('click', reloadDashboardSections);
     }
+    var batchContactBtn = $('bi-btn-batch-contact-discovery');
+    if (batchContactBtn) batchContactBtn.addEventListener('click', batchContactDiscovery);
+    var runContactBtn = $('bi-btn-run-contact-discovery');
+    if (runContactBtn) runContactBtn.addEventListener('click', runContactDiscoveryForCurrent);
+    var confirmContactBtn = $('bi-btn-confirm-contact');
+    if (confirmContactBtn) confirmContactBtn.addEventListener('click', confirmRecommendedContact);
     var pipelinePrevBtn = $('bi-btn-pipeline-prev');
     if (pipelinePrevBtn) {
       pipelinePrevBtn.addEventListener('click', function () {

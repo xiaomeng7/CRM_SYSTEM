@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10a" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10b" />
 </head>
 <body>
   <div class="app">
@@ -31,7 +31,10 @@
               <h2>Builder Development Pipeline</h2>
               <p class="bi-section-hint">What to advance today — each builder shows a recommended next step.</p>
             </div>
-            <button type="button" id="bi-btn-pipeline-refresh" class="bi-btn">Refresh</button>
+            <div class="bi-pipeline-toolbar">
+              <button type="button" id="bi-btn-batch-contact-discovery" class="bi-btn primary">Batch Run Contact Discovery</button>
+              <button type="button" id="bi-btn-pipeline-refresh" class="bi-btn">Refresh</button>
+            </div>
           </div>
           <div class="bi-pipeline-summary" id="bi-pipeline-summary">
             <p class="bi-empty-inline">Loading pipeline summary…</p>
@@ -254,6 +257,20 @@
             <div id="bi-research-runs" class="bi-research-runs"></div>
           </section>
 
+          <section class="bi-workflow-section" id="bi-section-contact-discovery">
+            <h3 class="bi-workflow-heading">Contact Discovery</h3>
+            <p class="bi-section-hint">Find likely decision makers from the builder website and public search. Review only — nothing is contacted automatically.</p>
+            <div class="bi-contact-discovery-actions">
+              <button type="button" id="bi-btn-run-contact-discovery" class="bi-btn primary">Run Contact Discovery</button>
+              <span id="bi-contact-discovery-status" class="bi-disc-status"></span>
+            </div>
+            <div id="bi-recommended-contact" class="bi-recommended-contact-card">
+              <p class="bi-empty-inline">No recommended contact yet.</p>
+            </div>
+            <div id="bi-contact-candidates" class="bi-contact-candidates"></div>
+            <button type="button" id="bi-btn-confirm-contact" class="bi-btn primary" hidden>Founder Confirm Contact</button>
+          </section>
+
           <section class="bi-workflow-section bi-workflow-pipeline" id="bi-section-pipeline">
             <h3 class="bi-workflow-heading">Development Pipeline</h3>
             <div class="bi-pipeline-panel-meta">
@@ -305,7 +322,7 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr10a"></script>
+  <script src="/js/builder-intelligence.js?v=pr10b"></script>
   <script src="/js/sidebar.js"></script>
 </body>
 </html>

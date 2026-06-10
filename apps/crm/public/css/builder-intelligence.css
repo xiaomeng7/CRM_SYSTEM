@@ -1737,3 +1737,85 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* PR10B — Contact discovery */
+.bi-pipeline-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bi-pipeline-stage-toolbar {
+  margin-bottom: 0.65rem;
+}
+
+.bi-card-contact {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 0.78rem;
+}
+
+.bi-card-contact strong {
+  color: #0d6efd;
+}
+
+.bi-contact-discovery-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.bi-recommended-contact-card {
+  margin-bottom: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #c5daf5;
+  border-radius: 8px;
+  background: #f7fbff;
+}
+
+.bi-recommended-contact-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.bi-recommended-contact-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.bi-recommended-contact-meta,
+.bi-recommended-contact-reason,
+.bi-recommended-contact-confidence {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  color: var(--text);
+}
+
+.bi-contact-candidates {
+  margin-bottom: 0.75rem;
+}
+
+.bi-contact-candidate {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 0.45rem;
+  cursor: pointer;
+  background: #fff;
+}
+
+.bi-contact-candidate.recommended {
+  border-color: #0d6efd;
+  background: #f7fbff;
+}
+
+.bi-contact-candidate-meta,
+.bi-contact-candidate-reason {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}

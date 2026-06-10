@@ -132,10 +132,12 @@ function groupBuildersByPipelineSections(builders) {
 
 async function getBuilderPipelineView(options = {}) {
   const builders = await loadPipelineBuilders(options);
+  const { attachRecommendedContacts } = require('./contactDiscovery/builderContactDiscoveryService');
+  const withContacts = await attachRecommendedContacts(builders, options);
   return {
-    summary: buildPipelineSummary(builders),
-    sections: groupBuildersByPipelineSections(builders),
-    builders,
+    summary: buildPipelineSummary(withContacts),
+    sections: groupBuildersByPipelineSections(withContacts),
+    builders: withContacts,
   };
 }
 

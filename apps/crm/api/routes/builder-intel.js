@@ -70,6 +70,12 @@ const {
 } = require('../../services/builder/builderPipelineService');
 const { pipelineStageOptions } = require('../../services/builder/pipelineStageMapping');
 const { PIPELINE_NEXT_ACTIONS } = require('../../services/builder/pipelineStageConstants');
+const {
+  runContactDiscovery,
+  batchContactDiscovery,
+  listBuilderContacts,
+  confirmBuilderContact,
+} = require('../../services/builder/contactDiscovery/builderContactDiscoveryService');
 
 function requireAdminSecret(req, res) {
   const secret = process.env.ADMIN_SECRET || process.env.SYNC_SECRET;
@@ -177,6 +183,17 @@ router.get('/pipeline/summary', async (req, res) => {
   }
 });
 
+router.post('/contact-discovery/batch', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const result = await batchContactDiscovery({ limit: req.body?.limit || req.query.limit });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST contact-discovery/batch]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
 router.get('/strategic-partners', async (req, res) => {
   try {
     const result = await getStrategicPartners({ limit: req.query.limit });
@@ -275,6 +292,39 @@ router.post('/prospects/:id/pipeline/transition', async (req, res) => {
     res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[builder-intel POST pipeline transition]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/prospects/:id/contacts', async (req, res) => {
+  try {
+    const contacts = await listBuilderContacts(req.params.id);
+    const recommended = contacts.find((c) => c.is_recommended) || contacts[0] || null;
+    res.json({ ok: true, contacts, recommended_contact: recommended });
+  } catch (err) {
+    console.error('[builder-intel GET contacts]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/prospects/:id/contact-discovery/run', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const result = await runContactDiscovery(req.params.id);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST contact-discovery/run]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/prospects/:id/contacts/:contactId/confirm', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const result = await confirmBuilderContact(req.params.id, req.params.contactId);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST contacts confirm]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
   }
 });
