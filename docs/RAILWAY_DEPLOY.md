@@ -83,6 +83,15 @@ CRM 应用位于 **apps/crm**（BHT Revenue OS 单仓）。**重要：Root Direc
 | `BUILDER_DISCOVERY_SERPAPI_ENABLED` | 启用 Builder Discovery SerpAPI | 填 `true`（需同时配置 `SERPAPI_API_KEY`） |
 | `ADMIN_SECRET` | CRM 写操作密钥 | 自设强密码；Builder Intelligence 导入/发现需此 header |
 
+**SerpAPI 变量必须是「普通 Variable」**：在 CRM_SYSTEM → Variables 里直接粘贴 key 值。  
+不要用 `${{ secrets.SERPAPI_API_KEY }}` 或引用尚未创建的 Secret，否则构建会失败：
+
+```text
+Build Failed: secret SERPAPI_API_KEY not found
+```
+
+代码只在**运行时**读取 `SERPAPI_API_KEY`，构建阶段不需要该 key。若 Variables 里已有带 Secret 图标的错误引用，删除后重新添加为普通变量即可。
+
 - `PORT` 不用填，Railway 会自动注入。
 
 ---
