@@ -16,6 +16,7 @@ const {
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
   BUILDER_STATUSES,
+  PIPELINE_STAGES,
   DISCOVERY_CREATE_DEFAULTS,
 } = require('./builderProspectConstants');
 const { applyRelationshipDerivation } = require('./builderRelationshipDerivation');
@@ -23,6 +24,12 @@ const {
   deriveFieldsFromRelationshipLevel,
   inferRelationshipLevelFromProspect,
 } = require('./relationshipLevelMapping');
+const {
+  deriveFieldsFromPipelineStage,
+  inferPipelineStageFromProspect,
+  pipelineNextAction,
+} = require('./pipelineStageMapping');
+const { PIPELINE_STAGE_LABELS } = require('./pipelineStageConstants');
 
 const MAX_LIMIT = 200;
 const DEFAULT_LIMIT = 100;
@@ -42,6 +49,17 @@ function trimOrNull(value) {
   if (value == null) return null;
   const s = String(value).trim();
   return s === '' ? null : s;
+}
+
+function decorateProspectPipelineFields(p) {
+  const stage = inferPipelineStageFromProspect(p);
+  return {
+    ...p,
+    pipeline_stage: stage,
+    pipeline_stage_label: PIPELINE_STAGE_LABELS[stage] || stage,
+    pipeline_next_action: pipelineNextAction(stage),
+    relationship_level: inferRelationshipLevelFromProspect(p),
+  };
 }
 
 function parseLimit(raw) {
@@ -143,6 +161,9 @@ function normalizeBuilderInput(data, { isCreate = false } = {}) {
       assertEnum(data.builder_status, BUILDER_STATUSES, 'builder_status') ||
       (isCreate ? 'prospect' : null);
   }
+  if (data.pipeline_stage !== undefined) {
+    out.pipeline_stage = assertEnum(data.pipeline_stage, PIPELINE_STAGES, 'pipeline_stage');
+  }
 
   if (data.next_followup_at !== undefined || isCreate) {
     out.next_followup_at =
@@ -176,6 +197,10 @@ function buildListQuery(filters = {}, { tableAlias = '' } = {}) {
   if (filters.research_status) {
     params.push(filters.research_status);
     conditions.push(`${p}research_status = $${params.length}`);
+  }
+  if (filters.pipeline_stage) {
+    params.push(filters.pipeline_stage);
+    conditions.push(`COALESCE(${p}pipeline_stage, 'target') = $${params.length}`);
   }
   if (filters.search) {
     params.push(`%${filters.search}%`);
@@ -234,10 +259,7 @@ async function listBuilderProspects(filters = {}, options = {}) {
   ]);
 
   return {
-    prospects: rows.rows.map((p) => ({
-      ...p,
-      relationship_level: inferRelationshipLevelFromProspect(p),
-    })),
+    prospects: rows.rows.map((p) => decorateProspectPipelineFields(p)),
     total: countRow.rows[0]?.cnt || 0,
     stage_stats: stageStats.rows,
   };
@@ -307,8 +329,7 @@ async function getBuilderProspectById(id, options = {}) {
   );
 
   return {
-    ...prospect,
-    relationship_level: inferRelationshipLevelFromProspect(prospect),
+    ...decorateProspectPipelineFields(prospect),
     outreach_log: outreach.rows,
   };
 }
@@ -316,6 +337,9 @@ async function getBuilderProspectById(id, options = {}) {
 async function createBuilderProspect(data, options = {}) {
   const db = options.db || pool;
   const input = normalizeBuilderInput(data, { isCreate: true });
+  const pipelineStage = input.pipeline_stage
+    ? input.pipeline_stage
+    : inferPipelineStageFromProspect({ ...DISCOVERY_CREATE_DEFAULTS, ...input });
 
   const r = await db.query(
     `INSERT INTO b2b_prospects (
@@ -324,7 +348,7 @@ async function createBuilderProspect(data, options = {}) {
        builder_type, project_focus, target_suburbs, fit_priority,
        research_status, relationship_stage,
        relationship_strength, opportunity_potential, timing_status, founder_notes,
-       builder_status,
+       builder_status, pipeline_stage,
        decision_maker_name, decision_maker_role, qualification_notes,
        next_followup_at
      ) VALUES (
@@ -332,9 +356,9 @@ async function createBuilderProspect(data, options = {}) {
        $8,$9,$10,$11,
        $12,$13,$14,$15,
        $16,$17,
-       $18,$19,$20,$21,$22,
-       $23,$24,$25,
-       $26
+       $18,$19,$20,$21,$22,$23,
+       $24,$25,$26,
+       $27
      ) RETURNING *`,
     [
       input.company_name,
@@ -359,13 +383,14 @@ async function createBuilderProspect(data, options = {}) {
       input.timing_status ?? DISCOVERY_CREATE_DEFAULTS.timing_status,
       input.founder_notes ?? null,
       input.builder_status ?? 'prospect',
+      pipelineStage,
       input.decision_maker_name,
       input.decision_maker_role,
       input.qualification_notes,
       input.next_followup_at,
     ]
   );
-  return r.rows[0];
+  return decorateProspectPipelineFields(r.rows[0]);
 }
 
 async function updateBuilderProspect(id, data, options = {}) {
@@ -386,6 +411,9 @@ async function updateBuilderProspect(id, data, options = {}) {
   const picked = pickFields(data, BUILDER_UPDATE_FIELDS);
   if (data.relationship_level !== undefined) {
     Object.assign(picked, deriveFieldsFromRelationshipLevel(data.relationship_level));
+  }
+  if (data.pipeline_stage !== undefined) {
+    Object.assign(picked, deriveFieldsFromPipelineStage(data.pipeline_stage));
   }
   if (!Object.keys(picked).length) {
     const err = new Error('No valid fields to update');
@@ -413,7 +441,7 @@ async function updateBuilderProspect(id, data, options = {}) {
      RETURNING *`,
     values
   );
-  return r.rows[0];
+  return decorateProspectPipelineFields(r.rows[0]);
 }
 
 async function addBuilderProspectNote(id, noteText, options = {}) {
@@ -456,5 +484,6 @@ module.exports = {
   updateBuilderProspect,
   addBuilderProspectNote,
   parseLimit,
+  decorateProspectPipelineFields,
   PROSPECT_TYPE_BUILDER,
 };

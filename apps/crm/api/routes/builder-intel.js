@@ -63,6 +63,13 @@ const {
   FOUNDER_BUILDER_STATUSES,
   FOUNDER_RELATIONSHIP_STRENGTHS,
 } = require('../../services/builder/builderRelationshipDerivation');
+const {
+  getBuilderPipelineView,
+  transitionPipelineStage,
+  listPipelineActivity,
+} = require('../../services/builder/builderPipelineService');
+const { pipelineStageOptions } = require('../../services/builder/pipelineStageMapping');
+const { PIPELINE_NEXT_ACTIONS } = require('../../services/builder/pipelineStageConstants');
 
 function requireAdminSecret(req, res) {
   const secret = process.env.ADMIN_SECRET || process.env.SYNC_SECRET;
@@ -141,7 +148,33 @@ router.get('/prospects/enums', (_req, res) => {
     serpapi_configured: isSerpApiConfigured(),
     serpapi_status: getSerpApiStatus(),
     fit_levels: FIT_LEVELS,
+    pipeline_stages: pipelineStageOptions(),
+    pipeline_next_actions: PIPELINE_NEXT_ACTIONS,
   });
+});
+
+router.get('/pipeline', async (req, res) => {
+  try {
+    const view = await getBuilderPipelineView({
+      include_inactive: req.query.include_inactive === 'true',
+    });
+    res.json({ ok: true, ...view });
+  } catch (err) {
+    console.error('[builder-intel GET pipeline]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/pipeline/summary', async (req, res) => {
+  try {
+    const view = await getBuilderPipelineView({
+      include_inactive: req.query.include_inactive === 'true',
+    });
+    res.json({ ok: true, summary: view.summary });
+  } catch (err) {
+    console.error('[builder-intel GET pipeline/summary]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
 });
 
 router.get('/strategic-partners', async (req, res) => {
@@ -209,6 +242,7 @@ router.get('/prospects', async (req, res) => {
       builder_type: req.query.builder_type,
       fit_priority: req.query.fit_priority,
       research_status: req.query.research_status,
+      pipeline_stage: req.query.pipeline_stage,
       search: req.query.search || req.query.q,
       limit: req.query.limit,
       offset: req.query.offset,
@@ -216,6 +250,31 @@ router.get('/prospects', async (req, res) => {
     res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[builder-intel GET prospects]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/prospects/:id/pipeline/activity', async (req, res) => {
+  try {
+    const activity = await listPipelineActivity(req.params.id, { limit: req.query.limit });
+    res.json({ ok: true, activity });
+  } catch (err) {
+    console.error('[builder-intel GET pipeline activity]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/prospects/:id/pipeline/transition', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const result = await transitionPipelineStage(req.params.id, {
+      direction: req.body?.direction,
+      to_stage: req.body?.to_stage,
+      note: req.body?.note,
+    });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST pipeline transition]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
   }
 });

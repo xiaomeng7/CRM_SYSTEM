@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr9b42" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10a" />
 </head>
 <body>
   <div class="app">
@@ -26,7 +26,7 @@
       <header class="header">
         <div>
           <h1 style="margin:0;font-size:1.1rem;">Builder Intelligence</h1>
-          <p class="bi-subtitle">Builder discovery platform — find, research, then build relationships</p>
+          <p class="bi-subtitle">Builder development pipeline — advance relationships, not browse a database</p>
         </div>
         <div class="bi-header-actions">
           <input type="password" id="bi-secret" placeholder="API secret (writes)" autocomplete="off" class="bi-secret-input" />
@@ -36,6 +36,22 @@
 
       <div class="content bi-content">
         <div id="bi-msg" class="bi-msg" style="display:none;"></div>
+
+        <section class="bi-pipeline" id="bi-pipeline">
+          <div class="bi-section-header-row">
+            <div>
+              <h2>Builder Development Pipeline</h2>
+              <p class="bi-section-hint">What to advance today — each builder shows a recommended next step.</p>
+            </div>
+            <button type="button" id="bi-btn-pipeline-refresh" class="bi-btn">Refresh</button>
+          </div>
+          <div class="bi-pipeline-summary" id="bi-pipeline-summary">
+            <p class="bi-empty-inline">Loading pipeline summary…</p>
+          </div>
+          <div class="bi-pipeline-sections" id="bi-pipeline-sections">
+            <p class="bi-empty">Loading pipeline…</p>
+          </div>
+        </section>
 
         <section class="bi-discovery-engine" id="bi-discovery-engine">
           <div class="bi-section-header-row">
@@ -115,59 +131,49 @@
           </div>
         </section>
 
-        <section class="bi-top-targets" id="bi-top-targets">
-          <div class="bi-top-targets-header">
-            <h2>Contact This Week</h2>
-            <div class="bi-top-targets-actions">
-              <select id="bi-target-band" class="bi-filter-select">
-                <option value="">All bands</option>
-                <option value="A">Band A</option>
-                <option value="B">Band B</option>
-                <option value="C">Band C</option>
-              </select>
-              <button type="button" id="bi-btn-recalc-targets" class="bi-btn">Recalculate</button>
+        <details class="bi-legacy-section">
+          <summary>Contact This Week (Target Ranking)</summary>
+          <section class="bi-top-targets" id="bi-top-targets">
+            <div class="bi-top-targets-header">
+              <h2>Contact This Week</h2>
+              <div class="bi-top-targets-actions">
+                <select id="bi-target-band" class="bi-filter-select">
+                  <option value="">All bands</option>
+                  <option value="A">Band A</option>
+                  <option value="B">Band B</option>
+                  <option value="C">Band C</option>
+                </select>
+                <button type="button" id="bi-btn-recalc-targets" class="bi-btn">Recalculate</button>
+              </div>
             </div>
-          </div>
-          <div id="bi-targets-list" class="bi-targets-list">
-            <p class="bi-empty">Loading priorities…</p>
-          </div>
-        </section>
-
-        <section class="bi-strategic-builders" id="bi-strategic-partners">
-          <h2>Strategic Partners</h2>
-          <p class="bi-section-hint">Long-term trusted partners — relationship management, not prospecting.</p>
-          <div id="bi-strategic-list" class="bi-targets-list">
-            <p class="bi-empty">Loading strategic partners…</p>
-          </div>
-        </section>
-
-        <section class="bi-active-partners" id="bi-active-partners">
-          <h2>Active Partners</h2>
-          <p class="bi-section-hint">Builders we work with — manage pipeline and relationships.</p>
-          <div id="bi-active-list" class="bi-targets-list">
-            <p class="bi-empty">Loading active partners…</p>
-          </div>
-        </section>
-
-        <section class="bi-all-builders" id="bi-all-builders">
-          <div class="bi-section-header-row">
-            <h2>All Builders</h2>
-            <div class="bi-toolbar bi-toolbar-inline">
-              <input type="search" id="bi-search" placeholder="Search company, website…" class="bi-filter-input" />
-              <select id="bi-filter-priority" class="bi-filter-select">
-                <option value="">All priorities</option>
-              </select>
-              <select id="bi-filter-research" class="bi-filter-select">
-                <option value="">All research</option>
-              </select>
-              <button type="button" id="bi-btn-refresh" class="bi-btn">Refresh</button>
+            <div id="bi-targets-list" class="bi-targets-list">
+              <p class="bi-empty">Loading priorities…</p>
             </div>
-          </div>
-          <div id="bi-builder-cards" class="bi-builder-cards">
-            <p class="bi-empty">Loading builders…</p>
-          </div>
-          <p class="bi-meta" id="bi-total"></p>
-        </section>
+          </section>
+        </details>
+
+        <details class="bi-legacy-section">
+          <summary>All Builders (database view)</summary>
+          <section class="bi-all-builders" id="bi-all-builders">
+            <div class="bi-section-header-row">
+              <h2>All Builders</h2>
+              <div class="bi-toolbar bi-toolbar-inline">
+                <input type="search" id="bi-search" placeholder="Search company, website…" class="bi-filter-input" />
+                <select id="bi-filter-priority" class="bi-filter-select">
+                  <option value="">All priorities</option>
+                </select>
+                <select id="bi-filter-research" class="bi-filter-select">
+                  <option value="">All research</option>
+                </select>
+                <button type="button" id="bi-btn-refresh" class="bi-btn">Refresh</button>
+              </div>
+            </div>
+            <div id="bi-builder-cards" class="bi-builder-cards">
+              <p class="bi-empty">Loading builders…</p>
+            </div>
+            <p class="bi-meta" id="bi-total"></p>
+          </section>
+        </details>
       </div>
     </main>
   </div>
@@ -260,6 +266,19 @@
             <div id="bi-research-runs" class="bi-research-runs"></div>
           </section>
 
+          <section class="bi-workflow-section bi-workflow-pipeline" id="bi-section-pipeline">
+            <h3 class="bi-workflow-heading">Development Pipeline</h3>
+            <div class="bi-pipeline-panel-meta">
+              <div class="bi-field"><span class="bi-field-label">Stage</span><strong id="bi-pipeline-stage-label">—</strong></div>
+              <div class="bi-field"><span class="bi-field-label">Next action</span><strong id="bi-pipeline-next-action" class="bi-pipeline-action">—</strong></div>
+            </div>
+            <div class="bi-pipeline-transition-actions">
+              <button type="button" id="bi-btn-pipeline-prev" class="bi-btn">Move To Previous Stage</button>
+              <button type="button" id="bi-btn-pipeline-next" class="bi-btn primary">Move To Next Stage</button>
+            </div>
+            <div id="bi-pipeline-activity" class="bi-pipeline-activity"></div>
+          </section>
+
           <section class="bi-workflow-section bi-workflow-action" id="bi-section-action">
             <h3 class="bi-workflow-heading">Recommended Action</h3>
             <div class="bi-action-card">
@@ -298,6 +317,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr9b42"></script>
+  <script src="/js/builder-intelligence.js?v=pr10a"></script>
 </body>
 </html>

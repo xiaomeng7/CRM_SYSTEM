@@ -14,6 +14,8 @@
   var hideLowQualityCandidates = true;
   var hideExistingBuilders = true;
   var serpApiEnabled = false;
+  var pipelineSummary = null;
+  var pipelineSections = [];
 
   function $(id) {
     return document.getElementById(id);
@@ -96,11 +98,13 @@
     $('bi-panel-title').textContent = prospect.company_name || 'Builder';
 
     var action =
+      prospect.pipeline_next_action ||
       (prospect.target_scores && prospect.target_scores.next_best_action) ||
       (profile && profile.recommended_founder_action) ||
       prospect.suggested_action ||
       suggestedActionForProspect(prospect);
     $('bi-action-next').textContent = action;
+    renderPipelinePanel(prospect);
 
     var status = prospect.builder_status || 'prospect';
     var isPartner = isPartnerStatus(status);
@@ -177,11 +181,195 @@
         .join('');
   }
 
-  function scrollToAllBuilders() {
-    var section = $('bi-all-builders');
+  function scrollToPipeline() {
+    var section = $('bi-pipeline');
     if (section && section.scrollIntoView) {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }
+
+  function scrollToAllBuilders() {
+    scrollToPipeline();
+  }
+
+  function renderPipelineSummary(summary) {
+    var el = $('bi-pipeline-summary');
+    if (!el || !summary) return;
+    var groups = summary.groups || [];
+    el.innerHTML =
+      '<h3 class="bi-pipeline-summary-title">Builder Pipeline Summary</h3>' +
+      '<div class="bi-pipeline-summary-grid">' +
+      groups
+        .map(function (g) {
+          return (
+            '<div class="bi-pipeline-summary-card"><span class="bi-pipeline-summary-label">' +
+            esc(g.label) +
+            '</span><strong class="bi-pipeline-summary-count">' +
+            esc(String(g.count)) +
+            '</strong></div>'
+          );
+        })
+        .join('') +
+      '</div>';
+  }
+
+  function renderPipelineCard(p) {
+    var fit = p.estimated_fit_score != null ? 'Fit ' + p.estimated_fit_score : 'Not researched';
+    return (
+      '<article class="bi-builder-card bi-pipeline-card" data-id="' +
+      esc(p.id) +
+      '"><h3 class="bi-card-company">' +
+      esc(p.company_name) +
+      '</h3><p class="bi-card-focus">' +
+      esc(focusLineForProspect(p)) +
+      '</p><p class="bi-card-fit">' +
+      esc(fit) +
+      '</p><p class="bi-card-action"><span>Next:</span> <strong>' +
+      esc(p.pipeline_next_action || suggestedActionForProspect(p)) +
+      '</strong></p><p class="bi-card-status"><span>Stage:</span> <strong>' +
+      esc(p.pipeline_stage_label || labelize(p.pipeline_stage)) +
+      '</strong></p></article>'
+    );
+  }
+
+  function renderPipelineSections(sections) {
+    var el = $('bi-pipeline-sections');
+    if (!el) return;
+    if (!sections || !sections.length) {
+      el.innerHTML = '<p class="bi-empty">No builders in pipeline yet. Use Discovery to find targets.</p>';
+      return;
+    }
+    el.innerHTML = sections
+      .map(function (section) {
+        var cards =
+          section.builders && section.builders.length
+            ? '<div class="bi-pipeline-cards">' +
+              section.builders.map(renderPipelineCard).join('') +
+              '</div>'
+            : '<p class="bi-empty-inline">No builders in this stage.</p>';
+        return (
+          '<section class="bi-pipeline-stage" id="bi-pipeline-stage-' +
+          esc(section.id) +
+          '"><div class="bi-pipeline-stage-header"><h3>' +
+          esc(section.title) +
+          '</h3><span class="bi-pipeline-stage-count">' +
+          esc(String(section.count)) +
+          '</span></div>' +
+          cards +
+          '</section>'
+        );
+      })
+      .join('');
+    bindCardClicks(el);
+  }
+
+  function loadPipeline() {
+    var summaryEl = $('bi-pipeline-summary');
+    var sectionsEl = $('bi-pipeline-sections');
+    if (summaryEl) summaryEl.innerHTML = '<p class="bi-empty-inline">Loading…</p>';
+    if (sectionsEl) sectionsEl.innerHTML = '<p class="bi-empty">Loading pipeline…</p>';
+    return fetch('/api/builder-intel/pipeline')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Pipeline load failed');
+        pipelineSummary = j.summary || null;
+        pipelineSections = j.sections || [];
+        renderPipelineSummary(pipelineSummary);
+        renderPipelineSections(pipelineSections);
+      })
+      .catch(function (e) {
+        if (summaryEl) summaryEl.innerHTML = '<p class="bi-empty-inline">' + esc(e.message) + '</p>';
+        if (sectionsEl) sectionsEl.innerHTML = '<p class="bi-empty">' + esc(e.message) + '</p>';
+      });
+  }
+
+  function renderPipelineActivity(items) {
+    var el = $('bi-pipeline-activity');
+    if (!el) return;
+    if (!items || !items.length) {
+      el.innerHTML = '<p class="bi-empty-inline">No pipeline activity yet.</p>';
+      return;
+    }
+    el.innerHTML =
+      '<h4 class="bi-runs-heading">Pipeline activity</h4>' +
+      items
+        .map(function (item) {
+          var label =
+            item.from_stage && item.to_stage
+              ? esc(labelize(item.from_stage)) + ' → ' + esc(labelize(item.to_stage))
+              : esc(item.activity_type || 'update');
+          return (
+            '<div class="bi-pipeline-activity-item"><strong>' +
+            label +
+            '</strong> · ' +
+            esc(fmtDate(item.created_at)) +
+            (item.body ? '<br>' + esc(item.body) : '') +
+            '</div>'
+          );
+        })
+        .join('');
+  }
+
+  function loadPipelineActivity(id) {
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/pipeline/activity')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        renderPipelineActivity(j.ok ? j.activity : []);
+      })
+      .catch(function () {
+        renderPipelineActivity([]);
+      });
+  }
+
+  function renderPipelinePanel(prospect) {
+    if (!prospect) return;
+    var stageLabel = $('bi-pipeline-stage-label');
+    var nextAction = $('bi-pipeline-next-action');
+    if (stageLabel) {
+      stageLabel.textContent = prospect.pipeline_stage_label || labelize(prospect.pipeline_stage) || '—';
+    }
+    if (nextAction) {
+      nextAction.textContent = prospect.pipeline_next_action || '—';
+    }
+    var prevBtn = $('bi-btn-pipeline-prev');
+    var nextBtn = $('bi-btn-pipeline-next');
+    if (prevBtn) prevBtn.disabled = prospect.pipeline_stage === 'target';
+    if (nextBtn) nextBtn.disabled = prospect.pipeline_stage === 'strategic_partner';
+  }
+
+  function transitionPipelineStage(direction) {
+    var id = $('bi-id') && $('bi-id').value;
+    if (!id) return;
+    var prevBtn = $('bi-btn-pipeline-prev');
+    var nextBtn = $('bi-btn-pipeline-next');
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/pipeline/transition', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({ direction: direction }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Stage transition failed');
+        if (j.prospect) {
+          currentProspect = j.prospect;
+          fillDetailForm(j.prospect);
+          renderRecommendedAction(j.prospect, currentProfile);
+        }
+        showMsg('Moved to ' + (j.prospect && j.prospect.pipeline_stage_label ? j.prospect.pipeline_stage_label : 'new stage') + '.', false);
+        return Promise.all([loadPipeline(), loadList(), loadPipelineActivity(id)]);
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Stage transition failed.', true);
+        if (currentProspect) renderPipelinePanel(currentProspect);
+      });
   }
 
   function updateResearchButtonLabel(researchStatus) {
@@ -240,7 +428,7 @@
   }
 
   function reloadDashboardSections() {
-    return Promise.all([loadTargets(), loadStrategicPartners(), loadActivePartners()]);
+    return Promise.all([loadPipeline(), loadTargets()]);
   }
 
   function loadTargets() {
@@ -639,6 +827,7 @@
         renderRecommendedAction(j.prospect, null);
         renderOutreach(j.prospect.outreach_log);
         $('bi-new-note').value = '';
+        loadPipelineActivity(id);
         return loadProfileAndRuns(id);
       })
       .catch(function (e) {
@@ -1311,7 +1500,7 @@
         var ok = j.researched_count || 0;
         var failed = j.error_count || 0;
         showMsg(
-          'Researched ' + ok + ' builder(s)' + (failed ? ' · ' + failed + ' failed' : '') + '. Review results in All Builders.',
+          'Researched ' + ok + ' builder(s)' + (failed ? ' · ' + failed + ' failed' : '') + '. Review results in the Pipeline.',
           failed > 0
         );
         scrollToAllBuilders();
@@ -1551,7 +1740,7 @@
               imported +
               ' builder(s)' +
               (failed ? ' · ' + failed + ' skipped' : '') +
-              '. Scroll to All Builders below, open a card, then Run Website Research.',
+              '. Scroll to Pipeline below, open a card, then Run Website Research.',
             false
           );
           scrollToAllBuilders();
@@ -1602,6 +1791,22 @@
       loadList();
       reloadDashboardSections();
     });
+    var pipelineRefreshBtn = $('bi-btn-pipeline-refresh');
+    if (pipelineRefreshBtn) {
+      pipelineRefreshBtn.addEventListener('click', reloadDashboardSections);
+    }
+    var pipelinePrevBtn = $('bi-btn-pipeline-prev');
+    if (pipelinePrevBtn) {
+      pipelinePrevBtn.addEventListener('click', function () {
+        transitionPipelineStage('previous');
+      });
+    }
+    var pipelineNextBtn = $('bi-btn-pipeline-next');
+    if (pipelineNextBtn) {
+      pipelineNextBtn.addEventListener('click', function () {
+        transitionPipelineStage('next');
+      });
+    }
     $('bi-btn-recalc-targets').addEventListener('click', recalculateTargets);
     $('bi-target-band').addEventListener('change', loadTargets);
     $('bi-btn-add').addEventListener('click', openAddModal);
@@ -1688,10 +1893,9 @@
   loadEnums()
     .then(function () {
       return Promise.all([
+        loadPipeline(),
         loadList(),
         loadTargets(),
-        loadStrategicPartners(),
-        loadActivePartners(),
         loadDiscoveryDashboard(),
         loadQuickSearches(),
       ]);

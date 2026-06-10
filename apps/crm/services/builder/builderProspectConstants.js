@@ -62,6 +62,17 @@ const BUILDER_STATUSES = [
   'inactive_partner',
 ];
 
+const PIPELINE_STAGES = [
+  'target',
+  'contact_discovery',
+  'contact_ready',
+  'relationship_building',
+  'opportunity',
+  'active_builder',
+  'strategic_partner',
+  'inactive',
+];
+
 const TIMING_STATUSES = [
   'unknown',
   'growth_mode',
@@ -100,6 +111,7 @@ const BUILDER_CREATE_FIELDS = [
   'timing_status',
   'founder_notes',
   'builder_status',
+  'pipeline_stage',
 ];
 
 const BUILDER_UPDATE_FIELDS = [
@@ -132,6 +144,7 @@ module.exports = {
   OPPORTUNITY_POTENTIALS,
   TIMING_STATUSES,
   BUILDER_STATUSES,
+  PIPELINE_STAGES,
   FOUNDER_OPPORTUNITY_POTENTIALS,
   BUILDER_CREATE_FIELDS,
   BUILDER_UPDATE_FIELDS,

@@ -71,14 +71,26 @@ async function updateProspectAfterResearch(prospectId, analysis, db) {
     fit_priority: analysis.fit_priority || fitPriorityFromScore(analysis.estimated_fit_score),
   });
 
+  const existingRes = await db.query(
+    `SELECT * FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
+    [prospectId, PROSPECT_TYPE_BUILDER]
+  );
+  const existing = existingRes.rows[0] || {};
+  const { suggestPipelineStageAfterResearch } = require('./pipelineStageMapping');
+  const pipelineStage = suggestPipelineStageAfterResearch({
+    ...existing,
+    research_status: inferred.research_status,
+  });
+
   const r = await db.query(
     `UPDATE b2b_prospects SET
        research_status = $2,
        fit_priority = $3,
        builder_type = $4,
        project_focus = $5,
-       target_suburbs = COALESCE($6, target_suburbs)
-     WHERE id = $1 AND prospect_type = $7
+       target_suburbs = COALESCE($6, target_suburbs),
+       pipeline_stage = $7
+     WHERE id = $1 AND prospect_type = $8
      RETURNING *`,
     [
       prospectId,
@@ -87,6 +99,7 @@ async function updateProspectAfterResearch(prospectId, analysis, db) {
       inferred.builder_type,
       inferred.project_focus,
       inferred.target_suburbs,
+      pipelineStage,
       PROSPECT_TYPE_BUILDER,
     ]
   );
