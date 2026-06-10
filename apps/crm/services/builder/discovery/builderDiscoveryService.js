@@ -1,29 +1,33 @@
 /**
- * Builder Discovery Engine service (PR9A).
+ * Builder Discovery Engine service (PR9A + PR9B.1).
  */
 
 const { pool } = require('../../../lib/db');
 const { PROSPECT_TYPE_BUILDER, DISCOVERY_CREATE_DEFAULTS } = require('../builderProspectConstants');
-const { createBuilderProspect, listBuilderProspects } = require('../builderProspectService');
-const { runManualSeedDiscovery } = require('./manualSeedDiscovery');
-const { runSearchEngineDiscovery } = require('./searchEngineDiscovery');
+const { createBuilderProspect } = require('../builderProspectService');
+const { runDiscovery } = require('./runDiscovery');
+const {
+  normalizeProviderSource,
+  listProviders,
+  PROVIDER_SOURCES,
+} = require('./providers/providerRegistry');
 const {
   normalizeWebsiteForCompare,
   normalizeCompanyNameForCompare,
+  normalizePhoneForCompare,
 } = require('./normalizeBuilderCandidate');
 
-const RUN_SOURCES = ['manual_seed', 'search_engine', 'website_directory'];
 const RUN_STATUSES = ['running', 'completed', 'failed'];
 const CANDIDATE_STATUSES = ['candidate', 'imported', 'dismissed', 'duplicate'];
 
 function assertRunSource(source) {
-  const v = String(source || 'manual_seed').trim();
-  if (!RUN_SOURCES.includes(v) && v !== 'web_disabled') {
-    const err = new Error(`Invalid discovery source: ${v}`);
+  const normalized = normalizeProviderSource(source);
+  if (!PROVIDER_SOURCES.includes(normalized)) {
+    const err = new Error(`Invalid discovery source: ${source}`);
     err.code = 'INVALID_INPUT';
     throw err;
   }
-  return v === 'web_disabled' ? 'search_engine' : v;
+  return normalized;
 }
 
 async function loadBuilderProspectsForDuplicateCheck(db) {
@@ -39,12 +43,15 @@ async function loadBuilderProspectsForDuplicateCheck(db) {
 function findMatchingProspect(existingRows, candidate) {
   const web = normalizeWebsiteForCompare(candidate.website);
   const name = normalizeCompanyNameForCompare(candidate.company_name);
+  const phone = normalizePhoneForCompare(candidate.phone);
 
   for (const row of existingRows) {
     const rowWeb = normalizeWebsiteForCompare(row.website);
     const rowName = normalizeCompanyNameForCompare(row.company_name);
+    const rowPhone = normalizePhoneForCompare(row.phone);
     if (web && rowWeb && web === rowWeb) return row;
     if (name && rowName && name === rowName) return row;
+    if (phone && rowPhone && phone === rowPhone) return row;
   }
   return null;
 }
@@ -52,16 +59,20 @@ function findMatchingProspect(existingRows, candidate) {
 function findDuplicateInBatch(seen, candidate) {
   const web = normalizeWebsiteForCompare(candidate.website);
   const name = normalizeCompanyNameForCompare(candidate.company_name);
+  const phone = normalizePhoneForCompare(candidate.phone);
   if (web && seen.websites.has(web)) return seen.websites.get(web);
   if (name && seen.names.has(name)) return seen.names.get(name);
+  if (phone && seen.phones.has(phone)) return seen.phones.get(phone);
   return null;
 }
 
 function trackBatchCandidate(seen, candidate) {
   const web = normalizeWebsiteForCompare(candidate.website);
   const name = normalizeCompanyNameForCompare(candidate.company_name);
+  const phone = normalizePhoneForCompare(candidate.phone);
   if (web) seen.websites.set(web, candidate);
   if (name) seen.names.set(name, candidate);
+  if (phone) seen.phones.set(phone, candidate);
 }
 
 async function insertCandidate(db, runId, candidate, status, matchedProspectId = null) {
@@ -93,6 +104,31 @@ async function insertCandidate(db, runId, candidate, status, matchedProspectId =
   return r.rows[0];
 }
 
+async function storeDiscoveryCandidates(db, runId, candidates) {
+  const existingProspects = await loadBuilderProspectsForDuplicateCheck(db);
+  const seen = { websites: new Map(), names: new Map(), phones: new Map() };
+  const stored = [];
+
+  for (const candidate of candidates || []) {
+    const existing = findMatchingProspect(existingProspects, candidate);
+    if (existing) {
+      stored.push(await insertCandidate(db, runId, candidate, 'duplicate', existing.id));
+      continue;
+    }
+
+    const batchDup = findDuplicateInBatch(seen, candidate);
+    if (batchDup) {
+      stored.push(await insertCandidate(db, runId, candidate, 'duplicate', null));
+      continue;
+    }
+
+    trackBatchCandidate(seen, candidate);
+    stored.push(await insertCandidate(db, runId, candidate, 'candidate', null));
+  }
+
+  return stored;
+}
+
 async function createDiscoveryRun(data, options = {}) {
   const db = options.db || pool;
   const query = String(data.query || '').trim();
@@ -115,57 +151,36 @@ async function createDiscoveryRun(data, options = {}) {
   const run = runRes.rows[0];
 
   try {
-    let discoveryResult;
-    if (source === 'manual_seed') {
-      discoveryResult = runManualSeedDiscovery({ query, location, seed_candidates: seedCandidates });
-    } else if (source === 'search_engine') {
-      discoveryResult = await runSearchEngineDiscovery({ query, location });
-      if (!discoveryResult.ok && discoveryResult.reason === 'web_discovery_disabled') {
-        await db.query(
-          `UPDATE builder_discovery_runs
-           SET status = 'completed', total_found = 0, completed_at = now(),
-               error_message = $2
-           WHERE id = $1`,
-          [run.id, discoveryResult.reason]
-        );
-        const updated = await getDiscoveryRunById(run.id, { db });
-        return { run: updated.run, candidates: [], web_discovery_disabled: true };
-      }
-      if (!discoveryResult.ok) {
-        await db.query(
-          `UPDATE builder_discovery_runs
-           SET status = 'failed', error_message = $2, completed_at = now()
-           WHERE id = $1`,
-          [run.id, discoveryResult.reason || 'discovery_failed']
-        );
-        const err = new Error(discoveryResult.reason || 'Discovery failed');
-        err.code = 'DISCOVERY_FAILED';
-        throw err;
-      }
-    } else {
-      discoveryResult = runManualSeedDiscovery({ query, location, seed_candidates: seedCandidates });
+    const discoveryResult = await runDiscovery({
+      source,
+      query,
+      location,
+      limit: data.limit,
+      seed_candidates: seedCandidates,
+    });
+
+    if (!discoveryResult.ok) {
+      const reason = discoveryResult.reason || 'discovery_failed';
+      await db.query(
+        `UPDATE builder_discovery_runs
+         SET status = 'completed', total_found = 0, completed_at = now(), error_message = $2
+         WHERE id = $1`,
+        [run.id, reason]
+      );
+      const updated = await getDiscoveryRunById(run.id, { db });
+      return {
+        run: updated.run,
+        candidates: [],
+        provider: discoveryResult.provider,
+        provider_disabled:
+          reason === 'provider_not_enabled' ||
+          reason === 'web_discovery_disabled' ||
+          reason === 'serpapi_not_configured',
+        reason,
+      };
     }
 
-    const existingProspects = await loadBuilderProspectsForDuplicateCheck(db);
-    const seen = { websites: new Map(), names: new Map() };
-    const stored = [];
-
-    for (const candidate of discoveryResult.candidates || []) {
-      const existing = findMatchingProspect(existingProspects, candidate);
-      if (existing) {
-        stored.push(await insertCandidate(db, run.id, candidate, 'duplicate', existing.id));
-        continue;
-      }
-
-      const batchDup = findDuplicateInBatch(seen, candidate);
-      if (batchDup) {
-        stored.push(await insertCandidate(db, run.id, candidate, 'duplicate', null));
-        continue;
-      }
-
-      trackBatchCandidate(seen, candidate);
-      stored.push(await insertCandidate(db, run.id, candidate, 'candidate', null));
-    }
+    const stored = await storeDiscoveryCandidates(db, run.id, discoveryResult.candidates);
 
     await db.query(
       `UPDATE builder_discovery_runs
@@ -175,7 +190,11 @@ async function createDiscoveryRun(data, options = {}) {
     );
 
     const updated = await getDiscoveryRunById(run.id, { db });
-    return { run: updated.run, candidates: stored };
+    return {
+      run: updated.run,
+      candidates: stored,
+      provider: discoveryResult.provider,
+    };
   } catch (err) {
     await db.query(
       `UPDATE builder_discovery_runs
@@ -217,6 +236,57 @@ async function getDiscoveryRunById(id, options = {}) {
     [id]
   );
   return { run, candidates: candidatesRes.rows };
+}
+
+async function getDiscoveryDashboard(options = {}) {
+  const db = options.db || pool;
+
+  const [
+    runsRes,
+    candidatesRes,
+    importedRes,
+    dismissedRes,
+    researchPendingRes,
+    topTypesRes,
+  ] = await Promise.all([
+    db.query(`SELECT COUNT(*)::int AS cnt FROM builder_discovery_runs`),
+    db.query(`SELECT COUNT(*)::int AS cnt FROM builder_discovery_candidates`),
+    db.query(
+      `SELECT COUNT(*)::int AS cnt FROM builder_discovery_candidates WHERE status = 'imported'`
+    ),
+    db.query(
+      `SELECT COUNT(*)::int AS cnt FROM builder_discovery_candidates WHERE status = 'dismissed'`
+    ),
+    db.query(
+      `SELECT COUNT(*)::int AS cnt
+       FROM b2b_prospects
+       WHERE prospect_type = $1
+         AND source = 'discovery'
+         AND research_status = 'not_started'`,
+      [PROSPECT_TYPE_BUILDER]
+    ),
+    db.query(
+      `SELECT suggested_builder_type AS builder_type, COUNT(*)::int AS cnt
+       FROM builder_discovery_candidates
+       WHERE suggested_builder_type IS NOT NULL
+       GROUP BY suggested_builder_type
+       ORDER BY cnt DESC, suggested_builder_type ASC
+       LIMIT 8`
+    ),
+  ]);
+
+  return {
+    discovery_runs: runsRes.rows[0]?.cnt || 0,
+    candidates_found: candidatesRes.rows[0]?.cnt || 0,
+    builders_found: candidatesRes.rows[0]?.cnt || 0,
+    imported: importedRes.rows[0]?.cnt || 0,
+    builders_imported: importedRes.rows[0]?.cnt || 0,
+    dismissed: dismissedRes.rows[0]?.cnt || 0,
+    research_pending: researchPendingRes.rows[0]?.cnt || 0,
+    builders_pending_research: researchPendingRes.rows[0]?.cnt || 0,
+    top_builder_types: topTypesRes.rows,
+    providers: listProviders(),
+  };
 }
 
 async function getCandidateById(id, options = {}) {
@@ -379,12 +449,13 @@ async function dismissSelectedCandidates(candidateIds, options = {}) {
 }
 
 module.exports = {
-  RUN_SOURCES,
+  RUN_SOURCES: PROVIDER_SOURCES,
   RUN_STATUSES,
   CANDIDATE_STATUSES,
   createDiscoveryRun,
   listDiscoveryRuns,
   getDiscoveryRunById,
+  getDiscoveryDashboard,
   getCandidateById,
   importDiscoveryCandidate,
   importSelectedCandidates,
@@ -392,4 +463,5 @@ module.exports = {
   dismissSelectedCandidates,
   findMatchingProspect,
   loadBuilderProspectsForDuplicateCheck,
+  storeDiscoveryCandidates,
 };

@@ -79,6 +79,9 @@ CRM 应用位于 **apps/crm**（BHT Revenue OS 单仓）。**重要：Root Direc
 | `TWILIO_ACCOUNT_SID` | Twilio 账户 SID | Twilio 控制台（见第五节） |
 | `TWILIO_AUTH_TOKEN` | Twilio 认证令牌 | Twilio 控制台 |
 | `TWILIO_PHONE_NUMBER` | 发短信的号码 | Twilio 购买的号码，E.164 如 `+61412345678` |
+| `SERPAPI_API_KEY` | SerpAPI 搜索密钥 | [serpapi.com](https://serpapi.com) Dashboard |
+| `BUILDER_DISCOVERY_SERPAPI_ENABLED` | 启用 Builder Discovery SerpAPI | 填 `true`（需同时配置 `SERPAPI_API_KEY`） |
+| `ADMIN_SECRET` | CRM 写操作密钥 | 自设强密码；Builder Intelligence 导入/发现需此 header |
 
 - `PORT` 不用填，Railway 会自动注入。
 

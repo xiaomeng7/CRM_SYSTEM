@@ -49,6 +49,13 @@ function normalizeCompanyNameForCompare(name) {
     .toLowerCase();
 }
 
+function normalizePhoneForCompare(phone) {
+  if (!phone) return '';
+  const digits = String(phone).replace(/\D/g, '');
+  if (digits.length >= 8) return digits.slice(-8);
+  return digits;
+}
+
 function extractSuburb(location, suburb) {
   const direct = trimOrNull(suburb);
   if (direct) return direct;
@@ -140,6 +147,7 @@ module.exports = {
   normalizeBuilderCandidate,
   normalizeWebsiteForCompare,
   normalizeCompanyNameForCompare,
+  normalizePhoneForCompare,
   calculateConfidenceScore,
   suggestBuilderType,
 };

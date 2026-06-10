@@ -9,6 +9,7 @@
   var debounceTimer = null;
   var discoveryCandidates = [];
   var currentDiscoveryRunId = null;
+  var serpApiEnabled = false;
 
   function $(id) {
     return document.getElementById(id);
@@ -407,9 +408,11 @@
         fillSelect('bi-timing_status', j.timing_statuses);
         fillSelect('bi-opportunity_potential', j.founder_opportunity_potentials || j.opportunity_potentials);
         fillSelect('bi-disc-source', j.discovery_run_sources || [], null);
-        if ($('bi-disc-source') && !$('bi-disc-source').value) {
-          $('bi-disc-source').value = 'manual_seed';
+        serpApiEnabled = Boolean(j.serpapi_configured);
+        if ($('bi-disc-source')) {
+          $('bi-disc-source').value = serpApiEnabled ? 'serpapi' : 'manual_seed';
         }
+        updateSerpApiStatus(j.serpapi_configured);
         if ($('bi-add-source') && !$('bi-add-source').value) {
           $('bi-add-source').value = 'google_search';
         }
@@ -742,6 +745,48 @@
       });
   }
 
+  function updateSerpApiStatus(configured) {
+    var el = $('bi-disc-serpapi-status');
+    if (!el) return;
+    if (configured) {
+      el.textContent = 'SerpAPI is configured — recommended searches will query Google via SerpAPI.';
+      el.className = 'bi-disc-serpapi-status ready';
+    } else {
+      el.textContent =
+        'SerpAPI is not configured. Set BUILDER_DISCOVERY_SERPAPI_ENABLED=true and SERPAPI_API_KEY to enable web discovery.';
+      el.className = 'bi-disc-serpapi-status missing';
+    }
+  }
+
+  function candidatePayload(c) {
+    if (!c || !c.payload) return {};
+    if (typeof c.payload === 'string') {
+      try {
+        return JSON.parse(c.payload);
+      } catch (_) {
+        return {};
+      }
+    }
+    return c.payload;
+  }
+
+  function googleRating(c) {
+    var p = candidatePayload(c);
+    return p.google_rating != null ? '★ ' + String(p.google_rating) : '—';
+  }
+
+  function googleReviewCount(c) {
+    var p = candidatePayload(c);
+    return p.google_reviews != null ? String(p.google_reviews) : '—';
+  }
+
+  function providerDisabledMessage(reason) {
+    if (reason === 'serpapi_not_configured') {
+      return 'SerpAPI is not configured. Set BUILDER_DISCOVERY_SERPAPI_ENABLED=true and SERPAPI_API_KEY on Railway.';
+    }
+    return 'Provider disabled — paste seed JSON for manual seed, or configure SerpAPI.';
+  }
+
   function parseSeedJson() {
     var raw = ($('bi-disc-seed-json') && $('bi-disc-seed-json').value) || '';
     if (!raw.trim()) return [];
@@ -820,24 +865,22 @@
             : '—') +
           '</td><td>' +
           esc(c.phone || '—') +
+          '</td><td class="bi-disc-rating">' +
+          esc(googleRating(c)) +
+          '</td><td>' +
+          esc(googleReviewCount(c)) +
           '</td><td>' +
           esc(c.location || c.suburb || '—') +
           '</td><td>' +
           String(c.confidence_score != null ? c.confidence_score : '—') +
-          '</td><td>' +
-          esc(labelize(c.suggested_builder_type)) +
-          '</td><td><span class="' +
-          discoveryStatusClass(c.status) +
-          '">' +
-          esc(c.status) +
-          '</span></td><td class="bi-disc-actions">' +
+          '</td><td class="bi-disc-actions">' +
           (selectable
             ? '<button type="button" class="bi-btn bi-disc-import-one" data-id="' +
               esc(c.id) +
               '">Import</button><button type="button" class="bi-btn bi-disc-dismiss-one" data-id="' +
               esc(c.id) +
               '">Dismiss</button>'
-            : '—') +
+            : esc(c.status || '—')) +
           '</td></tr>'
         );
       })
@@ -881,14 +924,20 @@
       });
   }
 
-  function runDiscovery() {
+  function runDiscoveryFromForm(sourceOverride) {
     var query = ($('bi-disc-query') && $('bi-disc-query').value) || '';
     var location = ($('bi-disc-location') && $('bi-disc-location').value) || '';
-    var source = ($('bi-disc-source') && $('bi-disc-source').value) || 'manual_seed';
+    var source =
+      sourceOverride || (($('bi-disc-source') && $('bi-disc-source').value) || 'manual_seed');
     var btn = $('bi-btn-disc-run');
 
     if (!query.trim()) {
       showMsg('Enter a search query.', true);
+      return;
+    }
+
+    if (source === 'serpapi' && !serpApiEnabled) {
+      showMsg(providerDisabledMessage('serpapi_not_configured'), true);
       return;
     }
 
@@ -931,10 +980,18 @@
         if (!res.body.ok) throw new Error(res.body.error || 'Discovery failed');
         currentDiscoveryRunId = res.body.run && res.body.run.id;
         var extra = res.body.web_discovery_disabled ? 'web search disabled' : null;
+        if (res.body.provider_disabled) {
+          extra = (res.body.reason || 'provider disabled') + ' — configure SerpAPI or use manual seed';
+        }
         renderDiscoveryRunMeta(res.body.run, extra);
         renderDiscoveryCandidates(res.body.candidates || []);
         setDiscoveryStatus('Discovery complete.');
-        showMsg('Discovery run completed.', false);
+        if (res.body.provider_disabled) {
+          showMsg(providerDisabledMessage(res.body.reason), true);
+        } else {
+          showMsg('Discovery run completed.', false);
+        }
+        return loadDiscoveryDashboard();
       })
       .catch(function (e) {
         setDiscoveryStatus('');
@@ -945,6 +1002,193 @@
           btn.disabled = false;
           btn.textContent = 'Run Discovery';
         }
+      });
+  }
+
+  function runDiscovery() {
+    runDiscoveryFromForm();
+  }
+
+  function findBuilders(search) {
+    if (!search || !search.query) return;
+    if (!serpApiEnabled) {
+      showMsg(providerDisabledMessage('serpapi_not_configured'), true);
+      return;
+    }
+    if ($('bi-disc-query')) $('bi-disc-query').value = search.query;
+    if ($('bi-disc-location')) $('bi-disc-location').value = search.location || '';
+    if ($('bi-disc-source')) $('bi-disc-source').value = 'serpapi';
+    runDiscoveryFromForm('serpapi');
+  }
+
+  function runRecommendedSearch(search) {
+    findBuilders(search);
+  }
+
+  function getTopImportableIds(limit) {
+    return discoveryCandidates
+      .filter(function (c) {
+        return c.status === 'candidate' && c.website;
+      })
+      .sort(function (a, b) {
+        return (b.confidence_score || 0) - (a.confidence_score || 0);
+      })
+      .slice(0, limit || 10)
+      .map(function (c) {
+        return c.id;
+      });
+  }
+
+  function importTop10Candidates() {
+    var ids = getTopImportableIds(10);
+    if (!ids.length) {
+      showMsg('No importable candidates with websites in this run.', true);
+      return Promise.resolve();
+    }
+    return importDiscoveryCandidates(ids);
+  }
+
+  function renderDiscoveryDashboard(dashboard) {
+    if (!dashboard) return;
+    var map = {
+      'bi-disc-m-found': dashboard.builders_found != null ? dashboard.builders_found : dashboard.candidates_found,
+      'bi-disc-m-imported':
+        dashboard.builders_imported != null ? dashboard.builders_imported : dashboard.imported,
+      'bi-disc-m-research':
+        dashboard.builders_pending_research != null
+          ? dashboard.builders_pending_research
+          : dashboard.research_pending,
+    };
+    Object.keys(map).forEach(function (id) {
+      var el = $(id);
+      if (el) el.textContent = map[id] != null ? String(map[id]) : '—';
+    });
+  }
+
+  function loadDiscoveryDashboard() {
+    return fetch('/api/builder-intel/discovery/dashboard')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Dashboard load failed');
+        renderDiscoveryDashboard(j.dashboard);
+      })
+      .catch(function () {
+        /* non-blocking */
+      });
+  }
+
+  function renderQuickSearches(categories) {
+    var el = $('bi-disc-quick-list');
+    if (!el) return;
+    if (!categories || !categories.length) {
+      el.innerHTML = '<p class="bi-empty-inline">No quick searches configured.</p>';
+      return;
+    }
+    el.innerHTML = categories
+      .map(function (cat) {
+        return (
+          '<div class="bi-disc-quick-category"><h4>' +
+          esc(cat.label) +
+          '</h4><div class="bi-disc-quick-grid">' +
+          (cat.searches || [])
+            .map(function (s) {
+              return (
+                '<div class="bi-disc-quick-item"><span>' +
+                esc(s.suburb) +
+                '</span><button type="button" class="bi-btn primary bi-disc-find-builders" data-query="' +
+                esc(s.query) +
+                '" data-location="' +
+                esc(s.location || '') +
+                '">Find Builders</button></div>'
+              );
+            })
+            .join('') +
+          '</div></div>'
+        );
+      })
+      .join('');
+
+    el.querySelectorAll('.bi-disc-find-builders').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        findBuilders({
+          query: btn.getAttribute('data-query'),
+          location: btn.getAttribute('data-location'),
+        });
+      });
+    });
+  }
+
+  function loadQuickSearches() {
+    return fetch('/api/builder-intel/discovery/quick-searches')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Quick searches load failed');
+        if (j.serpapi_configured != null) {
+          serpApiEnabled = Boolean(j.serpapi_configured);
+          updateSerpApiStatus(serpApiEnabled);
+        }
+        renderQuickSearches(j.categories || []);
+      })
+      .catch(function () {
+        var el = $('bi-disc-quick-list');
+        if (el) el.innerHTML = '<p class="bi-empty-inline">Could not load quick searches.</p>';
+      });
+  }
+
+  function renderRecommendedSearches(searches) {
+    var el = $('bi-disc-strategy-list');
+    if (!el) return;
+    if (!searches || !searches.length) {
+      el.innerHTML = '<p class="bi-empty-inline">No recommended searches.</p>';
+      return;
+    }
+    el.innerHTML = searches
+      .slice(0, 24)
+      .map(function (s) {
+        return (
+          '<div class="bi-disc-strategy-item" data-search-id="' +
+          esc(s.id) +
+          '"><span>' +
+          esc(s.label) +
+          (s.provider_enabled ? '' : ' · SerpAPI not configured') +
+          '</span><button type="button" class="bi-btn bi-disc-run-search" data-query="' +
+          esc(s.query) +
+          '" data-location="' +
+          esc(s.location || '') +
+          '" data-provider="' +
+          esc(s.recommended_provider || 'serpapi') +
+          '">Run Search</button></div>'
+        );
+      })
+      .join('');
+
+    el.querySelectorAll('.bi-disc-run-search').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        runRecommendedSearch({
+          query: btn.getAttribute('data-query'),
+          location: btn.getAttribute('data-location'),
+          recommended_provider: btn.getAttribute('data-provider'),
+        });
+      });
+    });
+  }
+
+  function loadRecommendedSearches() {
+    return fetch('/api/builder-intel/discovery/strategies')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Strategies load failed');
+        renderRecommendedSearches(j.searches || []);
+      })
+      .catch(function () {
+        var el = $('bi-disc-strategy-list');
+        if (el) el.innerHTML = '<p class="bi-empty-inline">Could not load recommended searches.</p>';
       });
   }
 
@@ -966,7 +1210,7 @@
         var imported = j.imported_count || 0;
         var failed = (j.errors && j.errors.length) || 0;
         showMsg('Imported ' + imported + ' builder(s)' + (failed ? ' · ' + failed + ' skipped' : '') + '.', false);
-        return Promise.all([reloadDiscoveryRun(), loadList()]);
+        return Promise.all([reloadDiscoveryRun(), loadList(), loadDiscoveryDashboard(), reloadDashboardSections()]);
       })
       .catch(function (e) {
         showMsg(e.message, true);
@@ -1035,6 +1279,10 @@
     }
     var discRunBtn = $('bi-btn-disc-run');
     if (discRunBtn) discRunBtn.addEventListener('click', runDiscovery);
+    var discImportTopBtn = $('bi-btn-disc-import-top10');
+    if (discImportTopBtn) {
+      discImportTopBtn.addEventListener('click', importTop10Candidates);
+    }
     var discImportBtn = $('bi-btn-disc-import-selected');
     if (discImportBtn) {
       discImportBtn.addEventListener('click', function () {
@@ -1060,7 +1308,14 @@
 
   loadEnums()
     .then(function () {
-      return Promise.all([loadList(), loadTargets(), loadStrategicPartners(), loadActivePartners()]);
+      return Promise.all([
+        loadList(),
+        loadTargets(),
+        loadStrategicPartners(),
+        loadActivePartners(),
+        loadDiscoveryDashboard(),
+        loadQuickSearches(),
+      ]);
     })
     .then(bindEvents)
     .catch(function (e) {

@@ -89,7 +89,10 @@ async function testWebDiscoveryDisabled() {
   delete process.env.BUILDER_DISCOVERY_WEB_ENABLED;
   const result = await runSearchEngineDiscovery({ query: 'builder Adelaide', location: 'SA' });
   assert(result.ok === false, 'not ok');
-  assert(result.reason === 'web_discovery_disabled', result.reason);
+  assert(
+    result.reason === 'web_discovery_disabled' || result.reason === 'serpapi_not_configured',
+    result.reason
+  );
   if (prev) process.env.BUILDER_DISCOVERY_WEB_ENABLED = prev;
   console.log('web disabled OK');
 }

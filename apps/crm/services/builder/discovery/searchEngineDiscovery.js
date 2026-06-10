@@ -1,33 +1,37 @@
 /**
- * Web search discovery — disabled by default (PR9A).
- * Enable with BUILDER_DISCOVERY_WEB_ENABLED=true when a provider is configured.
+ * Web search discovery — delegates to SerpAPI provider stub (PR9B.1).
+ * @deprecated use runDiscovery({ source: 'serpapi', ... })
  */
+
+const { isSerpApiConfigured } = require('./providers/serpApiProvider');
+const { runDiscovery } = require('./runDiscovery');
 
 function isWebDiscoveryEnabled() {
-  return process.env.BUILDER_DISCOVERY_WEB_ENABLED === 'true';
+  return isSerpApiConfigured();
 }
 
-/**
- * @param {object} params
- * @param {string} params.query
- * @param {string} [params.location]
- */
 async function runSearchEngineDiscovery({ query, location }) {
-  if (!isWebDiscoveryEnabled()) {
+  const result = await runDiscovery({
+    source: 'serpapi',
+    query,
+    location,
+  });
+
+  if (!result.ok && (result.reason === 'provider_not_enabled' || result.reason === 'serpapi_not_configured')) {
     return {
       ok: false,
-      reason: 'web_discovery_disabled',
+      reason: result.reason === 'serpapi_not_configured' ? 'serpapi_not_configured' : 'web_discovery_disabled',
       candidates: [],
       total_found: 0,
     };
   }
 
-  // PR9B: integrate a proper search API provider here.
   return {
-    ok: false,
-    reason: 'search_provider_not_configured',
-    candidates: [],
-    total_found: 0,
+    ok: result.ok,
+    reason: result.reason,
+    provider: result.provider,
+    candidates: result.candidates || [],
+    total_found: result.total_found || 0,
   };
 }
 

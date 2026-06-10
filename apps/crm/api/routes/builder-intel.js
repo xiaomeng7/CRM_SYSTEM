@@ -43,6 +43,14 @@ const {
   FOUNDER_OPPORTUNITY_POTENTIALS,
 } = require('../../services/builder/builderProspectConstants');
 const { relationshipLevelOptions } = require('../../services/builder/relationshipLevelMapping');
+const { listProviders } = require('../../services/builder/discovery/providers/providerRegistry');
+const { isSerpApiConfigured } = require('../../services/builder/discovery/providers/serpApiProvider');
+const {
+  generateRecommendedSearches,
+  generateQuickSearches,
+  getDiscoveryStrategyMeta,
+  QUICK_SEARCH_CATEGORIES,
+} = require('../../services/builder/discovery/discoveryStrategies');
 const { FIT_LEVELS } = require('../../services/builder/builderProfileConstants');
 const { getTopBuilderTargets } = require('../../services/builder/targetSelection/getTopBuilderTargets');
 const { getStrategicPartners } = require('../../services/builder/targetSelection/getStrategicPartners');
@@ -122,10 +130,15 @@ router.get('/prospects/enums', (_req, res) => {
       { value: 'manual', label: 'Manual' },
       { value: 'discovery', label: 'Discovery Import' },
     ],
-    discovery_run_sources: [
-      { value: 'manual_seed', label: 'Manual seed (paste JSON)' },
-      { value: 'web_disabled', label: 'Web search (disabled)' },
-    ],
+    discovery_run_sources: listProviders()
+      .filter((p) => p.value === 'manual_seed' || p.value === 'serpapi')
+      .map((p) => ({
+        value: p.value,
+        label: p.enabled ? p.label : `${p.label} (not configured)`,
+        enabled: p.enabled,
+      })),
+    discovery_providers: listProviders(),
+    serpapi_configured: isSerpApiConfigured(),
     fit_levels: FIT_LEVELS,
   });
 });
@@ -376,12 +389,68 @@ const {
   createDiscoveryRun,
   listDiscoveryRuns,
   getDiscoveryRunById,
+  getDiscoveryDashboard,
   importDiscoveryCandidate,
   importSelectedCandidates,
   dismissDiscoveryCandidate,
   dismissSelectedCandidates,
 } = require('../../services/builder/discovery/builderDiscoveryService');
 const { isWebDiscoveryEnabled } = require('../../services/builder/discovery/searchEngineDiscovery');
+
+router.get('/discovery/dashboard', async (_req, res) => {
+  try {
+    const dashboard = await getDiscoveryDashboard();
+    res.json({ ok: true, dashboard });
+  } catch (err) {
+    console.error('[builder-intel GET discovery/dashboard]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/discovery/quick-searches', async (_req, res) => {
+  try {
+    const providers = listProviders();
+    const providerMap = Object.fromEntries(providers.map((p) => [p.value, p.enabled]));
+    const quick = generateQuickSearches().map((s) => ({
+      ...s,
+      provider_enabled: Boolean(providerMap[s.recommended_provider]),
+    }));
+    const categories = QUICK_SEARCH_CATEGORIES.map((cat) => ({
+      ...cat,
+      searches: quick.filter((s) => s.category_id === cat.id),
+    }));
+    res.json({
+      ok: true,
+      categories,
+      suburbs: categories[0]?.searches?.map((s) => s.suburb) || [],
+      count: quick.length,
+      serpapi_configured: isSerpApiConfigured(),
+    });
+  } catch (err) {
+    console.error('[builder-intel GET discovery/quick-searches]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.get('/discovery/strategies', async (_req, res) => {
+  try {
+    const providers = listProviders();
+    const providerMap = Object.fromEntries(providers.map((p) => [p.value, p.enabled]));
+    const searches = generateRecommendedSearches().map((s) => ({
+      ...s,
+      provider_enabled: Boolean(providerMap[s.recommended_provider]),
+    }));
+    res.json({
+      ok: true,
+      strategy: getDiscoveryStrategyMeta(),
+      searches,
+      count: searches.length,
+    });
+  } catch (err) {
+    console.error('[builder-intel GET discovery/strategies]', err);
+    res.status(500).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
 
 router.get('/discovery/runs', async (req, res) => {
   try {

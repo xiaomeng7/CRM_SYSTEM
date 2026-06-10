@@ -1,30 +1,24 @@
 /**
- * Manual seed discovery — founder-provided candidate list (PR9A).
+ * Manual seed discovery — delegates to provider pipeline (PR9B.1).
+ * @deprecated use runDiscovery({ source: 'manual_seed', ... })
  */
 
-const { normalizeBuilderCandidate } = require('./normalizeBuilderCandidate');
+const { runDiscovery } = require('./runDiscovery');
 
-/**
- * @param {object} params
- * @param {string} params.query
- * @param {string} [params.location]
- * @param {Array<object>} [params.seed_candidates]
- */
-function runManualSeedDiscovery({ query, location, seed_candidates = [] }) {
-  if (!Array.isArray(seed_candidates)) {
-    const err = new Error('seed_candidates must be an array');
-    err.code = 'INVALID_INPUT';
-    throw err;
-  }
-
-  const context = { query, location };
-  const candidates = seed_candidates.map((row) => normalizeBuilderCandidate(row, context));
-
-  return {
-    ok: true,
+async function runManualSeedDiscovery({ query, location, seed_candidates = [] }) {
+  const result = await runDiscovery({
     source: 'manual_seed',
-    candidates,
-    total_found: candidates.length,
+    query,
+    location,
+    seed_candidates,
+  });
+  return {
+    ok: result.ok,
+    source: 'manual_seed',
+    provider: result.provider,
+    reason: result.reason,
+    candidates: result.candidates || [],
+    total_found: result.total_found || 0,
   };
 }
 

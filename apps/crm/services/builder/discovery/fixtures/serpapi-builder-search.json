@@ -1,0 +1,61 @@
+{
+  "search_metadata": {
+    "id": "fixture-pr9b2",
+    "status": "Success",
+    "engine": "google"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Burnside Architectural Builders | Custom Home Builder",
+      "link": "https://burnside-architectural.test",
+      "displayed_link": "burnside-architectural.test",
+      "snippet": "Architectural custom home builder serving Burnside and eastern Adelaide."
+    },
+    {
+      "position": 2,
+      "title": "Adelaide Builders Facebook Group",
+      "link": "https://facebook.com/groups/adelaide-builders",
+      "displayed_link": "facebook.com",
+      "snippet": "Community group for builders."
+    },
+    {
+      "position": 3,
+      "title": "Top Builders on hipages",
+      "link": "https://hipages.com.au/builders/burnside",
+      "displayed_link": "hipages.com.au",
+      "snippet": "Compare builder quotes."
+    },
+    {
+      "position": 4,
+      "title": "Luxury Homes SA - Home",
+      "link": "https://luxury-homes-sa.test",
+      "displayed_link": "luxury-homes-sa.test",
+      "snippet": "Luxury residential builder Adelaide SA."
+    }
+  ],
+  "local_results": [
+    {
+      "title": "Norwood Custom Homes SA",
+      "website": "https://norwood-custom.test",
+      "phone": "08 8123 4567",
+      "address": "Norwood SA 5067, Australia",
+      "rating": 4.8,
+      "reviews": 42,
+      "place_id": "fixture-place-1"
+    },
+    {
+      "title": "Local Builder No Website",
+      "phone": "08 8000 1111",
+      "address": "Unley Park SA 5061, Australia",
+      "rating": 4.5,
+      "reviews": 10
+    },
+    {
+      "title": "Yellow Pages Listing",
+      "link": "https://yellowpages.com.au/sa/burnside/builders",
+      "phone": "08 8333 4444",
+      "address": "Burnside SA"
+    }
+  ]
+}
