@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr9b2live" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr9b3quality" />
 </head>
 <body>
   <div class="app">
@@ -78,9 +78,15 @@
           </details>
 
           <div id="bi-disc-run-meta" class="bi-disc-run-meta" hidden></div>
+          <div id="bi-disc-summary" class="bi-disc-summary" hidden></div>
+          <div class="bi-disc-filter-row" id="bi-disc-filter-row" hidden>
+            <label class="bi-disc-hide-low"><input type="checkbox" id="bi-disc-hide-low" checked /> Hide low quality candidates</label>
+          </div>
           <div class="bi-discovery-toolbar" id="bi-disc-toolbar" hidden>
-            <button type="button" id="bi-btn-disc-import-top10" class="bi-btn primary">Import Top 10</button>
-            <button type="button" id="bi-btn-disc-import-selected" class="bi-btn primary">Import Selected</button>
+            <button type="button" id="bi-btn-disc-research-top10" class="bi-btn primary">Research Top 10</button>
+            <button type="button" id="bi-btn-disc-research-selected" class="bi-btn primary">Research Selected</button>
+            <button type="button" id="bi-btn-disc-import-top10" class="bi-btn">Import Top 10</button>
+            <button type="button" id="bi-btn-disc-import-selected" class="bi-btn">Import Selected</button>
             <button type="button" id="bi-btn-disc-dismiss-selected" class="bi-btn">Dismiss Selected</button>
           </div>
           <div class="bi-discovery-table-wrap">
@@ -95,11 +101,13 @@
                   <th>Review count</th>
                   <th>Location</th>
                   <th>Confidence</th>
+                  <th>Quality Score</th>
+                  <th>Quality Band</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="bi-disc-candidates">
-                <tr><td colspan="9" class="bi-empty-cell">Run a quick search to see candidates.</td></tr>
+                <tr><td colspan="11" class="bi-empty-cell">Run a quick search to see candidates.</td></tr>
               </tbody>
             </table>
           </div>
@@ -288,6 +296,6 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr9b2postimport"></script>
+  <script src="/js/builder-intelligence.js?v=pr9b3quality"></script>
 </body>
 </html>

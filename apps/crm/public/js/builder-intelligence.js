@@ -9,6 +9,8 @@
   var debounceTimer = null;
   var discoveryCandidates = [];
   var currentDiscoveryRunId = null;
+  var currentDiscoverySummary = null;
+  var hideLowQualityCandidates = true;
   var serpApiEnabled = false;
 
   function $(id) {
@@ -843,6 +845,52 @@
       (extra ? ' · ' + esc(extra) : '');
   }
 
+  function isLowQualityCandidate(c) {
+    return (c.quality_score != null ? c.quality_score : c.confidence_score || 0) < 50;
+  }
+
+  function getVisibleDiscoveryCandidates() {
+    if (!hideLowQualityCandidates) return discoveryCandidates;
+    return discoveryCandidates.filter(function (c) {
+      return !isLowQualityCandidate(c);
+    });
+  }
+
+  function qualityBandClass(band) {
+    return 'bi-quality-band ' + esc(band || 'D');
+  }
+
+  function renderDiscoverySummary(summary) {
+    var el = $('bi-disc-summary');
+    currentDiscoverySummary = summary || null;
+    if (!el) return;
+    if (!summary) {
+      el.hidden = true;
+      el.innerHTML = '';
+      return;
+    }
+    el.hidden = false;
+    var topList = (summary.top_recommended || [])
+      .map(function (item, idx) {
+        return '<li>' + esc(item.company_name) + ' <span class="bi-meta">(' + esc(item.quality_band) + ' · ' + String(item.quality_score) + ')</span></li>';
+      })
+      .join('');
+    el.innerHTML =
+      '<h3>Discovery Summary</h3>' +
+      '<div class="bi-disc-summary-stats">' +
+      '<span>Builders Found: <strong>' + String(summary.builders_found || 0) + '</strong></span>' +
+      '<span>High Quality: <strong>' + String(summary.high_quality || 0) + '</strong></span>' +
+      '<span>Medium Quality: <strong>' + String(summary.medium_quality || 0) + '</strong></span>' +
+      '<span>Low Quality: <strong>' + String(summary.low_quality || 0) + '</strong></span>' +
+      '</div>' +
+      (topList
+        ? '<p class="bi-section-hint" style="margin:0.5rem 0 0.25rem;">Top Recommended Builders:</p><ol class="bi-disc-top-list">' + topList + '</ol>'
+        : '') +
+      (summary.recommended_founder_action
+        ? '<div class="bi-disc-founder-action"><strong>Recommended Founder Action</strong>' + esc(summary.recommended_founder_action) + '</div>'
+        : '');
+  }
+
   function discoveryStatusClass(status) {
     return 'bi-disc-status-tag ' + (status || 'candidate');
   }
@@ -855,19 +903,32 @@
     discoveryCandidates = candidates || [];
     var tbody = $('bi-disc-candidates');
     var toolbar = $('bi-disc-toolbar');
+    var filterRow = $('bi-disc-filter-row');
     if (!tbody) return;
 
     if (!discoveryCandidates.length) {
       tbody.innerHTML =
-        '<tr><td colspan="9" class="bi-empty-cell">No candidates in this run.</td></tr>';
+        '<tr><td colspan="11" class="bi-empty-cell">No candidates in this run.</td></tr>';
       if (toolbar) toolbar.hidden = true;
+      if (filterRow) filterRow.hidden = true;
       return;
     }
 
     if (toolbar) toolbar.hidden = false;
-    tbody.innerHTML = discoveryCandidates
+    if (filterRow) filterRow.hidden = false;
+
+    var visible = getVisibleDiscoveryCandidates();
+    if (!visible.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="11" class="bi-empty-cell">All candidates are hidden — uncheck “Hide low quality” to view.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = visible
       .map(function (c) {
         var selectable = canSelectCandidate(c);
+        var qScore = c.quality_score != null ? c.quality_score : '—';
+        var qBand = c.quality_band || '—';
         return (
           '<tr data-candidate-id="' +
           esc(c.id) +
@@ -891,7 +952,13 @@
           esc(c.location || c.suburb || '—') +
           '</td><td>' +
           String(c.confidence_score != null ? c.confidence_score : '—') +
-          '</td><td class="bi-disc-actions">' +
+          '</td><td>' +
+          String(qScore) +
+          '</td><td><span class="' +
+          qualityBandClass(qBand !== '—' ? qBand : 'D') +
+          '">' +
+          esc(qBand) +
+          '</span></td><td class="bi-disc-actions">' +
           (selectable
             ? '<button type="button" class="bi-btn bi-disc-import-one" data-id="' +
               esc(c.id) +
@@ -951,6 +1018,7 @@
       .then(function (j) {
         if (!j.ok) throw new Error(j.error || 'Failed to load run');
         renderDiscoveryRunMeta(j.run);
+        renderDiscoverySummary(j.summary);
         renderDiscoveryCandidates(j.candidates || []);
       });
   }
@@ -1015,6 +1083,7 @@
           extra = (res.body.reason || 'provider disabled') + ' — configure SerpAPI or use manual seed';
         }
         renderDiscoveryRunMeta(res.body.run, extra);
+        renderDiscoverySummary(res.body.summary);
         renderDiscoveryCandidates(res.body.candidates || []);
         setDiscoveryStatus('Discovery complete.');
         if (res.body.provider_disabled) {
@@ -1056,13 +1125,32 @@
     findBuilders(search);
   }
 
+  function candidateQualityScore(c) {
+    return c.quality_score != null ? c.quality_score : c.confidence_score || 0;
+  }
+
   function getTopImportableIds(limit) {
     return discoveryCandidates
       .filter(function (c) {
         return c.status === 'candidate' && c.website;
       })
       .sort(function (a, b) {
-        return (b.confidence_score || 0) - (a.confidence_score || 0);
+        return candidateQualityScore(b) - candidateQualityScore(a);
+      })
+      .slice(0, limit || 10)
+      .map(function (c) {
+        return c.id;
+      });
+  }
+
+  function getTopResearchableIds(limit) {
+    var source = hideLowQualityCandidates ? getVisibleDiscoveryCandidates() : discoveryCandidates;
+    return source
+      .filter(function (c) {
+        return c.status === 'candidate' && c.website;
+      })
+      .sort(function (a, b) {
+        return candidateQualityScore(b) - candidateQualityScore(a);
       })
       .slice(0, limit || 10)
       .map(function (c) {
@@ -1077,6 +1165,97 @@
       return Promise.resolve();
     }
     return importDiscoveryCandidates(ids);
+  }
+
+  function researchDiscoveryCandidatesBatch(ids, label) {
+    if (!ids || !ids.length) {
+      showMsg('Select candidates to research.', true);
+      return Promise.resolve();
+    }
+    var btnTop = $('bi-btn-disc-research-top10');
+    var btnSel = $('bi-btn-disc-research-selected');
+    [btnTop, btnSel].forEach(function (btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.dataset.prevText = btn.textContent;
+        btn.textContent = 'Researching…';
+      }
+    });
+    showMsg((label || 'Batch research') + ' — importing and running website research…', false);
+    return fetch('/api/builder-intel/discovery/candidates/research-selected', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({ candidate_ids: ids }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Batch research failed');
+        var ok = j.researched_count || 0;
+        var failed = j.error_count || 0;
+        showMsg(
+          'Researched ' + ok + ' builder(s)' + (failed ? ' · ' + failed + ' failed' : '') + '. Review results in All Builders.',
+          failed > 0
+        );
+        scrollToAllBuilders();
+        return Promise.all([reloadDiscoveryRun(), loadList(), loadDiscoveryDashboard(), reloadDashboardSections()]);
+      })
+      .catch(function (e) {
+        showMsg(e.message, true);
+      })
+      .finally(function () {
+        [btnTop, btnSel].forEach(function (btn) {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = btn.dataset.prevText || btn.textContent;
+          }
+        });
+      });
+  }
+
+  function researchTop10Candidates() {
+    if (!currentDiscoveryRunId) {
+      showMsg('Run a discovery search first.', true);
+      return Promise.resolve();
+    }
+    var btn = $('bi-btn-disc-research-top10');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Researching…';
+    }
+    return fetch('/api/builder-intel/discovery/candidates/research-top-10', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({ run_id: currentDiscoveryRunId, limit: 10 }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Research Top 10 failed');
+        var ok = j.researched_count || 0;
+        var failed = j.error_count || 0;
+        showMsg(
+          'Research Top 10 complete — ' + ok + ' researched' + (failed ? ' · ' + failed + ' failed' : '') + '.',
+          failed > 0
+        );
+        scrollToAllBuilders();
+        return Promise.all([reloadDiscoveryRun(), loadList(), loadDiscoveryDashboard(), reloadDashboardSections()]);
+      })
+      .catch(function (e) {
+        showMsg(e.message, true);
+      })
+      .finally(function () {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Research Top 10';
+        }
+      });
+  }
+
+  function researchSelectedCandidates() {
+    return researchDiscoveryCandidatesBatch(getSelectedDiscoveryIds(), 'Research selected');
   }
 
   function renderDiscoveryDashboard(dashboard) {
@@ -1341,6 +1520,21 @@
     }
     var discRunBtn = $('bi-btn-disc-run');
     if (discRunBtn) discRunBtn.addEventListener('click', runDiscovery);
+    var discResearchTopBtn = $('bi-btn-disc-research-top10');
+    if (discResearchTopBtn) {
+      discResearchTopBtn.addEventListener('click', researchTop10Candidates);
+    }
+    var discResearchSelBtn = $('bi-btn-disc-research-selected');
+    if (discResearchSelBtn) {
+      discResearchSelBtn.addEventListener('click', researchSelectedCandidates);
+    }
+    var discHideLow = $('bi-disc-hide-low');
+    if (discHideLow) {
+      discHideLow.addEventListener('change', function () {
+        hideLowQualityCandidates = discHideLow.checked;
+        renderDiscoveryCandidates(discoveryCandidates);
+      });
+    }
     var discImportTopBtn = $('bi-btn-disc-import-top10');
     if (discImportTopBtn) {
       discImportTopBtn.addEventListener('click', importTop10Candidates);

@@ -390,12 +390,17 @@ const {
   createDiscoveryRun,
   listDiscoveryRuns,
   getDiscoveryRunById,
+  getDiscoveryRunSummary,
   getDiscoveryDashboard,
   importDiscoveryCandidate,
   importSelectedCandidates,
   dismissDiscoveryCandidate,
   dismissSelectedCandidates,
 } = require('../../services/builder/discovery/builderDiscoveryService');
+const {
+  researchDiscoveryCandidates,
+  researchTopDiscoveryCandidates,
+} = require('../../services/builder/discovery/batchDiscoveryResearch');
 const { isWebDiscoveryEnabled } = require('../../services/builder/discovery/searchEngineDiscovery');
 
 router.get('/discovery/dashboard', async (_req, res) => {
@@ -474,6 +479,16 @@ router.get('/discovery/runs/:id', async (req, res) => {
   }
 });
 
+router.get('/discovery/runs/:id/summary', async (req, res) => {
+  try {
+    const result = await getDiscoveryRunSummary(req.params.id);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET discovery/runs/:id/summary]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
 router.post('/discovery/run', async (req, res) => {
   if (!requireAdminSecret(req, res)) return;
   try {
@@ -542,6 +557,34 @@ router.post('/discovery/candidates/dismiss-selected', async (req, res) => {
     res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[builder-intel POST discovery/candidates/dismiss-selected]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/discovery/candidates/research-selected', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const ids = req.body?.candidate_ids || [];
+    const result = await researchDiscoveryCandidates(ids);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/candidates/research-selected]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/discovery/candidates/research-top-10', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const runId = req.body?.run_id;
+    if (!runId) {
+      return res.status(400).json({ ok: false, error: 'run_id required' });
+    }
+    const limit = req.body?.limit || 10;
+    const result = await researchTopDiscoveryCandidates(runId, limit);
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST discovery/candidates/research-top-10]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
   }
 });

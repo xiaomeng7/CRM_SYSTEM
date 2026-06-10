@@ -1423,6 +1423,86 @@
   padding: 0.25rem 0.5rem;
 }
 
+/* PR9B.3 — Quality filter + discovery summary */
+.bi-disc-summary {
+  margin: 0.75rem 0 1rem;
+  padding: 1rem 1.1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.bi-disc-summary h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.bi-disc-summary-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.85rem;
+}
+
+.bi-disc-summary-stats strong {
+  font-size: 1rem;
+}
+
+.bi-disc-top-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+}
+
+.bi-disc-founder-action {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: #e7f1ff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.bi-disc-founder-action strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #084298;
+}
+
+.bi-disc-filter-row {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.bi-disc-hide-low {
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.bi-quality-band {
+  display: inline-block;
+  min-width: 1.25rem;
+  text-align: center;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.bi-quality-band.A { background: #d1e7dd; color: #0f5132; }
+.bi-quality-band.B { background: #cff4fc; color: #055160; }
+.bi-quality-band.C { background: #fff3cd; color: #664d03; }
+.bi-quality-band.D { background: #f8d7da; color: #842029; }
+
+.bi-discovery-toolbar .bi-btn.primary {
+  font-weight: 600;
+}
+
 @media (max-width: 900px) {
   .bi-disc-dashboard {
     grid-template-columns: 1fr;
