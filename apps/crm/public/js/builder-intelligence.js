@@ -173,6 +173,23 @@
         .join('');
   }
 
+  function scrollToAllBuilders() {
+    var section = $('bi-all-builders');
+    if (section && section.scrollIntoView) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function updateResearchButtonLabel(researchStatus) {
+    var btn = $('bi-btn-run-research');
+    if (!btn) return;
+    if (researchStatus === 'researched' || researchStatus === 'researching') {
+      btn.textContent = 'Re-run Website Research';
+    } else {
+      btn.textContent = 'Run Website Research';
+    }
+  }
+
   function fillDetailForm(p) {
     $('bi-id').value = p.id || '';
     $('bi-company_name').value = p.company_name || '';
@@ -197,6 +214,7 @@
     $('bi-fit_priority').value = p.fit_priority || 'unknown';
     $('bi-research_status').value = p.research_status || 'not_started';
     $('bi-relationship_stage').value = p.relationship_stage || 'discovered';
+    updateResearchButtonLabel(p.research_status || 'not_started');
   }
 
   function detailSavePayload() {
@@ -880,7 +898,14 @@
               '">Import</button><button type="button" class="bi-btn bi-disc-dismiss-one" data-id="' +
               esc(c.id) +
               '">Dismiss</button>'
-            : esc(c.status || '—')) +
+            : c.status === 'imported' && c.matched_prospect_id
+              ? '<span class="bi-disc-status-tag imported">imported</span> ' +
+                '<button type="button" class="bi-btn bi-disc-open-builder" data-prospect-id="' +
+                esc(c.matched_prospect_id) +
+                '">Open builder</button>'
+              : '<span class="bi-disc-status-tag ' + esc(c.status || 'candidate') + '">' +
+                esc(c.status || '—') +
+                '</span>') +
           '</td></tr>'
         );
       })
@@ -898,6 +923,12 @@
     container.querySelectorAll('.bi-disc-dismiss-one').forEach(function (btn) {
       btn.addEventListener('click', function () {
         dismissDiscoveryCandidates([btn.getAttribute('data-id')]);
+      });
+    });
+    container.querySelectorAll('.bi-disc-open-builder').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var prospectId = btn.getAttribute('data-prospect-id');
+        if (prospectId) openDetail(prospectId);
       });
     });
   }
@@ -1209,8 +1240,39 @@
         if (!j.ok) throw new Error(j.error || 'Import failed');
         var imported = j.imported_count || 0;
         var failed = (j.errors && j.errors.length) || 0;
-        showMsg('Imported ' + imported + ' builder(s)' + (failed ? ' · ' + failed + ' skipped' : '') + '.', false);
-        return Promise.all([reloadDiscoveryRun(), loadList(), loadDiscoveryDashboard(), reloadDashboardSections()]);
+        var prospectIds = (j.imported || [])
+          .map(function (row) {
+            return row.prospect_id;
+          })
+          .filter(Boolean);
+        if (imported === 1 && prospectIds.length === 1) {
+          showMsg(
+            'Imported 1 builder — opening detail. Click Run Website Research to analyze their site.',
+            false
+          );
+        } else if (imported > 0) {
+          showMsg(
+            'Imported ' +
+              imported +
+              ' builder(s)' +
+              (failed ? ' · ' + failed + ' skipped' : '') +
+              '. Scroll to All Builders below, open a card, then Run Website Research.',
+            false
+          );
+          scrollToAllBuilders();
+        } else {
+          showMsg(
+            failed ? 'No builders imported · ' + failed + ' skipped (duplicate or missing website).' : 'No builders imported.',
+            true
+          );
+        }
+        return Promise.all([reloadDiscoveryRun(), loadList(), loadDiscoveryDashboard(), reloadDashboardSections()]).then(
+          function () {
+            if (imported === 1 && prospectIds.length === 1) {
+              openDetail(prospectIds[0]);
+            }
+          }
+        );
       })
       .catch(function (e) {
         showMsg(e.message, true);
