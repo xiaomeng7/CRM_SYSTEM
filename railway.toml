@@ -1,5 +1,6 @@
 # Railway config for BHT Revenue OS — CRM (apps/crm)
-# Deploy from REPO ROOT. In Railway dashboard set Root Directory to empty or ".".
+# Deploy from REPO ROOT. In Railway dashboard set Root Directory to empty or "."
+# Redeploy trigger: 2026-06-10 SerpAPI env fix
 
 [build]
 # Install all workspace deps (required for @bht/integrations)
