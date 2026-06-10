@@ -10,7 +10,7 @@ const {
   getCandidateById,
   getDiscoveryRunById,
 } = require('./builderDiscoveryService');
-const { enrichCandidateQualityFromRow } = require('./discoveryQualityScore');
+const { enrichCandidateQualityFromRow, isNewVisibleBuilder } = require('./discoveryQualityScore');
 
 async function resolveProspectIdForCandidate(candidateId, options = {}) {
   const candidate = await getCandidateById(candidateId, options);
@@ -95,8 +95,8 @@ async function researchDiscoveryCandidates(candidateIds, options = {}) {
 async function researchTopDiscoveryCandidates(runId, limit = 10, options = {}) {
   const { candidates } = await getDiscoveryRunById(runId, options);
   const ids = candidates
-    .map(enrichCandidateQualityFromRow)
-    .filter((c) => c.status === 'candidate' && c.website)
+    .map((c) => enrichCandidateQualityFromRow(c))
+    .filter((c) => isNewVisibleBuilder(c) && c.website)
     .sort((a, b) => (b.quality_score || 0) - (a.quality_score || 0))
     .slice(0, Math.min(Math.max(parseInt(limit, 10) || 10, 1), 25))
     .map((c) => c.id);

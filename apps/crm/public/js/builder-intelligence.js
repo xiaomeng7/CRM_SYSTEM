@@ -11,6 +11,7 @@
   var currentDiscoveryRunId = null;
   var currentDiscoverySummary = null;
   var hideLowQualityCandidates = true;
+  var hideExistingBuilders = true;
   var serpApiEnabled = false;
 
   function $(id) {
@@ -849,11 +850,32 @@
     return (c.quality_score != null ? c.quality_score : c.confidence_score || 0) < 50;
   }
 
+  function shouldHideDiscoveryCandidate(c) {
+    if (c.hidden) return true;
+    if (
+      hideExistingBuilders &&
+      (c.status === 'duplicate' || c.hide_reason === 'existing_crm')
+    ) {
+      return true;
+    }
+    if (hideLowQualityCandidates && isLowQualityCandidate(c)) return true;
+    if (c.candidate_type === 'directory') return true;
+    return false;
+  }
+
   function getVisibleDiscoveryCandidates() {
-    if (!hideLowQualityCandidates) return discoveryCandidates;
     return discoveryCandidates.filter(function (c) {
-      return !isLowQualityCandidate(c);
+      return !shouldHideDiscoveryCandidate(c);
     });
+  }
+
+  function isResearchableCandidate(c) {
+    return (
+      c.status === 'candidate' &&
+      c.candidate_type !== 'directory' &&
+      c.website &&
+      !shouldHideDiscoveryCandidate(c)
+    );
   }
 
   function qualityBandClass(band) {
@@ -878,10 +900,11 @@
     el.innerHTML =
       '<h3>Discovery Summary</h3>' +
       '<div class="bi-disc-summary-stats">' +
-      '<span>Builders Found: <strong>' + String(summary.builders_found || 0) + '</strong></span>' +
-      '<span>High Quality: <strong>' + String(summary.high_quality || 0) + '</strong></span>' +
-      '<span>Medium Quality: <strong>' + String(summary.medium_quality || 0) + '</strong></span>' +
-      '<span>Low Quality: <strong>' + String(summary.low_quality || 0) + '</strong></span>' +
+      '<span>Total Results: <strong>' + String(summary.total_results != null ? summary.total_results : summary.builders_found || 0) + '</strong></span>' +
+      '<span>Existing Builders Hidden: <strong>' + String(summary.existing_builders_hidden || 0) + '</strong></span>' +
+      '<span>Directories Hidden: <strong>' + String(summary.directories_hidden || 0) + '</strong></span>' +
+      '<span>SEO Pages Hidden: <strong>' + String(summary.seo_pages_hidden || 0) + '</strong></span>' +
+      '<span>New Builders Remaining: <strong>' + String(summary.new_builders_remaining || 0) + '</strong></span>' +
       '</div>' +
       (topList
         ? '<p class="bi-section-hint" style="margin:0.5rem 0 0.25rem;">Top Recommended Builders:</p><ol class="bi-disc-top-list">' + topList + '</ol>'
@@ -920,7 +943,7 @@
     var visible = getVisibleDiscoveryCandidates();
     if (!visible.length) {
       tbody.innerHTML =
-        '<tr><td colspan="11" class="bi-empty-cell">All candidates are hidden — uncheck “Hide low quality” to view.</td></tr>';
+        '<tr><td colspan="11" class="bi-empty-cell">All candidates are hidden — adjust filters above to view more.</td></tr>';
       return;
     }
 
@@ -1130,7 +1153,7 @@
   }
 
   function getTopImportableIds(limit) {
-    return discoveryCandidates
+    return getVisibleDiscoveryCandidates()
       .filter(function (c) {
         return c.status === 'candidate' && c.website;
       })
@@ -1144,10 +1167,9 @@
   }
 
   function getTopResearchableIds(limit) {
-    var source = hideLowQualityCandidates ? getVisibleDiscoveryCandidates() : discoveryCandidates;
-    return source
+    return getVisibleDiscoveryCandidates()
       .filter(function (c) {
-        return c.status === 'candidate' && c.website;
+        return isResearchableCandidate(c);
       })
       .sort(function (a, b) {
         return candidateQualityScore(b) - candidateQualityScore(a);
@@ -1527,6 +1549,13 @@
     var discResearchSelBtn = $('bi-btn-disc-research-selected');
     if (discResearchSelBtn) {
       discResearchSelBtn.addEventListener('click', researchSelectedCandidates);
+    }
+    var discHideExisting = $('bi-disc-hide-existing');
+    if (discHideExisting) {
+      discHideExisting.addEventListener('change', function () {
+        hideExistingBuilders = discHideExisting.checked;
+        renderDiscoveryCandidates(discoveryCandidates);
+      });
     }
     var discHideLow = $('bi-disc-hide-low');
     if (discHideLow) {

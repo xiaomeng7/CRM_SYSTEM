@@ -1,6 +1,6 @@
 # Railway config for BHT Revenue OS — CRM (apps/crm)
 # Deploy from REPO ROOT. In Railway dashboard set Root Directory to empty or "."
-# Redeploy trigger: 2026-06-10 PR9B.3 quality filter + batch research
+# Redeploy trigger: 2026-06-10 PR9B.4A discovery cleanup
 
 [build]
 # Install all workspace deps (required for @bht/integrations)
@@ -8,5 +8,5 @@ buildCommand = "pnpm install"
 
 [deploy]
 # Idempotent migrations before each deploy (bank/cashflow + builder discovery quality).
-releaseCommand = "pnpm --filter @bht/crm run db:bank-cashflow-migrations && pnpm --filter @bht/crm run db:builder-discovery-migration && pnpm --filter @bht/crm run db:builder-discovery-quality-migration"
+releaseCommand = "pnpm --filter @bht/crm run db:bank-cashflow-migrations && pnpm --filter @bht/crm run db:builder-discovery-migration && pnpm --filter @bht/crm run db:builder-discovery-quality-migration && pnpm --filter @bht/crm run db:builder-discovery-cleanup-migration"
 startCommand = "pnpm --filter @bht/crm start"

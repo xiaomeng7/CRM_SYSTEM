@@ -10,6 +10,7 @@ const { pool } = require('../lib/db');
 const {
   calculateDiscoveryQualityScore,
   assignDiscoveryQualityBand,
+  classifyDiscoveryCandidate,
   applyDiscoveryQuality,
   buildDiscoveryRunSummary,
 } = require('../services/builder/discovery/discoveryQualityScore');
@@ -32,7 +33,11 @@ function assert(cond, msg) {
 }
 
 async function ensureMigrations() {
-  for (const file of ['075_builder_discovery.sql', '076_builder_discovery_quality.sql']) {
+  for (const file of [
+    '075_builder_discovery.sql',
+    '076_builder_discovery_quality.sql',
+    '077_builder_discovery_cleanup.sql',
+  ]) {
     const sql = fs.readFileSync(path.join(__dirname, '../database', file), 'utf8');
     await pool.query(sql);
   }
@@ -71,9 +76,9 @@ function testQualityPenalties() {
     },
     { query: 'builder Norwood SA' }
   );
-  const dirScore = calculateDiscoveryQualityScore(directory);
-  assert(dirScore < directory.confidence_score, 'directory penalized');
-  assert(dirScore < 50, 'directory below low-quality threshold');
+  const classifiedDir = classifyDiscoveryCandidate(directory);
+  assert(classifiedDir.hidden === true, 'directory hidden');
+  assert(classifiedDir.candidate_type === 'directory', 'directory type');
 
   const blogPath = normalizeBuilderCandidate(
     {
@@ -83,9 +88,10 @@ function testQualityPenalties() {
     },
     { query: 'luxury builder' }
   );
-  assert(calculateDiscoveryQualityScore(blogPath) <= blogPath.confidence_score - 40, 'blog path penalized');
+  const classifiedBlog = classifyDiscoveryCandidate(blogPath);
+  assert(classifiedBlog.hide_reason === 'seo_url', 'seo url hard hide');
 
-  console.log('penalties OK', { cleanScore, dirScore });
+  console.log('penalties OK', { cleanScore, dirScore: classifiedDir.quality_score });
 }
 
 function testQualityBands() {
@@ -169,7 +175,11 @@ async function testStoredQualityOnRun() {
   const good = candidates.find((c) => c.company_name.includes('Good Builder'));
   const bad = candidates.find((c) => c.company_name.includes('Award Winning'));
   assert(good && good.quality_score >= 50, 'good builder quality');
-  assert(bad && bad.quality_score < 50, 'low quality builder penalized');
+  assert(bad && bad.hidden === true, 'spam candidate hidden');
+  assert(
+    bad.hide_reason === 'seo_title' || bad.hide_reason === 'directory',
+    'spam hide reason'
+  );
   assert(good.quality_band === 'A' || good.quality_band === 'B' || good.quality_band === 'C', 'good band');
 
   const loaded = await getDiscoveryRunById(run.id);

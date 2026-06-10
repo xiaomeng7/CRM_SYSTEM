@@ -17,7 +17,7 @@ const {
   normalizePhoneForCompare,
 } = require('./normalizeBuilderCandidate');
 const {
-  applyDiscoveryQuality,
+  classifyDiscoveryCandidate,
   enrichCandidateQualityFromRow,
   buildDiscoveryRunSummary,
   attachResearchFounderAction,
@@ -81,33 +81,48 @@ function trackBatchCandidate(seen, candidate) {
   if (phone) seen.phones.set(phone, candidate);
 }
 
-async function insertCandidate(db, runId, candidate, status, matchedProspectId = null) {
-  const scored = applyDiscoveryQuality(candidate);
+async function insertCandidate(
+  db,
+  runId,
+  candidate,
+  status,
+  matchedProspectId = null,
+  existingProspects = []
+) {
+  const classified = classifyDiscoveryCandidate(candidate, {
+    status,
+    matched_prospect_id: matchedProspectId,
+    existingProspects,
+  });
   const r = await db.query(
     `INSERT INTO builder_discovery_candidates (
        run_id, company_name, website, phone, email, location, suburb,
        source_url, source_name, suggested_builder_type, suggested_project_focus,
-       confidence_score, quality_score, quality_band, status, matched_prospect_id, payload
-     ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+       confidence_score, quality_score, quality_band, candidate_type, hidden, hide_reason,
+       status, matched_prospect_id, payload
+     ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
      RETURNING *`,
     [
       runId,
-      scored.company_name,
-      scored.website,
-      scored.phone,
-      scored.email,
-      scored.location,
-      scored.suburb,
-      scored.source_url,
-      scored.source_name,
-      scored.suggested_builder_type || 'unknown',
-      scored.suggested_project_focus || 'unknown',
-      scored.confidence_score || 0,
-      scored.quality_score || 0,
-      scored.quality_band || null,
+      classified.company_name,
+      classified.website,
+      classified.phone,
+      classified.email,
+      classified.location,
+      classified.suburb,
+      classified.source_url,
+      classified.source_name,
+      classified.suggested_builder_type || 'unknown',
+      classified.suggested_project_focus || 'unknown',
+      classified.confidence_score || 0,
+      classified.quality_score || 0,
+      classified.quality_band || null,
+      classified.candidate_type || 'builder',
+      Boolean(classified.hidden),
+      classified.hide_reason || null,
       status,
       matchedProspectId,
-      JSON.stringify(scored.payload || {}),
+      JSON.stringify(classified.payload || {}),
     ]
   );
   return r.rows[0];
@@ -121,18 +136,20 @@ async function storeDiscoveryCandidates(db, runId, candidates) {
   for (const candidate of candidates || []) {
     const existing = findMatchingProspect(existingProspects, candidate);
     if (existing) {
-      stored.push(await insertCandidate(db, runId, candidate, 'duplicate', existing.id));
+      stored.push(
+        await insertCandidate(db, runId, candidate, 'duplicate', existing.id, existingProspects)
+      );
       continue;
     }
 
     const batchDup = findDuplicateInBatch(seen, candidate);
     if (batchDup) {
-      stored.push(await insertCandidate(db, runId, candidate, 'duplicate', null));
+      stored.push(await insertCandidate(db, runId, candidate, 'duplicate', null, existingProspects));
       continue;
     }
 
     trackBatchCandidate(seen, candidate);
-    stored.push(await insertCandidate(db, runId, candidate, 'candidate', null));
+    stored.push(await insertCandidate(db, runId, candidate, 'candidate', null, existingProspects));
   }
 
   return stored;
@@ -229,8 +246,8 @@ async function listDiscoveryRuns(filters = {}, options = {}) {
   return { runs: r.rows, count: r.rows.length };
 }
 
-function mapCandidatesWithQuality(rows) {
-  return (rows || []).map(enrichCandidateQualityFromRow);
+function mapCandidatesWithQuality(rows, existingProspects = null) {
+  return (rows || []).map((row) => enrichCandidateQualityFromRow(row, existingProspects));
 }
 
 async function getDiscoveryRunSummary(runId, options = {}) {
@@ -246,14 +263,15 @@ async function getDiscoveryRunById(id, options = {}) {
     err.code = 'NOT_FOUND';
     throw err;
   }
+  const existingProspects = await loadBuilderProspectsForDuplicateCheck(db);
   const candidatesRes = await db.query(
     `SELECT *
      FROM builder_discovery_candidates
      WHERE run_id = $1
-     ORDER BY quality_score DESC NULLS LAST, confidence_score DESC, company_name ASC`,
+     ORDER BY hidden ASC, quality_score DESC NULLS LAST, confidence_score DESC, company_name ASC`,
     [id]
   );
-  const candidates = mapCandidatesWithQuality(candidatesRes.rows);
+  const candidates = mapCandidatesWithQuality(candidatesRes.rows, existingProspects);
   let summary = buildDiscoveryRunSummary(candidates, run);
   summary = await attachResearchFounderAction(summary, candidates, db);
   return { run, candidates, summary };
