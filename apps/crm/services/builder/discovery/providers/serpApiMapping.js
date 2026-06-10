@@ -149,6 +149,13 @@ function dedupeCandidates(candidates) {
  * @param {object} [context]
  * @param {number} [limit]
  */
+function normalizeLocalResults(localResults) {
+  if (!localResults) return [];
+  if (Array.isArray(localResults)) return localResults;
+  if (Array.isArray(localResults.places)) return localResults.places;
+  return [];
+}
+
 function parseSerpApiResponse(serpBody, context = {}, limit = 20) {
   const max = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 20);
   const mapped = [];
@@ -158,7 +165,7 @@ function parseSerpApiResponse(serpBody, context = {}, limit = 20) {
     if (candidate) mapped.push(candidate);
   }
 
-  for (const row of serpBody.local_results || []) {
+  for (const row of normalizeLocalResults(serpBody.local_results)) {
     const candidate = mapLocalResult(row);
     if (candidate) mapped.push(candidate);
   }
@@ -182,6 +189,7 @@ module.exports = {
   shouldFilterResult,
   mapOrganicResult,
   mapLocalResult,
+  normalizeLocalResults,
   parseSerpApiResponse,
   dedupeCandidates,
 };

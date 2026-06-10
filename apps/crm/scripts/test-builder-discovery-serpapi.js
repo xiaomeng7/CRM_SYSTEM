@@ -11,6 +11,7 @@ const {
   parseSerpApiResponse,
   cleanCompanyName,
   shouldFilterResult,
+  normalizeLocalResults,
 } = require('../services/builder/discovery/providers/serpApiMapping');
 const {
   SerpApiProvider,
@@ -143,6 +144,31 @@ function testFilterDeterministic() {
   console.log('filter OK');
 }
 
+function testLocalResultsObjectShape() {
+  console.log('\n=== local_results object shape (SerpAPI places) ===\n');
+  const body = {
+    organic_results: [],
+    local_results: {
+      places: [
+        {
+          title: 'Burnside Builder Co',
+          website: 'https://burnside-builder.test',
+          phone: '08 8111 2222',
+          address: 'Burnside SA 5066, Australia',
+          rating: 4.6,
+          reviews: 18,
+        },
+      ],
+    },
+  };
+  const candidates = parseSerpApiResponse(body, { query: 'builder Burnside SA' });
+  assert(candidates.length === 1, 'places array parsed');
+  assert(candidates[0].company_name === 'Burnside Builder Co', 'company name');
+  assert(normalizeLocalResults(null).length === 0, 'null safe');
+  assert(normalizeLocalResults({}).length === 0, 'empty object safe');
+  console.log('local_results object OK');
+}
+
 async function testMockProviderFetch() {
   console.log('\n=== Mock SerpAPI fetch ===\n');
   await withSerpEnv(async () => {
@@ -230,6 +256,7 @@ async function main() {
     testFixtureMapping();
     testCompanyCleanup();
     testFilterDeterministic();
+    testLocalResultsObjectShape();
     await testDisabledSafeReason();
     await testMockProviderFetch();
     await ensureMigration();
