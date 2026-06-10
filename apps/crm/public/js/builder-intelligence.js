@@ -942,8 +942,22 @@
 
     var visible = getVisibleDiscoveryCandidates();
     if (!visible.length) {
-      tbody.innerHTML =
-        '<tr><td colspan="11" class="bi-empty-cell">All candidates are hidden — adjust filters above to view more.</td></tr>';
+      var emptyMsg = 'All candidates are hidden — adjust filters above to view more.';
+      if (currentDiscoverySummary) {
+        var s = currentDiscoverySummary;
+        var remaining = s.new_builders_remaining != null ? s.new_builders_remaining : 0;
+        var existing = s.existing_builders_hidden || 0;
+        if (remaining === 0 && existing > 0) {
+          emptyMsg =
+            'All ' +
+            String(s.total_results || discoveryCandidates.length) +
+            ' results are already in your CRM from previous imports. Try a different suburb in Quick Searches, or uncheck “Hide Existing Builders” to review them.';
+        } else if (remaining === 0) {
+          emptyMsg =
+            'No new builders passed quality filters for this search. Try another suburb or uncheck filters above.';
+        }
+      }
+      tbody.innerHTML = '<tr><td colspan="11" class="bi-empty-cell">' + esc(emptyMsg) + '</td></tr>';
       return;
     }
 
