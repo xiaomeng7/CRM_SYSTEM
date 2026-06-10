@@ -10,6 +10,7 @@
   var discoveryCandidates = [];
   var currentDiscoveryRunId = null;
   var currentDiscoverySummary = null;
+  var currentDiscoveryExhaustion = null;
   var hideLowQualityCandidates = true;
   var hideExistingBuilders = true;
   var serpApiEnabled = false;
@@ -882,6 +883,82 @@
     return 'bi-quality-band ' + esc(band || 'D');
   }
 
+  function renderDiscoveryExhaustion(exhaustion) {
+    var panel = $('bi-disc-exhaustion');
+    var tableWrap = $('bi-disc-table-wrap');
+    var toolbar = $('bi-disc-toolbar');
+    currentDiscoveryExhaustion = exhaustion || null;
+
+    if (!panel) return;
+
+    if (!exhaustion || !exhaustion.exhausted) {
+      panel.hidden = true;
+      panel.innerHTML = '';
+      if (tableWrap) tableWrap.hidden = false;
+      return;
+    }
+
+    if (tableWrap) tableWrap.hidden = true;
+    if (toolbar) toolbar.hidden = true;
+    panel.hidden = false;
+
+    var mc = exhaustion.market_coverage || {};
+    var categories = exhaustion.recommended_next_searches || [];
+    var categoryHtml = categories
+      .map(function (cat) {
+        var items = (cat.searches || [])
+          .map(function (s) {
+            return (
+              '<div class="bi-disc-next-search-item"><span>' +
+              esc(s.label || s.query) +
+              '</span><button type="button" class="bi-btn primary bi-disc-run-guided" data-query="' +
+              esc(s.query) +
+              '" data-location="' +
+              esc(s.location || '') +
+              '">Run Search</button></div>'
+            );
+          })
+          .join('');
+        return (
+          '<div class="bi-disc-next-category"><h4>' +
+          esc(cat.label) +
+          '</h4><div class="bi-disc-next-search-list">' +
+          items +
+          '</div></div>'
+        );
+      })
+      .join('');
+
+    panel.innerHTML =
+      '<h3>Market Coverage Summary</h3>' +
+      '<div class="bi-disc-market-coverage">' +
+      '<div class="bi-disc-coverage-metric"><span>Total found</span><strong>' +
+      String(mc.total_found || 0) +
+      '</strong></div>' +
+      '<div class="bi-disc-coverage-metric"><span>Existing builders</span><strong>' +
+      String(mc.existing_builders || 0) +
+      '</strong></div>' +
+      '<div class="bi-disc-coverage-metric"><span>SEO pages filtered</span><strong>' +
+      String(mc.seo_pages_filtered || 0) +
+      '</strong></div>' +
+      '<div class="bi-disc-coverage-metric"><span>New builders</span><strong>' +
+      String(mc.new_builders || 0) +
+      '</strong></div>' +
+      '</div>' +
+      '<div class="bi-disc-next-searches"><h3>Recommended Next Searches</h3>' +
+      categoryHtml +
+      '</div>';
+
+    panel.querySelectorAll('.bi-disc-run-guided').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        findBuilders({
+          query: btn.getAttribute('data-query'),
+          location: btn.getAttribute('data-location') || '',
+        });
+      });
+    });
+  }
+
   function renderDiscoverySummary(summary) {
     var el = $('bi-disc-summary');
     currentDiscoverySummary = summary || null;
@@ -942,24 +1019,25 @@
 
     var visible = getVisibleDiscoveryCandidates();
     if (!visible.length) {
+      if (currentDiscoveryExhaustion && currentDiscoveryExhaustion.exhausted) {
+        renderDiscoveryExhaustion(currentDiscoveryExhaustion);
+        tbody.innerHTML = '';
+        return;
+      }
+      renderDiscoveryExhaustion(null);
       var emptyMsg = 'All candidates are hidden — adjust filters above to view more.';
       if (currentDiscoverySummary) {
         var s = currentDiscoverySummary;
         var remaining = s.new_builders_remaining != null ? s.new_builders_remaining : 0;
-        var existing = s.existing_builders_hidden || 0;
-        if (remaining === 0 && existing > 0) {
-          emptyMsg =
-            'All ' +
-            String(s.total_results || discoveryCandidates.length) +
-            ' results are already in your CRM from previous imports. Try a different suburb in Quick Searches, or uncheck “Hide Existing Builders” to review them.';
-        } else if (remaining === 0) {
-          emptyMsg =
-            'No new builders passed quality filters for this search. Try another suburb or uncheck filters above.';
+        if (remaining === 0) {
+          emptyMsg = 'No new builders in this run — see recommended next searches below.';
         }
       }
       tbody.innerHTML = '<tr><td colspan="11" class="bi-empty-cell">' + esc(emptyMsg) + '</td></tr>';
       return;
     }
+
+    renderDiscoveryExhaustion(null);
 
     tbody.innerHTML = visible
       .map(function (c) {
@@ -1056,6 +1134,7 @@
         if (!j.ok) throw new Error(j.error || 'Failed to load run');
         renderDiscoveryRunMeta(j.run);
         renderDiscoverySummary(j.summary);
+        renderDiscoveryExhaustion(j.exhaustion);
         renderDiscoveryCandidates(j.candidates || []);
       });
   }
@@ -1121,6 +1200,7 @@
         }
         renderDiscoveryRunMeta(res.body.run, extra);
         renderDiscoverySummary(res.body.summary);
+        renderDiscoveryExhaustion(res.body.exhaustion);
         renderDiscoveryCandidates(res.body.candidates || []);
         setDiscoveryStatus('Discovery complete.');
         if (res.body.provider_disabled) {

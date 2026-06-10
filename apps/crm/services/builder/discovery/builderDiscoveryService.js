@@ -22,6 +22,7 @@ const {
   buildDiscoveryRunSummary,
   attachResearchFounderAction,
 } = require('./discoveryQualityScore');
+const { buildDiscoveryExhaustionGuidance } = require('./discoverySearchGuidance');
 
 const RUN_STATUSES = ['running', 'completed', 'failed'];
 const CANDIDATE_STATUSES = ['candidate', 'imported', 'dismissed', 'duplicate'];
@@ -220,6 +221,7 @@ async function createDiscoveryRun(data, options = {}) {
       run: updated.run,
       candidates: updated.candidates,
       summary: updated.summary,
+      exhaustion: updated.exhaustion,
       provider: discoveryResult.provider,
     };
   } catch (err) {
@@ -274,7 +276,14 @@ async function getDiscoveryRunById(id, options = {}) {
   const candidates = mapCandidatesWithQuality(candidatesRes.rows, existingProspects);
   let summary = buildDiscoveryRunSummary(candidates, run);
   summary = await attachResearchFounderAction(summary, candidates, db);
-  return { run, candidates, summary };
+  const exhaustion = buildDiscoveryExhaustionGuidance(run, summary);
+  if (exhaustion.exhausted && exhaustion.recommended_founder_action) {
+    summary = {
+      ...summary,
+      recommended_founder_action: exhaustion.recommended_founder_action,
+    };
+  }
+  return { run, candidates, summary, exhaustion };
 }
 
 async function getDiscoveryDashboard(options = {}) {
