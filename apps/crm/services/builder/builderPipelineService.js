@@ -79,7 +79,7 @@ async function loadPipelineBuilders(options = {}) {
      LEFT JOIN builder_profiles bp ON bp.prospect_id = p.id
      LEFT JOIN builder_target_scores ts ON ts.prospect_id = p.id
      WHERE p.prospect_type = $1
-     ${includeInactive ? '' : "AND COALESCE(p.pipeline_stage, 'target') <> 'inactive'"}
+     ${includeInactive ? '' : "AND COALESCE(p.pipeline_stage, 'target') <> 'inactive' AND p.relationship_stage NOT IN ('inactive', 'not_fit')"}
      ORDER BY
        ts.founder_priority_score DESC NULLS LAST,
        ts.target_score DESC NULLS LAST,

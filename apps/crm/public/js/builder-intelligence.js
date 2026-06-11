@@ -229,6 +229,51 @@
     return line || 'Contact candidate found';
   }
 
+  function cardDismissButton(id) {
+    return (
+      '<button type="button" class="bi-card-dismiss" data-dismiss-id="' +
+      esc(id) +
+      '" aria-label="Remove builder" title="Remove from list">×</button>'
+    );
+  }
+
+  function dismissBuilderProspect(id, companyName) {
+    if (!id) return;
+    var label = companyName ? '"' + companyName + '"' : 'this builder';
+    if (!window.confirm('Remove ' + label + ' from your builder lists?')) return;
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/dismiss', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({}),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Remove failed');
+        if (currentProspect && currentProspect.id === id) closeDetail();
+        showMsg('Builder removed.', false);
+        return Promise.all([loadList(), loadPipeline(), loadTargets(), reloadDashboardSections()]);
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Remove failed.', true);
+      });
+  }
+
+  function bindDismissButtons(container) {
+    if (!container) return;
+    container.querySelectorAll('.bi-card-dismiss').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var card = btn.closest('[data-id]');
+        var id = btn.getAttribute('data-dismiss-id') || (card && card.getAttribute('data-id'));
+        var nameEl = card && card.querySelector('.bi-card-company, .bi-target-name');
+        dismissBuilderProspect(id, nameEl ? nameEl.textContent : '');
+      });
+    });
+  }
+
   function renderPipelineCard(p) {
     var fit = p.estimated_fit_score != null ? 'Fit ' + p.estimated_fit_score : 'Not researched';
     var rec = p.recommended_contact;
@@ -248,7 +293,9 @@
     return (
       '<article class="bi-builder-card bi-pipeline-card" data-id="' +
       esc(p.id) +
-      '"><h3 class="bi-card-company">' +
+      '">' +
+      cardDismissButton(p.id) +
+      '<h3 class="bi-card-company">' +
       esc(p.company_name) +
       '</h3><p class="bi-card-focus">' +
       esc(focusLineForProspect(p)) +
@@ -299,6 +346,7 @@
       })
       .join('');
     bindCardClicks(el);
+    bindDismissButtons(el);
     el.querySelectorAll('.bi-btn-stage-batch-contact').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -794,7 +842,9 @@
         return (
           '<div class="bi-target-card" data-id="' +
           esc(t.prospect_id) +
-          '"><div class="bi-target-rank">#' +
+          '">' +
+          cardDismissButton(t.prospect_id) +
+          '<div class="bi-target-rank">#' +
           esc(String(t.rank)) +
           '</div><div><div class="bi-target-name">' +
           esc(t.company_name) +
@@ -811,6 +861,7 @@
       })
       .join('');
     bindCardClicks(listEl);
+    bindDismissButtons(listEl);
   }
 
   function loadStrategicPartners() {
@@ -985,7 +1036,9 @@
         return (
           '<article class="bi-builder-card" data-id="' +
           esc(p.id) +
-          '"><h3 class="bi-card-company">' +
+          '">' +
+          cardDismissButton(p.id) +
+          '<h3 class="bi-card-company">' +
           esc(p.company_name) +
           '</h3><p class="bi-card-focus">' +
           esc(focusLineForProspect(p)) +
@@ -1001,6 +1054,7 @@
       .join('');
     if (totalEl) totalEl.textContent = prospects.length + ' builder(s)';
     bindCardClicks(el);
+    bindDismissButtons(el);
   }
 
   function loadList() {

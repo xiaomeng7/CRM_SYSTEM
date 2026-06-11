@@ -21,6 +21,7 @@ const {
   getBuilderProspectById,
   createBuilderProspect,
   updateBuilderProspect,
+  dismissBuilderProspect,
   addBuilderProspectNote,
 } = require('../../services/builder/builderProspectService');
 const {
@@ -534,6 +535,17 @@ router.put('/prospects/:id', async (req, res) => {
     });
   } catch (err) {
     console.error('[builder-intel PUT prospect]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/prospects/:id/dismiss', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const prospect = await dismissBuilderProspect(req.params.id);
+    res.json({ ok: true, prospect });
+  } catch (err) {
+    console.error('[builder-intel POST prospect dismiss]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
   }
 });

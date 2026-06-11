@@ -13,7 +13,9 @@ const {
   classifyDiscoveryCandidate,
   applyDiscoveryQuality,
   buildDiscoveryRunSummary,
+  isListicleTitle,
 } = require('../services/builder/discovery/discoveryQualityScore');
+const { shouldFilterResult } = require('../services/builder/discovery/providers/serpApiMapping');
 const {
   createDiscoveryRun,
   getDiscoveryRunById,
@@ -52,6 +54,29 @@ async function cleanup() {
     await pool.query(`DELETE FROM b2b_prospects WHERE id = ANY($1::uuid[])`, [createdProspectIds]);
   }
   await pool.query(`DELETE FROM b2b_prospects WHERE company_name LIKE $1`, [`${TEST_PREFIX}%`]);
+}
+
+function testListicleFilters() {
+  console.log('\n=== Listicle / SEO article filters ===\n');
+  const burnsideTitle = 'The Best Home Builder in City of Burnside, SA 2026';
+  const burnsideUrl =
+    'https://www.qualitybusinessawards.com.au/2026/the-best-home-builder-in-city-of-burnside-sa/sa-designer-homes---adelaide-builders';
+  assert(isListicleTitle(burnsideTitle), 'burnside listicle title');
+  assert(shouldFilterResult(burnsideTitle, burnsideUrl), 'serp mapping filters burnside article');
+
+  const classified = classifyDiscoveryCandidate({
+    company_name: burnsideTitle,
+    website: burnsideUrl,
+    confidence_score: 72,
+  });
+  assert(classified.hidden === true, 'burnside article hidden');
+  assert(
+    classified.hide_reason === 'seo_title' ||
+      classified.hide_reason === 'listicle_url' ||
+      classified.hide_reason === 'directory',
+    classified.hide_reason
+  );
+  console.log('listicle filters OK');
 }
 
 function testQualityPenalties() {
@@ -148,6 +173,8 @@ function testUiStatic() {
   assert(js.includes('renderDiscoverySummary'), 'summary renderer');
   assert(js.includes('research-top-10'), 'research top 10 API');
   assert(js.includes('research-selected'), 'research selected API');
+  assert(js.includes('bi-card-dismiss'), 'card dismiss button');
+  assert(js.includes('dismissBuilderProspect'), 'dismiss handler');
   console.log('UI OK');
 }
 
@@ -226,6 +253,7 @@ async function testBatchResearchMock() {
 async function main() {
   console.log('PR9B.3 Discovery quality + batch research tests\n');
   try {
+    testListicleFilters();
     testQualityPenalties();
     testQualityBands();
     testSummaryBuilder();

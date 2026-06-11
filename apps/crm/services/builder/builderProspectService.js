@@ -210,6 +210,10 @@ function buildListQuery(filters = {}, { tableAlias = '' } = {}) {
     );
   }
 
+  if (!filters.include_dismissed) {
+    conditions.push(`${p}relationship_stage NOT IN ('inactive', 'not_fit')`);
+  }
+
   const where = `WHERE ${conditions.join(' AND ')}`;
   return { where, params };
 }
@@ -444,6 +448,26 @@ async function updateBuilderProspect(id, data, options = {}) {
   return decorateProspectPipelineFields(r.rows[0]);
 }
 
+async function dismissBuilderProspect(id, options = {}) {
+  const db = options.db || pool;
+  const r = await db.query(
+    `UPDATE b2b_prospects
+     SET relationship_stage = 'not_fit',
+         pipeline_stage = 'inactive',
+         builder_status = 'inactive_partner',
+         updated_at = now()
+     WHERE id = $1 AND prospect_type = $2
+     RETURNING *`,
+    [id, PROSPECT_TYPE_BUILDER]
+  );
+  if (!r.rows[0]) {
+    const err = new Error('Builder prospect not found');
+    err.code = 'NOT_FOUND';
+    throw err;
+  }
+  return decorateProspectPipelineFields(r.rows[0]);
+}
+
 async function addBuilderProspectNote(id, noteText, options = {}) {
   const db = options.db || pool;
   const text = trimOrNull(noteText);
@@ -482,6 +506,7 @@ module.exports = {
   getBuilderProspectById,
   createBuilderProspect,
   updateBuilderProspect,
+  dismissBuilderProspect,
   addBuilderProspectNote,
   parseLimit,
   decorateProspectPipelineFields,

@@ -21,6 +21,10 @@ const SEO_TITLE_PHRASES = [
   'award winning builders',
   'top builders',
   'best builders',
+  'best home builder',
+  'the best home builder',
+  'best builder in',
+  'top home builder',
   'luxury home builder',
   'custom home builder adelaide',
   'architectural builder adelaide',
@@ -32,6 +36,19 @@ const DIRECTORY_DOMAINS = [
   'yellowpages.com.au',
   'service.com.au',
   'buildpilot.com.au',
+  'qualitybusinessawards.com.au',
+  'productreview.com.au',
+  'wordofmouth.com.au',
+  'houzz.com.au',
+  'threebestrated.com.au',
+];
+
+const LISTICLE_URL_SLUGS = [
+  '/the-best-',
+  '/top-10-',
+  '/top-5-',
+  '/best-home-builder',
+  '/best-builder',
 ];
 
 /** @deprecated PR9B.3 — kept for tests */
@@ -64,7 +81,30 @@ function isSeoUrl(url) {
 }
 
 function isSeoTitle(name) {
-  return SEO_TITLE_PHRASES.some((phrase) => name.includes(phrase));
+  if (SEO_TITLE_PHRASES.some((phrase) => name.includes(phrase))) return true;
+  return isListicleTitle(name);
+}
+
+function isListicleTitle(name) {
+  const raw = String(name || '').trim();
+  if (!raw) return false;
+  const lower = raw.toLowerCase();
+  if (/^the best\b/.test(lower)) return true;
+  if (/\b(best|top)\s+\d+\b/.test(lower)) return true;
+  if (/\b20\d{2}\b/.test(lower) && (lower.includes('best') || lower.includes('top'))) return true;
+  if (/\bin city of\b/.test(lower)) return true;
+  if (/\b(home builder|builders)\s+in\b/.test(lower) && raw.length > 36) return true;
+  return false;
+}
+
+function isListicleUrl(url) {
+  if (!url) return false;
+  const lower = String(url).toLowerCase();
+  if (LISTICLE_URL_SLUGS.some((slug) => lower.includes(slug))) return true;
+  if (/\/\d{4}\//.test(lower) && (lower.includes('best') || lower.includes('award') || lower.includes('top'))) {
+    return true;
+  }
+  return false;
 }
 
 function matchesExistingProspect(candidate, existingRows) {
@@ -116,14 +156,14 @@ function classifyDiscoveryCandidate(candidate, context = {}) {
     };
   }
 
-  if (isSeoUrl(url)) {
+  if (isSeoUrl(url) || isListicleUrl(url)) {
     return {
       ...base,
       candidate_type: 'builder',
       quality_score: 0,
       quality_band: 'D',
       hidden: true,
-      hide_reason: 'seo_url',
+      hide_reason: isListicleUrl(url) ? 'listicle_url' : 'seo_url',
     };
   }
 
@@ -213,7 +253,10 @@ function buildDiscoveryRunSummary(candidates, run = {}) {
     (c) => c.candidate_type === 'directory' || c.hide_reason === 'directory'
   ).length;
   const seo_pages_hidden = enriched.filter(
-    (c) => c.hide_reason === 'seo_url' || c.hide_reason === 'seo_title'
+    (c) =>
+      c.hide_reason === 'seo_url' ||
+      c.hide_reason === 'seo_title' ||
+      c.hide_reason === 'listicle_url'
   ).length;
   const new_builders_remaining = enriched.filter((c) => isNewVisibleBuilder(c)).length;
 
@@ -297,6 +340,9 @@ module.exports = {
   SEO_URL_PATHS,
   SEO_TITLE_PHRASES,
   DIRECTORY_DOMAINS,
+  LISTICLE_URL_SLUGS,
+  isListicleTitle,
+  isListicleUrl,
   LOW_QUALITY_URL_PATHS,
   LOW_QUALITY_NAME_TERMS,
   LOW_QUALITY_DOMAINS,

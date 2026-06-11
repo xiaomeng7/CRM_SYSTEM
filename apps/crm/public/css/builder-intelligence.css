@@ -711,7 +711,7 @@
   display: grid;
   grid-template-columns: 2.5rem 1fr auto;
   gap: 0.75rem;
-  padding: 0.65rem 0.75rem;
+  padding: 0.65rem 2rem 0.65rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
@@ -798,13 +798,43 @@
   gap: 0.75rem;
 }
 
+.bi-builder-card,
+.bi-target-card {
+  position: relative;
+}
+
 .bi-builder-card {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.85rem 1rem;
+  padding-right: 2rem;
   background: var(--bg);
   cursor: pointer;
   transition: border-color 0.15s ease;
+}
+
+.bi-card-dismiss {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bi-card-dismiss:hover {
+  background: #fde8e8;
+  color: #b42318;
 }
 
 .bi-builder-card:hover {

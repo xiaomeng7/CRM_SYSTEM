@@ -2,6 +2,8 @@
  * SerpAPI response → discovery candidate mapping (PR9B.2).
  */
 
+const { isListicleTitle, isListicleUrl } = require('../discoveryQualityScore');
+
 const BLOCKED_TERMS = [
   'facebook',
   'instagram',
@@ -11,6 +13,10 @@ const BLOCKED_TERMS = [
   'yellowpages',
   'truelocal',
   'productreview',
+  'qualitybusinessawards',
+  'wordofmouth',
+  'houzz.com',
+  'threebestrated',
   'reddit',
   'wikipedia',
   'seek',
@@ -65,6 +71,9 @@ function shouldFilterResult(title, link) {
 
   const isDirectory = DIRECTORY_TERMS.some((term) => hay.includes(term));
   if (isDirectory) return true;
+
+  if (isListicleTitle(title)) return true;
+  if (isListicleUrl(link)) return true;
 
   return false;
 }
