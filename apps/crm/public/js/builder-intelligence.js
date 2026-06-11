@@ -18,6 +18,7 @@
   var pipelineSections = [];
   var currentContacts = [];
   var selectedContactId = null;
+  var pendingStageSuggestion = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -236,6 +237,14 @@
         esc(formatRecommendedContactLine(rec)) +
         '</strong></p>'
       : '';
+    var suggestion = p.pending_stage_suggestion;
+    var suggestionLine = suggestion
+      ? '<p class="bi-card-suggestion"><span>Suggested Next Step:</span> <strong>' +
+        esc(suggestion.title || suggestion.suggested_to_stage) +
+        '</strong></p>'
+      : p.display_next_action
+        ? '<p class="bi-card-suggestion"><span>Next Action:</span> <strong>' + esc(p.display_next_action) + '</strong></p>'
+        : '';
     return (
       '<article class="bi-builder-card bi-pipeline-card" data-id="' +
       esc(p.id) +
@@ -247,7 +256,8 @@
       esc(fit) +
       '</p>' +
       recLine +
-      '<p class="bi-card-action"><span>Next:</span> <strong>' +
+      suggestionLine +
+      '<p class="bi-card-action"><span>Pipeline:</span> <strong>' +
       esc(p.pipeline_next_action || suggestedActionForProspect(p)) +
       '</strong></p><p class="bi-card-status"><span>Stage:</span> <strong>' +
       esc(p.pipeline_stage_label || labelize(p.pipeline_stage)) +
@@ -420,6 +430,93 @@
       });
   }
 
+  function renderStageSuggestionCard(suggestion) {
+    pendingStageSuggestion = suggestion || null;
+    var el = $('bi-stage-suggestion-card');
+    var approveBtn = $('bi-btn-approve-suggestion');
+    var dismissBtn = $('bi-btn-dismiss-suggestion');
+    if (!el) return;
+    if (!suggestion) {
+      el.innerHTML = '<p class="bi-empty-inline">No pending stage suggestion.</p>';
+      if (approveBtn) approveBtn.hidden = true;
+      if (dismissBtn) dismissBtn.hidden = true;
+      return;
+    }
+    el.innerHTML =
+      '<div class="bi-stage-suggestion-inner"><div class="bi-stage-suggestion-title">' +
+      esc(suggestion.title || 'Move to next stage') +
+      '</div><div class="bi-stage-suggestion-reason">' +
+      esc(suggestion.reason || '') +
+      '</div><div class="bi-stage-suggestion-meta">Confidence: <strong>' +
+      esc(suggestion.confidence_band || 'medium') +
+      '</strong></div></div>';
+    if (approveBtn) approveBtn.hidden = false;
+    if (dismissBtn) dismissBtn.hidden = false;
+  }
+
+  function loadStageSuggestion(id) {
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/stage-suggestions')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Failed to load suggestions');
+        renderStageSuggestionCard(j.pending_suggestion || null);
+      })
+      .catch(function () {
+        renderStageSuggestionCard(null);
+      });
+  }
+
+  function approveStageSuggestion() {
+    if (!pendingStageSuggestion || !pendingStageSuggestion.id) return;
+    var prospectId = $('bi-id') && $('bi-id').value;
+    return fetch('/api/builder-intel/stage-suggestions/' + encodeURIComponent(pendingStageSuggestion.id) + '/approve', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({}),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Approve failed');
+        if (j.prospect) {
+          currentProspect = j.prospect;
+          fillDetailForm(j.prospect);
+          renderRecommendedAction(j.prospect, currentProfile);
+        }
+        renderStageSuggestionCard(null);
+        showMsg('Stage suggestion approved.', false);
+        return Promise.all([loadPipeline(), prospectId ? loadStageSuggestion(prospectId) : Promise.resolve()]);
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Approve failed.', true);
+      });
+  }
+
+  function dismissStageSuggestion() {
+    if (!pendingStageSuggestion || !pendingStageSuggestion.id) return;
+    var prospectId = $('bi-id') && $('bi-id').value;
+    return fetch('/api/builder-intel/stage-suggestions/' + encodeURIComponent(pendingStageSuggestion.id) + '/dismiss', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({}),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Dismiss failed');
+        renderStageSuggestionCard(null);
+        showMsg('Stage suggestion dismissed.', false);
+        return prospectId ? loadStageSuggestion(prospectId) : Promise.resolve();
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Dismiss failed.', true);
+      });
+  }
+
   function confirmRecommendedContact() {
     var prospectId = $('bi-id') && $('bi-id').value;
     if (!prospectId || !selectedContactId) {
@@ -451,8 +548,9 @@
           renderRecommendedAction(j.prospect, currentProfile);
         }
         renderRecommendedContactCard(j.contact || null);
-        showMsg('Contact confirmed. Builder moved to Ready To Contact.', false);
-        return Promise.all([loadPipeline(), loadBuilderContacts(prospectId)]);
+        if (j.stage_suggestion) renderStageSuggestionCard(j.stage_suggestion);
+        showMsg('Contact confirmed. Approve the suggested stage change when ready.', false);
+        return Promise.all([loadPipeline(), loadBuilderContacts(prospectId), loadStageSuggestion(prospectId)]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Confirm failed.', true);
@@ -1060,6 +1158,7 @@
         $('bi-new-note').value = '';
         loadPipelineActivity(id);
         loadBuilderContacts(id);
+        loadStageSuggestion(id);
         return loadProfileAndRuns(id);
       })
       .catch(function (e) {
@@ -1093,7 +1192,8 @@
           fillDetailForm(j.prospect);
           renderRecommendedAction(j.prospect, currentProfile);
         }
-        return Promise.all([loadList(), reloadDashboardSections()]);
+        if (j.pending_suggestion) renderStageSuggestionCard(j.pending_suggestion);
+        return Promise.all([loadList(), loadPipeline(), reloadDashboardSections(), loadStageSuggestion(id)]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Save failed.', true);
@@ -2033,6 +2133,10 @@
     if (runContactBtn) runContactBtn.addEventListener('click', runContactDiscoveryForCurrent);
     var confirmContactBtn = $('bi-btn-confirm-contact');
     if (confirmContactBtn) confirmContactBtn.addEventListener('click', confirmRecommendedContact);
+    var approveSuggestionBtn = $('bi-btn-approve-suggestion');
+    if (approveSuggestionBtn) approveSuggestionBtn.addEventListener('click', approveStageSuggestion);
+    var dismissSuggestionBtn = $('bi-btn-dismiss-suggestion');
+    if (dismissSuggestionBtn) dismissSuggestionBtn.addEventListener('click', dismissStageSuggestion);
     var pipelinePrevBtn = $('bi-btn-pipeline-prev');
     if (pipelinePrevBtn) {
       pipelinePrevBtn.addEventListener('click', function () {

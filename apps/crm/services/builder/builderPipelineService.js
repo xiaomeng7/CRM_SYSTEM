@@ -133,11 +133,13 @@ function groupBuildersByPipelineSections(builders) {
 async function getBuilderPipelineView(options = {}) {
   const builders = await loadPipelineBuilders(options);
   const { attachRecommendedContacts } = require('./contactDiscovery/builderContactDiscoveryService');
+  const { attachPendingStageSuggestions } = require('./builderStageSuggestionService');
   const withContacts = await attachRecommendedContacts(builders, options);
+  const withSuggestions = await attachPendingStageSuggestions(withContacts, options);
   return {
-    summary: buildPipelineSummary(withContacts),
-    sections: groupBuildersByPipelineSections(withContacts),
-    builders: withContacts,
+    summary: buildPipelineSummary(withSuggestions),
+    sections: groupBuildersByPipelineSections(withSuggestions),
+    builders: withSuggestions,
   };
 }
 

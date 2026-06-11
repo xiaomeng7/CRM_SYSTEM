@@ -28,12 +28,18 @@ function assert(cond, msg) {
 }
 
 async function ensureMigrations() {
-  const sql = fs.readFileSync(path.join(__dirname, '../database/079_builder_contact_discovery.sql'), 'utf8');
-  await pool.query(sql);
+  const files = ['079_builder_contact_discovery.sql', '080_builder_stage_suggestions.sql'];
+  for (const file of files) {
+    const sql = fs.readFileSync(path.join(__dirname, '../database', file), 'utf8');
+    await pool.query(sql);
+  }
 }
 
 async function cleanup() {
   if (createdProspectIds.length) {
+    await pool.query(`DELETE FROM builder_stage_suggestions WHERE prospect_id = ANY($1::uuid[])`, [
+      createdProspectIds,
+    ]);
     await pool.query(`DELETE FROM builder_contacts WHERE prospect_id = ANY($1::uuid[])`, [createdProspectIds]);
     await pool.query(`DELETE FROM builder_contact_discovery_runs WHERE prospect_id = ANY($1::uuid[])`, [
       createdProspectIds,
@@ -110,7 +116,9 @@ async function testServiceIntegration() {
   assert(contacts.some((c) => c.is_recommended), 'recommended flag in db');
 
   const confirmed = await confirmBuilderContact(prospect.id, discovery.recommended_contact.id, { db: pool });
-  assert(confirmed.prospect.pipeline_stage === 'contact_ready', 'moves to contact_ready');
+  assert(confirmed.prospect.pipeline_stage === 'contact_discovery', 'does not auto-move stage');
+  assert(confirmed.stage_suggestion?.status === 'pending', 'creates pending stage suggestion');
+  assert(confirmed.stage_suggestion?.suggested_to_stage === 'contact_ready', 'suggests contact_ready');
   assert(confirmed.prospect.contact_name || confirmed.prospect.decision_maker_name, 'writes prospect contact');
   console.log('service integration OK');
 }

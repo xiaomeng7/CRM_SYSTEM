@@ -76,6 +76,14 @@ const {
   listBuilderContacts,
   confirmBuilderContact,
 } = require('../../services/builder/contactDiscovery/builderContactDiscoveryService');
+const {
+  listStageSuggestions,
+  getPendingStageSuggestion,
+  refreshStageSuggestionsForProspect,
+  approveStageSuggestion,
+  dismissStageSuggestion,
+} = require('../../services/builder/builderStageSuggestionService');
+const { SUGGESTION_SOURCES } = require('../../services/builder/stageSuggestionConstants');
 
 function requireAdminSecret(req, res) {
   const secret = process.env.ADMIN_SECRET || process.env.SYNC_SECRET;
@@ -156,6 +164,7 @@ router.get('/prospects/enums', (_req, res) => {
     fit_levels: FIT_LEVELS,
     pipeline_stages: pipelineStageOptions(),
     pipeline_next_actions: PIPELINE_NEXT_ACTIONS,
+    stage_suggestion_sources: SUGGESTION_SOURCES,
   });
 });
 
@@ -329,6 +338,52 @@ router.post('/prospects/:id/contacts/:contactId/confirm', async (req, res) => {
   }
 });
 
+router.get('/prospects/:id/stage-suggestions', async (req, res) => {
+  try {
+    const [suggestions, pending] = await Promise.all([
+      listStageSuggestions(req.params.id, { status: req.query.status }),
+      getPendingStageSuggestion(req.params.id),
+    ]);
+    res.json({ ok: true, suggestions, pending_suggestion: pending });
+  } catch (err) {
+    console.error('[builder-intel GET stage-suggestions]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/prospects/:id/stage-suggestions/evaluate', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const pending = await refreshStageSuggestionsForProspect(req.params.id);
+    res.json({ ok: true, pending_suggestion: pending });
+  } catch (err) {
+    console.error('[builder-intel POST stage-suggestions/evaluate]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/stage-suggestions/:id/approve', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const result = await approveStageSuggestion(req.params.id, { note: req.body?.note });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel POST stage-suggestions approve]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/stage-suggestions/:id/dismiss', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const suggestion = await dismissStageSuggestion(req.params.id, { note: req.body?.note });
+    res.json({ ok: true, suggestion });
+  } catch (err) {
+    console.error('[builder-intel POST stage-suggestions dismiss]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
 router.get('/prospects/:id/profile', async (req, res) => {
   try {
     const profile = await getBuilderProfile(req.params.id);
@@ -469,11 +524,13 @@ router.put('/prospects/:id', async (req, res) => {
     } catch (refreshErr) {
       console.warn('[builder-intel PUT prospect] score refresh skipped:', refreshErr.message);
     }
+    const pending_suggestion = await refreshStageSuggestionsForProspect(prospect.id);
     const full = await getBuilderProspectById(prospect.id);
     res.json({
       ok: true,
       prospect: full || prospect,
       target_scores: target_scores || full?.target_scores || null,
+      pending_suggestion,
     });
   } catch (err) {
     console.error('[builder-intel PUT prospect]', err);

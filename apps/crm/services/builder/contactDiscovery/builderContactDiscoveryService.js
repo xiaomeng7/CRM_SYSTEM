@@ -6,7 +6,7 @@ const { pool } = require('../../../lib/db');
 const { PROSPECT_TYPE_BUILDER } = require('../builderProspectConstants');
 const { fetchBuilderWebsite } = require('../research/fetchBuilderWebsite');
 const { listResearchRuns } = require('../builderProfileService');
-const { transitionPipelineStage } = require('../builderPipelineService');
+const { suggestContactReadyAfterConfirm } = require('../builderStageSuggestionService');
 const { decorateProspectPipelineFields } = require('../builderProspectService');
 const {
   extractFromHtml,
@@ -272,19 +272,21 @@ async function confirmBuilderContact(prospectId, contactId, options = {}) {
     ]
   );
 
-  const transition = await transitionPipelineStage(
+  const { decorateProspectPipelineFields } = require('../builderProspectService');
+  const updatedProspectRes = await db.query(
+    `SELECT * FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
+    [prospectId, PROSPECT_TYPE_BUILDER]
+  );
+  const stageSuggestion = await suggestContactReadyAfterConfirm(
     prospectId,
-    {
-      to_stage: 'contact_ready',
-      note: `Founder confirmed contact${contact.name ? `: ${contact.name}` : ''}${contact.role ? ` (${contact.role})` : ''}`,
-    },
+    { ...contact, founder_confirmed: true, is_recommended: true },
     { db }
   );
 
   return {
     contact: { ...contact, founder_confirmed: true, is_recommended: true },
-    prospect: transition.prospect,
-    pipeline: transition,
+    prospect: decorateProspectPipelineFields(updatedProspectRes.rows[0]),
+    stage_suggestion: stageSuggestion,
   };
 }
 

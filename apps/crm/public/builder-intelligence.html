@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10b" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10c" />
 </head>
 <body>
   <div class="app">
@@ -271,8 +271,21 @@
             <button type="button" id="bi-btn-confirm-contact" class="bi-btn primary" hidden>Founder Confirm Contact</button>
           </section>
 
+          <section class="bi-workflow-section bi-workflow-suggestion" id="bi-section-stage-suggestion">
+            <h3 class="bi-workflow-heading">Suggested Next Step</h3>
+            <p class="bi-section-hint">Stage changes require your approval — nothing moves automatically.</p>
+            <div id="bi-stage-suggestion-card" class="bi-stage-suggestion-card">
+              <p class="bi-empty-inline">No pending stage suggestion.</p>
+            </div>
+            <div class="bi-stage-suggestion-actions">
+              <button type="button" id="bi-btn-approve-suggestion" class="bi-btn primary" hidden>Approve</button>
+              <button type="button" id="bi-btn-dismiss-suggestion" class="bi-btn" hidden>Dismiss</button>
+            </div>
+          </section>
+
           <section class="bi-workflow-section bi-workflow-pipeline" id="bi-section-pipeline">
             <h3 class="bi-workflow-heading">Development Pipeline</h3>
+            <p class="bi-section-hint">Manual stage controls below — use only when you want to override suggestions.</p>
             <div class="bi-pipeline-panel-meta">
               <div class="bi-field"><span class="bi-field-label">Stage</span><strong id="bi-pipeline-stage-label">—</strong></div>
               <div class="bi-field"><span class="bi-field-label">Next action</span><strong id="bi-pipeline-next-action" class="bi-pipeline-action">—</strong></div>
@@ -322,7 +335,7 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr10b"></script>
+  <script src="/js/builder-intelligence.js?v=pr10c"></script>
   <script src="/js/sidebar.js"></script>
 </body>
 </html>

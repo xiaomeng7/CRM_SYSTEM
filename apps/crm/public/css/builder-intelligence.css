@@ -1819,3 +1819,44 @@
   color: var(--muted);
   margin-top: 0.15rem;
 }
+
+.bi-card-suggestion {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 0.78rem;
+}
+
+.bi-card-suggestion strong {
+  color: #198754;
+}
+
+.bi-stage-suggestion-card {
+  margin-bottom: 0.65rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #b8dfc8;
+  border-radius: 8px;
+  background: #f4fbf6;
+}
+
+.bi-stage-suggestion-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #146c43;
+}
+
+.bi-stage-suggestion-reason {
+  font-size: 0.82rem;
+  margin-top: 0.35rem;
+  color: var(--text);
+}
+
+.bi-stage-suggestion-meta {
+  font-size: 0.76rem;
+  margin-top: 0.35rem;
+  color: var(--muted);
+}
+
+.bi-stage-suggestion-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
