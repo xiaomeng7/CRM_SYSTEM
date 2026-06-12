@@ -237,41 +237,60 @@
     );
   }
 
-  function dismissBuilderProspect(id, companyName) {
-    if (!id) return;
-    var label = companyName ? '"' + companyName + '"' : 'this builder';
-    if (!window.confirm('Remove ' + label + ' from your builder lists?')) return;
+  function dismissBuilderProspect(id, companyName, triggerBtn) {
+    if (!id) return Promise.resolve();
+    if (triggerBtn) {
+      triggerBtn.disabled = true;
+      triggerBtn.setAttribute('aria-busy', 'true');
+    }
+    var cardEl = triggerBtn && triggerBtn.closest('[data-id]');
     return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/dismiss', {
       method: 'POST',
       headers: secretHeaders(),
       body: JSON.stringify({}),
     })
       .then(function (r) {
-        return r.json();
+        return r.json().then(function (j) {
+          return { status: r.status, body: j };
+        });
       })
-      .then(function (j) {
-        if (!j.ok) throw new Error(j.error || 'Remove failed');
+      .then(function (res) {
+        var j = res.body;
+        if (!j.ok) {
+          if (res.status === 401) {
+            throw new Error('Unauthorized — enter the correct API secret in the top bar.');
+          }
+          throw new Error(j.error || 'Remove failed');
+        }
+        if (cardEl && cardEl.parentNode) cardEl.parentNode.removeChild(cardEl);
+        prospects = prospects.filter(function (p) {
+          return p.id !== id;
+        });
         if (currentProspect && currentProspect.id === id) closeDetail();
-        showMsg('Builder removed.', false);
+        showMsg((companyName ? companyName + ' removed.' : 'Builder removed.'), false);
         return Promise.all([loadList(), loadPipeline(), loadTargets(), reloadDashboardSections()]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Remove failed.', true);
+      })
+      .finally(function () {
+        if (triggerBtn) {
+          triggerBtn.disabled = false;
+          triggerBtn.removeAttribute('aria-busy');
+        }
       });
   }
 
-  function bindDismissButtons(container) {
-    if (!container) return;
-    container.querySelectorAll('.bi-card-dismiss').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var card = btn.closest('[data-id]');
-        var id = btn.getAttribute('data-dismiss-id') || (card && card.getAttribute('data-id'));
-        var nameEl = card && card.querySelector('.bi-card-company, .bi-target-name');
-        dismissBuilderProspect(id, nameEl ? nameEl.textContent : '');
-      });
-    });
+  function handleDismissClick(e) {
+    var btn = e.target.closest('.bi-card-dismiss');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (btn.disabled) return;
+    var card = btn.closest('[data-id]');
+    var id = btn.getAttribute('data-dismiss-id') || (card && card.getAttribute('data-id'));
+    var nameEl = card && card.querySelector('.bi-card-company, .bi-target-name');
+    dismissBuilderProspect(id, nameEl ? nameEl.textContent.trim() : '', btn);
   }
 
   function renderPipelineCard(p) {
@@ -346,7 +365,6 @@
       })
       .join('');
     bindCardClicks(el);
-    bindDismissButtons(el);
     el.querySelectorAll('.bi-btn-stage-batch-contact').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -861,7 +879,6 @@
       })
       .join('');
     bindCardClicks(listEl);
-    bindDismissButtons(listEl);
   }
 
   function loadStrategicPartners() {
@@ -933,8 +950,9 @@
   }
 
   function bindCardClicks(container) {
-    container.querySelectorAll('[data-id]').forEach(function (card) {
-      card.addEventListener('click', function () {
+    container.querySelectorAll('.bi-builder-card[data-id], .bi-target-card[data-id]').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.bi-card-dismiss')) return;
         openDetail(card.getAttribute('data-id'));
       });
     });
@@ -1054,7 +1072,6 @@
       .join('');
     if (totalEl) totalEl.textContent = prospects.length + ' builder(s)';
     bindCardClicks(el);
-    bindDismissButtons(el);
   }
 
   function loadList() {
@@ -2173,6 +2190,7 @@
   }
 
   function bindEvents() {
+    document.body.addEventListener('click', handleDismissClick, true);
     $('bi-btn-refresh').addEventListener('click', function () {
       loadList();
       reloadDashboardSections();

@@ -175,6 +175,7 @@ function testUiStatic() {
   assert(js.includes('research-selected'), 'research selected API');
   assert(js.includes('bi-card-dismiss'), 'card dismiss button');
   assert(js.includes('dismissBuilderProspect'), 'dismiss handler');
+  assert(js.includes('handleDismissClick'), 'delegated dismiss click');
   console.log('UI OK');
 }
 
