@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Builder Intelligence — BHT CRM</title>
   <link rel="stylesheet" href="/css/admin.css" />
-  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10d1" />
+  <link rel="stylesheet" href="/css/builder-intelligence.css?v=pr10d2" />
 </head>
 <body>
   <div class="app">
@@ -24,6 +24,11 @@
 
       <div class="content bi-content">
         <div id="bi-msg" class="bi-msg" style="display:none;"></div>
+        <div id="bi-undo-bar" class="bi-undo-bar" hidden>
+          <span id="bi-undo-text"></span>
+          <button type="button" id="bi-btn-undo-dismiss" class="bi-btn">Undo</button>
+          <button type="button" id="bi-btn-view-removed" class="bi-btn">View removed</button>
+        </div>
 
         <section class="bi-pipeline" id="bi-pipeline">
           <div class="bi-section-header-row">
@@ -43,6 +48,14 @@
             <p class="bi-empty">Loading pipeline…</p>
           </div>
         </section>
+
+        <details class="bi-dismissed-section" id="bi-dismissed-section">
+          <summary>Removed builders <span class="bi-dismissed-count" id="bi-dismissed-count">(0)</span></summary>
+          <p class="bi-section-hint">Builders you removed with × — restore any time if you removed the wrong one.</p>
+          <div id="bi-dismissed-list" class="bi-dismissed-list">
+            <p class="bi-empty-inline">No removed builders.</p>
+          </div>
+        </details>
 
         <section class="bi-discovery-engine" id="bi-discovery-engine">
           <div class="bi-section-header-row">
@@ -335,7 +348,7 @@
     </div>
   </div>
 
-  <script src="/js/builder-intelligence.js?v=pr10d1"></script>
+  <script src="/js/builder-intelligence.js?v=pr10d2"></script>
   <script src="/js/sidebar.js"></script>
 </body>
 </html>

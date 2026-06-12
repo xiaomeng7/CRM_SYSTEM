@@ -210,7 +210,9 @@ function buildListQuery(filters = {}, { tableAlias = '' } = {}) {
     );
   }
 
-  if (!filters.include_dismissed) {
+  if (filters.dismissed_only) {
+    conditions.push(`${p}relationship_stage = 'not_fit'`);
+  } else if (!filters.include_dismissed) {
     conditions.push(`${p}relationship_stage NOT IN ('inactive', 'not_fit')`);
   }
 
@@ -448,24 +450,109 @@ async function updateBuilderProspect(id, data, options = {}) {
   return decorateProspectPipelineFields(r.rows[0]);
 }
 
+const DEFAULT_RESTORE_SNAPSHOT = {
+  relationship_stage: 'discovered',
+  pipeline_stage: 'target',
+  builder_status: 'prospect',
+};
+
+function buildDismissSnapshot(row = {}) {
+  return {
+    relationship_stage: row.relationship_stage || DEFAULT_RESTORE_SNAPSHOT.relationship_stage,
+    pipeline_stage: row.pipeline_stage || DEFAULT_RESTORE_SNAPSHOT.pipeline_stage,
+    builder_status: row.builder_status || DEFAULT_RESTORE_SNAPSHOT.builder_status,
+    dismissed_at: new Date().toISOString(),
+  };
+}
+
 async function dismissBuilderProspect(id, options = {}) {
   const db = options.db || pool;
+  const existing = await db.query(
+    `SELECT * FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
+    [id, PROSPECT_TYPE_BUILDER]
+  );
+  const row = existing.rows[0];
+  if (!row) {
+    const err = new Error('Builder prospect not found');
+    err.code = 'NOT_FOUND';
+    throw err;
+  }
+
+  if (row.relationship_stage === 'not_fit') {
+    return {
+      prospect: decorateProspectPipelineFields(row),
+      restore_snapshot: row.dismiss_snapshot || buildDismissSnapshot(DEFAULT_RESTORE_SNAPSHOT),
+      already_dismissed: true,
+    };
+  }
+
+  const restore_snapshot = buildDismissSnapshot(row);
   const r = await db.query(
     `UPDATE b2b_prospects
      SET relationship_stage = 'not_fit',
          pipeline_stage = 'inactive',
          builder_status = 'inactive_partner',
+         dismiss_snapshot = $3::jsonb,
          updated_at = now()
      WHERE id = $1 AND prospect_type = $2
      RETURNING *`,
+    [id, PROSPECT_TYPE_BUILDER, JSON.stringify(restore_snapshot)]
+  );
+  return {
+    prospect: decorateProspectPipelineFields(r.rows[0]),
+    restore_snapshot,
+    already_dismissed: false,
+  };
+}
+
+async function restoreBuilderProspect(id, options = {}) {
+  const db = options.db || pool;
+  const existing = await db.query(
+    `SELECT * FROM b2b_prospects WHERE id = $1 AND prospect_type = $2`,
     [id, PROSPECT_TYPE_BUILDER]
   );
-  if (!r.rows[0]) {
+  const row = existing.rows[0];
+  if (!row) {
     const err = new Error('Builder prospect not found');
     err.code = 'NOT_FOUND';
     throw err;
   }
+  if (row.relationship_stage !== 'not_fit') {
+    const err = new Error('Builder is not in removed list');
+    err.code = 'INVALID_INPUT';
+    throw err;
+  }
+
+  const snapshot = row.dismiss_snapshot || DEFAULT_RESTORE_SNAPSHOT;
+  const r = await db.query(
+    `UPDATE b2b_prospects
+     SET relationship_stage = $3,
+         pipeline_stage = $4,
+         builder_status = $5,
+         dismiss_snapshot = NULL,
+         updated_at = now()
+     WHERE id = $1 AND prospect_type = $2
+     RETURNING *`,
+    [
+      id,
+      PROSPECT_TYPE_BUILDER,
+      snapshot.relationship_stage || DEFAULT_RESTORE_SNAPSHOT.relationship_stage,
+      snapshot.pipeline_stage || DEFAULT_RESTORE_SNAPSHOT.pipeline_stage,
+      snapshot.builder_status || DEFAULT_RESTORE_SNAPSHOT.builder_status,
+    ]
+  );
   return decorateProspectPipelineFields(r.rows[0]);
+}
+
+async function listDismissedBuilders(filters = {}, options = {}) {
+  return listBuilderProspects(
+    {
+      ...filters,
+      dismissed_only: true,
+      limit: filters.limit || 50,
+    },
+    options
+  );
 }
 
 async function addBuilderProspectNote(id, noteText, options = {}) {
@@ -507,6 +594,8 @@ module.exports = {
   createBuilderProspect,
   updateBuilderProspect,
   dismissBuilderProspect,
+  restoreBuilderProspect,
+  listDismissedBuilders,
   addBuilderProspectNote,
   parseLimit,
   decorateProspectPipelineFields,

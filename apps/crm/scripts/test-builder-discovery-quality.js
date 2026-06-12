@@ -176,6 +176,8 @@ function testUiStatic() {
   assert(js.includes('bi-card-dismiss'), 'card dismiss button');
   assert(js.includes('dismissBuilderProspect'), 'dismiss handler');
   assert(js.includes('handleDismissClick'), 'delegated dismiss click');
+  assert(js.includes('restoreBuilderProspect'), 'restore handler');
+  assert(html.includes('bi-dismissed-section'), 'removed builders section');
   console.log('UI OK');
 }
 

@@ -22,6 +22,8 @@ const {
   createBuilderProspect,
   updateBuilderProspect,
   dismissBuilderProspect,
+  restoreBuilderProspect,
+  listDismissedBuilders,
   addBuilderProspectNote,
 } = require('../../services/builder/builderProspectService');
 const {
@@ -262,6 +264,20 @@ router.post('/targets/recalculate', async (req, res) => {
   }
 });
 
+router.get('/prospects/dismissed', async (req, res) => {
+  try {
+    const result = await listDismissedBuilders({
+      search: req.query.search || req.query.q,
+      limit: req.query.limit,
+      offset: req.query.offset,
+    });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[builder-intel GET prospects/dismissed]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
 router.get('/prospects', async (req, res) => {
   try {
     const result = await listBuilderProspects({
@@ -273,6 +289,8 @@ router.get('/prospects', async (req, res) => {
       search: req.query.search || req.query.q,
       limit: req.query.limit,
       offset: req.query.offset,
+      include_dismissed: req.query.include_dismissed === 'true',
+      dismissed_only: req.query.dismissed_only === 'true',
     });
     res.json({ ok: true, ...result });
   } catch (err) {
@@ -542,10 +560,21 @@ router.put('/prospects/:id', async (req, res) => {
 router.post('/prospects/:id/dismiss', async (req, res) => {
   if (!requireAdminSecret(req, res)) return;
   try {
-    const prospect = await dismissBuilderProspect(req.params.id);
-    res.json({ ok: true, prospect });
+    const result = await dismissBuilderProspect(req.params.id);
+    res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[builder-intel POST prospect dismiss]', err);
+    res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
+  }
+});
+
+router.post('/prospects/:id/restore', async (req, res) => {
+  if (!requireAdminSecret(req, res)) return;
+  try {
+    const prospect = await restoreBuilderProspect(req.params.id);
+    res.json({ ok: true, prospect });
+  } catch (err) {
+    console.error('[builder-intel POST prospect restore]', err);
     res.status(statusFromError(err)).json({ ok: false, error: safeErrorMessage(err) });
   }
 });

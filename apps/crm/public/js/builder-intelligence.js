@@ -19,6 +19,8 @@
   var currentContacts = [];
   var selectedContactId = null;
   var pendingStageSuggestion = null;
+  var pendingUndoDismiss = null;
+  var undoDismissTimer = null;
 
   function $(id) {
     return document.getElementById(id);
@@ -71,6 +73,27 @@
     el.style.display = 'block';
     el.textContent = text;
     el.className = 'bi-msg ' + (isErr ? 'err' : 'ok');
+  }
+
+  function hideUndoBar() {
+    var el = $('bi-undo-bar');
+    if (el) el.hidden = true;
+    pendingUndoDismiss = null;
+    if (undoDismissTimer) {
+      clearTimeout(undoDismissTimer);
+      undoDismissTimer = null;
+    }
+  }
+
+  function showUndoBar(text, undoFn) {
+    var el = $('bi-undo-bar');
+    var textEl = $('bi-undo-text');
+    if (!el || !textEl) return;
+    hideUndoBar();
+    pendingUndoDismiss = undoFn;
+    textEl.textContent = text;
+    el.hidden = false;
+    undoDismissTimer = setTimeout(hideUndoBar, 30000);
   }
 
   function bandClass(b) {
@@ -237,6 +260,41 @@
     );
   }
 
+  function restoreBuilderProspect(id, companyName) {
+    if (!id) return Promise.resolve();
+    return fetch('/api/builder-intel/prospects/' + encodeURIComponent(id) + '/restore', {
+      method: 'POST',
+      headers: secretHeaders(),
+      body: JSON.stringify({}),
+    })
+      .then(function (r) {
+        return r.json().then(function (j) {
+          return { status: r.status, body: j };
+        });
+      })
+      .then(function (res) {
+        var j = res.body;
+        if (!j.ok) {
+          if (res.status === 401) {
+            throw new Error('Unauthorized — enter the correct API secret in the top bar.');
+          }
+          throw new Error(j.error || 'Restore failed');
+        }
+        hideUndoBar();
+        showMsg((companyName ? companyName + ' restored.' : 'Builder restored.'), false);
+        return Promise.all([
+          loadList(),
+          loadPipeline(),
+          loadTargets(),
+          loadDismissedBuilders(),
+          reloadDashboardSections(),
+        ]);
+      })
+      .catch(function (e) {
+        showMsg(e.message || 'Restore failed.', true);
+      });
+  }
+
   function dismissBuilderProspect(id, companyName, triggerBtn) {
     if (!id) return Promise.resolve();
     if (triggerBtn) {
@@ -267,8 +325,17 @@
           return p.id !== id;
         });
         if (currentProspect && currentProspect.id === id) closeDetail();
-        showMsg((companyName ? companyName + ' removed.' : 'Builder removed.'), false);
-        return Promise.all([loadList(), loadPipeline(), loadTargets(), reloadDashboardSections()]);
+        var label = companyName || 'Builder';
+        showUndoBar(label + ' removed. Undo within 30 seconds?', function () {
+          restoreBuilderProspect(id, companyName);
+        });
+        return Promise.all([
+          loadList(),
+          loadPipeline(),
+          loadTargets(),
+          loadDismissedBuilders(),
+          reloadDashboardSections(),
+        ]);
       })
       .catch(function (e) {
         showMsg(e.message || 'Remove failed.', true);
@@ -290,7 +357,61 @@
     var card = btn.closest('[data-id]');
     var id = btn.getAttribute('data-dismiss-id') || (card && card.getAttribute('data-id'));
     var nameEl = card && card.querySelector('.bi-card-company, .bi-target-name');
-    dismissBuilderProspect(id, nameEl ? nameEl.textContent.trim() : '', btn);
+    var companyName = nameEl ? nameEl.textContent.trim() : '';
+    var label = companyName ? '"' + companyName + '"' : 'this builder';
+    if (!window.confirm('Remove ' + label + ' from your builder lists?')) return;
+    dismissBuilderProspect(id, companyName, btn);
+  }
+
+  function renderDismissedBuilders(items) {
+    var listEl = $('bi-dismissed-list');
+    var countEl = $('bi-dismissed-count');
+    if (countEl) countEl.textContent = '(' + String(items.length) + ')';
+    if (!listEl) return;
+    if (!items.length) {
+      listEl.innerHTML = '<p class="bi-empty-inline">No removed builders.</p>';
+      return;
+    }
+    listEl.innerHTML = items
+      .map(function (p) {
+        var snap = p.dismiss_snapshot || {};
+        var stage = snap.pipeline_stage || p.pipeline_stage || 'target';
+        return (
+          '<div class="bi-dismissed-row" data-id="' +
+          esc(p.id) +
+          '"><div class="bi-dismissed-name">' +
+          esc(p.company_name) +
+          '</div><div class="bi-dismissed-meta">Was in <strong>' +
+          esc(labelize(stage)) +
+          '</strong></div><button type="button" class="bi-btn bi-btn-restore" data-restore-id="' +
+          esc(p.id) +
+          '">Restore</button></div>'
+        );
+      })
+      .join('');
+    listEl.querySelectorAll('.bi-btn-restore').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var row = btn.closest('.bi-dismissed-row');
+        var id = btn.getAttribute('data-restore-id');
+        var nameEl = row && row.querySelector('.bi-dismissed-name');
+        restoreBuilderProspect(id, nameEl ? nameEl.textContent.trim() : '');
+      });
+    });
+  }
+
+  function loadDismissedBuilders() {
+    var listEl = $('bi-dismissed-list');
+    return fetch('/api/builder-intel/prospects/dismissed?limit=50')
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.error || 'Failed to load removed builders');
+        renderDismissedBuilders(j.prospects || []);
+      })
+      .catch(function (e) {
+        if (listEl) listEl.innerHTML = '<p class="bi-empty-inline">' + esc(e.message) + '</p>';
+      });
   }
 
   function renderPipelineCard(p) {
@@ -2191,6 +2312,23 @@
 
   function bindEvents() {
     document.body.addEventListener('click', handleDismissClick, true);
+    var undoBtn = $('bi-btn-undo-dismiss');
+    if (undoBtn) {
+      undoBtn.addEventListener('click', function () {
+        if (pendingUndoDismiss) pendingUndoDismiss();
+      });
+    }
+    var viewRemovedBtn = $('bi-btn-view-removed');
+    if (viewRemovedBtn) {
+      viewRemovedBtn.addEventListener('click', function () {
+        var section = $('bi-dismissed-section');
+        if (section) {
+          section.open = true;
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        loadDismissedBuilders();
+      });
+    }
     $('bi-btn-refresh').addEventListener('click', function () {
       loadList();
       reloadDashboardSections();
@@ -2310,6 +2448,7 @@
         loadPipeline(),
         loadList(),
         loadTargets(),
+        loadDismissedBuilders(),
         loadDiscoveryDashboard(),
         loadQuickSearches(),
       ]);
