@@ -62,7 +62,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
               Overview
             </a>
             <Link href="/configure" prefetch>New selection</Link>
-            <a href="/sales">Customers</a>
+            <Link href="/sales/customers">Customers</Link>
             <a href="/sales/proposals">Proposals</a>
           </nav>
           <footer>
@@ -104,7 +104,6 @@ export default function SalesHome({ locked, dashboard }: Props) {
                 <p>RECENT SELECTIONS</p>
                 <h2>Drafts</h2>
               </div>
-              <Link href="/configure" prefetch>Create new</Link>
             </div>
             {d.drafts.length ? (
               <div className="sales-table">
@@ -142,7 +141,6 @@ export default function SalesHome({ locked, dashboard }: Props) {
                   Begin with a room, an experience and a clear reason it belongs
                   in the home.
                 </p>
-                <Link href="/configure" prefetch>Create the first selection</Link>
               </div>
             )}
           </section>

@@ -12,7 +12,7 @@ const money=(n:number)=>new Intl.NumberFormat("en-AU",{style:"currency",currency
 export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
   const accent=product.themeLayout?.themes?.[0]?.tokens?.accent || "#68785f";
   return <main className="os-sheet-wrap" style={{"--accent":accent} as React.CSSProperties}>
-    <div className="os-toolbar"><div><strong>{product.productCode}</strong> · Product OS DEV</div><div className="os-toolbar-actions"><a href="/configure">Build a selection</a><button onClick={()=>window.print()} disabled={!product.printEligible}>{product.printEligible?"Print A4":"Image approval required"}</button></div></div>
+    <div className="os-toolbar"><div><a href="/sales">BETTER HOME</a><span> · {product.productCode}</span></div><div className="os-toolbar-actions"><a href="/sales">Sales Studio</a><a href="/configure">Build a selection</a><button onClick={()=>window.print()} disabled={!product.printEligible}>{product.printEligible?"Print A4":"Image approval required"}</button></div></div>
     <section className="os-page os-front">
       <header className="os-kicker"><span>BETTER HOME</span><span>{product.productCode}</span></header>
       <div className="os-front-title"><p>{product.canonicalName}</p><h1>{product.hero}</h1><h2>{product.customerContent.subtitle}</h2></div>

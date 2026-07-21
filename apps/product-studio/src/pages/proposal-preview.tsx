@@ -11,7 +11,7 @@ export default function ProposalPreview(){
   const [proposal,setProposal]=useState<Proposal|null>(null);
   useEffect(()=>{try{const raw=localStorage.getItem("better-home-proposal-preview-v1");if(raw)setProposal(JSON.parse(raw));}catch{setProposal(null);}},[]);
   return <><Head><title>Proposal preview — Better Home</title><meta name="robots" content="noindex"/></Head><main className="proposal-preview-shell">
-    <div className="proposal-toolbar"><a href="/configure">Back to selection</a><button onClick={()=>window.print()} disabled={!proposal}>Print / Save PDF</button></div>
+    <div className="proposal-toolbar"><div><a href="/sales">Sales Studio</a><a href="/configure">Back to selection</a></div><button onClick={()=>window.print()} disabled={!proposal}>Print / Save PDF</button></div>
     {!proposal?<section className="proposal-empty"><h1>No proposal preview is ready.</h1><p>Return to the configurator and choose Preview &amp; print.</p><a href="/configure">Open configurator</a></section>:<section className="proposal-page">
       <header className="proposal-head"><div><span>BETTER HOME</span><h1>Proposal preview</h1><p>Residential Living Experience</p></div><div><b>{proposal.proposalId}</b><span>{new Date(proposal.generatedAt).toLocaleDateString("en-AU")}</span><em>{proposal.status}</em></div></header>
       <section className="proposal-customer"><div><span>Prepared for</span><h2>{proposal.customer.name||"Customer name to be confirmed"}</h2><p>{proposal.customer.email}</p><p>{proposal.customer.phone}</p></div><div><span>Installation address</span><p>{proposal.customer.siteAddress||"Site address to be confirmed"}</p></div></section>

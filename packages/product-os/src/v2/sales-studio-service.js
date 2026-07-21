@@ -50,7 +50,19 @@ function createSalesStudioService(prisma){
     const rows=await prisma.pos2Proposal.findMany({where:ownOnly?{draftVersion:{draft:{ownerUser:{externalSubject:a.userId}}}}:{},include:{draftVersion:{include:{draft:{select:{draftCode:true,customerName:true,siteAddress:true}}}}},orderBy:{updatedAt:"desc"},take:100});
     return rows.map(x=>({proposalCode:x.proposalCode,status:x.status,total:Number(x.total),currencyCode:x.currencyCode,updatedAt:x.updatedAt,draftCode:x.draftVersion.draft.draftCode,draftVersion:x.draftVersion.versionNumber,customerName:x.draftVersion.draft.customerName,siteAddress:x.draftVersion.draft.siteAddress}));
   }
-  return {dashboard,draftDetail,proposalDetail,proposals};
+  async function customers(actor){
+    assertCan(actor,"CATALOG_READ");
+    const rows=await prisma.$queryRaw`
+      SELECT c.id::text AS contact_id,c.name,c.email,c.phone,
+        a.id::text AS account_id,a.name AS account_name,
+        c.updated_at
+      FROM contacts c
+      LEFT JOIN accounts a ON a.id=c.account_id
+      ORDER BY c.updated_at DESC NULLS LAST
+      LIMIT 100`;
+    return rows.map(row=>({...row,updated_at:row.updated_at?new Date(row.updated_at).toISOString():null}));
+  }
+  return {dashboard,draftDetail,proposalDetail,proposals,customers};
 }
 
 module.exports={normalizeProposalCode,createSalesStudioService};
