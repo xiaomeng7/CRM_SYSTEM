@@ -6,7 +6,8 @@ export default function ProductSheetPage({product}:{product:ProductSheetModel}){
 
 export const getServerSideProps:GetServerSideProps=async(ctx)=>{
   const code=String(ctx.params?.code||"").toUpperCase();
-  const {readContext}=require("@bht/product-os/v2");
-  const os=readContext.createProductOsV2ReadContext();
-  try{const product=await os.service.getProduct(code);if(!product)return {notFound:true};return {props:{product:JSON.parse(JSON.stringify(product))}}}finally{await os.disconnect()}
+  const {getSalesCatalog}=await import("@/server/catalog-cache");
+  const product=(await getSalesCatalog()).find((item:{productCode:string})=>item.productCode===code);
+  if(!product)return {notFound:true};
+  return {props:{product:JSON.parse(JSON.stringify(product))}};
 };
