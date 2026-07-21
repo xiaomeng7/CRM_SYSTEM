@@ -1,0 +1,5 @@
+const test=require("node:test");const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");
+const sql=fs.readFileSync(path.join(__dirname,"../../prisma/migrations/20260720170000_add_proposal_acceptance_handoff/migration.sql"),"utf8");
+test("proposal acceptance and operational handoff migration is additive",()=>{assert.match(sql,/CREATE TABLE "pos2_proposal_deliveries"/);assert.match(sql,/CREATE TABLE "pos2_proposal_acceptances"/);assert.match(sql,/CREATE TABLE "pos2_operational_handoffs"/);assert.doesNotMatch(sql,/\bDROP\b|\bTRUNCATE\b|\bDELETE\s+FROM\b/i);});
+test("one acceptance and one idempotent handoff belong to a Proposal",()=>{assert.match(sql,/UNIQUE \("proposal_id"\)/);assert.match(sql,/UNIQUE \("idempotency_key"\)/);assert.match(sql,/accepted_fingerprint/);assert.match(sql,/crm_opportunity_id/);});
+test("completed handoff requires the ServiceM8 Job identity",()=>{assert.match(sql,/status" <> 'COMPLETED'.*servicem8_job_uuid.*completed_at/s);});

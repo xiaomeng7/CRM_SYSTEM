@@ -1,0 +1,44 @@
+{
+  "name": "@bht/product-os",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Better Home Product OS database (PostgreSQL + Prisma)",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./v2": "./src/v2/index.js"
+  },
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "node scripts/safe-prisma-migrate.js",
+    "prisma:migration-history:bootstrap-dev": "node scripts/bootstrap-empty-prisma-migration-history.js",
+    "prisma:seed": "prisma db seed",
+    "import:excel": "node scripts/import-excel.js",
+    "scan-product-table-access": "node scripts/scan-product-table-access.js",
+    "scan-migration-safety": "node scripts/scan-migration-safety.js",
+    "scan-package-db-scripts": "node scripts/scan-package-db-scripts.js",
+    "validate:definitions": "node scripts/validate-product-definitions.js",
+    "validate:v2-structural": "node --test tests/v2/**/*.test.js",
+    "test:v2": "node scripts/scan-migration-safety.js && node scripts/scan-package-db-scripts.js && node --test tests/v2/**/*.test.js",
+    "report:phase4a1": "node scripts/generate-phase4a1-artifacts.js",
+    "report:phase4a2": "node scripts/generate-phase4a2-artifacts.js",
+    "import:v2:dev": "node scripts/import-v2-plan-dev.js",
+    "assets:a4:approve-dev": "node scripts/register-approved-a4-hero-assets-dev.js",
+    "sales-user:register-dev": "node scripts/register-sales-user-dev.js",
+    "build:product-os": "node scripts/build-product-os.js",
+    "build:product-os:offline": "node scripts/build-product-os.js --offline",
+    "report:definition-completion": "node scripts/generate-definition-completion-report.js",
+    "report:questions": "node scripts/generate-questions-report.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "pg": "^8.22.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "prisma": "^6.11.1"
+  }
+}

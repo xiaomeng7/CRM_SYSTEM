@@ -1,0 +1,1716 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductType {
+  INFRASTRUCTURE
+  COLLECTION
+  EXPERIENCE_PACK
+}
+
+enum RecordStatus {
+  DRAFT
+  ACTIVE
+  FROZEN
+  ARCHIVED
+}
+
+enum IncludedType {
+  STANDARD
+  OPTIONAL
+  UPGRADE
+}
+
+model Setting {
+  id            String   @id @default(uuid()) @db.Uuid
+  settingKey    String   @unique @map("setting_key")
+  numericValue  Decimal? @map("numeric_value") @db.Decimal(12, 4)
+  textValue     String?  @map("text_value")
+  booleanValue  Boolean? @map("boolean_value")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("settings")
+}
+
+model ProductCatalog {
+  id                  String               @id @default(uuid()) @db.Uuid
+  code                String               @unique
+  type                ProductType
+  name                String
+  version             String               @default("1.0")
+  status              RecordStatus         @default(DRAFT)
+  coreValue           String?              @map("core_value")
+  primaryEmotion      String?              @map("primary_emotion")
+  coverage            String?
+  hero                String?
+  subtitle            String?
+  story               String?
+  finalInstalledPrice Decimal              @map("final_installed_price") @db.Decimal(12, 2)
+  requiresFoundation  Boolean              @default(true) @map("requires_foundation")
+  notes               String?
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  bomItems            ProductBom[]
+  labourItems         ProductLabour[]
+  experiences         ProductExperience[]
+  capabilities        ProductCapability[]
+  rules               ProductRule[]
+  contentItems        ProductContent[]
+  icons               ProductIcon[]
+  images              ProductImage[]
+  themes              ProductTheme[]
+  layouts             ProductLayout[]
+  automations         ProductAutomation[]
+  changeLogs          ChangeLog[]
+
+  @@index([type, status])
+  @@map("product_catalog")
+}
+
+model SkuLibrary {
+  id            String      @id @default(uuid()) @db.Uuid
+  sku           String      @unique
+  productName   String      @map("product_name")
+  category      String?
+  brand         String?
+  supplier      String?
+  unitCostExGst Decimal     @map("unit_cost_ex_gst") @db.Decimal(12, 2)
+  status        RecordStatus @default(ACTIVE)
+  notes         String?
+  bomItems      ProductBom[]
+
+  @@map("sku_library")
+}
+
+model LabourLibrary {
+  id          String         @id @default(uuid()) @db.Uuid
+  labourItem  String         @unique @map("labour_item")
+  hours       Decimal        @db.Decimal(10, 2)
+  category    String?
+  notes       String?
+  productUses ProductLabour[]
+
+  @@map("labour_library")
+}
+
+model ProductBom {
+  id           String       @id @default(uuid()) @db.Uuid
+  productId    String       @map("product_id") @db.Uuid
+  skuId        String       @map("sku_id") @db.Uuid
+  qty          Decimal      @db.Decimal(12, 3)
+  includedType IncludedType @default(STANDARD) @map("included_type")
+  notes        String?
+  product      ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku          SkuLibrary     @relation(fields: [skuId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, skuId])
+  @@map("product_bom")
+}
+
+model ProductLabour {
+  id           String       @id @default(uuid()) @db.Uuid
+  productId    String       @map("product_id") @db.Uuid
+  labourItemId String       @map("labour_item_id") @db.Uuid
+  qty          Decimal      @db.Decimal(10, 2)
+  notes        String?
+  product      ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+  labourItem   LabourLibrary  @relation(fields: [labourItemId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, labourItemId])
+  @@map("product_labour")
+}
+
+model ProductExperience {
+  id          String        @id @default(uuid()) @db.Uuid
+  productId   String        @map("product_id") @db.Uuid
+  sequence    Int
+  title       String
+  description String?
+  status      RecordStatus  @default(ACTIVE)
+  product     ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, sequence])
+  @@map("product_experiences")
+}
+
+model ProductCapability {
+  id            String        @id @default(uuid()) @db.Uuid
+  productId     String        @map("product_id") @db.Uuid
+  capability    String
+  includedQty   Decimal?      @map("included_qty") @db.Decimal(12, 3)
+  customerLayer String?       @map("customer_layer")
+  notes         String?
+  product       ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_capabilities")
+}
+
+model ProductRule {
+  id        String        @id @default(uuid()) @db.Uuid
+  productId String        @map("product_id") @db.Uuid
+  ruleKey   String        @map("rule_key")
+  ruleValue String        @map("rule_value")
+  notes     String?
+  product   ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, ruleKey])
+  @@map("product_rules")
+}
+
+model ProductContent {
+  id          String        @id @default(uuid()) @db.Uuid
+  productId   String        @map("product_id") @db.Uuid
+  contentType String        @map("content_type")
+  contentKey  String        @map("content_key")
+  sequence    Int           @default(1)
+  title       String?
+  body        String?
+  status      RecordStatus  @default(ACTIVE)
+  notes       String?
+  product     ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, contentType, contentKey, sequence])
+  @@map("product_content")
+}
+
+model ProductIcon {
+  id        String        @id @default(uuid()) @db.Uuid
+  productId String        @map("product_id") @db.Uuid
+  iconKey   String        @map("icon_key")
+  title     String?
+  assetUrl  String?       @map("asset_url")
+  sequence  Int           @default(1)
+  status    RecordStatus  @default(ACTIVE)
+  notes     String?
+  product   ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, iconKey, sequence])
+  @@map("product_icons")
+}
+
+model ProductImage {
+  id          String        @id @default(uuid()) @db.Uuid
+  productId   String        @map("product_id") @db.Uuid
+  imageType   String        @map("image_type")
+  imageUrl    String        @map("image_url")
+  altText     String?       @map("alt_text")
+  sequence    Int           @default(1)
+  status      RecordStatus  @default(ACTIVE)
+  notes       String?
+  product     ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, imageType, sequence])
+  @@map("product_images")
+}
+
+model ProductTheme {
+  id               String        @id @default(uuid()) @db.Uuid
+  productId        String        @map("product_id") @db.Uuid
+  themeKey         String        @map("theme_key")
+  primaryColor     String?       @map("primary_color")
+  secondaryColor   String?       @map("secondary_color")
+  typographyScheme String?       @map("typography_scheme")
+  status           RecordStatus  @default(ACTIVE)
+  notes            String?
+  product          ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, themeKey])
+  @@map("product_theme")
+}
+
+model ProductLayout {
+  id           String        @id @default(uuid()) @db.Uuid
+  productId    String        @map("product_id") @db.Uuid
+  layoutKey    String        @map("layout_key")
+  renderTarget String?       @map("render_target")
+  definition   Json?
+  status       RecordStatus  @default(ACTIVE)
+  notes        String?
+  product      ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, layoutKey])
+  @@map("product_layout")
+}
+
+model ProductAutomation {
+  id          String        @id @default(uuid()) @db.Uuid
+  productId   String        @map("product_id") @db.Uuid
+  sequence    Int           @default(1)
+  automationKey String      @map("automation_key")
+  title       String
+  description String?
+  triggerType String?       @map("trigger_type")
+  status      RecordStatus  @default(ACTIVE)
+  notes       String?
+  product     ProductCatalog @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, automationKey, sequence])
+  @@map("product_automation")
+}
+
+model ChangeLog {
+  id              String        @id @default(uuid()) @db.Uuid
+  productId       String?       @map("product_id") @db.Uuid
+  changedBy       String?       @map("changed_by")
+  changeType      String        @map("change_type")
+  changeSummary   String?       @map("change_summary")
+  previousVersion String?       @map("previous_version")
+  newVersion      String?       @map("new_version")
+  metadata        Json?
+  changedAt       DateTime      @default(now()) @map("changed_at") @db.Timestamptz(6)
+  product         ProductCatalog? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([productId, changedAt])
+  @@map("change_log")
+}
+
+
+// =============================================================================
+// Product OS V2 (additive) — Phase 3A
+// Physical tables use pos2_ prefix in the default public schema.
+// ADR-008: prefixed tables preferred over Prisma multi-schema for tooling safety.
+// V1 models above MUST remain unchanged. No V2 seed of product facts in Phase 3A.
+// =============================================================================
+
+enum Pos2ProductKind {
+  FOUNDATION
+  COLLECTION
+  EXPERIENCE
+  ADDON
+  STANDALONE
+}
+
+enum Pos2CommercialRole {
+  STANDARD
+  PACK
+  BONUS
+}
+
+enum Pos2LifecycleStatus {
+  DRAFT
+  ACTIVE
+  FROZEN
+  ARCHIVED
+}
+
+enum Pos2RelationshipType {
+  PREREQUISITE
+  COMPATIBLE_EXPERIENCE
+  RECOMMENDED_NEXT_PRODUCT
+  BONUS_PREREQUISITE
+  BONUS_UNLOCK
+  DEPENDENCY
+  PRESENTATION_CTA
+}
+
+enum Pos2RequirementLogic {
+  AND
+  OR
+}
+
+enum Pos2ContentKind {
+  HERO
+  SUBTITLE
+  STORY_TITLE
+  STORY_BODY
+  FRONT_MOMENT_TITLE
+  FRONT_MOMENT_CAPTION
+  PROBLEM
+  BETTER_HOME_RESPONSE
+  CUSTOMER_EXPERIENCE_COPY
+  INSTALLATION_ASSUMPTION_CUSTOMER
+  FOOTER
+  ADDON_EXPERIENCE_PROMISE
+}
+
+enum Pos2ContentSide {
+  FRONT
+  BACK
+  NA
+}
+
+enum Pos2AssumptionLayer {
+  CUSTOMER
+  TECHNICAL
+}
+
+enum Pos2TaxBasis {
+  GST_INCLUSIVE
+  GST_EXCLUSIVE
+  GST_FREE
+}
+
+enum Pos2PriceDisplayMode {
+  EXACT
+  FROM
+  CONTACT
+}
+
+enum Pos2PriceFulfilmentMode {
+  INSTALLED
+  SUPPLY_ONLY
+}
+
+enum Pos2PublishStatus {
+  DRAFT
+  APPROVED
+  NOT_APPROVED_FOR_PUBLISH
+  RETIRED
+}
+
+enum Pos2ThemeScope {
+  GLOBAL
+  CHANNEL
+  PRODUCT
+}
+
+enum Pos2InclusionType {
+  STANDARD
+  OPTIONAL
+  UPGRADE
+}
+
+enum Pos2SupportKind {
+  BOM_ITEM
+  RULE
+  NON_HARDWARE
+}
+
+enum Pos2ReleaseComponentKind {
+  PRODUCT_VERSION
+  BOM_VERSION
+  LABOUR_VERSION
+  PRICE
+  CONTENT_ENTRY
+  AUTOMATION
+  THEME
+  LAYOUT
+  ASSET
+}
+
+enum Pos2ImportMode {
+  DRY_RUN
+  APPLY
+}
+
+enum Pos2IssueStatus {
+  OPEN
+  NEEDS_SOURCE
+  NEEDS_PRODUCT_OWNER
+  RESOLVED
+  DEFERRED
+  NOT_A_CONFLICT
+}
+
+enum Pos2AliasResolutionKind {
+  PRODUCT
+  INCLUDED_BENEFIT
+  WITHDRAWN
+}
+
+enum Pos2SelectionDraftStatus {
+  DRAFT
+  READY_FOR_REVIEW
+  CONVERTED
+  ARCHIVED
+}
+
+enum Pos2ProposalStatus {
+  DRAFT
+  INTERNAL_REVIEW
+  APPROVED
+  SENT
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  CANCELLED
+}
+
+enum Pos2SalesRole {
+  SALES
+  MANAGER
+  ADMIN
+}
+
+enum Pos2SalesUserStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum Pos2CustomerLinkStatus {
+  PENDING_REVIEW
+  CONFIRMED
+  REJECTED
+}
+
+enum Pos2CustomerMatchMethod {
+  EXPLICIT_ID
+  EMAIL_EXACT
+  PHONE_EXACT
+  MANUAL
+  NEW_CUSTOMER
+}
+
+enum Pos2ProposalDeliveryChannel {
+  EMAIL
+  MANUAL_HANDOFF
+  OTHER
+}
+
+enum Pos2ProposalAcceptanceMethod {
+  SIGNED_DOCUMENT
+  EMAIL_CONFIRMATION
+  PORTAL
+  IN_PERSON
+  OTHER
+}
+
+enum Pos2OperationalHandoffStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum Pos2OperationalHandoffOperation {
+  CREATE_SERVICEM8_WORK_ORDER
+}
+
+/// Canonical V2 product catalogue node (dual-axis kind × commercial role).
+model Pos2Product {
+  id                 String             @id @default(uuid()) @db.Uuid
+  productCode        String             @unique @map("product_code")
+  canonicalName      String             @map("canonical_name")
+  productKind        Pos2ProductKind    @map("product_kind")
+  commercialRole     Pos2CommercialRole @default(STANDARD) @map("commercial_role")
+  status             Pos2LifecycleStatus @default(DRAFT)
+  parentProductId    String?            @map("parent_product_id") @db.Uuid
+  coverage           String?
+  requiresFoundation Boolean            @default(true) @map("requires_foundation")
+  notes              String?
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  archivedAt         DateTime?          @map("archived_at") @db.Timestamptz(6)
+
+  parent             Pos2Product?       @relation("Pos2ProductHierarchy", fields: [parentProductId], references: [id], onDelete: SetNull)
+  children           Pos2Product[]      @relation("Pos2ProductHierarchy")
+  versions           Pos2ProductVersion[]
+  addonProfile       Pos2AddonProfile?
+  addonEligibilitiesAsAddon  Pos2AddonParentEligibility[] @relation("Pos2AddonSide")
+  addonEligibilitiesAsParent Pos2AddonParentEligibility[] @relation("Pos2ParentSide")
+  featuredAsParent   Pos2ProductFeaturedAddon[] @relation("Pos2FeaturedParent")
+  featuredAsAddon    Pos2ProductFeaturedAddon[] @relation("Pos2FeaturedAddon")
+  installationAssumptions Pos2InstallationAssumption[]
+  capabilityInclusions Pos2ProductCapability[]
+  experiences        Pos2Experience[]
+  relationshipsFrom  Pos2ProductRelationship[] @relation("Pos2RelFrom")
+  relationshipsTo    Pos2ProductRelationship[] @relation("Pos2RelTo")
+  relationshipRequirements Pos2RelationshipRequirement[]
+  scopeGroups        Pos2ScopeGroup[]
+  bomVersions        Pos2BomVersion[]
+  labourVersions     Pos2LabourVersion[]
+  rules              Pos2RuleDefinition[]
+  productAutomations Pos2ProductAutomation[]
+  prices             Pos2ProductPrice[]
+  contentPlacements  Pos2ProductContentPlacement[]
+  imageLinks         Pos2ProductImageLink[]
+  themes             Pos2Theme[]
+  layoutConfigs      Pos2LayoutConfig[]
+  footerConfigs      Pos2FooterConfig[]
+  aliasesAsCanonical Pos2ProductAlias[] @relation("Pos2AliasCanonicalProduct")
+  includedBenefits   Pos2IncludedBenefit[]
+  selectionDraftLines Pos2SelectionDraftLine[]
+
+  @@unique([canonicalName, productKind])
+  @@index([productKind, commercialRole, status])
+  @@map("pos2_products")
+}
+
+/// Legacy / external identifier crosswalk. Never silently rewrite historical codes.
+model Pos2ProductAlias {
+  id                   String                 @id @default(uuid()) @db.Uuid
+  aliasCode            String                 @map("alias_code")
+  aliasSystem          String                 @map("alias_system")
+  resolutionKind       Pos2AliasResolutionKind @map("resolution_kind")
+  canonicalProductId   String?                @map("canonical_product_id") @db.Uuid
+  includedBenefitCode  String?                @map("included_benefit_code")
+  sourceLabel          String?                @map("source_label")
+  notes                String?
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  canonicalProduct     Pos2Product?           @relation("Pos2AliasCanonicalProduct", fields: [canonicalProductId], references: [id], onDelete: SetNull)
+  includedBenefit      Pos2IncludedBenefit?   @relation(fields: [includedBenefitCode], references: [benefitCode], onDelete: SetNull)
+
+  @@unique([aliasCode, aliasSystem])
+  @@index([resolutionKind])
+  @@map("pos2_product_aliases")
+}
+
+/// Non-product included benefit (e.g. Protection Bonus on CCTV). Not a Product ID.
+model Pos2IncludedBenefit {
+  id                     String              @id @default(uuid()) @db.Uuid
+  benefitCode            String              @unique @map("benefit_code")
+  hostProductId          String              @map("host_product_id") @db.Uuid
+  displayName            String              @map("display_name")
+  quoteShowsZeroValue    Boolean             @default(true) @map("quote_shows_zero_value")
+  showOnConfigurator     Boolean             @default(true) @map("show_on_configurator")
+  showOnA4               Boolean             @default(true) @map("show_on_a4")
+  unlockRelationshipId   String?             @map("unlock_relationship_id") @db.Uuid
+  status                 Pos2LifecycleStatus @default(ACTIVE)
+  notes                  String?
+  createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  hostProduct            Pos2Product         @relation(fields: [hostProductId], references: [id], onDelete: Cascade)
+  unlockRelationship     Pos2ProductRelationship? @relation(fields: [unlockRelationshipId], references: [id], onDelete: SetNull)
+  aliases                Pos2ProductAlias[]
+
+  @@index([hostProductId, status])
+  @@map("pos2_included_benefits")
+}
+
+model Pos2ProductVersion {
+  id                   String              @id @default(uuid()) @db.Uuid
+  productId            String              @map("product_id") @db.Uuid
+  versionLabel         String              @map("version_label")
+  status               Pos2LifecycleStatus @default(DRAFT)
+  effectiveFrom        DateTime?           @map("effective_from") @db.Timestamptz(6)
+  effectiveTo          DateTime?           @map("effective_to") @db.Timestamptz(6)
+  supersedesVersionId  String?             @map("supersedes_version_id") @db.Uuid
+  changeSummary        String?             @map("change_summary")
+  createdAt            DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product              Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supersedes           Pos2ProductVersion? @relation("Pos2VersionChain", fields: [supersedesVersionId], references: [id], onDelete: SetNull)
+  supersededBy         Pos2ProductVersion[] @relation("Pos2VersionChain")
+  releaseComponents    Pos2ReleaseComponent[]
+
+  @@unique([productId, versionLabel])
+  @@map("pos2_product_versions")
+}
+
+model Pos2Release {
+  id          String              @id @default(uuid()) @db.Uuid
+  releaseCode String              @unique @map("release_code")
+  label       String
+  status      Pos2LifecycleStatus @default(DRAFT)
+  releasedAt  DateTime?           @map("released_at") @db.Timestamptz(6)
+  notes       String?
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  components  Pos2ReleaseComponent[]
+  validationRuns Pos2ValidationRun[]
+
+  @@map("pos2_releases")
+}
+
+model Pos2ReleaseComponent {
+  id            String                 @id @default(uuid()) @db.Uuid
+  releaseId     String                 @map("release_id") @db.Uuid
+  componentKind Pos2ReleaseComponentKind @map("component_kind")
+  componentId   String                 @map("component_id") @db.Uuid
+  productId     String?                @map("product_id") @db.Uuid
+  productVersionId String?             @map("product_version_id") @db.Uuid
+  createdAt     DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  release       Pos2Release            @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  productVersion Pos2ProductVersion?   @relation(fields: [productVersionId], references: [id], onDelete: SetNull)
+
+  @@unique([releaseId, componentKind, componentId])
+  @@index([releaseId])
+  @@map("pos2_release_components")
+}
+
+model Pos2AddonProfile {
+  productId              String   @id @map("product_id") @db.Uuid
+  /// Add-ons may extend a product capability, a BOM SKU, or both. Equipment-only
+  /// extensions must not require an invented capability merely to satisfy storage.
+  extendsCapabilityId    String?  @map("extends_capability_id") @db.Uuid
+  expandsSkuId           String?  @map("expands_sku_id") @db.Uuid
+  standardScopeUnit      String?  @map("standard_scope_unit")
+  experiencePromiseKey   String?  @map("experience_promise_key")
+  createsNewRoom         Boolean  @default(false) @map("creates_new_room")
+  createsNewExperience   Boolean  @default(false) @map("creates_new_experience")
+  maxQuantity            Decimal? @map("max_quantity") @db.Decimal(12, 3)
+  notes                  String?
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product                Pos2Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  extendsCapability      Pos2Capability? @relation(fields: [extendsCapabilityId], references: [id], onDelete: Restrict)
+  expandsSku             Pos2EquipmentSku? @relation(fields: [expandsSkuId], references: [id], onDelete: SetNull)
+  equipmentBases         Pos2AddonEquipmentBasis[]
+
+  @@map("pos2_addon_profiles")
+}
+
+/// Every equipment item an Add-on is permitted to extend. This preserves
+/// composite Add-ons without flattening them into a made-up capability.
+model Pos2AddonEquipmentBasis {
+  id             String   @id @default(uuid()) @db.Uuid
+  addonProductId String   @map("addon_product_id") @db.Uuid
+  skuId          String   @map("sku_id") @db.Uuid
+  sequence       Int      @default(1)
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  addonProfile   Pos2AddonProfile @relation(fields: [addonProductId], references: [productId], onDelete: Cascade)
+  sku            Pos2EquipmentSku @relation(fields: [skuId], references: [id], onDelete: Restrict)
+
+  @@unique([addonProductId, skuId])
+  @@unique([addonProductId, sequence])
+  @@map("pos2_addon_equipment_bases")
+}
+
+model Pos2AddonParentEligibility {
+  id              String              @id @default(uuid()) @db.Uuid
+  addonProductId  String              @map("addon_product_id") @db.Uuid
+  parentProductId String              @map("parent_product_id") @db.Uuid
+  status          Pos2LifecycleStatus @default(ACTIVE)
+  notes           String?
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  addonProduct    Pos2Product         @relation("Pos2AddonSide", fields: [addonProductId], references: [id], onDelete: Cascade)
+  parentProduct   Pos2Product         @relation("Pos2ParentSide", fields: [parentProductId], references: [id], onDelete: Cascade)
+
+  @@unique([addonProductId, parentProductId])
+  @@map("pos2_addon_parent_eligibility")
+}
+
+model Pos2ProductFeaturedAddon {
+  id              String              @id @default(uuid()) @db.Uuid
+  parentProductId String              @map("parent_product_id") @db.Uuid
+  addonProductId  String              @map("addon_product_id") @db.Uuid
+  channel         String
+  surface         String
+  sortOrder       Int                 @map("sort_order")
+  status          Pos2LifecycleStatus @default(ACTIVE)
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  parentProduct   Pos2Product         @relation("Pos2FeaturedParent", fields: [parentProductId], references: [id], onDelete: Cascade)
+  addonProduct    Pos2Product         @relation("Pos2FeaturedAddon", fields: [addonProductId], references: [id], onDelete: Cascade)
+
+  @@unique([parentProductId, addonProductId, channel, surface])
+  @@index([parentProductId, channel, surface, sortOrder])
+  @@map("pos2_product_featured_addons")
+}
+
+model Pos2InstallationAssumption {
+  id             String              @id @default(uuid()) @db.Uuid
+  productId      String              @map("product_id") @db.Uuid
+  assumptionCode String              @map("assumption_code")
+  sequence       Int
+  assumptionText String              @map("assumption_text")
+  layer          Pos2AssumptionLayer @default(CUSTOMER)
+  status         Pos2LifecycleStatus @default(ACTIVE)
+  versionLabel   String?             @map("version_label")
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product        Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, assumptionCode])
+  @@unique([productId, sequence])
+  @@map("pos2_installation_assumptions")
+}
+
+model Pos2Capability {
+  id             String              @id @default(uuid()) @db.Uuid
+  capabilityCode String              @unique @map("capability_code")
+  name           String
+  description    String?
+  status         Pos2LifecycleStatus @default(ACTIVE)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  productInclusions Pos2ProductCapability[]
+  scopeItems        Pos2ScopeItem[]
+  addonProfiles     Pos2AddonProfile[]
+  experiences       Pos2Experience[]
+
+  @@map("pos2_capabilities")
+}
+
+model Pos2ProductCapability {
+  id            String              @id @default(uuid()) @db.Uuid
+  productId     String              @map("product_id") @db.Uuid
+  capabilityId  String              @map("capability_id") @db.Uuid
+  includedQty   Decimal?            @map("included_qty") @db.Decimal(12, 3)
+  unitCode      String?             @map("unit_code")
+  customerLayer String?             @map("customer_layer")
+  notes         String?
+  status        Pos2LifecycleStatus @default(ACTIVE)
+  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product       Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  capability    Pos2Capability      @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+  supportLinks  Pos2CapabilitySupportLink[]
+
+  @@unique([productId, capabilityId])
+  @@map("pos2_product_capabilities")
+}
+
+model Pos2CapabilitySupportLink {
+  id                           String         @id @default(uuid()) @db.Uuid
+  productCapabilityInclusionId String         @map("product_capability_inclusion_id") @db.Uuid
+  supportKind                  Pos2SupportKind @map("support_kind")
+  bomItemId                    String?        @map("bom_item_id") @db.Uuid
+  ruleId                       String?        @map("rule_id") @db.Uuid
+  notes                        String?
+  createdAt                    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  inclusion                    Pos2ProductCapability @relation(fields: [productCapabilityInclusionId], references: [id], onDelete: Cascade)
+  bomItem                      Pos2BomItem?          @relation(fields: [bomItemId], references: [id], onDelete: SetNull)
+  rule                         Pos2RuleDefinition?   @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+
+  @@index([productCapabilityInclusionId])
+  @@map("pos2_capability_support_links")
+}
+
+model Pos2ProductRelationship {
+  id                   String               @id @default(uuid()) @db.Uuid
+  relationshipCode     String               @unique @map("relationship_code")
+  fromProductId        String               @map("from_product_id") @db.Uuid
+  toProductId          String?              @map("to_product_id") @db.Uuid
+  relationshipType     Pos2RelationshipType @map("relationship_type")
+  status               Pos2LifecycleStatus  @default(ACTIVE)
+  priority             Int                  @default(0)
+  notes                String?
+  createdAt            DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  fromProduct          Pos2Product          @relation("Pos2RelFrom", fields: [fromProductId], references: [id], onDelete: Cascade)
+  toProduct            Pos2Product?         @relation("Pos2RelTo", fields: [toProductId], references: [id], onDelete: Cascade)
+  requirementGroups    Pos2RelationshipRequirementGroup[]
+  includedBenefits     Pos2IncludedBenefit[]
+
+  @@unique([fromProductId, toProductId, relationshipType])
+  @@index([fromProductId, relationshipType, status])
+  @@map("pos2_product_relationships")
+}
+
+model Pos2RelationshipRequirementGroup {
+  id             String               @id @default(uuid()) @db.Uuid
+  relationshipId String               @map("relationship_id") @db.Uuid
+  groupCode      String               @map("group_code")
+  logic          Pos2RequirementLogic @default(AND)
+  sequence       Int                  @default(1)
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  relationship   Pos2ProductRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  requirements   Pos2RelationshipRequirement[]
+
+  @@unique([relationshipId, groupCode])
+  @@map("pos2_relationship_requirement_groups")
+}
+
+model Pos2RelationshipRequirement {
+  id                  String   @id @default(uuid()) @db.Uuid
+  requirementGroupId  String   @map("requirement_group_id") @db.Uuid
+  requiredProductId   String   @map("required_product_id") @db.Uuid
+  minQty              Int      @default(1) @map("min_qty")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  group               Pos2RelationshipRequirementGroup @relation(fields: [requirementGroupId], references: [id], onDelete: Cascade)
+  requiredProduct     Pos2Product @relation(fields: [requiredProductId], references: [id], onDelete: Restrict)
+
+  @@unique([requirementGroupId, requiredProductId])
+  @@map("pos2_relationship_requirements")
+}
+
+model Pos2Experience {
+  id                   String              @id @default(uuid()) @db.Uuid
+  experienceCode       String              @unique @map("experience_code")
+  productId            String              @map("product_id") @db.Uuid
+  canonicalTitle       String              @map("canonical_title")
+  canonicalDescription String?             @map("canonical_description")
+  sequence             Int
+  status               Pos2LifecycleStatus @default(ACTIVE)
+  linkedCapabilityId   String?             @map("linked_capability_id") @db.Uuid
+  linkedAutomationId   String?             @map("linked_automation_id") @db.Uuid
+  createdAt            DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product              Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  linkedCapability     Pos2Capability?     @relation(fields: [linkedCapabilityId], references: [id], onDelete: SetNull)
+  linkedAutomation     Pos2AutomationDefinition? @relation(fields: [linkedAutomationId], references: [id], onDelete: SetNull)
+  presentationMappings Pos2ExperiencePresentationMapping[]
+
+  @@unique([productId, sequence])
+  @@map("pos2_experiences")
+}
+
+model Pos2ExperiencePresentationMapping {
+  id                  String              @id @default(uuid()) @db.Uuid
+  mappingCode         String              @unique @map("mapping_code")
+  experienceId        String              @map("experience_id") @db.Uuid
+  channel             String
+  surface             String
+  side                Pos2ContentSide     @default(BACK)
+  locale              String              @default("en-AU")
+  displayTitle        String              @map("display_title")
+  customerDescription String?             @map("customer_description")
+  sortOrder           Int                 @map("sort_order")
+  grouping            String?
+  visibility          Boolean             @default(true)
+  linkedAutomationId  String?             @map("linked_automation_id") @db.Uuid
+  status              Pos2LifecycleStatus @default(DRAFT)
+  versionLabel        String?             @map("version_label")
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  experience          Pos2Experience      @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  linkedAutomation    Pos2AutomationDefinition? @relation(fields: [linkedAutomationId], references: [id], onDelete: SetNull)
+
+  @@unique([experienceId, channel, surface, side, locale, sortOrder])
+  @@index([channel, surface, status])
+  @@map("pos2_experience_presentation_mappings")
+}
+
+model Pos2ScopeGroup {
+  id         String              @id @default(uuid()) @db.Uuid
+  groupCode  String              @map("group_code")
+  productId  String              @map("product_id") @db.Uuid
+  title      String
+  sequence   Int
+  status     Pos2LifecycleStatus @default(ACTIVE)
+  createdAt  DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product    Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  items      Pos2ScopeItem[]
+
+  @@unique([productId, groupCode])
+  @@unique([productId, sequence])
+  @@map("pos2_scope_groups")
+}
+
+model Pos2ScopeItem {
+  id                String              @id @default(uuid()) @db.Uuid
+  itemCode          String              @map("item_code")
+  scopeGroupId      String              @map("scope_group_id") @db.Uuid
+  capabilityId      String              @map("capability_id") @db.Uuid
+  sequence          Int
+  standardScopeUnit String?             @map("standard_scope_unit")
+  qty               Decimal?            @db.Decimal(12, 3)
+  label             String
+  status            Pos2LifecycleStatus @default(ACTIVE)
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  scopeGroup        Pos2ScopeGroup      @relation(fields: [scopeGroupId], references: [id], onDelete: Cascade)
+  capability        Pos2Capability      @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+
+  @@unique([scopeGroupId, itemCode])
+  @@unique([scopeGroupId, sequence])
+  @@map("pos2_scope_items")
+}
+
+model Pos2EquipmentSku {
+  id                      String              @id @default(uuid()) @db.Uuid
+  skuCode                 String              @unique @map("sku_code")
+  name                    String
+  category                String?
+  brand                   String?
+  supplier                String?
+  unitCostExGst           Decimal?            @map("unit_cost_ex_gst") @db.Decimal(12, 2)
+  currencyCode            String              @default("AUD") @map("currency_code")
+  protocol                String?
+  technicalNotes          String?             @map("technical_notes")
+  technicianInstructions  String?             @map("technician_instructions")
+  status                  Pos2LifecycleStatus @default(ACTIVE)
+  createdAt               DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  bomItems                Pos2BomItem[]
+  addonProfiles           Pos2AddonProfile[]
+  addonEquipmentBases     Pos2AddonEquipmentBasis[]
+
+  @@map("pos2_equipment_skus")
+}
+
+model Pos2BomVersion {
+  id             String              @id @default(uuid()) @db.Uuid
+  bomVersionCode String              @unique @map("bom_version_code")
+  productId      String              @map("product_id") @db.Uuid
+  versionLabel   String              @map("version_label")
+  status         Pos2LifecycleStatus @default(DRAFT)
+  effectiveFrom  DateTime?           @map("effective_from") @db.Timestamptz(6)
+  effectiveTo    DateTime?           @map("effective_to") @db.Timestamptz(6)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product        Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  items          Pos2BomItem[]
+
+  @@unique([productId, versionLabel])
+  @@map("pos2_bom_versions")
+}
+
+model Pos2BomItem {
+  id            String            @id @default(uuid()) @db.Uuid
+  bomVersionId  String            @map("bom_version_id") @db.Uuid
+  skuId         String            @map("sku_id") @db.Uuid
+  qty           Decimal           @db.Decimal(12, 3)
+  unitCode      String?           @map("unit_code")
+  includedType  Pos2InclusionType @default(STANDARD) @map("included_type")
+  installationNotes String?       @map("installation_notes")
+  sequence      Int               @default(1)
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  bomVersion    Pos2BomVersion    @relation(fields: [bomVersionId], references: [id], onDelete: Cascade)
+  sku           Pos2EquipmentSku  @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  supportLinks  Pos2CapabilitySupportLink[]
+
+  @@unique([bomVersionId, skuId])
+  @@map("pos2_bom_items")
+}
+
+model Pos2LabourLibrary {
+  id          String              @id @default(uuid()) @db.Uuid
+  labourCode  String              @unique @map("labour_code")
+  labourItem  String              @map("labour_item")
+  hours       Decimal             @db.Decimal(10, 2)
+  category    String?
+  notes       String?
+  status      Pos2LifecycleStatus @default(ACTIVE)
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  labourItems Pos2LabourItem[]
+
+  @@map("pos2_labour_library")
+}
+
+model Pos2LabourVersion {
+  id                String              @id @default(uuid()) @db.Uuid
+  labourVersionCode String              @unique @map("labour_version_code")
+  productId         String              @map("product_id") @db.Uuid
+  versionLabel      String              @map("version_label")
+  status            Pos2LifecycleStatus @default(DRAFT)
+  effectiveFrom     DateTime?           @map("effective_from") @db.Timestamptz(6)
+  effectiveTo       DateTime?           @map("effective_to") @db.Timestamptz(6)
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product           Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  items             Pos2LabourItem[]
+
+  @@unique([productId, versionLabel])
+  @@map("pos2_labour_versions")
+}
+
+model Pos2LabourItem {
+  id              String            @id @default(uuid()) @db.Uuid
+  labourVersionId String            @map("labour_version_id") @db.Uuid
+  labourLibraryId String            @map("labour_library_id") @db.Uuid
+  qty             Decimal           @db.Decimal(10, 2)
+  notes           String?
+  sequence        Int               @default(1)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  labourVersion   Pos2LabourVersion @relation(fields: [labourVersionId], references: [id], onDelete: Cascade)
+  labourLibrary   Pos2LabourLibrary @relation(fields: [labourLibraryId], references: [id], onDelete: Restrict)
+
+  @@unique([labourVersionId, labourLibraryId])
+  @@map("pos2_labour_items")
+}
+
+model Pos2RuleDefinition {
+  id         String              @id @default(uuid()) @db.Uuid
+  ruleCode   String              @unique @map("rule_code")
+  productId  String?             @map("product_id") @db.Uuid
+  ruleKey    String              @map("rule_key")
+  ruleValue  String              @map("rule_value")
+  severity   String?
+  status     Pos2LifecycleStatus @default(ACTIVE)
+  versionLabel String?           @map("version_label")
+  notes      String?
+  createdAt  DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product    Pos2Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supportLinks Pos2CapabilitySupportLink[]
+
+  @@unique([productId, ruleKey])
+  @@map("pos2_rule_definitions")
+}
+
+model Pos2AutomationDefinition {
+  id             String              @id @default(uuid()) @db.Uuid
+  automationCode String              @unique @map("automation_code")
+  name           String
+  description    String?
+  triggerType    String?             @map("trigger_type")
+  boundaryNotes  String?             @map("boundary_notes")
+  status         Pos2LifecycleStatus @default(DRAFT)
+  versionLabel   String?             @map("version_label")
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  productLinks   Pos2ProductAutomation[]
+  triggers       Pos2AutomationTrigger[]
+  conditions     Pos2AutomationCondition[]
+  actions        Pos2AutomationAction[]
+  experiences    Pos2Experience[]
+  presentationMappings Pos2ExperiencePresentationMapping[]
+
+  @@map("pos2_automation_definitions")
+}
+
+model Pos2ProductAutomation {
+  id           String              @id @default(uuid()) @db.Uuid
+  productId    String              @map("product_id") @db.Uuid
+  automationId String              @map("automation_id") @db.Uuid
+  sequence     Int                 @default(1)
+  status       Pos2LifecycleStatus @default(ACTIVE)
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  product      Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  automation   Pos2AutomationDefinition @relation(fields: [automationId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, automationId])
+  @@map("pos2_product_automations")
+}
+
+model Pos2AutomationTrigger {
+  id           String   @id @default(uuid()) @db.Uuid
+  automationId String   @map("automation_id") @db.Uuid
+  sequence     Int
+  triggerType  String   @map("trigger_type")
+  expression   String?
+  params       Json?
+  notes        String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  automation   Pos2AutomationDefinition @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, sequence])
+  @@map("pos2_automation_triggers")
+}
+
+model Pos2AutomationCondition {
+  id            String   @id @default(uuid()) @db.Uuid
+  automationId  String   @map("automation_id") @db.Uuid
+  sequence      Int
+  conditionType String   @map("condition_type")
+  expression    String?
+  params        Json?
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  automation    Pos2AutomationDefinition @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, sequence])
+  @@map("pos2_automation_conditions")
+}
+
+model Pos2AutomationAction {
+  id           String   @id @default(uuid()) @db.Uuid
+  automationId String   @map("automation_id") @db.Uuid
+  sequence     Int
+  actionType   String   @map("action_type")
+  expression   String?
+  params       Json?
+  notes        String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  automation   Pos2AutomationDefinition @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, sequence])
+  @@map("pos2_automation_actions")
+}
+
+model Pos2PriceBook {
+  id            String              @id @default(uuid()) @db.Uuid
+  priceBookCode String              @unique @map("price_book_code")
+  name          String
+  currencyCode  String              @default("AUD") @map("currency_code")
+  status        Pos2LifecycleStatus @default(ACTIVE)
+  effectiveFrom DateTime?           @map("effective_from") @db.Timestamptz(6)
+  effectiveTo   DateTime?           @map("effective_to") @db.Timestamptz(6)
+  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  prices        Pos2ProductPrice[]
+
+  @@map("pos2_price_books")
+}
+
+model Pos2ProductPrice {
+  id                               String                  @id @default(uuid()) @db.Uuid
+  priceCode                        String                  @unique @map("price_code")
+  priceBookId                      String                  @map("price_book_id") @db.Uuid
+  productId                        String                  @map("product_id") @db.Uuid
+  amount                           Decimal?                @db.Decimal(12, 2)
+  currencyCode                     String                  @default("AUD") @map("currency_code")
+  taxBasis                         Pos2TaxBasis            @map("tax_basis")
+  displayMode                      Pos2PriceDisplayMode    @map("display_mode")
+  fulfilmentMode                   Pos2PriceFulfilmentMode @map("fulfilment_mode")
+  scopeBasis                       String?                 @map("scope_basis")
+  subjectToInstallationAssumptions Boolean                 @default(true) @map("subject_to_installation_assumptions")
+  installationIncluded             Boolean                 @default(true) @map("installation_included")
+  customerVisible                  Boolean                 @default(true) @map("customer_visible")
+  commercialNotes                  String?                 @map("commercial_notes")
+  exceptionMeta                    Json?                   @map("exception_meta")
+  versionLabel                     String                  @map("version_label")
+  status                           Pos2LifecycleStatus     @default(DRAFT)
+  effectiveFrom                    DateTime?               @map("effective_from") @db.Timestamptz(6)
+  effectiveTo                      DateTime?               @map("effective_to") @db.Timestamptz(6)
+  createdAt                        DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                        DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  priceBook                        Pos2PriceBook           @relation(fields: [priceBookId], references: [id], onDelete: Restrict)
+  product                          Pos2Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([priceBookId, productId, currencyCode, fulfilmentMode, taxBasis, versionLabel])
+  @@index([productId, status, customerVisible])
+  @@map("pos2_product_prices")
+}
+
+model Pos2ContentEntry {
+  id               String              @id @default(uuid()) @db.Uuid
+  contentKey       String              @map("content_key")
+  contentKind      Pos2ContentKind     @map("content_kind")
+  locale           String              @default("en-AU")
+  title            String?
+  body             String?             @map("value")
+  languageLayer    String              @default("CUSTOMER") @map("language_layer")
+  status           Pos2LifecycleStatus @default(DRAFT)
+  versionLabel     String              @map("version_label")
+  factReferenceKind String?            @map("fact_reference_kind")
+  factReferenceId  String?             @map("fact_reference_id") @db.Uuid
+  sourceProvenanceId String?           @map("source_provenance_id") @db.Uuid
+  createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  placements       Pos2ProductContentPlacement[]
+  sourceProvenance Pos2SourceProvenance? @relation(fields: [sourceProvenanceId], references: [id], onDelete: SetNull)
+  footerConfigs    Pos2FooterConfig[]
+
+  @@unique([contentKey, locale, versionLabel])
+  @@index([contentKind, status])
+  @@map("pos2_content_entries")
+}
+
+model Pos2ProductContentPlacement {
+  id             String              @id @default(uuid()) @db.Uuid
+  productId      String              @map("product_id") @db.Uuid
+  contentEntryId String              @map("content_entry_id") @db.Uuid
+  channel        String
+  surface        String
+  side           Pos2ContentSide     @default(NA)
+  sortOrder      Int                 @default(1) @map("sort_order")
+  status         Pos2LifecycleStatus @default(ACTIVE)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  product        Pos2Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  contentEntry   Pos2ContentEntry    @relation(fields: [contentEntryId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, contentEntryId, channel, surface, side, sortOrder])
+  @@index([productId, channel, surface])
+  @@map("pos2_product_content_placements")
+}
+
+model Pos2ImageAsset {
+  id            String            @id @default(uuid()) @db.Uuid
+  assetCode     String            @unique @map("asset_code")
+  storageUri    String            @map("storage_uri")
+  mediaType     String?           @map("media_type")
+  altTextDefault String?          @map("alt_text_default")
+  rightsNotes   String?           @map("rights_notes")
+  sourceMeta    Json?             @map("source_meta")
+  publishStatus Pos2PublishStatus @default(NOT_APPROVED_FOR_PUBLISH) @map("publish_status")
+  approvalStatus Pos2LifecycleStatus @default(DRAFT) @map("approval_status")
+  versionLabel  String            @map("version_label")
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  crops         Pos2ImageCrop[]
+  productLinks  Pos2ProductImageLink[]
+
+  @@map("pos2_image_assets")
+}
+
+model Pos2ImageCrop {
+  id           String   @id @default(uuid()) @db.Uuid
+  assetId      String   @map("asset_id") @db.Uuid
+  surface      String
+  focalX       Decimal? @map("focal_x") @db.Decimal(8, 4)
+  focalY       Decimal? @map("focal_y") @db.Decimal(8, 4)
+  cropBox      Json?    @map("crop_box")
+  versionLabel String   @map("version_label")
+  status       Pos2LifecycleStatus @default(ACTIVE)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  asset        Pos2ImageAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  productLinks Pos2ProductImageLink[]
+
+  @@unique([assetId, surface, versionLabel])
+  @@map("pos2_image_crops")
+}
+
+model Pos2ProductImageLink {
+  id        String   @id @default(uuid()) @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  assetId   String   @map("asset_id") @db.Uuid
+  cropId    String?  @map("crop_id") @db.Uuid
+  channel   String
+  surface   String
+  sequence  Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  product   Pos2Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  asset     Pos2ImageAsset @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  crop      Pos2ImageCrop? @relation(fields: [cropId], references: [id], onDelete: SetNull)
+
+  @@unique([productId, assetId, channel, surface, sequence])
+  @@map("pos2_product_image_links")
+}
+
+model Pos2Theme {
+  id          String              @id @default(uuid()) @db.Uuid
+  themeCode   String              @unique @map("theme_code")
+  name        String
+  themeScope  Pos2ThemeScope      @map("theme_scope")
+  channelCode String?             @map("channel_code")
+  productId   String?             @map("product_id") @db.Uuid
+  status      Pos2LifecycleStatus @default(ACTIVE)
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product     Pos2Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tokens      Pos2ThemeToken[]
+
+  @@map("pos2_themes")
+}
+
+model Pos2ThemeToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  themeId    String   @map("theme_id") @db.Uuid
+  tokenKey   String   @map("token_key")
+  tokenValue String   @map("token_value")
+  status     Pos2LifecycleStatus @default(ACTIVE)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  theme      Pos2Theme @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  @@unique([themeId, tokenKey])
+  @@map("pos2_theme_tokens")
+}
+
+model Pos2LayoutTemplate {
+  id           String              @id @default(uuid()) @db.Uuid
+  templateCode String              @unique @map("template_code")
+  surface      String
+  name         String
+  status       Pos2LifecycleStatus @default(ACTIVE)
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  configs      Pos2LayoutConfig[]
+
+  @@map("pos2_layout_templates")
+}
+
+model Pos2LayoutConfig {
+  id           String              @id @default(uuid()) @db.Uuid
+  templateId   String              @map("template_id") @db.Uuid
+  productId    String?             @map("product_id") @db.Uuid
+  surface      String
+  definition   Json
+  status       Pos2LifecycleStatus @default(DRAFT)
+  versionLabel String              @map("version_label")
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  template     Pos2LayoutTemplate  @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  product      Pos2Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, productId, surface, versionLabel])
+  @@map("pos2_layout_configs")
+}
+
+model Pos2DocumentTemplateVersion {
+  id            String              @id @default(uuid()) @db.Uuid
+  templateCode  String              @map("template_code")
+  versionLabel  String              @map("version_label")
+  surface       String
+  notes         String?
+  status        Pos2LifecycleStatus @default(ACTIVE)
+  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  footerConfigs Pos2FooterConfig[]
+
+  @@unique([templateCode, versionLabel, surface])
+  @@map("pos2_document_template_versions")
+}
+
+model Pos2FooterConfig {
+  id                         String   @id @default(uuid()) @db.Uuid
+  productId                  String   @map("product_id") @db.Uuid
+  contentEntryId             String?  @map("content_entry_id") @db.Uuid
+  productOsReleaseCode       String   @map("product_os_release_code")
+  documentTemplateVersionId  String?  @map("document_template_version_id") @db.Uuid
+  channel                    String   @default("a4")
+  status                     Pos2LifecycleStatus @default(DRAFT)
+  createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  product                    Pos2Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  contentEntry               Pos2ContentEntry? @relation(fields: [contentEntryId], references: [id], onDelete: SetNull)
+  documentTemplateVersion    Pos2DocumentTemplateVersion? @relation(fields: [documentTemplateVersionId], references: [id], onDelete: SetNull)
+
+  @@unique([productId, channel, productOsReleaseCode])
+  @@map("pos2_footer_configs")
+}
+
+model Pos2SourceSnapshot {
+  id           String   @id @default(uuid()) @db.Uuid
+  snapshotCode String   @unique @map("snapshot_code")
+  filename     String
+  sha256       String
+  byteSize     Int      @map("byte_size")
+  sourceKind   String   @map("source_kind")
+  recordedAt   DateTime @default(now()) @map("recorded_at") @db.Timestamptz(6)
+  notes        String?
+
+  importBatches Pos2ImportBatch[]
+
+  @@map("pos2_source_snapshots")
+}
+
+model Pos2ImportBatch {
+  id               String         @id @default(uuid()) @db.Uuid
+  batchCode        String         @unique @map("batch_code")
+  sourceSnapshotId String?        @map("source_snapshot_id") @db.Uuid
+  mode             Pos2ImportMode @default(DRY_RUN)
+  status           String
+  startedAt        DateTime       @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt       DateTime?      @map("finished_at") @db.Timestamptz(6)
+  stats            Json?
+  notes            String?
+
+  sourceSnapshot   Pos2SourceSnapshot? @relation(fields: [sourceSnapshotId], references: [id], onDelete: SetNull)
+  provenances      Pos2SourceProvenance[]
+  validationRuns   Pos2ValidationRun[]
+
+  @@map("pos2_import_batches")
+}
+
+model Pos2SourceProvenance {
+  id              String   @id @default(uuid()) @db.Uuid
+  importBatchId   String   @map("import_batch_id") @db.Uuid
+  sourceSheet     String?  @map("source_sheet")
+  sourceRowRef    String?  @map("source_row_ref")
+  sourceStableId  String?  @map("source_stable_id")
+  transformation  String?  @map("transformation")
+  entityType      String?  @map("entity_type")
+  entityId        String?  @map("entity_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  importBatch     Pos2ImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+  contentEntries  Pos2ContentEntry[]
+
+  @@index([importBatchId, entityType])
+  @@map("pos2_source_provenance")
+}
+
+model Pos2ValidationRun {
+  id            String   @id @default(uuid()) @db.Uuid
+  runCode       String   @unique @map("run_code")
+  releaseId     String?  @map("release_id") @db.Uuid
+  importBatchId String?  @map("import_batch_id") @db.Uuid
+  startedAt     DateTime @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt    DateTime? @map("finished_at") @db.Timestamptz(6)
+  status        String
+  summary       Json?
+
+  release       Pos2Release?     @relation(fields: [releaseId], references: [id], onDelete: SetNull)
+  importBatch   Pos2ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  results       Pos2ValidationResult[]
+
+  @@map("pos2_validation_runs")
+}
+
+model Pos2ValidationResult {
+  id          String   @id @default(uuid()) @db.Uuid
+  runId       String   @map("run_id") @db.Uuid
+  ruleCode    String   @map("rule_code")
+  severity    String
+  entityType  String?  @map("entity_type")
+  entityId    String?  @map("entity_id")
+  message     String
+  passed      Boolean
+  provenance  Json?
+  payload     Json?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  run         Pos2ValidationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, ruleCode, severity])
+  @@map("pos2_validation_results")
+}
+
+model Pos2MigrationIssue {
+  id                       String          @id @default(uuid()) @db.Uuid
+  issueCode                String          @unique @map("issue_code")
+  severity                 String
+  productCode              String?         @map("product_code")
+  category                 String
+  sourceA                  String?         @map("source_a")
+  exactValueA              String?         @map("exact_value_a")
+  sourceB                  String?         @map("source_b")
+  exactValueB              String?         @map("exact_value_b")
+  productFactAffected      String?         @map("product_fact_affected")
+  downstreamSystems        String?         @map("downstream_systems")
+  recommendedResolution    String?         @map("recommended_resolution")
+  status                   Pos2IssueStatus @default(OPEN)
+  decision                 String?
+  decisionDate             DateTime?       @map("decision_date") @db.Date
+  decisionReference        String?         @map("decision_reference")
+  migrationImpact          String?         @map("migration_impact")
+  createdAt                DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status, severity])
+  @@map("pos2_migration_issues")
+}
+
+model Pos2AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actor      String?
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id") @db.Uuid
+  beforeJson Json?    @map("before_json")
+  afterJson  Json?    @map("after_json")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entityType, entityId, createdAt])
+  @@map("pos2_audit_log")
+}
+
+model Pos2SelectionDraft {
+  id             String                   @id @default(uuid()) @db.Uuid
+  draftCode      String                   @unique @map("draft_code")
+  status         Pos2SelectionDraftStatus @default(DRAFT)
+  customerName   String?                  @map("customer_name")
+  customerEmail  String?                  @map("customer_email")
+  customerPhone  String?                  @map("customer_phone")
+  siteAddress    String?                  @map("site_address")
+  currentVersion Int                      @default(0) @map("current_version")
+  createdBy      String?                  @map("created_by")
+  ownerUserId    String?                  @map("owner_user_id") @db.Uuid
+  createdAt      DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  versions       Pos2SelectionDraftVersion[]
+  ownerUser      Pos2SalesUser?           @relation("Pos2DraftOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  customerLink   Pos2DraftCustomerLink?
+
+  @@index([status, updatedAt])
+  @@index([ownerUserId])
+  @@map("pos2_selection_drafts")
+}
+
+model Pos2SelectionDraftVersion {
+  id                   String   @id @default(uuid()) @db.Uuid
+  draftId              String   @map("draft_id") @db.Uuid
+  versionNumber        Int      @map("version_number")
+  selectionFingerprint String   @map("selection_fingerprint")
+  customerSnapshot     Json     @map("customer_snapshot")
+  currencyCode         String   @map("currency_code") @db.VarChar(3)
+  taxBasis             String   @map("tax_basis")
+  total                Decimal  @db.Decimal(12, 2)
+  createdBy            String?  @map("created_by")
+  actorUserId          String?  @map("actor_user_id") @db.Uuid
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  draft                Pos2SelectionDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  lines                Pos2SelectionDraftLine[]
+  proposals            Pos2Proposal[]
+  actorUser            Pos2SalesUser? @relation("Pos2DraftVersionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@unique([draftId, versionNumber])
+  @@index([selectionFingerprint])
+  @@map("pos2_selection_draft_versions")
+}
+
+model Pos2SelectionDraftLine {
+  id                  String   @id @default(uuid()) @db.Uuid
+  draftVersionId      String   @map("draft_version_id") @db.Uuid
+  productId           String   @map("product_id") @db.Uuid
+  productCodeSnapshot String   @map("product_code_snapshot")
+  productNameSnapshot String   @map("product_name_snapshot")
+  quantity            Int
+  unitPrice           Decimal  @map("unit_price") @db.Decimal(12, 2)
+  lineTotal           Decimal  @map("line_total") @db.Decimal(12, 2)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  draftVersion        Pos2SelectionDraftVersion @relation(fields: [draftVersionId], references: [id], onDelete: Cascade)
+  product             Pos2Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([draftVersionId, productId])
+  @@map("pos2_selection_draft_lines")
+}
+
+model Pos2Proposal {
+  id                   String             @id @default(uuid()) @db.Uuid
+  proposalCode         String             @unique @map("proposal_code")
+  draftVersionId       String             @map("draft_version_id") @db.Uuid
+  status               Pos2ProposalStatus @default(DRAFT)
+  selectionFingerprint String             @map("selection_fingerprint")
+  projectionSnapshot   Json               @map("projection_snapshot")
+  total                Decimal            @db.Decimal(12, 2)
+  currencyCode         String             @map("currency_code") @db.VarChar(3)
+  taxBasis             String             @map("tax_basis")
+  approvedBy           String?            @map("approved_by")
+  approvedByUserId     String?            @map("approved_by_user_id") @db.Uuid
+  approvedAt           DateTime?          @map("approved_at") @db.Timestamptz(6)
+  sentAt               DateTime?          @map("sent_at") @db.Timestamptz(6)
+  expiresAt            DateTime?          @map("expires_at") @db.Timestamptz(6)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  draftVersion         Pos2SelectionDraftVersion @relation(fields: [draftVersionId], references: [id], onDelete: Restrict)
+  approvedByUser       Pos2SalesUser? @relation("Pos2ProposalApprover", fields: [approvedByUserId], references: [id], onDelete: Restrict)
+  deliveries           Pos2ProposalDelivery[]
+  acceptance           Pos2ProposalAcceptance?
+  operationalHandoff   Pos2OperationalHandoff?
+
+  @@index([status, updatedAt])
+  @@index([draftVersionId])
+  @@map("pos2_proposals")
+}
+
+model Pos2SalesUser {
+  id              String              @id @default(uuid()) @db.Uuid
+  email           String              @unique
+  displayName     String              @map("display_name")
+  role            Pos2SalesRole       @default(SALES)
+  status          Pos2SalesUserStatus @default(INVITED)
+  authProvider    String?             @map("auth_provider")
+  externalSubject String?             @unique @map("external_subject")
+  lastLoginAt     DateTime?           @map("last_login_at") @db.Timestamptz(6)
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  ownedDrafts     Pos2SelectionDraft[] @relation("Pos2DraftOwner")
+  draftVersions   Pos2SelectionDraftVersion[] @relation("Pos2DraftVersionActor")
+  approvedProposals Pos2Proposal[] @relation("Pos2ProposalApprover")
+  confirmedCustomerLinks Pos2DraftCustomerLink[] @relation("Pos2CustomerLinkConfirmer")
+  recordedDeliveries Pos2ProposalDelivery[] @relation("Pos2ProposalDeliveryRecorder")
+  recordedAcceptances Pos2ProposalAcceptance[] @relation("Pos2ProposalAcceptanceRecorder")
+  authorizedHandoffs Pos2OperationalHandoff[] @relation("Pos2OperationalHandoffAuthorizer")
+
+  @@index([status, role])
+  @@map("pos2_sales_users")
+}
+
+model Pos2ProposalDelivery {
+  id               String                      @id @default(uuid()) @db.Uuid
+  proposalId       String                      @map("proposal_id") @db.Uuid
+  channel          Pos2ProposalDeliveryChannel
+  recipient        String?
+  evidenceReference String?                    @map("evidence_reference")
+  recordedByUserId String                      @map("recorded_by_user_id") @db.Uuid
+  deliveredAt      DateTime                    @map("delivered_at") @db.Timestamptz(6)
+  createdAt        DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  proposal         Pos2Proposal @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  recordedByUser   Pos2SalesUser @relation("Pos2ProposalDeliveryRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([proposalId, deliveredAt])
+  @@map("pos2_proposal_deliveries")
+}
+
+model Pos2ProposalAcceptance {
+  id                 String                       @id @default(uuid()) @db.Uuid
+  proposalId         String                       @unique @map("proposal_id") @db.Uuid
+  method             Pos2ProposalAcceptanceMethod
+  evidenceReference  String                       @map("evidence_reference")
+  acceptedFingerprint String                      @map("accepted_fingerprint")
+  acceptedTotal      Decimal                      @map("accepted_total") @db.Decimal(12, 2)
+  currencyCode       String                       @map("currency_code") @db.VarChar(3)
+  acceptedByName     String                       @map("accepted_by_name")
+  acceptedByContact  String?                      @map("accepted_by_contact")
+  notes              String?
+  recordedByUserId   String                       @map("recorded_by_user_id") @db.Uuid
+  acceptedAt         DateTime                     @map("accepted_at") @db.Timestamptz(6)
+  createdAt          DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  proposal           Pos2Proposal @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  recordedByUser     Pos2SalesUser @relation("Pos2ProposalAcceptanceRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([acceptedAt])
+  @@map("pos2_proposal_acceptances")
+}
+
+model Pos2OperationalHandoff {
+  id                 String                          @id @default(uuid()) @db.Uuid
+  proposalId         String                          @unique @map("proposal_id") @db.Uuid
+  operation          Pos2OperationalHandoffOperation @default(CREATE_SERVICEM8_WORK_ORDER)
+  status             Pos2OperationalHandoffStatus    @default(PENDING)
+  idempotencyKey     String                          @unique @map("idempotency_key")
+  crmOpportunityId   String                          @map("crm_opportunity_id")
+  crmAccountId       String                          @map("crm_account_id")
+  crmContactId       String                          @map("crm_contact_id")
+  crmAssetId         String                          @map("crm_asset_id")
+  serviceM8JobUuid   String?                         @map("servicem8_job_uuid")
+  authorizedByUserId String?                         @map("authorized_by_user_id") @db.Uuid
+  authorizedPayloadHash String?                      @map("authorized_payload_hash")
+  authorizedPayloadSnapshot Json?                    @map("authorized_payload_snapshot")
+  authorizedAt       DateTime?                       @map("authorized_at") @db.Timestamptz(6)
+  attemptCount       Int                             @default(0) @map("attempt_count")
+  lastError          String?                         @map("last_error")
+  requestedAt        DateTime                        @default(now()) @map("requested_at") @db.Timestamptz(6)
+  processingAt       DateTime?                       @map("processing_at") @db.Timestamptz(6)
+  completedAt        DateTime?                       @map("completed_at") @db.Timestamptz(6)
+  createdAt          DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime                        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  proposal           Pos2Proposal @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  authorizedByUser   Pos2SalesUser? @relation("Pos2OperationalHandoffAuthorizer", fields: [authorizedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([status, requestedAt])
+  @@map("pos2_operational_handoffs")
+}
+
+model Pos2DraftCustomerLink {
+  id                String                   @id @default(uuid()) @db.Uuid
+  draftId           String                   @unique @map("draft_id") @db.Uuid
+  crmContactId      String?                  @map("crm_contact_id")
+  crmAccountId      String?                  @map("crm_account_id")
+  crmAssetId        String?                  @map("crm_asset_id")
+  crmOpportunityId  String?                  @map("crm_opportunity_id")
+  status            Pos2CustomerLinkStatus   @default(PENDING_REVIEW)
+  matchMethod       Pos2CustomerMatchMethod? @map("match_method")
+  candidateSnapshot Json?                    @map("candidate_snapshot")
+  confirmedByUserId String?                  @map("confirmed_by_user_id") @db.Uuid
+  confirmedAt       DateTime?                @map("confirmed_at") @db.Timestamptz(6)
+  createdAt         DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  draft             Pos2SelectionDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  confirmedByUser   Pos2SalesUser? @relation("Pos2CustomerLinkConfirmer", fields: [confirmedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([crmContactId, status])
+  @@index([crmOpportunityId, status])
+  @@map("pos2_draft_customer_links")
+}

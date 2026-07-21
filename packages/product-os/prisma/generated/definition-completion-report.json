@@ -1,0 +1,671 @@
+{
+  "generatedAt": "2026-07-08T12:15:27.955Z",
+  "rule": "100% requires: no TODO/UNKNOWN/QUESTION/MISSING, validation pass, and all required sections complete.",
+  "products": [
+    {
+      "productName": "Away",
+      "productCode": "AWAY",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Away"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Away Collection"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "Confidence and awareness when no one is home."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Away collection coordinates leave-home transitions, check routines, and away-state automation confidence."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "2499"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=8"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC completed for Away; supplier-specific SKU details remain TODO."
+        }
+      ],
+      "unresolvedMarkers": 6,
+      "validationPass": true,
+      "releaseReady": false
+    },
+    {
+      "productName": "Bathroom",
+      "productCode": "BATHROOM",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Bathroom"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Bathroom Collection"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "Practical comfort for every daily routine."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Bathroom collection focuses on comfort transitions, safety guidance, and routine support in daily bathroom usage."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "2199"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=8"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC completed for Bathroom; supplier-specific SKU details remain TODO."
+        }
+      ],
+      "unresolvedMarkers": 6,
+      "validationPass": true,
+      "releaseReady": false
+    },
+    {
+      "productName": "Bedroom",
+      "productCode": "BEDROOM",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Bedroom"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Bedroom Collection"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "Support restful routines with calm smart control."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Bedroom collection supports evening transition, night comfort, and wake-up consistency for personal spaces."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "2699"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=8"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC completed for Bedroom; supplier-specific SKU details remain TODO."
+        }
+      ],
+      "unresolvedMarkers": 6,
+      "validationPass": true,
+      "releaseReady": false
+    },
+    {
+      "productName": "Entry",
+      "productCode": "ENTRY",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Entry"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Entry Collection"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "A confident and welcoming home entry experience."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Entry collection orchestrates arrival awareness, access confidence, and transition scenes at the home boundary."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "2499"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=8"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC completed for Entry; supplier-specific SKU details remain TODO."
+        }
+      ],
+      "unresolvedMarkers": 6,
+      "validationPass": true,
+      "releaseReady": false
+    },
+    {
+      "productName": "Foundation",
+      "productCode": "FOUNDATION",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Foundation"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Foundation"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "The intelligence backbone for every Better Home experience."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Foundation is the system center that unifies Zigbee network, RS485 communication, smart display, cloud connection, mobile app connection and automation control."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=3"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "4999"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=6"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC complete for Foundation with TODO markers where supplier and policy details are pending."
+        }
+      ],
+      "unresolvedMarkers": 7,
+      "validationPass": true,
+      "releaseReady": false
+    },
+    {
+      "productName": "Kitchen",
+      "productCode": "KITCHEN",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Kitchen"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Kitchen Collection"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "Practical intelligence for daily kitchen routines."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Kitchen collection focuses on practical scene transitions, visibility support, and routine efficiency during preparation and cleanup."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "2499"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=8"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC completed for Kitchen; supplier-specific SKU details remain TODO."
+        }
+      ],
+      "unresolvedMarkers": 6,
+      "validationPass": true,
+      "releaseReady": false
+    },
+    {
+      "productName": "Living",
+      "productCode": "LIVING",
+      "completionPercent": 0,
+      "sections": [
+        {
+          "name": "Product",
+          "complete": true,
+          "detail": "Living"
+        },
+        {
+          "name": "Hero",
+          "complete": true,
+          "detail": "Better Home Living Collection"
+        },
+        {
+          "name": "Subtitle",
+          "complete": true,
+          "detail": "Comfort and atmosphere in every shared moment."
+        },
+        {
+          "name": "Story",
+          "complete": true,
+          "detail": "Living collection orchestrates lighting, mode switching, and shared-space routines to improve comfort and confidence in family areas."
+        },
+        {
+          "name": "Experiences",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Capabilities",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "BOM",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Labour",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Pricing",
+          "complete": true,
+          "detail": "2999"
+        },
+        {
+          "name": "Content",
+          "complete": true,
+          "detail": "count=8"
+        },
+        {
+          "name": "Automation",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Icons",
+          "complete": true,
+          "detail": "count=4"
+        },
+        {
+          "name": "Theme",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Layout",
+          "complete": true,
+          "detail": "count=1"
+        },
+        {
+          "name": "Images",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Rules",
+          "complete": true,
+          "detail": "count=2"
+        },
+        {
+          "name": "Notes",
+          "complete": true,
+          "detail": "PDC completed for Living; supplier-specific SKU details remain TODO."
+        }
+      ],
+      "unresolvedMarkers": 6,
+      "validationPass": true,
+      "releaseReady": false
+    }
+  ]
+}

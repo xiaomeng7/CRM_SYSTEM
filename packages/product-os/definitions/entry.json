@@ -1,0 +1,315 @@
+{
+  "product": {
+    "code": "ENTRY",
+    "name": "Entry",
+    "type": "COLLECTION",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Confident and secure arrival experience.",
+    "primary_emotion": "Assurance",
+    "coverage": "Home entry and boundary interaction zone.",
+    "final_installed_price": 2499,
+    "requires_foundation": true,
+    "notes": "Collection product. Foundation dependency is mandatory."
+  },
+  "hero": "Better Home Entry Collection",
+  "subtitle": "A confident and welcoming home entry experience.",
+  "story": "Entry collection orchestrates arrival awareness, access confidence, and transition scenes at the home boundary.",
+  "experiences": [
+    {
+      "title": "Smart Arrival",
+      "subtitle": "Welcome behavior at first contact.",
+      "description": "Transitions from approach to welcome with consistent entry logic.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Home Check",
+      "subtitle": "Quick state verification on arrival.",
+      "description": "Provides boundary-level confidence with entry condition checks.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Night Entry Guidance",
+      "subtitle": "Safe movement during low-light arrival.",
+      "description": "Guides entry movement with contextual low-brightness response.",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Away Return Transition",
+      "subtitle": "Smooth return from away state.",
+      "description": "Handles state transition from away mode to normal occupancy.",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Arrival Detection",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Boundary-level arrival sensing."
+    },
+    {
+      "capability": "Home Check",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "First-touch home status check."
+    },
+    {
+      "capability": "Night Guidance",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Low light safe guidance."
+    },
+    {
+      "capability": "Entry Scene Control",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Entry-mode experience control."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-ENTRY-SMART-BUTTON",
+      "product_name": "Entry Smart Button",
+      "category": "Control",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-ENTRY-MOTION-SENSOR",
+      "product_name": "Entry Motion Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-ENTRY-DOOR-SENSOR",
+      "product_name": "Entry Door Contact Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-ENTRY-SWITCH-MODULE",
+      "product_name": "Entry Switch Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Entry Installation",
+      "qty": 1,
+      "hours": 2,
+      "category": "Installation",
+      "notes": "Install entry hardware."
+    },
+    {
+      "labour_item": "Entry Programming",
+      "qty": 1,
+      "hours": 1.5,
+      "category": "Programming",
+      "notes": "Program entry state logic."
+    },
+    {
+      "labour_item": "Entry Commissioning",
+      "qty": 1,
+      "hours": 1,
+      "category": "Commissioning",
+      "notes": "Validate event transitions."
+    },
+    {
+      "labour_item": "Entry Training",
+      "qty": 1,
+      "hours": 0.5,
+      "category": "Training",
+      "notes": "Train customer on entry controls."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 2499
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Entry Hero",
+      "body": "A confident and welcoming home entry experience.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "entry_story",
+      "sequence": 2,
+      "title": "Entry Story",
+      "body": "Boundary-aware routines for secure and smooth arrival.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Smart Arrival",
+      "body": "Welcome scene activation at first contact.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Home Check",
+      "body": "Quick confidence check at entry.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_3",
+      "sequence": 5,
+      "title": "Night Entry Guidance",
+      "body": "Safe low-light entry transition.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_4",
+      "sequence": 6,
+      "title": "Away Return Transition",
+      "body": "Consistent switch from away to home state.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 7,
+      "title": "Entry Quote",
+      "body": "Every arrival should feel secure and calm.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 8,
+      "title": "Footer",
+      "body": "TODO: finalize approved Entry footer line.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Entry Welcome Automation",
+      "automation_key": "entry_welcome_automation",
+      "sequence": 1,
+      "trigger": "Door sensor state changes to open",
+      "condition": "Occupancy context indicates arrival",
+      "action": "Activate welcome entry scene",
+      "trigger_type": "event",
+      "title": "Entry Welcome Automation",
+      "description": "Runs welcome scene at validated arrival entry.",
+      "status": "ACTIVE"
+    },
+    {
+      "automation_name": "Entry Night Guidance Automation",
+      "automation_key": "entry_night_guidance_automation",
+      "sequence": 2,
+      "trigger": "Entry motion during night window",
+      "condition": "Ambient brightness below threshold",
+      "action": "Turn on guidance path lighting",
+      "trigger_type": "event",
+      "title": "Entry Night Guidance Automation",
+      "description": "Applies low-light entry guidance mode.",
+      "status": "ACTIVE"
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "entry_experience_1",
+      "title": "Smart Arrival Icon",
+      "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "entry_experience_2",
+      "title": "Home Check Icon",
+      "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "entry_experience_3",
+      "title": "Night Guidance Icon",
+      "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-3.svg",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "entry_experience_4",
+      "title": "Away Return Icon",
+      "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-4.svg",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "entry_default",
+      "primary_color": "#111827",
+      "secondary_color": "#10B981",
+      "typography_scheme": "modern",
+      "status": "ACTIVE"
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "entry_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "quote", "pricing"]
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/entry/hero.jpg",
+      "alt_text": "Entry hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "image_type": "experience",
+      "image_url": "https://assets.placeholder.betterhome/entry/experience-1.jpg",
+      "alt_text": "Entry experience placeholder",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "requires_foundation",
+      "rule_value": "true",
+      "notes": "Entry collection requires Foundation."
+    },
+    {
+      "rule_key": "collection_independent",
+      "rule_value": "true",
+      "notes": "Entry does not depend on other collections."
+    }
+  ],
+  "notes": "PDC completed for Entry; supplier-specific SKU details remain TODO."
+}

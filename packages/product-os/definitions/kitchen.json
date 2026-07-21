@@ -1,0 +1,315 @@
+{
+  "product": {
+    "code": "KITCHEN",
+    "name": "Kitchen",
+    "type": "COLLECTION",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Task-oriented comfort and practical routine control.",
+    "primary_emotion": "Control",
+    "coverage": "Kitchen and meal-preparation zones.",
+    "final_installed_price": 2499,
+    "requires_foundation": true,
+    "notes": "Collection product. Foundation dependency is mandatory."
+  },
+  "hero": "Better Home Kitchen Collection",
+  "subtitle": "Practical intelligence for daily kitchen routines.",
+  "story": "Kitchen collection focuses on practical scene transitions, visibility support, and routine efficiency during preparation and cleanup.",
+  "experiences": [
+    {
+      "title": "Preparation Mode",
+      "subtitle": "Focused setup for cooking tasks.",
+      "description": "Activates context-appropriate environment for active meal preparation.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Cleanup Mode",
+      "subtitle": "Practical support for post-meal tasks.",
+      "description": "Transitions kitchen behavior for efficient cleanup workflow.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Night Guidance",
+      "subtitle": "Safe low-light access to kitchen path.",
+      "description": "Provides subtle guidance without full scene activation.",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Energy Saving",
+      "subtitle": "Reduce unnecessary active states.",
+      "description": "Optimizes kitchen scene state based on occupancy and time.",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Task Scene Control",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Preparation and cleanup scene orchestration."
+    },
+    {
+      "capability": "Automatic Lighting",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Adaptive brightness behavior."
+    },
+    {
+      "capability": "Night Guidance",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Low-light movement support."
+    },
+    {
+      "capability": "Energy Saving",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Occupancy-based efficiency behavior."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-KITCHEN-SCENE-PANEL",
+      "product_name": "Kitchen Scene Panel",
+      "category": "Control",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-KITCHEN-MOTION-SENSOR",
+      "product_name": "Kitchen Motion Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-KITCHEN-DIMMING-MODULE",
+      "product_name": "Kitchen Dimming Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-KITCHEN-SWITCH-MODULE",
+      "product_name": "Kitchen Switch Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Kitchen Installation",
+      "qty": 1,
+      "hours": 2,
+      "category": "Installation",
+      "notes": "Install kitchen collection devices."
+    },
+    {
+      "labour_item": "Kitchen Programming",
+      "qty": 1,
+      "hours": 1.5,
+      "category": "Programming",
+      "notes": "Configure kitchen scenes and transitions."
+    },
+    {
+      "labour_item": "Kitchen Commissioning",
+      "qty": 1,
+      "hours": 1,
+      "category": "Commissioning",
+      "notes": "Validate operational behavior."
+    },
+    {
+      "labour_item": "Kitchen Training",
+      "qty": 1,
+      "hours": 0.5,
+      "category": "Training",
+      "notes": "Customer handover and operation guidance."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 2499
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Kitchen Hero",
+      "body": "Practical intelligence for daily kitchen routines.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "kitchen_story",
+      "sequence": 2,
+      "title": "Kitchen Story",
+      "body": "Task-focused automation for preparation and cleanup flow.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Preparation Mode",
+      "body": "Focused setup for meal preparation tasks.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Cleanup Mode",
+      "body": "Practical scene for post-meal workflow.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_3",
+      "sequence": 5,
+      "title": "Night Guidance",
+      "body": "Subtle movement support at night.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_4",
+      "sequence": 6,
+      "title": "Energy Saving",
+      "body": "Occupancy-aware efficiency mode.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 7,
+      "title": "Kitchen Quote",
+      "body": "Smarter kitchen flow for every day.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 8,
+      "title": "Footer",
+      "body": "TODO: finalize approved Kitchen footer line.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Kitchen Preparation Automation",
+      "automation_key": "kitchen_preparation_automation",
+      "sequence": 1,
+      "trigger": "Manual preparation mode trigger",
+      "condition": "Occupancy confirmed in kitchen zone",
+      "action": "Set preparation scene profile",
+      "trigger_type": "manual",
+      "title": "Kitchen Preparation Automation",
+      "description": "Applies preparation scene profile when initiated.",
+      "status": "ACTIVE"
+    },
+    {
+      "automation_name": "Kitchen Night Guidance Automation",
+      "automation_key": "kitchen_night_guidance_automation",
+      "sequence": 2,
+      "trigger": "Motion event in night window",
+      "condition": "Ambient brightness below threshold",
+      "action": "Set low-brightness guidance path",
+      "trigger_type": "event",
+      "title": "Kitchen Night Guidance Automation",
+      "description": "Provides safe and subtle path lighting overnight.",
+      "status": "ACTIVE"
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "kitchen_experience_1",
+      "title": "Preparation Mode Icon",
+      "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "kitchen_experience_2",
+      "title": "Cleanup Mode Icon",
+      "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "kitchen_experience_3",
+      "title": "Night Guidance Icon",
+      "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-3.svg",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "kitchen_experience_4",
+      "title": "Energy Saving Icon",
+      "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-4.svg",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "kitchen_default",
+      "primary_color": "#0F172A",
+      "secondary_color": "#F97316",
+      "typography_scheme": "clean",
+      "status": "ACTIVE"
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "kitchen_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "quote", "pricing"]
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/kitchen/hero.jpg",
+      "alt_text": "Kitchen hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "image_type": "experience",
+      "image_url": "https://assets.placeholder.betterhome/kitchen/experience-1.jpg",
+      "alt_text": "Kitchen experience placeholder",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "requires_foundation",
+      "rule_value": "true",
+      "notes": "Kitchen collection requires Foundation."
+    },
+    {
+      "rule_key": "collection_independent",
+      "rule_value": "true",
+      "notes": "Kitchen does not depend on other collections."
+    }
+  ],
+  "notes": "PDC completed for Kitchen; supplier-specific SKU details remain TODO."
+}

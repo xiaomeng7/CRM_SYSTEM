@@ -1,0 +1,2 @@
+const test=require("node:test");const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const sql=fs.readFileSync(path.join(__dirname,"../../prisma/migrations/20260721100000_add_handoff_authorization/migration.sql"),"utf8");
+test("handoff authorization migration is additive and all-or-none",()=>{assert.match(sql,/ADD COLUMN "authorized_by_user_id"/);assert.match(sql,/authorized_payload_hash/);assert.match(sql,/authorization_chk/);assert.doesNotMatch(sql,/\bDROP\b|\bDELETE\s+FROM\b|\bTRUNCATE\b/i);});

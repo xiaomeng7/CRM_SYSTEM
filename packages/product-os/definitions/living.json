@@ -1,0 +1,315 @@
+{
+  "product": {
+    "code": "LIVING",
+    "name": "Living",
+    "type": "COLLECTION",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Shared-space comfort and responsive atmosphere control.",
+    "primary_emotion": "Comfort",
+    "coverage": "Living room and shared family zones.",
+    "final_installed_price": 2999,
+    "requires_foundation": true,
+    "notes": "Collection product. Foundation dependency is mandatory."
+  },
+  "hero": "Better Home Living Collection",
+  "subtitle": "Comfort and atmosphere in every shared moment.",
+  "story": "Living collection orchestrates lighting, mode switching, and shared-space routines to improve comfort and confidence in family areas.",
+  "experiences": [
+    {
+      "title": "Arrival Comfort",
+      "subtitle": "A smooth welcome in shared spaces.",
+      "description": "Automatically transitions living areas to the preferred arrival setting.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Movie Mode",
+      "subtitle": "One-step environment scene.",
+      "description": "Sets ambient scene for evening viewing routines.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Night Guidance",
+      "subtitle": "Safe low-light movement.",
+      "description": "Supports low-brightness guidance in late evening transitions.",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Energy Saving",
+      "subtitle": "Reduce unnecessary consumption.",
+      "description": "Adjusts running scenes when occupancy or schedule indicates lower demand.",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Automatic Lighting",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Experience-level lighting automation."
+    },
+    {
+      "capability": "Scene Mode Switching",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Living scenario switching capability."
+    },
+    {
+      "capability": "Night Guidance",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Low-light path guidance."
+    },
+    {
+      "capability": "Energy Saving",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Occupancy and schedule-based optimization."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-LIVING-SCENE-PANEL",
+      "product_name": "Living Scene Panel",
+      "category": "Control",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-LIVING-OCCUPANCY-SENSOR",
+      "product_name": "Living Occupancy Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 2,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-LIVING-DIMMING-MODULE",
+      "product_name": "Living Dimming Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-LIVING-SWITCH-MODULE",
+      "product_name": "Living Switch Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Living Installation",
+      "qty": 1,
+      "hours": 2,
+      "category": "Installation",
+      "notes": "Install living collection devices."
+    },
+    {
+      "labour_item": "Living Programming",
+      "qty": 1,
+      "hours": 1.5,
+      "category": "Programming",
+      "notes": "Configure living automation scenes."
+    },
+    {
+      "labour_item": "Living Commissioning",
+      "qty": 1,
+      "hours": 1,
+      "category": "Commissioning",
+      "notes": "Validate operational behavior."
+    },
+    {
+      "labour_item": "Living Training",
+      "qty": 1,
+      "hours": 0.5,
+      "category": "Training",
+      "notes": "User handover and scene usage training."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 2999
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Living Hero",
+      "body": "Comfort and atmosphere in every shared moment.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "living_story",
+      "sequence": 2,
+      "title": "Living Story",
+      "body": "A responsive environment for family and guests.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Arrival Comfort",
+      "body": "Automatically shift to welcome comfort scenes.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Movie Mode",
+      "body": "One-step atmosphere setup for evening routines.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_3",
+      "sequence": 5,
+      "title": "Night Guidance",
+      "body": "Low-light guidance for safe movement.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_4",
+      "sequence": 6,
+      "title": "Energy Saving",
+      "body": "Reduce unnecessary energy use based on context.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 7,
+      "title": "Living Quote",
+      "body": "A home that adapts to family rhythms.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 8,
+      "title": "Footer",
+      "body": "TODO: finalize approved Living footer line.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Living Arrival Automation",
+      "automation_key": "living_arrival_automation",
+      "sequence": 1,
+      "trigger": "Entry event from foundation context",
+      "condition": "Home state = arrival and time window = evening",
+      "action": "Set living scene to arrival comfort",
+      "trigger_type": "event",
+      "title": "Living Arrival Automation",
+      "description": "Applies welcome scene at arrival conditions.",
+      "status": "ACTIVE"
+    },
+    {
+      "automation_name": "Living Night Guidance Automation",
+      "automation_key": "living_night_guidance_automation",
+      "sequence": 2,
+      "trigger": "Motion event in living circulation path",
+      "condition": "Time window = night and brightness below threshold",
+      "action": "Activate low brightness guidance scene",
+      "trigger_type": "event",
+      "title": "Living Night Guidance Automation",
+      "description": "Guides movement with low-light mode.",
+      "status": "ACTIVE"
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "living_experience_1",
+      "title": "Arrival Comfort Icon",
+      "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "living_experience_2",
+      "title": "Movie Mode Icon",
+      "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "living_experience_3",
+      "title": "Night Guidance Icon",
+      "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-3.svg",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "living_experience_4",
+      "title": "Energy Saving Icon",
+      "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-4.svg",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "living_default",
+      "primary_color": "#1E293B",
+      "secondary_color": "#F59E0B",
+      "typography_scheme": "modern",
+      "status": "ACTIVE"
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "living_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "quote", "pricing"]
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/living/hero.jpg",
+      "alt_text": "Living hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "image_type": "experience",
+      "image_url": "https://assets.placeholder.betterhome/living/experience-1.jpg",
+      "alt_text": "Living experience placeholder",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "requires_foundation",
+      "rule_value": "true",
+      "notes": "Living collection requires Foundation."
+    },
+    {
+      "rule_key": "collection_independent",
+      "rule_value": "true",
+      "notes": "Living does not depend on other collections."
+    }
+  ],
+  "notes": "PDC completed for Living; supplier-specific SKU details remain TODO."
+}

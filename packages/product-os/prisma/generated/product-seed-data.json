@@ -1,0 +1,2224 @@
+[
+  {
+    "fileName": "away.json",
+    "product": {
+      "code": "AWAY",
+      "name": "Away",
+      "type": "COLLECTION",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Peace of mind while away from home.",
+      "primary_emotion": "Reassurance",
+      "coverage": "Whole-home away-state orchestration.",
+      "final_installed_price": 2499,
+      "requires_foundation": true,
+      "notes": "Collection product. Foundation dependency is mandatory."
+    },
+    "hero": "Better Home Away Collection",
+    "subtitle": "Confidence and awareness when no one is home.",
+    "story": "Away collection coordinates leave-home transitions, check routines, and away-state automation confidence.",
+    "experiences": [
+      {
+        "title": "Leave Home Activation",
+        "subtitle": "One-step away transition.",
+        "description": "Activates away-state behavior when occupants leave home.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Holiday Mode",
+        "subtitle": "Longer absence behavior control.",
+        "description": "Adapts behavior for extended away periods.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Home Check",
+        "subtitle": "Confidence through status overview.",
+        "description": "Provides away-state confidence checks through routine status events.",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Return Home Transition",
+        "subtitle": "Smooth resume from away state.",
+        "description": "Resets away-state behavior when home occupancy resumes.",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Away State Management",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Occupancy-aware away-state orchestration."
+      },
+      {
+        "capability": "Holiday Mode",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Extended absence behavior profile."
+      },
+      {
+        "capability": "Home Check",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Remote confidence and state verification."
+      },
+      {
+        "capability": "Energy Saving",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Away-state efficiency optimization."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-AWAY-STATE-PANEL",
+        "product_name": "Away State Panel",
+        "category": "Control",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-AWAY-OCCUPANCY-SENSOR",
+        "product_name": "Away Occupancy Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-AWAY-ENTRY-SENSOR",
+        "product_name": "Away Entry Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-AWAY-SCENE-MODULE",
+        "product_name": "Away Scene Module",
+        "category": "Automation",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Away Installation",
+        "qty": 1,
+        "hours": 2,
+        "category": "Installation",
+        "notes": "Install away collection devices."
+      },
+      {
+        "labour_item": "Away Programming",
+        "qty": 1,
+        "hours": 1.5,
+        "category": "Programming",
+        "notes": "Configure away-state logic."
+      },
+      {
+        "labour_item": "Away Commissioning",
+        "qty": 1,
+        "hours": 1,
+        "category": "Commissioning",
+        "notes": "Validate away and return transitions."
+      },
+      {
+        "labour_item": "Away Training",
+        "qty": 1,
+        "hours": 0.5,
+        "category": "Training",
+        "notes": "Customer handover for away behavior controls."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 2499
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Away Hero",
+        "body": "Confidence and awareness when no one is home.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "away_story",
+        "sequence": 2,
+        "title": "Away Story",
+        "body": "A predictable and confident away-state experience.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Leave Home Activation",
+        "body": "One-step transition into away mode.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Holiday Mode",
+        "body": "Extended absence behavior control.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_3",
+        "sequence": 5,
+        "title": "Home Check",
+        "body": "Status confidence while away.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_4",
+        "sequence": 6,
+        "title": "Return Home Transition",
+        "body": "Smooth return to occupied-home behavior.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 7,
+        "title": "Away Quote",
+        "body": "Leave home with confidence, return with ease.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 8,
+        "title": "Footer",
+        "body": "TODO: finalize approved Away footer line.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Away Activation Automation",
+        "automation_key": "away_activation_automation",
+        "sequence": 1,
+        "trigger": "Away mode enabled event",
+        "condition": "No occupancy detected in monitored zones",
+        "action": "Activate away-state profile and notify status channel",
+        "trigger_type": "event",
+        "title": "Away Activation Automation",
+        "description": "Enables away profile and tracks transition status.",
+        "status": "ACTIVE"
+      },
+      {
+        "automation_name": "Away Return Automation",
+        "automation_key": "away_return_automation",
+        "sequence": 2,
+        "trigger": "Occupancy returns from entry context",
+        "condition": "Away profile currently active",
+        "action": "Disable away profile and restore home baseline state",
+        "trigger_type": "event",
+        "title": "Away Return Automation",
+        "description": "Handles state restoration when occupants return.",
+        "status": "ACTIVE"
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "away_experience_1",
+        "title": "Leave Home Activation Icon",
+        "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "away_experience_2",
+        "title": "Holiday Mode Icon",
+        "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "away_experience_3",
+        "title": "Home Check Icon",
+        "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-3.svg",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "away_experience_4",
+        "title": "Return Home Transition Icon",
+        "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-4.svg",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "away_default",
+        "primary_color": "#111827",
+        "secondary_color": "#22D3EE",
+        "typography_scheme": "clear",
+        "status": "ACTIVE"
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "away_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "quote",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/away/hero.jpg",
+        "alt_text": "Away hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "image_type": "experience",
+        "image_url": "https://assets.placeholder.betterhome/away/experience-1.jpg",
+        "alt_text": "Away experience placeholder",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "requires_foundation",
+        "rule_value": "true",
+        "notes": "Away collection requires Foundation."
+      },
+      {
+        "rule_key": "collection_independent",
+        "rule_value": "true",
+        "notes": "Away does not depend on other collections."
+      }
+    ],
+    "notes": "PDC completed for Away; supplier-specific SKU details remain TODO."
+  },
+  {
+    "fileName": "bathroom.json",
+    "product": {
+      "code": "BATHROOM",
+      "name": "Bathroom",
+      "type": "COLLECTION",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Practical comfort and daily hygiene routine support.",
+      "primary_emotion": "Ease",
+      "coverage": "Bathroom and adjacent wet-area access zones.",
+      "final_installed_price": 2199,
+      "requires_foundation": true,
+      "notes": "Collection product. Foundation dependency is mandatory."
+    },
+    "hero": "Better Home Bathroom Collection",
+    "subtitle": "Practical comfort for every daily routine.",
+    "story": "Bathroom collection focuses on comfort transitions, safety guidance, and routine support in daily bathroom usage.",
+    "experiences": [
+      {
+        "title": "Morning Start Mode",
+        "subtitle": "Clear and practical morning transition.",
+        "description": "Supports predictable morning routine setup.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Evening Wind-down Mode",
+        "subtitle": "Comfortable evening transition.",
+        "description": "Adjusts bathroom context for evening use.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Night Guidance",
+        "subtitle": "Low-light safe access.",
+        "description": "Supports safe movement at night with minimal brightness.",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Energy Saving",
+        "subtitle": "Context-based efficiency mode.",
+        "description": "Optimizes active state based on occupancy and schedule.",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Routine Scene Control",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Morning and evening scene transitions."
+      },
+      {
+        "capability": "Automatic Lighting",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Responsive practical lighting behavior."
+      },
+      {
+        "capability": "Night Guidance",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Low-light safe access support."
+      },
+      {
+        "capability": "Energy Saving",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Occupancy-aware optimization."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-BATHROOM-SCENE-PANEL",
+        "product_name": "Bathroom Scene Panel",
+        "category": "Control",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-BATHROOM-MOTION-SENSOR",
+        "product_name": "Bathroom Motion Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-BATHROOM-SWITCH-MODULE",
+        "product_name": "Bathroom Switch Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-BATHROOM-NIGHT-GUIDE-MODULE",
+        "product_name": "Bathroom Night Guidance Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Bathroom Installation",
+        "qty": 1,
+        "hours": 1.5,
+        "category": "Installation",
+        "notes": "Install bathroom collection devices."
+      },
+      {
+        "labour_item": "Bathroom Programming",
+        "qty": 1,
+        "hours": 1.25,
+        "category": "Programming",
+        "notes": "Configure bathroom scene logic."
+      },
+      {
+        "labour_item": "Bathroom Commissioning",
+        "qty": 1,
+        "hours": 1,
+        "category": "Commissioning",
+        "notes": "Validate behavior and transitions."
+      },
+      {
+        "labour_item": "Bathroom Training",
+        "qty": 1,
+        "hours": 0.5,
+        "category": "Training",
+        "notes": "Customer handover and usage guidance."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 2199
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Bathroom Hero",
+        "body": "Practical comfort for every daily routine.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "bathroom_story",
+        "sequence": 2,
+        "title": "Bathroom Story",
+        "body": "Reliable routine support for morning and evening bathroom use.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Morning Start Mode",
+        "body": "Supports practical morning routine transitions.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Evening Wind-down Mode",
+        "body": "Comfort transition for evening usage.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_3",
+        "sequence": 5,
+        "title": "Night Guidance",
+        "body": "Safe low-light access behavior.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_4",
+        "sequence": 6,
+        "title": "Energy Saving",
+        "body": "Context-driven efficiency mode.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 7,
+        "title": "Bathroom Quote",
+        "body": "Comfort and clarity in every daily transition.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 8,
+        "title": "Footer",
+        "body": "TODO: finalize approved Bathroom footer line.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Bathroom Morning Automation",
+        "automation_key": "bathroom_morning_automation",
+        "sequence": 1,
+        "trigger": "Scheduled morning routine event",
+        "condition": "Occupied state in bathroom zone",
+        "action": "Activate morning start scene",
+        "trigger_type": "schedule",
+        "title": "Bathroom Morning Automation",
+        "description": "Applies morning scene profile for bathroom use.",
+        "status": "ACTIVE"
+      },
+      {
+        "automation_name": "Bathroom Night Guidance Automation",
+        "automation_key": "bathroom_night_guidance_automation",
+        "sequence": 2,
+        "trigger": "Motion event during night window",
+        "condition": "Ambient brightness below threshold",
+        "action": "Enable low brightness guidance scene",
+        "trigger_type": "event",
+        "title": "Bathroom Night Guidance Automation",
+        "description": "Provides low-light path for night access.",
+        "status": "ACTIVE"
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "bathroom_experience_1",
+        "title": "Morning Start Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "bathroom_experience_2",
+        "title": "Evening Wind-down Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "bathroom_experience_3",
+        "title": "Night Guidance Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-3.svg",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "bathroom_experience_4",
+        "title": "Energy Saving Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-4.svg",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "bathroom_default",
+        "primary_color": "#0B132B",
+        "secondary_color": "#38BDF8",
+        "typography_scheme": "clean",
+        "status": "ACTIVE"
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "bathroom_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "quote",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/bathroom/hero.jpg",
+        "alt_text": "Bathroom hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "image_type": "experience",
+        "image_url": "https://assets.placeholder.betterhome/bathroom/experience-1.jpg",
+        "alt_text": "Bathroom experience placeholder",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "requires_foundation",
+        "rule_value": "true",
+        "notes": "Bathroom collection requires Foundation."
+      },
+      {
+        "rule_key": "collection_independent",
+        "rule_value": "true",
+        "notes": "Bathroom does not depend on other collections."
+      }
+    ],
+    "notes": "PDC completed for Bathroom; supplier-specific SKU details remain TODO."
+  },
+  {
+    "fileName": "bedroom.json",
+    "product": {
+      "code": "BEDROOM",
+      "name": "Bedroom",
+      "type": "COLLECTION",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Personal comfort and restful routine support.",
+      "primary_emotion": "Calm",
+      "coverage": "Bedroom and private rest zones.",
+      "final_installed_price": 2699,
+      "requires_foundation": true,
+      "notes": "Collection product. Foundation dependency is mandatory."
+    },
+    "hero": "Better Home Bedroom Collection",
+    "subtitle": "Support restful routines with calm smart control.",
+    "story": "Bedroom collection supports evening transition, night comfort, and wake-up consistency for personal spaces.",
+    "experiences": [
+      {
+        "title": "Sleep Preparation",
+        "subtitle": "A calm transition into rest.",
+        "description": "Switches bedroom context into low-stimulation pre-sleep mode.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Night Guidance",
+        "subtitle": "Safe movement without full wake-up.",
+        "description": "Provides minimal and comfortable guidance during late-night movement.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Wake Routine",
+        "subtitle": "Gentle start to the day.",
+        "description": "Transitions room ambience for planned wake-up timing.",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Energy Saving Rest Mode",
+        "subtitle": "Reduce unnecessary overnight usage.",
+        "description": "Optimizes bedroom state for energy efficiency during rest periods.",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Sleep Scene Control",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Bedroom sleep-focused scene control."
+      },
+      {
+        "capability": "Night Guidance",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Safe movement support."
+      },
+      {
+        "capability": "Wake Routine Automation",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Morning transition support."
+      },
+      {
+        "capability": "Energy Saving",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Context-based optimization."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-BEDROOM-SCENE-PANEL",
+        "product_name": "Bedroom Scene Panel",
+        "category": "Control",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-BEDROOM-MOTION-SENSOR",
+        "product_name": "Bedroom Motion Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-BEDROOM-DIMMING-MODULE",
+        "product_name": "Bedroom Dimming Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-BEDROOM-SWITCH-MODULE",
+        "product_name": "Bedroom Switch Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Bedroom Installation",
+        "qty": 1,
+        "hours": 2,
+        "category": "Installation",
+        "notes": "Install bedroom collection devices."
+      },
+      {
+        "labour_item": "Bedroom Programming",
+        "qty": 1,
+        "hours": 1.5,
+        "category": "Programming",
+        "notes": "Configure bedroom scenes."
+      },
+      {
+        "labour_item": "Bedroom Commissioning",
+        "qty": 1,
+        "hours": 1,
+        "category": "Commissioning",
+        "notes": "Validate behavior and transitions."
+      },
+      {
+        "labour_item": "Bedroom Training",
+        "qty": 1,
+        "hours": 0.5,
+        "category": "Training",
+        "notes": "Customer handover and usage explanation."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 2699
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Bedroom Hero",
+        "body": "Support restful routines with calm smart control.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "bedroom_story",
+        "sequence": 2,
+        "title": "Bedroom Story",
+        "body": "Personal comfort automation for better rest and wake transitions.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Sleep Preparation",
+        "body": "Calm transition into bedtime mode.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Night Guidance",
+        "body": "Safe and subtle movement support at night.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_3",
+        "sequence": 5,
+        "title": "Wake Routine",
+        "body": "Gentle transition into morning state.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_4",
+        "sequence": 6,
+        "title": "Energy Saving Rest Mode",
+        "body": "Overnight optimization for energy control.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 7,
+        "title": "Bedroom Quote",
+        "body": "Rest better with calm and consistent smart routines.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 8,
+        "title": "Footer",
+        "body": "TODO: finalize approved Bedroom footer line.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Bedroom Sleep Automation",
+        "automation_key": "bedroom_sleep_automation",
+        "sequence": 1,
+        "trigger": "Scheduled bedtime event",
+        "condition": "Occupancy in bedroom and manual override not active",
+        "action": "Activate sleep preparation scene",
+        "trigger_type": "schedule",
+        "title": "Bedroom Sleep Automation",
+        "description": "Transitions bedroom to sleep mode at configured time.",
+        "status": "ACTIVE"
+      },
+      {
+        "automation_name": "Bedroom Night Guidance Automation",
+        "automation_key": "bedroom_night_guidance_automation",
+        "sequence": 2,
+        "trigger": "Night motion detection",
+        "condition": "Time window = night and low brightness context",
+        "action": "Activate low-level guidance lighting",
+        "trigger_type": "event",
+        "title": "Bedroom Night Guidance Automation",
+        "description": "Supports safe movement without bright scene changes.",
+        "status": "ACTIVE"
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "bedroom_experience_1",
+        "title": "Sleep Preparation Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "bedroom_experience_2",
+        "title": "Night Guidance Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "bedroom_experience_3",
+        "title": "Wake Routine Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-3.svg",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "bedroom_experience_4",
+        "title": "Energy Saving Icon",
+        "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-4.svg",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "bedroom_default",
+        "primary_color": "#312E81",
+        "secondary_color": "#A78BFA",
+        "typography_scheme": "calm",
+        "status": "ACTIVE"
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "bedroom_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "quote",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/bedroom/hero.jpg",
+        "alt_text": "Bedroom hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "image_type": "experience",
+        "image_url": "https://assets.placeholder.betterhome/bedroom/experience-1.jpg",
+        "alt_text": "Bedroom experience placeholder",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "requires_foundation",
+        "rule_value": "true",
+        "notes": "Bedroom collection requires Foundation."
+      },
+      {
+        "rule_key": "collection_independent",
+        "rule_value": "true",
+        "notes": "Bedroom does not depend on other collections."
+      }
+    ],
+    "notes": "PDC completed for Bedroom; supplier-specific SKU details remain TODO."
+  },
+  {
+    "fileName": "entry.json",
+    "product": {
+      "code": "ENTRY",
+      "name": "Entry",
+      "type": "COLLECTION",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Confident and secure arrival experience.",
+      "primary_emotion": "Assurance",
+      "coverage": "Home entry and boundary interaction zone.",
+      "final_installed_price": 2499,
+      "requires_foundation": true,
+      "notes": "Collection product. Foundation dependency is mandatory."
+    },
+    "hero": "Better Home Entry Collection",
+    "subtitle": "A confident and welcoming home entry experience.",
+    "story": "Entry collection orchestrates arrival awareness, access confidence, and transition scenes at the home boundary.",
+    "experiences": [
+      {
+        "title": "Smart Arrival",
+        "subtitle": "Welcome behavior at first contact.",
+        "description": "Transitions from approach to welcome with consistent entry logic.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Home Check",
+        "subtitle": "Quick state verification on arrival.",
+        "description": "Provides boundary-level confidence with entry condition checks.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Night Entry Guidance",
+        "subtitle": "Safe movement during low-light arrival.",
+        "description": "Guides entry movement with contextual low-brightness response.",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Away Return Transition",
+        "subtitle": "Smooth return from away state.",
+        "description": "Handles state transition from away mode to normal occupancy.",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Arrival Detection",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Boundary-level arrival sensing."
+      },
+      {
+        "capability": "Home Check",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "First-touch home status check."
+      },
+      {
+        "capability": "Night Guidance",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Low light safe guidance."
+      },
+      {
+        "capability": "Entry Scene Control",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Entry-mode experience control."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-ENTRY-SMART-BUTTON",
+        "product_name": "Entry Smart Button",
+        "category": "Control",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-ENTRY-MOTION-SENSOR",
+        "product_name": "Entry Motion Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-ENTRY-DOOR-SENSOR",
+        "product_name": "Entry Door Contact Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-ENTRY-SWITCH-MODULE",
+        "product_name": "Entry Switch Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Entry Installation",
+        "qty": 1,
+        "hours": 2,
+        "category": "Installation",
+        "notes": "Install entry hardware."
+      },
+      {
+        "labour_item": "Entry Programming",
+        "qty": 1,
+        "hours": 1.5,
+        "category": "Programming",
+        "notes": "Program entry state logic."
+      },
+      {
+        "labour_item": "Entry Commissioning",
+        "qty": 1,
+        "hours": 1,
+        "category": "Commissioning",
+        "notes": "Validate event transitions."
+      },
+      {
+        "labour_item": "Entry Training",
+        "qty": 1,
+        "hours": 0.5,
+        "category": "Training",
+        "notes": "Train customer on entry controls."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 2499
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Entry Hero",
+        "body": "A confident and welcoming home entry experience.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "entry_story",
+        "sequence": 2,
+        "title": "Entry Story",
+        "body": "Boundary-aware routines for secure and smooth arrival.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Smart Arrival",
+        "body": "Welcome scene activation at first contact.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Home Check",
+        "body": "Quick confidence check at entry.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_3",
+        "sequence": 5,
+        "title": "Night Entry Guidance",
+        "body": "Safe low-light entry transition.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_4",
+        "sequence": 6,
+        "title": "Away Return Transition",
+        "body": "Consistent switch from away to home state.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 7,
+        "title": "Entry Quote",
+        "body": "Every arrival should feel secure and calm.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 8,
+        "title": "Footer",
+        "body": "TODO: finalize approved Entry footer line.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Entry Welcome Automation",
+        "automation_key": "entry_welcome_automation",
+        "sequence": 1,
+        "trigger": "Door sensor state changes to open",
+        "condition": "Occupancy context indicates arrival",
+        "action": "Activate welcome entry scene",
+        "trigger_type": "event",
+        "title": "Entry Welcome Automation",
+        "description": "Runs welcome scene at validated arrival entry.",
+        "status": "ACTIVE"
+      },
+      {
+        "automation_name": "Entry Night Guidance Automation",
+        "automation_key": "entry_night_guidance_automation",
+        "sequence": 2,
+        "trigger": "Entry motion during night window",
+        "condition": "Ambient brightness below threshold",
+        "action": "Turn on guidance path lighting",
+        "trigger_type": "event",
+        "title": "Entry Night Guidance Automation",
+        "description": "Applies low-light entry guidance mode.",
+        "status": "ACTIVE"
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "entry_experience_1",
+        "title": "Smart Arrival Icon",
+        "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "entry_experience_2",
+        "title": "Home Check Icon",
+        "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "entry_experience_3",
+        "title": "Night Guidance Icon",
+        "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-3.svg",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "entry_experience_4",
+        "title": "Away Return Icon",
+        "asset_url": "https://assets.placeholder.betterhome/entry/icon-experience-4.svg",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "entry_default",
+        "primary_color": "#111827",
+        "secondary_color": "#10B981",
+        "typography_scheme": "modern",
+        "status": "ACTIVE"
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "entry_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "quote",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/entry/hero.jpg",
+        "alt_text": "Entry hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "image_type": "experience",
+        "image_url": "https://assets.placeholder.betterhome/entry/experience-1.jpg",
+        "alt_text": "Entry experience placeholder",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "requires_foundation",
+        "rule_value": "true",
+        "notes": "Entry collection requires Foundation."
+      },
+      {
+        "rule_key": "collection_independent",
+        "rule_value": "true",
+        "notes": "Entry does not depend on other collections."
+      }
+    ],
+    "notes": "PDC completed for Entry; supplier-specific SKU details remain TODO."
+  },
+  {
+    "fileName": "foundation.json",
+    "product": {
+      "code": "FOUNDATION",
+      "name": "Foundation",
+      "type": "INFRASTRUCTURE",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Unified Better Home infrastructure backbone.",
+      "primary_emotion": "Confidence",
+      "coverage": "Whole-home infrastructure and orchestration layer.",
+      "final_installed_price": 4999,
+      "requires_foundation": false,
+      "notes": "Foundation is the only infrastructure product in Product OS."
+    },
+    "hero": "Better Home Foundation",
+    "subtitle": "The intelligence backbone for every Better Home experience.",
+    "story": "Foundation is the system center that unifies Zigbee network, RS485 communication, smart display, cloud connection, mobile app connection and automation control.",
+    "experiences": [
+      {
+        "title": "Connected Home Core",
+        "subtitle": "One system center for all control surfaces.",
+        "description": "Provides a central orchestration layer for control, integration and product runtime consistency.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Automation Reliability",
+        "subtitle": "Stable logic execution across daily routines.",
+        "description": "Supports reliable automation trigger execution with centralized controller and cloud synchronization.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Zigbee Network Coordination",
+        "included_qty": 1,
+        "customer_layer": "Infrastructure",
+        "notes": "Network backbone capability."
+      },
+      {
+        "capability": "RS485 Communication Bridge",
+        "included_qty": 1,
+        "customer_layer": "Infrastructure",
+        "notes": "Wired communication capability."
+      },
+      {
+        "capability": "Central Automation Engine",
+        "included_qty": 1,
+        "customer_layer": "Infrastructure",
+        "notes": "Automation execution core."
+      },
+      {
+        "capability": "Cloud and App Synchronization",
+        "included_qty": 1,
+        "customer_layer": "Infrastructure",
+        "notes": "Cloud and mobile app state sync."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-FOUNDATION-CONTROLLER-CORE",
+        "product_name": "Foundation Controller Core",
+        "category": "Controller",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier SKU and cost."
+      },
+      {
+        "sku": "SKU-FOUNDATION-DISPLAY-HUB",
+        "product_name": "Foundation Smart Display Hub",
+        "category": "Display",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier SKU and cost."
+      },
+      {
+        "sku": "SKU-FOUNDATION-NETWORK-MODULE",
+        "product_name": "Foundation Network Module",
+        "category": "Networking",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier SKU and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Foundation Installation",
+        "qty": 1,
+        "hours": 4,
+        "category": "Installation",
+        "notes": "Install and wire infrastructure hardware."
+      },
+      {
+        "labour_item": "Foundation Programming",
+        "qty": 1,
+        "hours": 2,
+        "category": "Programming",
+        "notes": "Program controller baseline logic."
+      },
+      {
+        "labour_item": "Foundation Commissioning",
+        "qty": 1,
+        "hours": 2,
+        "category": "Commissioning",
+        "notes": "Run system validation and cloud handshake."
+      },
+      {
+        "labour_item": "Foundation Training",
+        "qty": 1,
+        "hours": 1,
+        "category": "Training",
+        "notes": "Customer handover and baseline training."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 4999
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Foundation Hero",
+        "body": "The intelligence backbone for every Better Home experience.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "foundation_story",
+        "sequence": 2,
+        "title": "Foundation Story",
+        "body": "A centralized infrastructure architecture to support all Better Home product collections.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Connected Home Core",
+        "body": "Unified control center for all connected layers.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Automation Reliability",
+        "body": "Stable logic and cloud-connected automation runtime.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 5,
+        "title": "Foundation Quote",
+        "body": "Foundation makes every Better Home collection consistent.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 6,
+        "title": "Footer",
+        "body": "TODO: finalize official foundation footer message.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Foundation Health Monitor",
+        "automation_key": "foundation_health_monitor",
+        "sequence": 1,
+        "trigger": "Controller heartbeat interval",
+        "condition": "Heartbeat delay exceeds threshold",
+        "action": "Raise internal health alert and log event",
+        "trigger_type": "system",
+        "title": "Foundation Health Monitor",
+        "description": "Monitors infrastructure runtime heartbeat and raises alert when degraded.",
+        "status": "ACTIVE",
+        "notes": "TODO: confirm heartbeat threshold policy."
+      },
+      {
+        "automation_name": "Cloud Sync Retry",
+        "automation_key": "foundation_cloud_sync_retry",
+        "sequence": 2,
+        "trigger": "Cloud sync failure event",
+        "condition": "Connection unavailable for more than retry window",
+        "action": "Retry sync and notify monitoring channel",
+        "trigger_type": "system",
+        "title": "Cloud Sync Retry",
+        "description": "Retries cloud synchronization and records retry lifecycle.",
+        "status": "ACTIVE",
+        "notes": "TODO: finalize retry policy."
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "foundation_experience_1",
+        "title": "Connected Home Core Icon",
+        "asset_url": "https://assets.placeholder.betterhome/foundation/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE",
+        "notes": "Icon for experience 1."
+      },
+      {
+        "icon_key": "foundation_experience_2",
+        "title": "Automation Reliability Icon",
+        "asset_url": "https://assets.placeholder.betterhome/foundation/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE",
+        "notes": "Icon for experience 2."
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "foundation_default",
+        "primary_color": "#0F172A",
+        "secondary_color": "#22C55E",
+        "typography_scheme": "modern",
+        "status": "ACTIVE",
+        "notes": "Foundation visual baseline."
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "foundation_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE",
+        "notes": "Unified cross-channel layout mapping."
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/foundation/hero.jpg",
+        "alt_text": "Foundation hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE",
+        "notes": "Placeholder image, replace in media production."
+      },
+      {
+        "image_type": "feature",
+        "image_url": "https://assets.placeholder.betterhome/foundation/feature-1.jpg",
+        "alt_text": "Foundation feature placeholder",
+        "sequence": 2,
+        "status": "ACTIVE",
+        "notes": "Placeholder image."
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "foundation_is_unique_infrastructure",
+        "rule_value": "true",
+        "notes": "Foundation is the only infrastructure product."
+      },
+      {
+        "rule_key": "collections_require_foundation",
+        "rule_value": "true",
+        "notes": "All collections require Foundation."
+      }
+    ],
+    "notes": "PDC complete for Foundation with TODO markers where supplier and policy details are pending."
+  },
+  {
+    "fileName": "kitchen.json",
+    "product": {
+      "code": "KITCHEN",
+      "name": "Kitchen",
+      "type": "COLLECTION",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Task-oriented comfort and practical routine control.",
+      "primary_emotion": "Control",
+      "coverage": "Kitchen and meal-preparation zones.",
+      "final_installed_price": 2499,
+      "requires_foundation": true,
+      "notes": "Collection product. Foundation dependency is mandatory."
+    },
+    "hero": "Better Home Kitchen Collection",
+    "subtitle": "Practical intelligence for daily kitchen routines.",
+    "story": "Kitchen collection focuses on practical scene transitions, visibility support, and routine efficiency during preparation and cleanup.",
+    "experiences": [
+      {
+        "title": "Preparation Mode",
+        "subtitle": "Focused setup for cooking tasks.",
+        "description": "Activates context-appropriate environment for active meal preparation.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Cleanup Mode",
+        "subtitle": "Practical support for post-meal tasks.",
+        "description": "Transitions kitchen behavior for efficient cleanup workflow.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Night Guidance",
+        "subtitle": "Safe low-light access to kitchen path.",
+        "description": "Provides subtle guidance without full scene activation.",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Energy Saving",
+        "subtitle": "Reduce unnecessary active states.",
+        "description": "Optimizes kitchen scene state based on occupancy and time.",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Task Scene Control",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Preparation and cleanup scene orchestration."
+      },
+      {
+        "capability": "Automatic Lighting",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Adaptive brightness behavior."
+      },
+      {
+        "capability": "Night Guidance",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Low-light movement support."
+      },
+      {
+        "capability": "Energy Saving",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Occupancy-based efficiency behavior."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-KITCHEN-SCENE-PANEL",
+        "product_name": "Kitchen Scene Panel",
+        "category": "Control",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-KITCHEN-MOTION-SENSOR",
+        "product_name": "Kitchen Motion Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-KITCHEN-DIMMING-MODULE",
+        "product_name": "Kitchen Dimming Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-KITCHEN-SWITCH-MODULE",
+        "product_name": "Kitchen Switch Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Kitchen Installation",
+        "qty": 1,
+        "hours": 2,
+        "category": "Installation",
+        "notes": "Install kitchen collection devices."
+      },
+      {
+        "labour_item": "Kitchen Programming",
+        "qty": 1,
+        "hours": 1.5,
+        "category": "Programming",
+        "notes": "Configure kitchen scenes and transitions."
+      },
+      {
+        "labour_item": "Kitchen Commissioning",
+        "qty": 1,
+        "hours": 1,
+        "category": "Commissioning",
+        "notes": "Validate operational behavior."
+      },
+      {
+        "labour_item": "Kitchen Training",
+        "qty": 1,
+        "hours": 0.5,
+        "category": "Training",
+        "notes": "Customer handover and operation guidance."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 2499
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Kitchen Hero",
+        "body": "Practical intelligence for daily kitchen routines.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "kitchen_story",
+        "sequence": 2,
+        "title": "Kitchen Story",
+        "body": "Task-focused automation for preparation and cleanup flow.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Preparation Mode",
+        "body": "Focused setup for meal preparation tasks.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Cleanup Mode",
+        "body": "Practical scene for post-meal workflow.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_3",
+        "sequence": 5,
+        "title": "Night Guidance",
+        "body": "Subtle movement support at night.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_4",
+        "sequence": 6,
+        "title": "Energy Saving",
+        "body": "Occupancy-aware efficiency mode.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 7,
+        "title": "Kitchen Quote",
+        "body": "Smarter kitchen flow for every day.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 8,
+        "title": "Footer",
+        "body": "TODO: finalize approved Kitchen footer line.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Kitchen Preparation Automation",
+        "automation_key": "kitchen_preparation_automation",
+        "sequence": 1,
+        "trigger": "Manual preparation mode trigger",
+        "condition": "Occupancy confirmed in kitchen zone",
+        "action": "Set preparation scene profile",
+        "trigger_type": "manual",
+        "title": "Kitchen Preparation Automation",
+        "description": "Applies preparation scene profile when initiated.",
+        "status": "ACTIVE"
+      },
+      {
+        "automation_name": "Kitchen Night Guidance Automation",
+        "automation_key": "kitchen_night_guidance_automation",
+        "sequence": 2,
+        "trigger": "Motion event in night window",
+        "condition": "Ambient brightness below threshold",
+        "action": "Set low-brightness guidance path",
+        "trigger_type": "event",
+        "title": "Kitchen Night Guidance Automation",
+        "description": "Provides safe and subtle path lighting overnight.",
+        "status": "ACTIVE"
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "kitchen_experience_1",
+        "title": "Preparation Mode Icon",
+        "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "kitchen_experience_2",
+        "title": "Cleanup Mode Icon",
+        "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "kitchen_experience_3",
+        "title": "Night Guidance Icon",
+        "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-3.svg",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "kitchen_experience_4",
+        "title": "Energy Saving Icon",
+        "asset_url": "https://assets.placeholder.betterhome/kitchen/icon-experience-4.svg",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "kitchen_default",
+        "primary_color": "#0F172A",
+        "secondary_color": "#F97316",
+        "typography_scheme": "clean",
+        "status": "ACTIVE"
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "kitchen_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "quote",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/kitchen/hero.jpg",
+        "alt_text": "Kitchen hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "image_type": "experience",
+        "image_url": "https://assets.placeholder.betterhome/kitchen/experience-1.jpg",
+        "alt_text": "Kitchen experience placeholder",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "requires_foundation",
+        "rule_value": "true",
+        "notes": "Kitchen collection requires Foundation."
+      },
+      {
+        "rule_key": "collection_independent",
+        "rule_value": "true",
+        "notes": "Kitchen does not depend on other collections."
+      }
+    ],
+    "notes": "PDC completed for Kitchen; supplier-specific SKU details remain TODO."
+  },
+  {
+    "fileName": "living.json",
+    "product": {
+      "code": "LIVING",
+      "name": "Living",
+      "type": "COLLECTION",
+      "version": "1.0",
+      "status": "FROZEN",
+      "core_value": "Shared-space comfort and responsive atmosphere control.",
+      "primary_emotion": "Comfort",
+      "coverage": "Living room and shared family zones.",
+      "final_installed_price": 2999,
+      "requires_foundation": true,
+      "notes": "Collection product. Foundation dependency is mandatory."
+    },
+    "hero": "Better Home Living Collection",
+    "subtitle": "Comfort and atmosphere in every shared moment.",
+    "story": "Living collection orchestrates lighting, mode switching, and shared-space routines to improve comfort and confidence in family areas.",
+    "experiences": [
+      {
+        "title": "Arrival Comfort",
+        "subtitle": "A smooth welcome in shared spaces.",
+        "description": "Automatically transitions living areas to the preferred arrival setting.",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Movie Mode",
+        "subtitle": "One-step environment scene.",
+        "description": "Sets ambient scene for evening viewing routines.",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Night Guidance",
+        "subtitle": "Safe low-light movement.",
+        "description": "Supports low-brightness guidance in late evening transitions.",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "title": "Energy Saving",
+        "subtitle": "Reduce unnecessary consumption.",
+        "description": "Adjusts running scenes when occupancy or schedule indicates lower demand.",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "capabilities": [
+      {
+        "capability": "Automatic Lighting",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Experience-level lighting automation."
+      },
+      {
+        "capability": "Scene Mode Switching",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Living scenario switching capability."
+      },
+      {
+        "capability": "Night Guidance",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Low-light path guidance."
+      },
+      {
+        "capability": "Energy Saving",
+        "included_qty": 1,
+        "customer_layer": "Collection",
+        "notes": "Occupancy and schedule-based optimization."
+      }
+    ],
+    "bom": [
+      {
+        "sku": "SKU-LIVING-SCENE-PANEL",
+        "product_name": "Living Scene Panel",
+        "category": "Control",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-LIVING-OCCUPANCY-SENSOR",
+        "product_name": "Living Occupancy Sensor",
+        "category": "Sensor",
+        "unit_cost_ex_gst": 0,
+        "qty": 2,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-LIVING-DIMMING-MODULE",
+        "product_name": "Living Dimming Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      },
+      {
+        "sku": "SKU-LIVING-SWITCH-MODULE",
+        "product_name": "Living Switch Module",
+        "category": "Lighting",
+        "unit_cost_ex_gst": 0,
+        "qty": 1,
+        "included_type": "STANDARD",
+        "notes": "TODO: confirm final supplier and cost."
+      }
+    ],
+    "labour": [
+      {
+        "labour_item": "Living Installation",
+        "qty": 1,
+        "hours": 2,
+        "category": "Installation",
+        "notes": "Install living collection devices."
+      },
+      {
+        "labour_item": "Living Programming",
+        "qty": 1,
+        "hours": 1.5,
+        "category": "Programming",
+        "notes": "Configure living automation scenes."
+      },
+      {
+        "labour_item": "Living Commissioning",
+        "qty": 1,
+        "hours": 1,
+        "category": "Commissioning",
+        "notes": "Validate operational behavior."
+      },
+      {
+        "labour_item": "Living Training",
+        "qty": 1,
+        "hours": 0.5,
+        "category": "Training",
+        "notes": "User handover and scene usage training."
+      }
+    ],
+    "pricing": {
+      "final_installed_price": 2999
+    },
+    "content": [
+      {
+        "content_type": "hero",
+        "content_key": "hero_statement",
+        "sequence": 1,
+        "title": "Living Hero",
+        "body": "Comfort and atmosphere in every shared moment.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "story",
+        "content_key": "living_story",
+        "sequence": 2,
+        "title": "Living Story",
+        "body": "A responsive environment for family and guests.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_1",
+        "sequence": 3,
+        "title": "Arrival Comfort",
+        "body": "Automatically shift to welcome comfort scenes.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_2",
+        "sequence": 4,
+        "title": "Movie Mode",
+        "body": "One-step atmosphere setup for evening routines.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_3",
+        "sequence": 5,
+        "title": "Night Guidance",
+        "body": "Low-light guidance for safe movement.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "experience",
+        "content_key": "experience_4",
+        "sequence": 6,
+        "title": "Energy Saving",
+        "body": "Reduce unnecessary energy use based on context.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "quote",
+        "content_key": "quote_primary",
+        "sequence": 7,
+        "title": "Living Quote",
+        "body": "A home that adapts to family rhythms.",
+        "status": "ACTIVE"
+      },
+      {
+        "content_type": "footer",
+        "content_key": "footer_note",
+        "sequence": 8,
+        "title": "Footer",
+        "body": "TODO: finalize approved Living footer line.",
+        "status": "ACTIVE"
+      }
+    ],
+    "automation": [
+      {
+        "automation_name": "Living Arrival Automation",
+        "automation_key": "living_arrival_automation",
+        "sequence": 1,
+        "trigger": "Entry event from foundation context",
+        "condition": "Home state = arrival and time window = evening",
+        "action": "Set living scene to arrival comfort",
+        "trigger_type": "event",
+        "title": "Living Arrival Automation",
+        "description": "Applies welcome scene at arrival conditions.",
+        "status": "ACTIVE"
+      },
+      {
+        "automation_name": "Living Night Guidance Automation",
+        "automation_key": "living_night_guidance_automation",
+        "sequence": 2,
+        "trigger": "Motion event in living circulation path",
+        "condition": "Time window = night and brightness below threshold",
+        "action": "Activate low brightness guidance scene",
+        "trigger_type": "event",
+        "title": "Living Night Guidance Automation",
+        "description": "Guides movement with low-light mode.",
+        "status": "ACTIVE"
+      }
+    ],
+    "icons": [
+      {
+        "icon_key": "living_experience_1",
+        "title": "Arrival Comfort Icon",
+        "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-1.svg",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "living_experience_2",
+        "title": "Movie Mode Icon",
+        "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-2.svg",
+        "sequence": 2,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "living_experience_3",
+        "title": "Night Guidance Icon",
+        "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-3.svg",
+        "sequence": 3,
+        "status": "ACTIVE"
+      },
+      {
+        "icon_key": "living_experience_4",
+        "title": "Energy Saving Icon",
+        "asset_url": "https://assets.placeholder.betterhome/living/icon-experience-4.svg",
+        "sequence": 4,
+        "status": "ACTIVE"
+      }
+    ],
+    "theme": [
+      {
+        "theme_key": "living_default",
+        "primary_color": "#1E293B",
+        "secondary_color": "#F59E0B",
+        "typography_scheme": "modern",
+        "status": "ACTIVE"
+      }
+    ],
+    "layout": [
+      {
+        "layout_key": "living_card_layout",
+        "render_target": "website,proposal,print,ai",
+        "definition": {
+          "sections": [
+            "hero",
+            "story",
+            "experiences",
+            "capabilities",
+            "automation",
+            "quote",
+            "pricing"
+          ]
+        },
+        "status": "ACTIVE"
+      }
+    ],
+    "images": [
+      {
+        "image_type": "hero",
+        "image_url": "https://assets.placeholder.betterhome/living/hero.jpg",
+        "alt_text": "Living hero placeholder",
+        "sequence": 1,
+        "status": "ACTIVE"
+      },
+      {
+        "image_type": "experience",
+        "image_url": "https://assets.placeholder.betterhome/living/experience-1.jpg",
+        "alt_text": "Living experience placeholder",
+        "sequence": 2,
+        "status": "ACTIVE"
+      }
+    ],
+    "rules": [
+      {
+        "rule_key": "requires_foundation",
+        "rule_value": "true",
+        "notes": "Living collection requires Foundation."
+      },
+      {
+        "rule_key": "collection_independent",
+        "rule_value": "true",
+        "notes": "Living does not depend on other collections."
+      }
+    ],
+    "notes": "PDC completed for Living; supplier-specific SKU details remain TODO."
+  }
+]

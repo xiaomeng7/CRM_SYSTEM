@@ -1,0 +1,270 @@
+{
+  "product": {
+    "code": "FOUNDATION",
+    "name": "Foundation",
+    "type": "INFRASTRUCTURE",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Unified Better Home infrastructure backbone.",
+    "primary_emotion": "Confidence",
+    "coverage": "Whole-home infrastructure and orchestration layer.",
+    "final_installed_price": 4999,
+    "requires_foundation": false,
+    "notes": "Foundation is the only infrastructure product in Product OS."
+  },
+  "hero": "Better Home Foundation",
+  "subtitle": "The intelligence backbone for every Better Home experience.",
+  "story": "Foundation is the system center that unifies Zigbee network, RS485 communication, smart display, cloud connection, mobile app connection and automation control.",
+  "experiences": [
+    {
+      "title": "Connected Home Core",
+      "subtitle": "One system center for all control surfaces.",
+      "description": "Provides a central orchestration layer for control, integration and product runtime consistency.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Automation Reliability",
+      "subtitle": "Stable logic execution across daily routines.",
+      "description": "Supports reliable automation trigger execution with centralized controller and cloud synchronization.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Zigbee Network Coordination",
+      "included_qty": 1,
+      "customer_layer": "Infrastructure",
+      "notes": "Network backbone capability."
+    },
+    {
+      "capability": "RS485 Communication Bridge",
+      "included_qty": 1,
+      "customer_layer": "Infrastructure",
+      "notes": "Wired communication capability."
+    },
+    {
+      "capability": "Central Automation Engine",
+      "included_qty": 1,
+      "customer_layer": "Infrastructure",
+      "notes": "Automation execution core."
+    },
+    {
+      "capability": "Cloud and App Synchronization",
+      "included_qty": 1,
+      "customer_layer": "Infrastructure",
+      "notes": "Cloud and mobile app state sync."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-FOUNDATION-CONTROLLER-CORE",
+      "product_name": "Foundation Controller Core",
+      "category": "Controller",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier SKU and cost."
+    },
+    {
+      "sku": "SKU-FOUNDATION-DISPLAY-HUB",
+      "product_name": "Foundation Smart Display Hub",
+      "category": "Display",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier SKU and cost."
+    },
+    {
+      "sku": "SKU-FOUNDATION-NETWORK-MODULE",
+      "product_name": "Foundation Network Module",
+      "category": "Networking",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier SKU and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Foundation Installation",
+      "qty": 1,
+      "hours": 4,
+      "category": "Installation",
+      "notes": "Install and wire infrastructure hardware."
+    },
+    {
+      "labour_item": "Foundation Programming",
+      "qty": 1,
+      "hours": 2,
+      "category": "Programming",
+      "notes": "Program controller baseline logic."
+    },
+    {
+      "labour_item": "Foundation Commissioning",
+      "qty": 1,
+      "hours": 2,
+      "category": "Commissioning",
+      "notes": "Run system validation and cloud handshake."
+    },
+    {
+      "labour_item": "Foundation Training",
+      "qty": 1,
+      "hours": 1,
+      "category": "Training",
+      "notes": "Customer handover and baseline training."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 4999
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Foundation Hero",
+      "body": "The intelligence backbone for every Better Home experience.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "foundation_story",
+      "sequence": 2,
+      "title": "Foundation Story",
+      "body": "A centralized infrastructure architecture to support all Better Home product collections.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Connected Home Core",
+      "body": "Unified control center for all connected layers.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Automation Reliability",
+      "body": "Stable logic and cloud-connected automation runtime.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 5,
+      "title": "Foundation Quote",
+      "body": "Foundation makes every Better Home collection consistent.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 6,
+      "title": "Footer",
+      "body": "TODO: finalize official foundation footer message.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Foundation Health Monitor",
+      "automation_key": "foundation_health_monitor",
+      "sequence": 1,
+      "trigger": "Controller heartbeat interval",
+      "condition": "Heartbeat delay exceeds threshold",
+      "action": "Raise internal health alert and log event",
+      "trigger_type": "system",
+      "title": "Foundation Health Monitor",
+      "description": "Monitors infrastructure runtime heartbeat and raises alert when degraded.",
+      "status": "ACTIVE",
+      "notes": "TODO: confirm heartbeat threshold policy."
+    },
+    {
+      "automation_name": "Cloud Sync Retry",
+      "automation_key": "foundation_cloud_sync_retry",
+      "sequence": 2,
+      "trigger": "Cloud sync failure event",
+      "condition": "Connection unavailable for more than retry window",
+      "action": "Retry sync and notify monitoring channel",
+      "trigger_type": "system",
+      "title": "Cloud Sync Retry",
+      "description": "Retries cloud synchronization and records retry lifecycle.",
+      "status": "ACTIVE",
+      "notes": "TODO: finalize retry policy."
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "foundation_experience_1",
+      "title": "Connected Home Core Icon",
+      "asset_url": "https://assets.placeholder.betterhome/foundation/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE",
+      "notes": "Icon for experience 1."
+    },
+    {
+      "icon_key": "foundation_experience_2",
+      "title": "Automation Reliability Icon",
+      "asset_url": "https://assets.placeholder.betterhome/foundation/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE",
+      "notes": "Icon for experience 2."
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "foundation_default",
+      "primary_color": "#0F172A",
+      "secondary_color": "#22C55E",
+      "typography_scheme": "modern",
+      "status": "ACTIVE",
+      "notes": "Foundation visual baseline."
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "foundation_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "pricing"]
+      },
+      "status": "ACTIVE",
+      "notes": "Unified cross-channel layout mapping."
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/foundation/hero.jpg",
+      "alt_text": "Foundation hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE",
+      "notes": "Placeholder image, replace in media production."
+    },
+    {
+      "image_type": "feature",
+      "image_url": "https://assets.placeholder.betterhome/foundation/feature-1.jpg",
+      "alt_text": "Foundation feature placeholder",
+      "sequence": 2,
+      "status": "ACTIVE",
+      "notes": "Placeholder image."
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "foundation_is_unique_infrastructure",
+      "rule_value": "true",
+      "notes": "Foundation is the only infrastructure product."
+    },
+    {
+      "rule_key": "collections_require_foundation",
+      "rule_value": "true",
+      "notes": "All collections require Foundation."
+    }
+  ],
+  "notes": "PDC complete for Foundation with TODO markers where supplier and policy details are pending."
+}

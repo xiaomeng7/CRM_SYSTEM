@@ -1,0 +1,315 @@
+{
+  "product": {
+    "code": "BATHROOM",
+    "name": "Bathroom",
+    "type": "COLLECTION",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Practical comfort and daily hygiene routine support.",
+    "primary_emotion": "Ease",
+    "coverage": "Bathroom and adjacent wet-area access zones.",
+    "final_installed_price": 2199,
+    "requires_foundation": true,
+    "notes": "Collection product. Foundation dependency is mandatory."
+  },
+  "hero": "Better Home Bathroom Collection",
+  "subtitle": "Practical comfort for every daily routine.",
+  "story": "Bathroom collection focuses on comfort transitions, safety guidance, and routine support in daily bathroom usage.",
+  "experiences": [
+    {
+      "title": "Morning Start Mode",
+      "subtitle": "Clear and practical morning transition.",
+      "description": "Supports predictable morning routine setup.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Evening Wind-down Mode",
+      "subtitle": "Comfortable evening transition.",
+      "description": "Adjusts bathroom context for evening use.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Night Guidance",
+      "subtitle": "Low-light safe access.",
+      "description": "Supports safe movement at night with minimal brightness.",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Energy Saving",
+      "subtitle": "Context-based efficiency mode.",
+      "description": "Optimizes active state based on occupancy and schedule.",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Routine Scene Control",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Morning and evening scene transitions."
+    },
+    {
+      "capability": "Automatic Lighting",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Responsive practical lighting behavior."
+    },
+    {
+      "capability": "Night Guidance",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Low-light safe access support."
+    },
+    {
+      "capability": "Energy Saving",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Occupancy-aware optimization."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-BATHROOM-SCENE-PANEL",
+      "product_name": "Bathroom Scene Panel",
+      "category": "Control",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-BATHROOM-MOTION-SENSOR",
+      "product_name": "Bathroom Motion Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-BATHROOM-SWITCH-MODULE",
+      "product_name": "Bathroom Switch Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-BATHROOM-NIGHT-GUIDE-MODULE",
+      "product_name": "Bathroom Night Guidance Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Bathroom Installation",
+      "qty": 1,
+      "hours": 1.5,
+      "category": "Installation",
+      "notes": "Install bathroom collection devices."
+    },
+    {
+      "labour_item": "Bathroom Programming",
+      "qty": 1,
+      "hours": 1.25,
+      "category": "Programming",
+      "notes": "Configure bathroom scene logic."
+    },
+    {
+      "labour_item": "Bathroom Commissioning",
+      "qty": 1,
+      "hours": 1,
+      "category": "Commissioning",
+      "notes": "Validate behavior and transitions."
+    },
+    {
+      "labour_item": "Bathroom Training",
+      "qty": 1,
+      "hours": 0.5,
+      "category": "Training",
+      "notes": "Customer handover and usage guidance."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 2199
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Bathroom Hero",
+      "body": "Practical comfort for every daily routine.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "bathroom_story",
+      "sequence": 2,
+      "title": "Bathroom Story",
+      "body": "Reliable routine support for morning and evening bathroom use.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Morning Start Mode",
+      "body": "Supports practical morning routine transitions.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Evening Wind-down Mode",
+      "body": "Comfort transition for evening usage.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_3",
+      "sequence": 5,
+      "title": "Night Guidance",
+      "body": "Safe low-light access behavior.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_4",
+      "sequence": 6,
+      "title": "Energy Saving",
+      "body": "Context-driven efficiency mode.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 7,
+      "title": "Bathroom Quote",
+      "body": "Comfort and clarity in every daily transition.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 8,
+      "title": "Footer",
+      "body": "TODO: finalize approved Bathroom footer line.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Bathroom Morning Automation",
+      "automation_key": "bathroom_morning_automation",
+      "sequence": 1,
+      "trigger": "Scheduled morning routine event",
+      "condition": "Occupied state in bathroom zone",
+      "action": "Activate morning start scene",
+      "trigger_type": "schedule",
+      "title": "Bathroom Morning Automation",
+      "description": "Applies morning scene profile for bathroom use.",
+      "status": "ACTIVE"
+    },
+    {
+      "automation_name": "Bathroom Night Guidance Automation",
+      "automation_key": "bathroom_night_guidance_automation",
+      "sequence": 2,
+      "trigger": "Motion event during night window",
+      "condition": "Ambient brightness below threshold",
+      "action": "Enable low brightness guidance scene",
+      "trigger_type": "event",
+      "title": "Bathroom Night Guidance Automation",
+      "description": "Provides low-light path for night access.",
+      "status": "ACTIVE"
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "bathroom_experience_1",
+      "title": "Morning Start Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "bathroom_experience_2",
+      "title": "Evening Wind-down Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "bathroom_experience_3",
+      "title": "Night Guidance Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-3.svg",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "bathroom_experience_4",
+      "title": "Energy Saving Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bathroom/icon-experience-4.svg",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "bathroom_default",
+      "primary_color": "#0B132B",
+      "secondary_color": "#38BDF8",
+      "typography_scheme": "clean",
+      "status": "ACTIVE"
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "bathroom_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "quote", "pricing"]
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/bathroom/hero.jpg",
+      "alt_text": "Bathroom hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "image_type": "experience",
+      "image_url": "https://assets.placeholder.betterhome/bathroom/experience-1.jpg",
+      "alt_text": "Bathroom experience placeholder",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "requires_foundation",
+      "rule_value": "true",
+      "notes": "Bathroom collection requires Foundation."
+    },
+    {
+      "rule_key": "collection_independent",
+      "rule_value": "true",
+      "notes": "Bathroom does not depend on other collections."
+    }
+  ],
+  "notes": "PDC completed for Bathroom; supplier-specific SKU details remain TODO."
+}

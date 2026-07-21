@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-07-18T08:11:32.027Z",
+  "summary": {
+    "totalDefinitions": 7,
+    "validDefinitions": 7,
+    "invalidDefinitions": 0
+  },
+  "results": [
+    {
+      "fileName": "away.json",
+      "productCode": "AWAY",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "fileName": "bathroom.json",
+      "productCode": "BATHROOM",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "fileName": "bedroom.json",
+      "productCode": "BEDROOM",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "fileName": "entry.json",
+      "productCode": "ENTRY",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "fileName": "foundation.json",
+      "productCode": "FOUNDATION",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "fileName": "kitchen.json",
+      "productCode": "KITCHEN",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "fileName": "living.json",
+      "productCode": "LIVING",
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    }
+  ]
+}

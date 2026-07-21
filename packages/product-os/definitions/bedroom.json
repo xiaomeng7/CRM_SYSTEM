@@ -1,0 +1,315 @@
+{
+  "product": {
+    "code": "BEDROOM",
+    "name": "Bedroom",
+    "type": "COLLECTION",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Personal comfort and restful routine support.",
+    "primary_emotion": "Calm",
+    "coverage": "Bedroom and private rest zones.",
+    "final_installed_price": 2699,
+    "requires_foundation": true,
+    "notes": "Collection product. Foundation dependency is mandatory."
+  },
+  "hero": "Better Home Bedroom Collection",
+  "subtitle": "Support restful routines with calm smart control.",
+  "story": "Bedroom collection supports evening transition, night comfort, and wake-up consistency for personal spaces.",
+  "experiences": [
+    {
+      "title": "Sleep Preparation",
+      "subtitle": "A calm transition into rest.",
+      "description": "Switches bedroom context into low-stimulation pre-sleep mode.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Night Guidance",
+      "subtitle": "Safe movement without full wake-up.",
+      "description": "Provides minimal and comfortable guidance during late-night movement.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Wake Routine",
+      "subtitle": "Gentle start to the day.",
+      "description": "Transitions room ambience for planned wake-up timing.",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Energy Saving Rest Mode",
+      "subtitle": "Reduce unnecessary overnight usage.",
+      "description": "Optimizes bedroom state for energy efficiency during rest periods.",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Sleep Scene Control",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Bedroom sleep-focused scene control."
+    },
+    {
+      "capability": "Night Guidance",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Safe movement support."
+    },
+    {
+      "capability": "Wake Routine Automation",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Morning transition support."
+    },
+    {
+      "capability": "Energy Saving",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Context-based optimization."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-BEDROOM-SCENE-PANEL",
+      "product_name": "Bedroom Scene Panel",
+      "category": "Control",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-BEDROOM-MOTION-SENSOR",
+      "product_name": "Bedroom Motion Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-BEDROOM-DIMMING-MODULE",
+      "product_name": "Bedroom Dimming Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-BEDROOM-SWITCH-MODULE",
+      "product_name": "Bedroom Switch Module",
+      "category": "Lighting",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Bedroom Installation",
+      "qty": 1,
+      "hours": 2,
+      "category": "Installation",
+      "notes": "Install bedroom collection devices."
+    },
+    {
+      "labour_item": "Bedroom Programming",
+      "qty": 1,
+      "hours": 1.5,
+      "category": "Programming",
+      "notes": "Configure bedroom scenes."
+    },
+    {
+      "labour_item": "Bedroom Commissioning",
+      "qty": 1,
+      "hours": 1,
+      "category": "Commissioning",
+      "notes": "Validate behavior and transitions."
+    },
+    {
+      "labour_item": "Bedroom Training",
+      "qty": 1,
+      "hours": 0.5,
+      "category": "Training",
+      "notes": "Customer handover and usage explanation."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 2699
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Bedroom Hero",
+      "body": "Support restful routines with calm smart control.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "bedroom_story",
+      "sequence": 2,
+      "title": "Bedroom Story",
+      "body": "Personal comfort automation for better rest and wake transitions.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Sleep Preparation",
+      "body": "Calm transition into bedtime mode.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Night Guidance",
+      "body": "Safe and subtle movement support at night.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_3",
+      "sequence": 5,
+      "title": "Wake Routine",
+      "body": "Gentle transition into morning state.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_4",
+      "sequence": 6,
+      "title": "Energy Saving Rest Mode",
+      "body": "Overnight optimization for energy control.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 7,
+      "title": "Bedroom Quote",
+      "body": "Rest better with calm and consistent smart routines.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 8,
+      "title": "Footer",
+      "body": "TODO: finalize approved Bedroom footer line.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Bedroom Sleep Automation",
+      "automation_key": "bedroom_sleep_automation",
+      "sequence": 1,
+      "trigger": "Scheduled bedtime event",
+      "condition": "Occupancy in bedroom and manual override not active",
+      "action": "Activate sleep preparation scene",
+      "trigger_type": "schedule",
+      "title": "Bedroom Sleep Automation",
+      "description": "Transitions bedroom to sleep mode at configured time.",
+      "status": "ACTIVE"
+    },
+    {
+      "automation_name": "Bedroom Night Guidance Automation",
+      "automation_key": "bedroom_night_guidance_automation",
+      "sequence": 2,
+      "trigger": "Night motion detection",
+      "condition": "Time window = night and low brightness context",
+      "action": "Activate low-level guidance lighting",
+      "trigger_type": "event",
+      "title": "Bedroom Night Guidance Automation",
+      "description": "Supports safe movement without bright scene changes.",
+      "status": "ACTIVE"
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "bedroom_experience_1",
+      "title": "Sleep Preparation Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "bedroom_experience_2",
+      "title": "Night Guidance Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "bedroom_experience_3",
+      "title": "Wake Routine Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-3.svg",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "bedroom_experience_4",
+      "title": "Energy Saving Icon",
+      "asset_url": "https://assets.placeholder.betterhome/bedroom/icon-experience-4.svg",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "bedroom_default",
+      "primary_color": "#312E81",
+      "secondary_color": "#A78BFA",
+      "typography_scheme": "calm",
+      "status": "ACTIVE"
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "bedroom_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "quote", "pricing"]
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/bedroom/hero.jpg",
+      "alt_text": "Bedroom hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "image_type": "experience",
+      "image_url": "https://assets.placeholder.betterhome/bedroom/experience-1.jpg",
+      "alt_text": "Bedroom experience placeholder",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "requires_foundation",
+      "rule_value": "true",
+      "notes": "Bedroom collection requires Foundation."
+    },
+    {
+      "rule_key": "collection_independent",
+      "rule_value": "true",
+      "notes": "Bedroom does not depend on other collections."
+    }
+  ],
+  "notes": "PDC completed for Bedroom; supplier-specific SKU details remain TODO."
+}

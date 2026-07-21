@@ -1,0 +1,37 @@
+{
+  "verifiedAtPhase": "4A.1",
+  "sourceDir": "/Users/mengzhang/Downloads/CRM/crm-system/docs/product-os/source",
+  "files": [
+    {
+      "relativePath": "Better_Home_Product_Database_V2.07.xlsx",
+      "role": "workbook_facts",
+      "bytes": 84783,
+      "sha256": "5e6bd55401f2ba0df37d60aa5cd52ccf3129c822dffd80c40d0fe10da4ca620f",
+      "match": true
+    },
+    {
+      "relativePath": "A4_Content_Mapping_Review_V1.md",
+      "role": "a4_mapping_review",
+      "bytes": 37494,
+      "sha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+      "match": true
+    },
+    {
+      "relativePath": "Better_Home_Collections_A4_Review_Set_V1.pdf",
+      "role": "a4_review_pdf",
+      "bytes": 7338416,
+      "sha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+      "match": true
+    }
+  ],
+  "decisionDocuments": [
+    "docs/product-os/product-owner-decision-pack.md",
+    "docs/product-os/migration-issue-register.md",
+    "docs/product-os/architecture-decisions.md",
+    "docs/product-os/legacy-id-crosswalk.md"
+  ],
+  "a4MappingSource": "docs/product-os/source/A4_Content_Mapping_Review_V1.md",
+  "a4PdfSource": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
+  "workbookSheetCount": 22,
+  "ok": true
+}

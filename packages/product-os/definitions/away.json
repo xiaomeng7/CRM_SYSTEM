@@ -1,0 +1,315 @@
+{
+  "product": {
+    "code": "AWAY",
+    "name": "Away",
+    "type": "COLLECTION",
+    "version": "1.0",
+    "status": "FROZEN",
+    "core_value": "Peace of mind while away from home.",
+    "primary_emotion": "Reassurance",
+    "coverage": "Whole-home away-state orchestration.",
+    "final_installed_price": 2499,
+    "requires_foundation": true,
+    "notes": "Collection product. Foundation dependency is mandatory."
+  },
+  "hero": "Better Home Away Collection",
+  "subtitle": "Confidence and awareness when no one is home.",
+  "story": "Away collection coordinates leave-home transitions, check routines, and away-state automation confidence.",
+  "experiences": [
+    {
+      "title": "Leave Home Activation",
+      "subtitle": "One-step away transition.",
+      "description": "Activates away-state behavior when occupants leave home.",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Holiday Mode",
+      "subtitle": "Longer absence behavior control.",
+      "description": "Adapts behavior for extended away periods.",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Home Check",
+      "subtitle": "Confidence through status overview.",
+      "description": "Provides away-state confidence checks through routine status events.",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "title": "Return Home Transition",
+      "subtitle": "Smooth resume from away state.",
+      "description": "Resets away-state behavior when home occupancy resumes.",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability": "Away State Management",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Occupancy-aware away-state orchestration."
+    },
+    {
+      "capability": "Holiday Mode",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Extended absence behavior profile."
+    },
+    {
+      "capability": "Home Check",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Remote confidence and state verification."
+    },
+    {
+      "capability": "Energy Saving",
+      "included_qty": 1,
+      "customer_layer": "Collection",
+      "notes": "Away-state efficiency optimization."
+    }
+  ],
+  "bom": [
+    {
+      "sku": "SKU-AWAY-STATE-PANEL",
+      "product_name": "Away State Panel",
+      "category": "Control",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-AWAY-OCCUPANCY-SENSOR",
+      "product_name": "Away Occupancy Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-AWAY-ENTRY-SENSOR",
+      "product_name": "Away Entry Sensor",
+      "category": "Sensor",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    },
+    {
+      "sku": "SKU-AWAY-SCENE-MODULE",
+      "product_name": "Away Scene Module",
+      "category": "Automation",
+      "unit_cost_ex_gst": 0,
+      "qty": 1,
+      "included_type": "STANDARD",
+      "notes": "TODO: confirm final supplier and cost."
+    }
+  ],
+  "labour": [
+    {
+      "labour_item": "Away Installation",
+      "qty": 1,
+      "hours": 2,
+      "category": "Installation",
+      "notes": "Install away collection devices."
+    },
+    {
+      "labour_item": "Away Programming",
+      "qty": 1,
+      "hours": 1.5,
+      "category": "Programming",
+      "notes": "Configure away-state logic."
+    },
+    {
+      "labour_item": "Away Commissioning",
+      "qty": 1,
+      "hours": 1,
+      "category": "Commissioning",
+      "notes": "Validate away and return transitions."
+    },
+    {
+      "labour_item": "Away Training",
+      "qty": 1,
+      "hours": 0.5,
+      "category": "Training",
+      "notes": "Customer handover for away behavior controls."
+    }
+  ],
+  "pricing": {
+    "final_installed_price": 2499
+  },
+  "content": [
+    {
+      "content_type": "hero",
+      "content_key": "hero_statement",
+      "sequence": 1,
+      "title": "Away Hero",
+      "body": "Confidence and awareness when no one is home.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "story",
+      "content_key": "away_story",
+      "sequence": 2,
+      "title": "Away Story",
+      "body": "A predictable and confident away-state experience.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_1",
+      "sequence": 3,
+      "title": "Leave Home Activation",
+      "body": "One-step transition into away mode.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_2",
+      "sequence": 4,
+      "title": "Holiday Mode",
+      "body": "Extended absence behavior control.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_3",
+      "sequence": 5,
+      "title": "Home Check",
+      "body": "Status confidence while away.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "experience",
+      "content_key": "experience_4",
+      "sequence": 6,
+      "title": "Return Home Transition",
+      "body": "Smooth return to occupied-home behavior.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "quote",
+      "content_key": "quote_primary",
+      "sequence": 7,
+      "title": "Away Quote",
+      "body": "Leave home with confidence, return with ease.",
+      "status": "ACTIVE"
+    },
+    {
+      "content_type": "footer",
+      "content_key": "footer_note",
+      "sequence": 8,
+      "title": "Footer",
+      "body": "TODO: finalize approved Away footer line.",
+      "status": "ACTIVE"
+    }
+  ],
+  "automation": [
+    {
+      "automation_name": "Away Activation Automation",
+      "automation_key": "away_activation_automation",
+      "sequence": 1,
+      "trigger": "Away mode enabled event",
+      "condition": "No occupancy detected in monitored zones",
+      "action": "Activate away-state profile and notify status channel",
+      "trigger_type": "event",
+      "title": "Away Activation Automation",
+      "description": "Enables away profile and tracks transition status.",
+      "status": "ACTIVE"
+    },
+    {
+      "automation_name": "Away Return Automation",
+      "automation_key": "away_return_automation",
+      "sequence": 2,
+      "trigger": "Occupancy returns from entry context",
+      "condition": "Away profile currently active",
+      "action": "Disable away profile and restore home baseline state",
+      "trigger_type": "event",
+      "title": "Away Return Automation",
+      "description": "Handles state restoration when occupants return.",
+      "status": "ACTIVE"
+    }
+  ],
+  "icons": [
+    {
+      "icon_key": "away_experience_1",
+      "title": "Leave Home Activation Icon",
+      "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-1.svg",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "away_experience_2",
+      "title": "Holiday Mode Icon",
+      "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-2.svg",
+      "sequence": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "away_experience_3",
+      "title": "Home Check Icon",
+      "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-3.svg",
+      "sequence": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "icon_key": "away_experience_4",
+      "title": "Return Home Transition Icon",
+      "asset_url": "https://assets.placeholder.betterhome/away/icon-experience-4.svg",
+      "sequence": 4,
+      "status": "ACTIVE"
+    }
+  ],
+  "theme": [
+    {
+      "theme_key": "away_default",
+      "primary_color": "#111827",
+      "secondary_color": "#22D3EE",
+      "typography_scheme": "clear",
+      "status": "ACTIVE"
+    }
+  ],
+  "layout": [
+    {
+      "layout_key": "away_card_layout",
+      "render_target": "website,proposal,print,ai",
+      "definition": {
+        "sections": ["hero", "story", "experiences", "capabilities", "automation", "quote", "pricing"]
+      },
+      "status": "ACTIVE"
+    }
+  ],
+  "images": [
+    {
+      "image_type": "hero",
+      "image_url": "https://assets.placeholder.betterhome/away/hero.jpg",
+      "alt_text": "Away hero placeholder",
+      "sequence": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "image_type": "experience",
+      "image_url": "https://assets.placeholder.betterhome/away/experience-1.jpg",
+      "alt_text": "Away experience placeholder",
+      "sequence": 2,
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "rule_key": "requires_foundation",
+      "rule_value": "true",
+      "notes": "Away collection requires Foundation."
+    },
+    {
+      "rule_key": "collection_independent",
+      "rule_value": "true",
+      "notes": "Away does not depend on other collections."
+    }
+  ],
+  "notes": "PDC completed for Away; supplier-specific SKU details remain TODO."
+}

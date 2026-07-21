@@ -1,0 +1,3589 @@
+{
+  "phase": "4A.1",
+  "neonConnections": 0,
+  "databaseWrites": 0,
+  "sourceFilesModified": false,
+  "import_plan_version": "1.2.0",
+  "deterministic_hash": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+  "determinism": {
+    "run1": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+    "run2": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+    "run3": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+    "identical": true,
+    "generatedUuidsPresent": false
+  },
+  "schema": {
+    "ok": true,
+    "errors": [],
+    "warnings": []
+  },
+  "gateChecks": {
+    "p0_zero": true,
+    "unresolved_references_zero": true,
+    "duplicate_stable_ids_zero": true,
+    "orphan_addons_zero": true,
+    "placeholder_facts_zero": true,
+    "silent_skips_zero": true,
+    "determinism_passed": true,
+    "dec001_012_applied": true,
+    "schema_passed": true,
+    "validators_passed": true
+  },
+  "readyForPhase4B": true,
+  "gateDecision": "Phase 4B CONDITIONALLY ELIGIBLE",
+  "issueCounts": {
+    "P0": 0,
+    "P1": 1,
+    "P2": 2,
+    "INFO": 3,
+    "silentSkips": 0
+  },
+  "entityInventory": {
+    "products": 13,
+    "productVersions": 13,
+    "aliases": 3,
+    "includedBenefits": 1,
+    "experiences": 45,
+    "capabilities": 54,
+    "bomItems": 67,
+    "labourLibrary": 36,
+    "labourApplications": 87,
+    "equipmentSkus": 49,
+    "rules": 47,
+    "automations": 22,
+    "addons": 32,
+    "prices": 13,
+    "contentEntries": 214,
+    "themes": 14,
+    "assets": 13,
+    "icons": 28,
+    "layouts": 13,
+    "costingSettings": 7,
+    "relationshipsExpandFurther": 14,
+    "featuredAddonOrders": 16,
+    "a4PresentationMappings": 30,
+    "a4ScopePresentationGroups": 30,
+    "decisionDeltaOverlays": 6
+  },
+  "emptyEntityExplanations": {
+    "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction",
+    "priceDisplayModeRecords": "deferred — DEC-011 policy applied as fields on price rows; structured enum NEEDS_SOURCE"
+  },
+  "productRecon": [
+    {
+      "productCode": "F-01",
+      "expectedName": "Foundation",
+      "actualName": "Foundation",
+      "productKind": "FOUNDATION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 0,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 0,
+          "status": "PARTIAL",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 2,
+        "capabilities": 4,
+        "bom": 6,
+        "rules": 0,
+        "automations": 0,
+        "content": 4,
+        "addons": 6
+      }
+    },
+    {
+      "productCode": "C-01",
+      "expectedName": "Entry Collection",
+      "actualName": "Entry Collection",
+      "productKind": "COLLECTION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        },
+        {
+          "factArea": "DEC-001 door contact",
+          "source": "DELTA-C01-DOOR",
+          "plannedTarget": "capability+BOM overlay",
+          "count": 1,
+          "status": "PLANNED",
+          "issues": ""
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 4,
+        "capabilities": 6,
+        "bom": 6,
+        "rules": 4,
+        "automations": 2,
+        "content": 31,
+        "addons": 6
+      }
+    },
+    {
+      "productCode": "C-02",
+      "expectedName": "Living Collection",
+      "actualName": "Living Collection",
+      "productKind": "COLLECTION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 7,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 9,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 7,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 5,
+        "capabilities": 7,
+        "bom": 9,
+        "rules": 4,
+        "automations": 4,
+        "content": 31,
+        "addons": 7
+      }
+    },
+    {
+      "productCode": "C-03",
+      "expectedName": "Kitchen Collection",
+      "actualName": "Kitchen Collection",
+      "productKind": "COLLECTION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 8,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 0,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        },
+        {
+          "factArea": "DEC-002 kickboard name",
+          "source": "DELTA-C03-KICK",
+          "plannedTarget": "capability",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 4,
+        "capabilities": 6,
+        "bom": 8,
+        "rules": 2,
+        "automations": 0,
+        "content": 31,
+        "addons": 6
+      }
+    },
+    {
+      "productCode": "C-04",
+      "expectedName": "Bedroom Collection",
+      "actualName": "Bedroom Collection",
+      "productKind": "COLLECTION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 7,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 10,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 8,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 4,
+        "capabilities": 7,
+        "bom": 10,
+        "rules": 2,
+        "automations": 3,
+        "content": 31,
+        "addons": 8
+      }
+    },
+    {
+      "productCode": "C-05",
+      "expectedName": "Bathroom Collection",
+      "actualName": "Bathroom Collection",
+      "productKind": "COLLECTION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 6,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        },
+        {
+          "factArea": "DEC-003 circuit qualifier",
+          "source": "DELTA-C05-CIRCUIT",
+          "plannedTarget": "qualifier",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 3,
+        "capabilities": 5,
+        "bom": 6,
+        "rules": 2,
+        "automations": 1,
+        "content": 31,
+        "addons": 5
+      }
+    },
+    {
+      "productCode": "C-06",
+      "expectedName": "Away Collection",
+      "actualName": "Away Collection",
+      "productKind": "COLLECTION",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        },
+        {
+          "factArea": "DEC-004 Return Routine",
+          "source": "DELTA-C06-RETURN",
+          "plannedTarget": "automation",
+          "count": 1,
+          "status": "PLANNED",
+          "issues": ""
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 4,
+        "capabilities": 1,
+        "bom": 1,
+        "rules": 4,
+        "automations": 3,
+        "content": 31,
+        "addons": 1
+      }
+    },
+    {
+      "productCode": "E-01",
+      "expectedName": "Mood Lighting",
+      "actualName": "Mood Lighting",
+      "productKind": "EXPERIENCE",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 3,
+        "capabilities": 3,
+        "bom": 4,
+        "rules": 3,
+        "automations": 1,
+        "content": 4,
+        "addons": 2
+      }
+    },
+    {
+      "productCode": "E-02",
+      "expectedName": "Climate",
+      "actualName": "Climate",
+      "productKind": "EXPERIENCE",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 2,
+        "capabilities": 2,
+        "bom": 3,
+        "rules": 3,
+        "automations": 1,
+        "content": 4,
+        "addons": 1
+      }
+    },
+    {
+      "productCode": "E-03",
+      "expectedName": "Healthy Air",
+      "actualName": "Healthy Air",
+      "productKind": "EXPERIENCE",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 8,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 0,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 3,
+        "capabilities": 5,
+        "bom": 5,
+        "rules": 8,
+        "automations": 3,
+        "content": 4,
+        "addons": 0
+      }
+    },
+    {
+      "productCode": "E-04",
+      "expectedName": "Garden Care",
+      "actualName": "Garden Care",
+      "productKind": "EXPERIENCE",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 3,
+        "capabilities": 3,
+        "bom": 4,
+        "rules": 4,
+        "automations": 1,
+        "content": 4,
+        "addons": 1
+      }
+    },
+    {
+      "productCode": "E-05",
+      "expectedName": "CCTV",
+      "actualName": "CCTV",
+      "productKind": "EXPERIENCE",
+      "commercialRole": "PACK",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 2,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 5,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        },
+        {
+          "factArea": "Protection host",
+          "source": "DEC-013",
+          "plannedTarget": "included_benefit host",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 4,
+        "capabilities": 4,
+        "bom": 4,
+        "rules": 5,
+        "automations": 2,
+        "content": 4,
+        "addons": 5
+      }
+    },
+    {
+      "productCode": "E-06",
+      "expectedName": "Smart Toilet",
+      "actualName": "Smart Toilet",
+      "productKind": "STANDALONE",
+      "commercialRole": "STANDARD",
+      "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
+      "publishReadiness": "NOT_PUBLISHABLE",
+      "areas": [
+        {
+          "factArea": "identity",
+          "source": "04_Product_Master",
+          "plannedTarget": "products",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "name",
+          "source": "04_Product_Master",
+          "plannedTarget": "canonical_name",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "kind",
+          "source": "DEC-008",
+          "plannedTarget": "productKind",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "commercial_role",
+          "source": "DEC-008",
+          "plannedTarget": "commercialRole",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "hero/subtitle/story",
+          "source": "14_Content_Library",
+          "plannedTarget": "content_entries",
+          "count": 3,
+          "status": "PARTIAL",
+          "issues": "A4 verbatim story may differ (DEC-012)"
+        },
+        {
+          "factArea": "customer_experiences",
+          "source": "05_Product_Experiences",
+          "plannedTarget": "experiences",
+          "count": 4,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "capabilities",
+          "source": "06_Product_Capabilities",
+          "plannedTarget": "capabilities",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "BOM",
+          "source": "07_Product_BOM",
+          "plannedTarget": "bom_items",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "automation",
+          "source": "19_Automation_Library+deltas",
+          "plannedTarget": "automations",
+          "count": 0,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "dependencies",
+          "source": "09_Product_Rules",
+          "plannedTarget": "rules",
+          "count": 3,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "Expand Further",
+          "source": "A4 / DEC-010",
+          "plannedTarget": "relationships",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "No structured relationship rows in ImportPlan"
+        },
+        {
+          "factArea": "Add-ons",
+          "source": "11_Add_Ons",
+          "plannedTarget": "addon eligibility",
+          "count": 0,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "price",
+          "source": "10_Pricing_Summary",
+          "plannedTarget": "product_prices",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "theme",
+          "source": "17_Theme_Library",
+          "plannedTarget": "themes",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "images",
+          "source": "16_Image_Library",
+          "plannedTarget": "assets",
+          "count": 1,
+          "status": "NOT_PUBLISHABLE",
+          "issues": ""
+        },
+        {
+          "factArea": "A4 presentation",
+          "source": "DEC-009/012",
+          "plannedTarget": "presentation_map",
+          "count": 0,
+          "status": "MISSING",
+          "issues": "Structured A4 map not in plan"
+        },
+        {
+          "factArea": "version",
+          "source": "DEC-005",
+          "plannedTarget": "product_os_release",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        },
+        {
+          "factArea": "publish_eligibility",
+          "source": "gates",
+          "plannedTarget": "publish",
+          "count": 0,
+          "status": "BLOCKED",
+          "issues": "Assets + A4 content gaps"
+        },
+        {
+          "factArea": "supply-only",
+          "source": "DEC-011",
+          "plannedTarget": "fulfillmentMode",
+          "count": 1,
+          "status": "OK",
+          "issues": ""
+        }
+      ],
+      "blockingIssues": [],
+      "counts": {
+        "experiences": 4,
+        "capabilities": 1,
+        "bom": 1,
+        "rules": 3,
+        "automations": 0,
+        "content": 4,
+        "addons": 0
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "DEC-001",
+      "approvedOutcome": "C-01 includes 1 Zigbee door contact",
+      "transformRule": "DELTA-C01-DOOR overlay",
+      "objects": "capability+BOM MAG-001+experience link+assumption",
+      "test": "decisionDeltas contains DELTA-C01-DOOR",
+      "status": "APPLIED_PLANNED"
+    },
+    {
+      "decision": "DEC-002",
+      "approvedOutcome": "Warm Kickboard Ambient Zone",
+      "transformRule": "Rename C-03 capability on import",
+      "objects": "capabilities C-03",
+      "test": "capability name == Warm Kickboard Ambient Zone",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-003",
+      "approvedOutcome": "Six compatible circuits not lighting-only",
+      "transformRule": "DELTA-C05-CIRCUIT qualifier",
+      "objects": "C-05 capability qualifier",
+      "test": "contentQualifier present on C-05 circuit cap",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-004",
+      "approvedOutcome": "Return Routine with boundaries",
+      "transformRule": "DELTA-C06-RETURN",
+      "objects": "auto.c06.return_routine",
+      "test": "decisionDeltas DELTA-C06-RETURN",
+      "status": "APPLIED_PLANNED"
+    },
+    {
+      "decision": "DEC-005",
+      "approvedOutcome": "Product OS release V2.07; A4 template separate",
+      "transformRule": "governance fields",
+      "objects": "product_os_release / a4_template_version_separate",
+      "test": "product_os_release === V2.07",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-006",
+      "approvedOutcome": "A4 channel green override; accents preserved",
+      "transformRule": "theme.a4ChannelOverride",
+      "objects": "themes[]",
+      "test": "themes have a4ChannelOverride.enabled",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-007",
+      "approvedOutcome": "Placeholders NOT_APPROVED_FOR_PUBLISH",
+      "transformRule": "image publishStatus",
+      "objects": "assets[]",
+      "test": "placeholder assets gated",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-008",
+      "approvedOutcome": "kind × commercial_role; Protection not product",
+      "transformRule": "type-normalize + crosswalk",
+      "objects": "products + benefit",
+      "test": "no Protection product; dual-axis present",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-009",
+      "approvedOutcome": "Experience library = facts; A4 = presentation map",
+      "transformRule": "import 05; presentation map separate",
+      "objects": "experiences=45; a4PresentationMappings=30",
+      "test": "Experience facts exist; A4 mappings do not create facts",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-010",
+      "approvedOutcome": "Expand Further = relationships; Add-ons CTA",
+      "transformRule": "approved A4 source → typed relationship/CTA",
+      "objects": "relationshipsExpandFurther=14",
+      "test": "nonzero; no unresolved/duplicate/self references",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-011",
+      "approvedOutcome": "Collections installed+GST; Toilet supply-only",
+      "transformRule": "price fulfillment fields",
+      "objects": "prices[]",
+      "test": "E-06 SUPPLY_ONLY; collections INSTALLED",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-012",
+      "approvedOutcome": "Six Collection A4 copy verbatim into Content Library",
+      "transformRule": "approved six-Collection A4 source → content entries",
+      "objects": "contentEntries=214",
+      "test": "verbatim anchors + six-Collection front/back coverage",
+      "status": "APPLIED"
+    },
+    {
+      "decision": "DEC-013",
+      "approvedOutcome": "SSoT + renumber + Protection benefit",
+      "transformRule": "legacy-crosswalk",
+      "objects": "aliases + benefit + E-05/E-06",
+      "test": "CCTV E-05 Toilet E-06 no E-07",
+      "status": "APPLIED"
+    }
+  ],
+  "addonAudit": [
+    {
+      "addonId": "AO-001",
+      "parents": "C-01/C-02/C-03/C-04/C-05",
+      "basis": "SW-001",
+      "deviceSku": "SW-001",
+      "price": 299,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-002",
+      "parents": "C-02/C-03/C-04/C-05",
+      "basis": "DM-001",
+      "deviceSku": "DM-001",
+      "price": 299,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-003",
+      "parents": "C-02/C-03/C-04/C-05",
+      "basis": "RGB-CTRL + PSU-24-76 + WW-STRIP-3",
+      "deviceSku": "RGB-CTRL + PSU-24-76 + WW-STRIP-3",
+      "price": 499,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-004",
+      "parents": "E-01",
+      "basis": "RGB-CTRL + PSU-24-76 + RGB-STRIP-5",
+      "deviceSku": "RGB-CTRL + PSU-24-76 + RGB-STRIP-5",
+      "price": 499,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-005",
+      "parents": "C-02/C-04",
+      "basis": "CM-001 + CT-001",
+      "deviceSku": "CM-001 + CT-001",
+      "price": 799,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-006",
+      "parents": "C-02/C-04",
+      "basis": "SN-001",
+      "deviceSku": "SN-001",
+      "price": 499,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-007",
+      "parents": "C-01/C-03/C-05",
+      "basis": "OCC-001",
+      "deviceSku": "OCC-001",
+      "price": 449,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-008",
+      "parents": "C-01",
+      "basis": "PIR-001",
+      "deviceSku": "PIR-001",
+      "price": 349,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-009",
+      "parents": "C-02/C-04",
+      "basis": "SP-001",
+      "deviceSku": "SP-001",
+      "price": 299,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-010",
+      "parents": "C-03",
+      "basis": "HUB-001",
+      "deviceSku": "HUB-001",
+      "price": 249,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-011",
+      "parents": "C-03",
+      "basis": "PLG-001",
+      "deviceSku": "PLG-001",
+      "price": 69,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-012",
+      "parents": "C-04",
+      "basis": "BED-REMOTE",
+      "deviceSku": "BED-REMOTE",
+      "price": 199,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-013",
+      "parents": "C-01",
+      "basis": "LK-001",
+      "deviceSku": "LK-001",
+      "price": 599,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-014",
+      "parents": "C-01",
+      "basis": "DB-001",
+      "deviceSku": "DB-001",
+      "price": 149,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-015",
+      "parents": "C-01",
+      "basis": "GAR-REL",
+      "deviceSku": "GAR-REL",
+      "price": 199,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-016",
+      "parents": "C-02/C-04",
+      "basis": "IR capability",
+      "deviceSku": "IR capability",
+      "price": 199,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-017",
+      "parents": "C-05",
+      "basis": "Spare switch circuit capability",
+      "deviceSku": "Spare switch circuit capability",
+      "price": 199,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-018",
+      "parents": "C-06",
+      "basis": "MAG-001",
+      "deviceSku": "MAG-001",
+      "price": 149,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-019",
+      "parents": "E-02",
+      "basis": "ZONE-CTRL",
+      "deviceSku": "ZONE-CTRL",
+      "price": 1299,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-020",
+      "parents": "E-04",
+      "basis": "Existing spare relay output",
+      "deviceSku": "Existing spare relay output",
+      "price": 99,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-021",
+      "parents": "E-05",
+      "basis": "CAM-8MP",
+      "deviceSku": "CAM-8MP",
+      "price": 699,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-022",
+      "parents": "E-05",
+      "basis": "CAM-180",
+      "deviceSku": "CAM-180",
+      "price": 799,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-023",
+      "parents": "E-05",
+      "basis": "CAM-180 replaces CAM-8MP",
+      "deviceSku": "CAM-180 replaces CAM-8MP",
+      "price": 99,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-024",
+      "parents": "E-05",
+      "basis": "HDD-3TB",
+      "deviceSku": "HDD-3TB",
+      "price": 599,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-025",
+      "parents": "E-05",
+      "basis": "HDD-6TB",
+      "deviceSku": "HDD-6TB",
+      "price": 899,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-026",
+      "parents": "F-01",
+      "basis": "SCREEN-13 replaces SCREEN-10",
+      "deviceSku": "SCREEN-13 replaces SCREEN-10",
+      "price": 799,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-027",
+      "parents": "F-01",
+      "basis": "SCREEN-10",
+      "deviceSku": "SCREEN-10",
+      "price": 1499,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-028",
+      "parents": "F-01",
+      "basis": "SCREEN-13",
+      "deviceSku": "SCREEN-13",
+      "price": 1999,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-029",
+      "parents": "F-01",
+      "basis": "POE-SWITCH",
+      "deviceSku": "POE-SWITCH",
+      "price": 499,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-030",
+      "parents": "F-01",
+      "basis": "ZB-GATEWAY",
+      "deviceSku": "ZB-GATEWAY",
+      "price": 599,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-031",
+      "parents": "F-01",
+      "basis": "485-MODULE",
+      "deviceSku": "485-MODULE",
+      "price": 599,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    },
+    {
+      "addonId": "AO-032",
+      "parents": "E-01",
+      "basis": "COLOR-BULB",
+      "deviceSku": "COLOR-BULB",
+      "price": 99,
+      "newRoom": false,
+      "newExperience": false,
+      "basisStatus": "PROVEN",
+      "eligibilityStatus": "ELIGIBLE",
+      "status": "OK"
+    }
+  ],
+  "a4Coverage": [
+    {
+      "productCode": "C-01",
+      "front": {
+        "productName": true,
+        "productId": true,
+        "hero": true,
+        "subtitle": true,
+        "storyTitle": true,
+        "storyBody": true,
+        "frontMoments": false,
+        "valueFooter": true,
+        "theme": true,
+        "approvedImage": false,
+        "layoutConfig": true
+      },
+      "back": {
+        "problem": false,
+        "betterHomeResponse": false,
+        "customerExperiences": true,
+        "standardScopeHeadings": false,
+        "standardScopeContent": true,
+        "includedCapability": true,
+        "expandFurther": false,
+        "permittedAddons": true,
+        "installationAssumptions": true,
+        "price": true,
+        "hierarchyNav": true,
+        "footer": true,
+        "templateVersion": true
+      },
+      "frontCoverage": "9/11",
+      "backCoverage": "9/13",
+      "frontRatio": 0.8181818181818182,
+      "backRatio": 0.6923076923076923
+    },
+    {
+      "productCode": "C-02",
+      "front": {
+        "productName": true,
+        "productId": true,
+        "hero": true,
+        "subtitle": true,
+        "storyTitle": true,
+        "storyBody": true,
+        "frontMoments": false,
+        "valueFooter": true,
+        "theme": true,
+        "approvedImage": false,
+        "layoutConfig": true
+      },
+      "back": {
+        "problem": false,
+        "betterHomeResponse": false,
+        "customerExperiences": true,
+        "standardScopeHeadings": false,
+        "standardScopeContent": true,
+        "includedCapability": true,
+        "expandFurther": false,
+        "permittedAddons": true,
+        "installationAssumptions": true,
+        "price": true,
+        "hierarchyNav": true,
+        "footer": true,
+        "templateVersion": true
+      },
+      "frontCoverage": "9/11",
+      "backCoverage": "9/13",
+      "frontRatio": 0.8181818181818182,
+      "backRatio": 0.6923076923076923
+    },
+    {
+      "productCode": "C-03",
+      "front": {
+        "productName": true,
+        "productId": true,
+        "hero": true,
+        "subtitle": true,
+        "storyTitle": true,
+        "storyBody": true,
+        "frontMoments": false,
+        "valueFooter": true,
+        "theme": true,
+        "approvedImage": false,
+        "layoutConfig": true
+      },
+      "back": {
+        "problem": false,
+        "betterHomeResponse": false,
+        "customerExperiences": true,
+        "standardScopeHeadings": false,
+        "standardScopeContent": true,
+        "includedCapability": true,
+        "expandFurther": false,
+        "permittedAddons": true,
+        "installationAssumptions": true,
+        "price": true,
+        "hierarchyNav": true,
+        "footer": true,
+        "templateVersion": true
+      },
+      "frontCoverage": "9/11",
+      "backCoverage": "9/13",
+      "frontRatio": 0.8181818181818182,
+      "backRatio": 0.6923076923076923
+    },
+    {
+      "productCode": "C-04",
+      "front": {
+        "productName": true,
+        "productId": true,
+        "hero": true,
+        "subtitle": true,
+        "storyTitle": true,
+        "storyBody": true,
+        "frontMoments": false,
+        "valueFooter": true,
+        "theme": true,
+        "approvedImage": false,
+        "layoutConfig": true
+      },
+      "back": {
+        "problem": false,
+        "betterHomeResponse": false,
+        "customerExperiences": true,
+        "standardScopeHeadings": false,
+        "standardScopeContent": true,
+        "includedCapability": true,
+        "expandFurther": false,
+        "permittedAddons": true,
+        "installationAssumptions": true,
+        "price": true,
+        "hierarchyNav": true,
+        "footer": true,
+        "templateVersion": true
+      },
+      "frontCoverage": "9/11",
+      "backCoverage": "9/13",
+      "frontRatio": 0.8181818181818182,
+      "backRatio": 0.6923076923076923
+    },
+    {
+      "productCode": "C-05",
+      "front": {
+        "productName": true,
+        "productId": true,
+        "hero": true,
+        "subtitle": true,
+        "storyTitle": true,
+        "storyBody": true,
+        "frontMoments": false,
+        "valueFooter": true,
+        "theme": true,
+        "approvedImage": false,
+        "layoutConfig": true
+      },
+      "back": {
+        "problem": false,
+        "betterHomeResponse": false,
+        "customerExperiences": true,
+        "standardScopeHeadings": false,
+        "standardScopeContent": true,
+        "includedCapability": true,
+        "expandFurther": false,
+        "permittedAddons": true,
+        "installationAssumptions": true,
+        "price": true,
+        "hierarchyNav": true,
+        "footer": true,
+        "templateVersion": true
+      },
+      "frontCoverage": "9/11",
+      "backCoverage": "9/13",
+      "frontRatio": 0.8181818181818182,
+      "backRatio": 0.6923076923076923
+    },
+    {
+      "productCode": "C-06",
+      "front": {
+        "productName": true,
+        "productId": true,
+        "hero": true,
+        "subtitle": true,
+        "storyTitle": true,
+        "storyBody": true,
+        "frontMoments": false,
+        "valueFooter": true,
+        "theme": true,
+        "approvedImage": false,
+        "layoutConfig": true
+      },
+      "back": {
+        "problem": false,
+        "betterHomeResponse": false,
+        "customerExperiences": true,
+        "standardScopeHeadings": false,
+        "standardScopeContent": true,
+        "includedCapability": true,
+        "expandFurther": false,
+        "permittedAddons": true,
+        "installationAssumptions": true,
+        "price": true,
+        "hierarchyNav": true,
+        "footer": true,
+        "templateVersion": true
+      },
+      "frontCoverage": "9/11",
+      "backCoverage": "9/13",
+      "frontRatio": 0.8181818181818182,
+      "backRatio": 0.6923076923076923
+    }
+  ],
+  "protection": {
+    "benefit": {
+      "action": "UPSERT_INCLUDED_BENEFIT",
+      "ref": "DELTA-PROTECTION-BENEFIT",
+      "decision": "DEC-013",
+      "benefitCode": "benefit.protection_bonus",
+      "hostProductCode": "E-05",
+      "unlockLogic": "AND",
+      "unlockRequiredCodes": [
+        "C-01",
+        "C-06",
+        "E-05"
+      ],
+      "purchasable": false,
+      "selectable": false,
+      "hasProductPage": false,
+      "hasIndependentA4": false,
+      "hasPrice": false,
+      "addToMyHomeButton": false,
+      "quoteDisplay": "INCLUDED_BONUS_NO_DUPLICATE_AMOUNT",
+      "configuratorDisplay": "UNLOCKED_BENEFIT_WHEN_PREREQS_MET",
+      "cctvPageNoteAllowed": true,
+      "forbidden": [
+        "siren_product",
+        "independent_security_package",
+        "new_room_control"
+      ]
+    },
+    "unlockRequired": [
+      "C-01",
+      "C-06",
+      "E-05"
+    ],
+    "tests": [
+      {
+        "name": "all three unlock",
+        "pass": true
+      },
+      {
+        "name": "missing Entry fails",
+        "pass": true
+      },
+      {
+        "name": "missing Away fails",
+        "pass": true
+      },
+      {
+        "name": "missing CCTV fails",
+        "pass": true
+      },
+      {
+        "name": "no Protection product",
+        "pass": true
+      },
+      {
+        "name": "no Protection price",
+        "pass": true
+      },
+      {
+        "name": "no canonical E-07",
+        "pass": true
+      }
+    ]
+  },
+  "remap": {
+    "aliases": [
+      {
+        "legacySystem": "V2_07_WORKBOOK",
+        "legacyCode": "E-05",
+        "canonicalProductCode": null,
+        "includedBenefitCode": "benefit.protection_bonus",
+        "resolutionKind": "INCLUDED_BENEFIT"
+      },
+      {
+        "legacySystem": "V2_07_WORKBOOK",
+        "legacyCode": "E-06",
+        "canonicalProductCode": "E-05",
+        "resolutionKind": "PRODUCT"
+      },
+      {
+        "legacySystem": "V2_07_WORKBOOK",
+        "legacyCode": "E-07",
+        "canonicalProductCode": "E-06",
+        "resolutionKind": "PRODUCT"
+      }
+    ],
+    "proofs": {
+      "legacyE06ToE05": true,
+      "legacyE07ToE06": true,
+      "protectionToBenefit": true,
+      "cctvIsE05": true,
+      "toiletIsE06": true,
+      "noCanonicalE07": true,
+      "noDuplicateE05": true,
+      "noDuplicateE06": true
+    },
+    "residualLegacyTokensInCanonicalFields": [],
+    "tokenScanSample": [
+      {
+        "path": "plan.products[0].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[1].deltas[1].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[2].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[3].deltas[1].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[4].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[5].deltas[1].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[6].deltas[1].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[7].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[8].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[9].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[10].deltas[0].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].productCode",
+        "value": "E-05",
+        "tokens": [
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].identityRemap.canonicalProductCode",
+        "value": "E-05",
+        "tokens": [
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].identityRemap.notes",
+        "value": "Legacy E-06 CCTV → canonical E-05",
+        "tokens": [
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].deltas[0].productCode",
+        "value": "E-05",
+        "tokens": [
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].deltas[0].summary",
+        "value": "Protection Bonus as benefit.protection_bonus on CCTV; unlock C-01 ∧ C-06 ∧ E-05; no product row/price",
+        "tokens": [
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].deltas[0].unlockRequiredCodes[2]",
+        "value": "E-05",
+        "tokens": [
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[11].deltas[1].summary",
+        "value": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
+        "tokens": [
+          "E-06",
+          "E-05",
+          "E-07",
+          "E-06",
+          "E-05"
+        ]
+      },
+      {
+        "path": "plan.products[12].productCode",
+        "value": "E-06",
+        "tokens": [
+          "E-06"
+        ]
+      },
+      {
+        "path": "plan.products[12].identityRemap.canonicalProductCode",
+        "value": "E-06",
+        "tokens": [
+          "E-06"
+        ]
+      }
+    ]
+  },
+  "issues": [
+    {
+      "issueId": "4A1-003",
+      "source": "16_Image_Library",
+      "fact": "Approved hero originals",
+      "action": "GATE_ASSET",
+      "reason": "Generic placeholder paths; DEC-007 NOT_APPROVED_FOR_PUBLISH",
+      "severity": "P1_PUBLISH_BLOCKER",
+      "ownerDecision": "DEC-007 / ISSUE-007",
+      "publishImpact": "All product pages not publishable"
+    },
+    {
+      "issueId": "4A1-004",
+      "source": "ISSUE-014",
+      "fact": "Featured Add-on order",
+      "action": "DEFER",
+      "reason": "Eligibility present; featured sort missing",
+      "severity": "P2_REVIEW",
+      "ownerDecision": "ISSUE-014",
+      "publishImpact": "A4 featured Add-ons sequence"
+    },
+    {
+      "issueId": "4A1-005",
+      "source": "ISSUE-012 / DEC-011",
+      "fact": "Structured Exact/From/Contact display modes",
+      "action": "PARTIAL",
+      "reason": "Policy fields set; full display-mode authority NEEDS_SOURCE",
+      "severity": "P2_REVIEW",
+      "ownerDecision": "DEC-011",
+      "publishImpact": "Price line qualifiers"
+    },
+    {
+      "issueId": "4A1-006",
+      "source": "12_Product_Card_Content",
+      "fact": "Legacy card content rows",
+      "action": "SKIP",
+      "reason": "LEGACY_NON_AUTHORITATIVE — intentional",
+      "severity": "INFO_INTENTIONAL",
+      "ownerDecision": "DEC-012",
+      "publishImpact": "None if 14 used"
+    },
+    {
+      "issueId": "4A1-007",
+      "source": "13_Roadmap",
+      "fact": "Roadmap rows",
+      "action": "SKIP",
+      "reason": "INTENTIONALLY_SKIPPED_ROADMAP",
+      "severity": "INFO_INTENTIONAL",
+      "ownerDecision": null,
+      "publishImpact": "None"
+    },
+    {
+      "issueId": "4A1-009",
+      "source": "10_Pricing_Summary E-05",
+      "fact": "Protection price row",
+      "action": "SKIP_PRICE",
+      "reason": "PROTECTION_NOT_PRICED",
+      "severity": "INFO_INTENTIONAL",
+      "ownerDecision": "DEC-013",
+      "publishImpact": "None"
+    }
+  ],
+  "sheetDisposition": {
+    "classification": {
+      "ok": true,
+      "unknown": [],
+      "missing": []
+    },
+    "matrix": [
+      {
+        "sheet": "00_ReadMe",
+        "authorityRole": "DOCUMENTATION",
+        "importStatus": "REFERENCE_ONLY",
+        "targetContext": "Governance notes",
+        "rowsRead": 11,
+        "rowsPlanned": 0,
+        "rowsSkipped": 0,
+        "reason": "Human readme; no catalogue facts",
+        "sheetExists": true
+      },
+      {
+        "sheet": "01_Settings",
+        "authorityRole": "COSTING_SETTINGS",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "costing_settings (internal); GST reference",
+        "rowsRead": 7,
+        "rowsPlanned": 7,
+        "rowsSkipped": 0,
+        "reason": "Loaded labour / GST reference; costs never customer-facing",
+        "sheetExists": true
+      },
+      {
+        "sheet": "02_Labour_Library",
+        "authorityRole": "LABOUR_LIBRARY",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "labour_library",
+        "rowsRead": 36,
+        "rowsPlanned": 36,
+        "rowsSkipped": 0,
+        "reason": "Technical labour catalogue",
+        "sheetExists": true
+      },
+      {
+        "sheet": "03_SKU_Master",
+        "authorityRole": "EQUIPMENT_SKU",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "equipment_skus",
+        "rowsRead": 49,
+        "rowsPlanned": 49,
+        "rowsSkipped": 0,
+        "reason": "SKU identity + supplier; unit cost internal-only",
+        "sheetExists": true
+      },
+      {
+        "sheet": "04_Product_Master",
+        "authorityRole": "PRODUCT_IDENTITY",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "products / versions / aliases / benefits",
+        "rowsRead": 14,
+        "rowsPlanned": 14,
+        "rowsSkipped": 1,
+        "reason": "Identity + kind×role; hero/price/accent non-authoritative cache",
+        "sheetExists": true
+      },
+      {
+        "sheet": "05_Product_Experiences",
+        "authorityRole": "EXPERIENCE_FACTS",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "product_experiences",
+        "rowsRead": 46,
+        "rowsPlanned": 45,
+        "rowsSkipped": 1,
+        "reason": "Canonical experience inventory (DEC-009); A4 map separate",
+        "sheetExists": true
+      },
+      {
+        "sheet": "06_Product_Capabilities",
+        "authorityRole": "CAPABILITY_SCOPE",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "capabilities + inclusions",
+        "rowsRead": 54,
+        "rowsPlanned": 54,
+        "rowsSkipped": 0,
+        "reason": "Included scope facts; DEC overlays may rename/qualify",
+        "sheetExists": true
+      },
+      {
+        "sheet": "07_Product_BOM",
+        "authorityRole": "BOM_TECHNICAL",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "bom_versions + bom_items",
+        "rowsRead": 67,
+        "rowsPlanned": 67,
+        "rowsSkipped": 0,
+        "reason": "Technical quantities; never drives customer wording",
+        "sheetExists": true
+      },
+      {
+        "sheet": "08_Product_Labour",
+        "authorityRole": "LABOUR_APPLICATION",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "labour_versions + items",
+        "rowsRead": 87,
+        "rowsPlanned": 87,
+        "rowsSkipped": 0,
+        "reason": "Internal labour application; costing redacted in artifacts",
+        "sheetExists": true
+      },
+      {
+        "sheet": "09_Product_Rules",
+        "authorityRole": "PRODUCT_RULES",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "rule_definitions",
+        "rowsRead": 47,
+        "rowsPlanned": 47,
+        "rowsSkipped": 0,
+        "reason": "Boundary rules; free-form keys normalized to stable codes",
+        "sheetExists": true
+      },
+      {
+        "sheet": "10_Pricing_Summary",
+        "authorityRole": "CUSTOMER_PRICE",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "product_prices",
+        "rowsRead": 14,
+        "rowsPlanned": 13,
+        "rowsSkipped": 1,
+        "reason": "Customer price authority; Protection SKIP_PRICE; costing internal",
+        "sheetExists": true
+      },
+      {
+        "sheet": "11_Add_Ons",
+        "authorityRole": "ADDON_CATALOGUE",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "addon products + eligibility + prices",
+        "rowsRead": 32,
+        "rowsPlanned": 32,
+        "rowsSkipped": 0,
+        "reason": "Add-on products; parent eligibility remapped",
+        "sheetExists": true
+      },
+      {
+        "sheet": "12_Product_Card_Content",
+        "authorityRole": "LEGACY_CONTENT",
+        "importStatus": "LEGACY_SKIPPED",
+        "targetContext": "none (audit archive only)",
+        "rowsRead": 16,
+        "rowsPlanned": 0,
+        "rowsSkipped": 16,
+        "reason": "DEC-012 / ISSUE-017 — non-authoritative; use 14_Content_Library",
+        "sheetExists": true
+      },
+      {
+        "sheet": "13_Roadmap",
+        "authorityRole": "ROADMAP",
+        "importStatus": "INTENTIONALLY_SKIPPED",
+        "targetContext": "none",
+        "rowsRead": 6,
+        "rowsPlanned": 0,
+        "rowsSkipped": 6,
+        "reason": "Future roadmap; not catalogue facts for V2.07 release",
+        "sheetExists": true
+      },
+      {
+        "sheet": "14_Content_Library",
+        "authorityRole": "CUSTOMER_CONTENT",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "content_entries",
+        "rowsRead": 56,
+        "rowsPlanned": 52,
+        "rowsSkipped": 4,
+        "reason": "Customer content authority for present rows; A4 verbatim gap = issue",
+        "sheetExists": true
+      },
+      {
+        "sheet": "15_Icon_Library",
+        "authorityRole": "ICON_ASSETS",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "asset metadata (icons)",
+        "rowsRead": 28,
+        "rowsPlanned": 28,
+        "rowsSkipped": 0,
+        "reason": "Optional visual metadata; not A4 content dependency",
+        "sheetExists": true
+      },
+      {
+        "sheet": "16_Image_Library",
+        "authorityRole": "IMAGE_ASSETS",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "assets (publish-gated)",
+        "rowsRead": 13,
+        "rowsPlanned": 13,
+        "rowsSkipped": 0,
+        "reason": "Paths imported as NOT_APPROVED_FOR_PUBLISH until originals registered (DEC-007)",
+        "sheetExists": true
+      },
+      {
+        "sheet": "17_Theme_Library",
+        "authorityRole": "THEME",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "theme_tokens + channel override plan",
+        "rowsRead": 14,
+        "rowsPlanned": 14,
+        "rowsSkipped": 0,
+        "reason": "Product accents; A4 green is channel override (DEC-006)",
+        "sheetExists": true
+      },
+      {
+        "sheet": "18_Layout_Config",
+        "authorityRole": "LAYOUT_POLICY",
+        "importStatus": "AUTHORITATIVE_DERIVED",
+        "targetContext": "layout policy (subordinate to presentation map)",
+        "rowsRead": 13,
+        "rowsPlanned": 13,
+        "rowsSkipped": 0,
+        "reason": "Imported as reference; A4 presentation map wins on drift (ISSUE-018)",
+        "sheetExists": true
+      },
+      {
+        "sheet": "19_Automation_Library",
+        "authorityRole": "AUTOMATION",
+        "importStatus": "AUTHORITATIVE_IMPORTED",
+        "targetContext": "automation_definitions",
+        "rowsRead": 21,
+        "rowsPlanned": 21,
+        "rowsSkipped": 0,
+        "reason": "Technical automation; DEC-004 Return Routine overlay planned",
+        "sheetExists": true
+      },
+      {
+        "sheet": "20_Product_Review",
+        "authorityRole": "GOVERNANCE_QA",
+        "importStatus": "REFERENCE_ONLY",
+        "targetContext": "release gate notes",
+        "rowsRead": 15,
+        "rowsPlanned": 0,
+        "rowsSkipped": 0,
+        "reason": "QA/review notes; commercial exceptions inform DEC-011 fields",
+        "sheetExists": true
+      },
+      {
+        "sheet": "CHANGELOG",
+        "authorityRole": "CHANGELOG",
+        "importStatus": "REFERENCE_ONLY",
+        "targetContext": "governance",
+        "rowsRead": 16,
+        "rowsPlanned": 0,
+        "rowsSkipped": 0,
+        "reason": "Version history reference; Product OS release = V2.07 (DEC-005)",
+        "sheetExists": true
+      }
+    ]
+  },
+  "explicitConfirmations": {
+    "neonConnectionsMade": "None",
+    "productionConnectionsMade": "None",
+    "databaseWrites": "None",
+    "migrationOperations": "None",
+    "factsImported": "None",
+    "sourceWorkbookModified": "No",
+    "approvedA4CopyModified": "No",
+    "legacySheet12UsedAsAuthority": "No",
+    "protectionCreatedAsProduct": "No",
+    "canonicalE07Created": "No",
+    "placeholderFactsCreated": "No",
+    "silentSkips": 0,
+    "p0Blockers": 0,
+    "importPlanReadyForPhase4B": "Yes"
+  }
+}
