@@ -7,7 +7,7 @@
     "dev": "next dev -p 3010",
     "dev:sales": "node scripts/dev-single-admin.js",
     "build": "next build",
-    "start": "next start -p 3010"
+    "start": "next start -H 0.0.0.0 -p ${PORT:-3010}"
   },
   "dependencies": {
     "@bht/product-os": "workspace:*",
