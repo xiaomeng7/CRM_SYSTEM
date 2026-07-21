@@ -11,15 +11,17 @@ const money=(n:number)=>new Intl.NumberFormat("en-AU",{style:"currency",currency
 
 export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
   const accent=product.themeLayout?.themes?.[0]?.tokens?.accent || "#68785f";
+  const heroLines=(product.hero||"").split(/(?<=\.)\s+/).filter(Boolean);
   return <main className="os-sheet-wrap" style={{"--accent":accent} as React.CSSProperties}>
     <div className="os-toolbar"><div><a href="/sales">BETTER HOME</a><span> · {product.productCode}</span></div><div className="os-toolbar-actions"><a href="/sales">Sales Studio</a><a href="/configure">Build a selection</a><button onClick={()=>window.print()} disabled={!product.printEligible}>{product.printEligible?"Print A4":"Image approval required"}</button></div></div>
     <section className="os-page os-front">
-      <header className="os-kicker"><span>BETTER HOME</span><span>{product.productCode}</span></header>
-      <div className="os-front-title"><p>{product.canonicalName}</p><h1>{product.hero}</h1><h2>{product.customerContent.subtitle}</h2></div>
+      <header className="os-kicker"><div><strong>BETTER HOME</strong><span>{product.canonicalName}</span></div><b>{product.productCode}</b></header>
+      <div className="os-front-title"><h1>{heroLines.map((line,index)=><span key={index}>{line}</span>)}</h1><h2>{product.customerContent.subtitle}</h2></div>
       {product.approvedImage?<figure className="os-hero"><img src={product.approvedImage.storageUri} alt={product.approvedImage.altText||product.canonicalName}/></figure>:<div className="os-hero os-hero--pending"><span>Approved hero image pending</span></div>}
       <section className="os-story"><h3>{product.customerContent.storyTitle}</h3><p>{product.customerContent.storyBody}</p></section>
-      <div className="os-moments">{product.customerContent.frontMoments.map(x=><div key={x.sequence}><b>{x.title}</b><span>{x.caption}</span></div>)}</div>
-      <footer>Technology should quietly support everyday life.</footer>
+      <section className="os-moments-section"><h3>Everyday moments</h3><div className="os-moments">{product.customerContent.frontMoments.map(x=><div key={x.sequence}><small>{String(x.sequence).padStart(2,"0")}</small><b>{x.title}</b><span>{x.caption}</span></div>)}</div></section>
+      <div className="os-front-quote">“Technology should quietly support everyday life.”</div>
+      <footer><strong>BETTER HOME TECHNOLOGY PTY LTD</strong><span>{product.productCode} | {product.releaseVersion} | 1/2</span></footer>
     </section>
     <section className="os-page os-back">
       <header className="os-back-head"><div><span>{product.productCode} / DECISION GUIDE</span><h1>{product.canonicalName}</h1></div><div className="os-price">{product.activePrice?<><strong>{product.activePrice.displayMode==="FROM"?"From ":""}{money(product.activePrice.amount)}</strong><span>{product.activePrice.fulfilmentMode==="INSTALLED"?"INSTALLED":"SUPPLY ONLY"} · {product.activePrice.taxBasis==="GST_INCLUSIVE"?"INCL GST":"EX GST"}</span></>:<strong>Contact us</strong>}</div></header>
