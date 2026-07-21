@@ -8,8 +8,6 @@ type ResumeDraft={draftCode:string;customerName:string|null;customerEmail:string
 type Props={products:Product[];resumeDraft?:ResumeDraft|null};
 type Quantities=Record<string,number>;
 
-let configuratorProductCache:{expiresAt:number;products:Product[]}|null=null;
-
 const money=(n:number)=>new Intl.NumberFormat("en-AU",{style:"currency",currency:"AUD",maximumFractionDigits:0}).format(n);
 
 export default function Configure({products,resumeDraft}:Props){
@@ -79,6 +77,5 @@ export default function Configure({products,resumeDraft}:Props){
 
 export const getServerSideProps:GetServerSideProps<Props>=async context=>{
   const {actorFromRequest}=await import("@/server/sales-auth");const actor=actorFromRequest(context.req);if(!actor)return {redirect:{destination:`/login?next=${encodeURIComponent(context.resolvedUrl)}`,permanent:false}};
-  const {readContext}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();
-  try{let products:Product[];if(configuratorProductCache&&configuratorProductCache.expiresAt>Date.now())products=configuratorProductCache.products;else{products=await os.service.listProductModels();configuratorProductCache={products:JSON.parse(JSON.stringify(products)),expiresAt:Date.now()+5*60*1000};}let resumeDraft=null;const requested=typeof context.query.draft==="string"?context.query.draft:null;if(requested){const {salesStudioService}=require("@bht/product-os/v2");resumeDraft=await salesStudioService.createSalesStudioService(os.prisma).draftDetail(actor,requested);}return {props:{products:JSON.parse(JSON.stringify(products)),resumeDraft:resumeDraft?JSON.parse(JSON.stringify(resumeDraft)):null}};}finally{await os.disconnect();}
+  const {getSalesCatalog}=await import("@/server/catalog-cache");const products:Product[]=await getSalesCatalog();let resumeDraft=null;const requested=typeof context.query.draft==="string"?context.query.draft:null;if(requested){const {readContext,salesStudioService}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();try{resumeDraft=await salesStudioService.createSalesStudioService(os.prisma).draftDetail(actor,requested);}finally{await os.disconnect();}}return {props:{products:JSON.parse(JSON.stringify(products)),resumeDraft:resumeDraft?JSON.parse(JSON.stringify(resumeDraft)):null}};
 };
