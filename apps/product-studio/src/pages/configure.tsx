@@ -70,6 +70,6 @@ export default function Configure({products,resumeDraft}:Props){
 }
 
 export const getServerSideProps:GetServerSideProps<Props>=async context=>{
-  const {readContext}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext({envName:"neon_dev"});
+  const {readContext}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();
   try{const catalog=await os.service.listProducts();const products=(await Promise.all(catalog.map((x:{productCode:string})=>os.service.getProduct(x.productCode)))).filter(Boolean);let resumeDraft=null;const requested=typeof context.query.draft==="string"?context.query.draft:null;if(requested){const {getSingleAdminDevActor}=await import("@/server/single-admin-dev");const actor=getSingleAdminDevActor();if(actor){const {salesStudioService}=require("@bht/product-os/v2");resumeDraft=await salesStudioService.createSalesStudioService(os.prisma).draftDetail(actor,requested);}}return {props:{products:JSON.parse(JSON.stringify(products)),resumeDraft:resumeDraft?JSON.parse(JSON.stringify(resumeDraft)):null}};}finally{await os.disconnect();}
 };

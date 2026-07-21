@@ -7,7 +7,7 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse){
   const requestedCodes=requested.map((x:{productCode:string})=>String(x.productCode||"").toUpperCase());
   if(new Set(requestedCodes).size!==requestedCodes.length)return res.status(400).json({error:"DUPLICATE_PRODUCT_LINE"});
   const {readContext,selectionQuote,proposalProjection}=require("@bht/product-os/v2");
-  const os=readContext.createProductOsV2ReadContext({envName:"neon_dev"});
+  const os=readContext.createProductOsV2ReadContext();
   try{
     const models=(await Promise.all(requested.map((x:{productCode:string})=>os.service.getProduct(String(x.productCode||"").toUpperCase()))));
     if(models.some((x:unknown)=>!x))return res.status(400).json({error:"UNKNOWN_PRODUCT"});

@@ -9,6 +9,6 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse){
   const {salesAuthPolicy}=require("@bht/product-os/v2");
   try{salesAuthPolicy.assertCan(actor,"DRAFT_CREATE");}catch{return res.status(403).json({error:"SALES_STUDIO_FORBIDDEN"});}
   const {readContext,salesDraftService}=require("@bht/product-os/v2");
-  const os=readContext.createProductOsV2ReadContext({envName:"neon_dev"});
+  const os=readContext.createProductOsV2ReadContext();
   try{const service=salesDraftService.createSalesDraftService(os.prisma);const result=await service.saveProjection({draftCode:req.body?.draftCode,projection:req.body?.projection,actor:actor.userId,actorRole:actor.role});return res.status(200).json(result);}catch(error){return res.status(400).json({error:"DRAFT_SAVE_FAILED"});}finally{await os.disconnect();}
 }

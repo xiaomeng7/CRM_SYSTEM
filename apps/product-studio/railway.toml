@@ -1,0 +1,13 @@
+# Railway service config for Better Home Sales Studio.
+# In Railway, create a separate service from the same repository and set this
+# service's config file path to /apps/product-studio/railway.toml.
+
+[build]
+buildCommand = "pnpm install --frozen-lockfile && pnpm --filter @bht/product-os prisma:generate && pnpm --filter @bht/product-studio build"
+
+[deploy]
+startCommand = "pnpm --filter @bht/product-studio start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
