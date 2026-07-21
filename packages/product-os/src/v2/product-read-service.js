@@ -76,7 +76,8 @@ function assembleProductReadModel(product, addonRows = [], selectedProductCodes 
 
 function createProductReadService(repository) {
   async function getProduct(productCode,{selectedProductCodes=[]}={}) { const product=await repository.findProduct(productCode); if(!product)return null; const addons=await repository.findPermittedAddons(product.id); return assembleProductReadModel(product,addons,selectedProductCodes); }
-  return { getProduct, listProducts:repository.listProducts };
+  async function listProductModels(){const {products,addonsByParent}=await repository.findAllProductsWithAddons();return products.map(product=>assembleProductReadModel(product,addonsByParent.get(product.id)||[]));}
+  return { getProduct, listProducts:repository.listProducts, listProductModels };
 }
 
 module.exports={assembleProductReadModel,createProductReadService};

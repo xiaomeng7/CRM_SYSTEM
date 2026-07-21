@@ -89,7 +89,34 @@ function createProductReadRepository(prisma) {
     });
   }
 
-  return { findProduct, findPermittedAddons, listProducts };
+  async function findAllProductsWithAddons() {
+    const products = await prisma.pos2Product.findMany({
+      where: { status: { in: VISIBLE_STATUSES }, productKind: { not: "ADDON" } },
+      include: productInclude,
+      orderBy: { productCode: "asc" }
+    });
+    const addonRows = products.length ? await prisma.pos2AddonParentEligibility.findMany({
+      where: { parentProductId: { in: products.map((product) => product.id) }, status: { in: VISIBLE_STATUSES } },
+      include: {
+        addonProduct: {
+          include: {
+            prices: { where: { status: { in: VISIBLE_STATUSES }, customerVisible: true }, include: { priceBook: true } },
+            contentPlacements: { include: { contentEntry: true } },
+            addonProfile: { include: { extendsCapability: true, expandsSku: true, equipmentBases: { include: { sku: true }, orderBy: { sequence: "asc" } } } }
+          }
+        }
+      }
+    }) : [];
+    const addonsByParent = new Map();
+    for (const row of addonRows) {
+      const current = addonsByParent.get(row.parentProductId) || [];
+      current.push(row);
+      addonsByParent.set(row.parentProductId, current);
+    }
+    return { products, addonsByParent };
+  }
+
+  return { findProduct, findPermittedAddons, listProducts, findAllProductsWithAddons };
 }
 
 module.exports = { createProductReadRepository, VISIBLE_STATUSES };
