@@ -30,7 +30,7 @@ export default function DraftDetail({locked,notFound,draft}:Props){
 }
 
 export const getServerSideProps:GetServerSideProps<Props>=async context=>{
-  const {getSingleAdminDevActor}=await import("@/server/single-admin-dev");const actor=getSingleAdminDevActor();if(!actor)return {props:{locked:true}};
+  const {actorFromRequest}=await import("@/server/sales-auth");const actor=actorFromRequest(context.req);if(!actor)return {redirect:{destination:`/login?next=${encodeURIComponent(context.resolvedUrl)}`,permanent:false}};
   const {readContext,salesStudioService}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();
   try{const draft=await salesStudioService.createSalesStudioService(os.prisma).draftDetail(actor,String(context.params?.draftCode||""));if(!draft)return {props:{notFound:true}};return {props:{draft:JSON.parse(JSON.stringify(draft))}};}finally{await os.disconnect();}
 };

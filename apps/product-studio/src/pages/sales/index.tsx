@@ -67,6 +67,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
           <footer>
             <b>{d.actor.email}</b>
             <span>{d.actor.role}</span>
+            <a href="/logout">Sign out</a>
           </footer>
         </aside>
         <section className="sales-main">
@@ -150,12 +151,12 @@ export default function SalesHome({ locked, dashboard }: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const { getSingleAdminDevActor } = await import("@/server/single-admin-dev");
-  const actor = getSingleAdminDevActor();
-  if (!actor) return { props: { locked: true } };
+export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
+  const { actorFromRequest } = await import("@/server/sales-auth");
+  const actor = actorFromRequest(context.req);
+  if (!actor) return { redirect: { destination: "/login?next=%2Fsales", permanent: false } };
   const { readContext, salesStudioService } = require("@bht/product-os/v2");
-  const os = readContext.createProductOsV2ReadContext({ envName: "neon_dev" });
+  const os = readContext.createProductOsV2ReadContext();
   try {
     const dashboard = await salesStudioService
       .createSalesStudioService(os.prisma)

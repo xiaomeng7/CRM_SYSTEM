@@ -18,7 +18,13 @@ function resolveRuntimeEnvironment(explicitEnvName) {
 
 function createProductOsV2ReadContext({ envName } = {}) {
   envName = resolveRuntimeEnvironment(envName);
-  assertProductOsDatabaseTarget({ envName, requireUrl: true, requireFingerprint: true });
+  assertProductOsDatabaseTarget({
+    envName,
+    requireUrl: true,
+    requireFingerprint: true,
+    productionConfirmed: envName === "production",
+    productionConfirmValue: envName === "production" ? process.env.PRODUCT_OS_PRODUCTION_CONFIRM : null
+  });
   const prisma = new PrismaClient({ datasourceUrl: resolveDatabaseUrlForEnv(envName) });
   const repository = createProductReadRepository(prisma);
   return { prisma, repository, service: createProductReadService(repository), async disconnect(){ await prisma.$disconnect(); } };
