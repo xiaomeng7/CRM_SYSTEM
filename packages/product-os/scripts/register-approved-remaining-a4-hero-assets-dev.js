@@ -6,6 +6,8 @@ const crypto=require("crypto");
 const {PrismaClient}=require("@prisma/client");
 const {assertProductOsDatabaseTarget,resolveDatabaseUrlForEnv,fingerprintHost}=require("../src/v2/env-guard");
 
+const envFileArg=process.argv.find(value=>value.startsWith("--env-file="));
+if(envFileArg){for(const line of fs.readFileSync(envFileArg.slice("--env-file=".length),"utf8").split(/\r?\n/)){const clean=line.trim();if(!clean||clean.startsWith("#"))continue;const split=clean.indexOf("=");if(split<1)continue;const key=clean.slice(0,split).trim();let value=clean.slice(split+1).trim();if((value.startsWith('"')&&value.endsWith('"'))||(value.startsWith("'")&&value.endsWith("'")))value=value.slice(1,-1);if(!(key in process.env))process.env[key]=value;}}
 if(!process.argv.includes("--env=neon_dev")||!process.argv.includes("--apply-approved-assets"))throw new Error("Explicit Neon DEV asset approval flags required");
 const sourceArg=process.argv.find(value=>value.startsWith("--source-dir="));
 if(!sourceArg)throw new Error("--source-dir is required");
