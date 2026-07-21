@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import type { GetServerSideProps } from "next";
 
 type Draft = {
@@ -60,7 +61,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
             <a className="active" href="/sales">
               Overview
             </a>
-            <a href="/configure">New selection</a>
+            <Link href="/configure" prefetch>New selection</Link>
             <a href="/sales">Customers</a>
             <a href="/sales/proposals">Proposals</a>
           </nav>
@@ -77,7 +78,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
               <h1>Good evening.</h1>
               <span>A quiet view of the work moving towards a decision.</span>
             </div>
-            <a href="/configure">New selection</a>
+            <Link href="/configure" prefetch>New selection</Link>
           </header>
           <div className="sales-metrics">
             <article>
@@ -103,7 +104,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
                 <p>RECENT SELECTIONS</p>
                 <h2>Drafts</h2>
               </div>
-              <a href="/configure">Create new</a>
+              <Link href="/configure" prefetch>Create new</Link>
             </div>
             {d.drafts.length ? (
               <div className="sales-table">
@@ -141,7 +142,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
                   Begin with a room, an experience and a clear reason it belongs
                   in the home.
                 </p>
-                <a href="/configure">Create the first selection</a>
+                <Link href="/configure" prefetch>Create the first selection</Link>
               </div>
             )}
           </section>
