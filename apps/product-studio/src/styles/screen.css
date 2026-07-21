@@ -1,0 +1,510 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap");
+
+/* ── Screen preview — premium printed card ── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: #ddd9d3;
+  color: #3a3a3a;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+.studio__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px;
+  background: rgb(247 245 242 / 0.92);
+  border-bottom: 1px solid rgb(58 58 58 / 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.studio__print-btn {
+  appearance: none;
+  border: 1px solid rgb(58 58 58 / 0.15);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #3a3a3a;
+  cursor: pointer;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 20px;
+}
+
+.studio__print-btn:hover {
+  border-color: #6c7a5c;
+}
+
+.studio__pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  padding: 56px 24px 80px;
+}
+
+.product-page {
+  width: 210mm;
+  height: 297mm;
+  padding: 15mm;
+  background: #f7f5f2;
+  color: #3a3a3a;
+  box-shadow:
+    0 0 0 0.3mm rgb(58 58 58 / 0.04),
+    0 8mm 24mm rgb(58 58 58 / 0.08);
+  overflow: hidden;
+}
+
+.card-front,
+.card-back {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Front ── */
+
+.card-front__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 18mm;
+  flex-shrink: 0;
+}
+
+.card-front__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+}
+
+.card-front__brand {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 9pt;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3a3a3a;
+}
+
+.card-front__collection {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  color: #3a3a3a;
+}
+
+.card-front__header-right {
+  display: flex;
+  align-items: flex-stretch;
+  gap: 3mm;
+}
+
+.card-front__code {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 9pt;
+  letter-spacing: 0.06em;
+  color: rgb(58 58 58 / 0.65);
+}
+
+.card-front__accent-tab {
+  display: block;
+  width: 2.5mm;
+  min-height: 10mm;
+  border-radius: 1mm;
+}
+
+.card-front__hero-statement {
+  height: 25mm;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 1mm;
+}
+
+.card-front__hero-title {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 36pt;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: #3a3a3a;
+}
+
+.card-front__hero-subtitle {
+  margin: 2mm 0 0;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  color: rgb(58 58 58 / 0.72);
+}
+
+.card-front__hero-image {
+  height: 125mm;
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: 6mm;
+  overflow: hidden;
+}
+
+.card-front__hero-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.card-front__story {
+  height: 45mm;
+  flex-shrink: 0;
+  padding-top: 5mm;
+  overflow: hidden;
+}
+
+.card-front__story-paragraph {
+  margin: 0 0 2.5mm;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.55;
+  color: #3a3a3a;
+}
+
+.card-front__story-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.card-front__moments {
+  height: 35mm;
+  flex-shrink: 0;
+  padding-top: 4mm;
+  border-top: 0.2mm solid rgb(58 58 58 / 0.08);
+}
+
+.card-front__moments-title {
+  margin: 0 0 4mm;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16pt;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #3a3a3a;
+}
+
+.card-front__moments-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-front__moment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 4mm;
+  border-right: 0.15mm solid rgb(58 58 58 / 0.1);
+}
+
+.card-front__moment:first-child {
+  padding-left: 0;
+}
+
+.card-front__moment:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.card-front__moment-mark {
+  display: block;
+  width: 7mm;
+  height: 0.2mm;
+  margin-bottom: 2.5mm;
+  background: #6c7a5c;
+  opacity: 0.4;
+}
+
+.card-front__moment:nth-child(2) .card-front__moment-mark {
+  width: 5mm;
+  opacity: 0.3;
+}
+
+.card-front__moment:nth-child(3) .card-front__moment-mark {
+  width: 6mm;
+  opacity: 0.35;
+}
+
+.card-front__moment:nth-child(4) .card-front__moment-mark {
+  width: 4mm;
+  opacity: 0.25;
+}
+
+.card-front__moment-label {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  letter-spacing: 0.01em;
+  color: rgb(58 58 58 / 0.82);
+}
+
+.card-front__quote {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  margin: 0;
+  padding: 4mm 0 0;
+  border: none;
+}
+
+.card-front__quote p {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 16pt;
+  font-style: italic;
+  line-height: 1.45;
+  color: rgb(58 58 58 / 0.85);
+}
+
+/* ── Back ── */
+
+.section-title {
+  margin: 0 0 3mm;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16pt;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #3a3a3a;
+}
+
+.card-back__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 28mm;
+  flex-shrink: 0;
+  padding-bottom: 3mm;
+  border-bottom: 0.2mm solid rgb(58 58 58 / 0.1);
+}
+
+.card-back__title {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22pt;
+  font-weight: 500;
+  line-height: 1.1;
+  color: #3a3a3a;
+}
+
+.card-back__subtitle {
+  margin: 1.5mm 0 0;
+  font-size: 9pt;
+  color: rgb(58 58 58 / 0.7);
+}
+
+.card-back__header-right {
+  text-align: right;
+}
+
+.card-back__price-label {
+  margin: 0;
+  font-size: 9pt;
+  color: rgb(58 58 58 / 0.7);
+}
+
+.card-back__price {
+  margin: 1mm 0 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 20pt;
+  font-weight: 500;
+  color: #3a3a3a;
+}
+
+.card-back__experiences {
+  flex-shrink: 0;
+  padding-top: 5mm;
+}
+
+.card-back__experience-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 10mm;
+  row-gap: 5mm;
+  margin: 0;
+  padding: 0 0 1mm;
+  list-style: none;
+  border-bottom: 0.2mm solid rgb(58 58 58 / 0.08);
+}
+
+.card-back__experience {
+  padding: 0 0 4mm;
+}
+
+.card-back__experience-title {
+  margin: 0 0 1.5mm;
+  font-size: 10pt;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #3a3a3a;
+}
+
+.card-back__experience-text {
+  margin: 0;
+  font-size: 9pt;
+  line-height: 1.55;
+  color: rgb(58 58 58 / 0.72);
+}
+
+.card-back__included {
+  flex-shrink: 0;
+  padding-top: 5mm;
+}
+
+.card-back__included-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding-top: 1mm;
+  border-top: 0.2mm solid rgb(58 58 58 / 0.08);
+}
+
+.card-back__included-card {
+  padding: 3mm 4mm 2mm;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.card-back__included-card:not(:first-child) {
+  border-left: 0.15mm solid rgb(58 58 58 / 0.08);
+}
+
+.card-back__included-title {
+  margin: 0 0 2.5mm;
+  padding-bottom: 1.5mm;
+  font-size: 9pt;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6c7a5c;
+  border-bottom: 0.15mm solid rgb(108 122 92 / 0.2);
+}
+
+.card-back__included-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-back__included-list li {
+  margin-bottom: 1.2mm;
+  font-size: 9pt;
+  line-height: 1.45;
+  color: rgb(58 58 58 / 0.78);
+}
+
+.card-back__enhancements {
+  flex-shrink: 0;
+  padding-top: 5mm;
+}
+
+.card-back__enhancement-list {
+  display: flex;
+  gap: 10mm;
+  margin: 0;
+  padding: 2mm 0 0;
+  list-style: none;
+  border-top: 0.15mm solid rgb(58 58 58 / 0.06);
+}
+
+.card-back__enhancement-list li {
+  font-size: 11pt;
+  letter-spacing: 0.01em;
+  color: rgb(58 58 58 / 0.88);
+}
+
+.card-back__enhancement-list li::before {
+  content: "";
+  display: inline-block;
+  width: 3mm;
+  height: 0.2mm;
+  margin-right: 2.5mm;
+  vertical-align: middle;
+  background: #6c7a5c;
+  opacity: 0.4;
+}
+
+.card-back__footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 4mm;
+  border-top: 0.2mm solid rgb(58 58 58 / 0.1);
+}
+
+.card-back__footer-main {
+  margin: 0;
+  font-size: 9pt;
+  color: rgb(58 58 58 / 0.75);
+}
+
+.card-back__footer-small {
+  margin: 1mm 0 0;
+  font-size: 9pt;
+  color: rgb(58 58 58 / 0.55);
+}
+
+@media screen and (max-width: 900px) {
+  .studio__pages {
+    padding: 24px 12px 48px;
+    gap: 32px;
+  }
+
+  .product-page {
+    width: calc(100vw - 24px);
+    height: auto;
+    min-height: calc((100vw - 24px) * 297 / 210);
+  }
+
+  .card-front__hero-title {
+    font-size: clamp(26pt, 7vw, 36pt);
+  }
+
+  .card-front__moments-list {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 4mm;
+  }
+
+  .card-front__moment {
+    border-right: none;
+    padding: 0;
+  }
+
+  .card-back__experience-list {
+    grid-template-columns: 1fr;
+  }
+
+  .card-back__included-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-back__included-card:not(:first-child) {
+    border-left: none;
+    border-top: 0.15mm solid rgb(58 58 58 / 0.08);
+    padding-top: 4mm;
+  }
+}

@@ -1,0 +1,198 @@
+/* ── Print — A4 portrait, fixed mm layout ── */
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    margin: 0;
+    padding: 0;
+    background: #f7f5f2 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .studio__pages {
+    display: block;
+    padding: 0;
+    gap: 0;
+  }
+
+  .product-page {
+    width: 210mm;
+    height: 297mm;
+    max-width: none;
+    min-height: 297mm;
+    margin: 0;
+    padding: 15mm;
+    box-shadow: none;
+    overflow: hidden;
+    page-break-after: always;
+    break-after: page;
+    background: #f7f5f2 !important;
+  }
+
+  .product-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .card-front,
+  .card-back {
+    height: 267mm;
+  }
+
+  /* Typography — print sizes */
+  .card-front__brand,
+  .card-front__code,
+  .card-back__subtitle,
+  .card-back__price-label,
+  .card-back__included-title,
+  .card-back__footer-main,
+  .card-back__footer-small {
+    font-size: 9.5pt;
+  }
+
+  .card-back__included-list li {
+    font-size: 10pt;
+  }
+
+  .card-front__collection,
+  .card-front__hero-subtitle,
+  .card-front__story-paragraph,
+  .card-front__moment-label,
+  .card-back__enhancement-list li {
+    font-size: 11pt;
+  }
+
+  .card-front__hero-title {
+    font-size: 36pt;
+  }
+
+  .card-front__moments-title,
+  .section-title,
+  .card-front__quote p {
+    font-size: 16pt;
+  }
+
+  .card-back__title {
+    font-size: 22pt;
+  }
+
+  .card-back__price {
+    font-size: 20pt;
+  }
+
+  .card-back__experience-title {
+    font-size: 11pt;
+  }
+
+  .card-back__experience-text {
+    font-size: 10pt;
+    line-height: 1.42;
+  }
+
+  /* Front — fixed section heights */
+  .card-front__header {
+    height: 18mm;
+  }
+
+  .card-front__hero-statement {
+    height: 25mm;
+  }
+
+  .card-front__hero-image {
+    height: 125mm;
+    border-radius: 6mm;
+  }
+
+  .card-front__hero-img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .card-front__story {
+    height: 45mm;
+  }
+
+  .card-front__moments {
+    height: 35mm;
+  }
+
+  .card-front__moments-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .card-front__moment {
+    border-right: 0.15mm solid rgb(58 58 58 / 0.1);
+    padding: 0 4mm;
+  }
+
+  .card-front__moment:first-child {
+    padding-left: 0;
+  }
+
+  .card-front__moment:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .card-front__quote {
+    height: auto;
+    min-height: 0;
+    flex: 1;
+  }
+
+  /* Back — fixed header */
+  .card-back__header {
+    height: 28mm;
+  }
+
+  .card-back__experience-list {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 10mm;
+    row-gap: 5mm;
+  }
+
+  .card-back__included {
+    flex: 0 0 auto;
+  }
+
+  .card-back__included-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+
+  .card-back__included-card {
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .card-back__enhancement-list {
+    display: flex;
+    gap: 10mm;
+  }
+
+  /* Prevent internal breaks */
+  .card-front__header,
+  .card-front__hero-statement,
+  .card-front__hero-image,
+  .card-front__story,
+  .card-front__moments,
+  .card-front__quote,
+  .card-back__header,
+  .card-back__experience,
+  .card-back__included-card,
+  .card-back__footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

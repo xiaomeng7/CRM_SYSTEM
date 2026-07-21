@@ -11,6 +11,8 @@
     "dev:energy": "pnpm --filter @bht/energy-insight-lite dev",
     "dev:risk": "pnpm --filter @bht/risk-snapshot dev",
     "dev:rental": "pnpm --filter @bht/rental-safety-check dev",
+    "dev:product-studio": "pnpm --filter @bht/product-studio dev",
+    "build:product-studio": "pnpm --filter @bht/product-studio build",
     "build:web": "pnpm --filter @bht/web build",
     "build:landing": "pnpm --filter @bht/landing-page build",
     "build:report": "pnpm --filter @bht/essential-report build",
