@@ -22,7 +22,7 @@ const CANONICAL_PRODUCTS = Object.freeze([
   { code: "E-01", name: "Mood Lighting", kind: "EXPERIENCE" },
   { code: "E-02", name: "Climate", kind: "EXPERIENCE" },
   { code: "E-03", name: "Healthy Air", kind: "EXPERIENCE" },
-  { code: "E-04", name: "Garden Care", kind: "EXPERIENCE" },
+  { code: "E-04", name: "Garden Care", kind: "STANDALONE" },
   { code: "E-05", name: "CCTV", kind: "EXPERIENCE" },
   { code: "E-06", name: "Smart Toilet", kind: "STANDALONE" }
 ]);

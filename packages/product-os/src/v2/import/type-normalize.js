@@ -65,7 +65,7 @@ const CANONICAL_KIND_ROLE = Object.freeze({
   "E-01": { productKind: "EXPERIENCE", commercialRole: "STANDARD" },
   "E-02": { productKind: "EXPERIENCE", commercialRole: "STANDARD" },
   "E-03": { productKind: "EXPERIENCE", commercialRole: "STANDARD" },
-  "E-04": { productKind: "EXPERIENCE", commercialRole: "STANDARD" },
+  "E-04": { productKind: "STANDALONE", commercialRole: "STANDARD" },
   "E-05": { productKind: "EXPERIENCE", commercialRole: "PACK" }, // CCTV
   "E-06": { productKind: "STANDALONE", commercialRole: "STANDARD" } // Smart Toilet
 });

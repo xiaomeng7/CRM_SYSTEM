@@ -60,6 +60,24 @@ const APPROVED_DELTAS = Object.freeze([
     kind: "IDENTITY_CROSSWALK",
     summary: "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
     status: "PLANNED"
+  },
+  {
+    ref: "DELTA-E04-INDEPENDENT",
+    authority: "PO-2026-07-21",
+    productCode: "E-04",
+    kind: "PRODUCT_CLASSIFICATION",
+    summary:
+      "Garden Care is independently purchasable and does not require a Collection; classify as STANDALONE.",
+    status: "APPROVED"
+  },
+  {
+    ref: "DELTA-E02-WHOLE-HOME",
+    authority: "PO-2026-07-21",
+    productCode: "E-02",
+    kind: "SELECTION_SCOPE",
+    summary:
+      "Climate controls the central air-conditioning system as a whole-home Experience; room selection is optional sensor context, not a purchase dependency.",
+    status: "APPROVED"
   }
 ]);
 
