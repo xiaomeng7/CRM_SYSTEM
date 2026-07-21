@@ -98,8 +98,12 @@ async function createServiceM8JobFromCRM(params, options = {}) {
   const log = options.log || (() => {});
 
   const opportunityId = params.opportunity_id;
+  const jobStatus = String(params.job_status || 'Quote').trim();
   if (!opportunityId) {
     return { ok: false, error: 'opportunity_id is required', error_code: ERROR_CODES.VALIDATION };
+  }
+  if (!['Quote', 'Work Order'].includes(jobStatus)) {
+    return { ok: false, error: 'job_status must be Quote or Work Order', error_code: ERROR_CODES.VALIDATION };
   }
 
   const ctx = await loadOpportunityContext(db, opportunityId);
@@ -178,7 +182,7 @@ async function createServiceM8JobFromCRM(params, options = {}) {
     const created = await client.createJob(companyUuid, {
       job_address: jobAddress,
       job_description: jobDescription,
-      status: 'Quote',
+      status: jobStatus,
     });
     jobUuid = created.uuid;
     jobNumber = created.job_number;
@@ -207,7 +211,7 @@ async function createServiceM8JobFromCRM(params, options = {}) {
         jobDescription.slice(0, 2000),
         jobAddress.slice(0, 500),
         (account.suburb || '').slice(0, 100),
-        'Quote',
+        jobStatus,
         opportunityId,
         CREATED_VIA,
         AUDIT_SOURCE,

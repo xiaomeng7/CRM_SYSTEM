@@ -55,6 +55,8 @@
     "db:builder-contact-discovery-migration": "node scripts/run-builder-contact-discovery-migration.js",
     "db:builder-stage-suggestions-migration": "node scripts/run-builder-stage-suggestions-migration.js",
     "db:builder-dismiss-snapshot-migration": "node scripts/run-builder-dismiss-snapshot-migration.js",
+    "db:better-home-commercial-channel-dev": "node scripts/run-better-home-commercial-channel-migration.js",
+    "test:better-home-handoff-worker": "node scripts/test-better-home-handoff-worker.js",
     "test:builder-target-selection": "node scripts/test-builder-target-selection.js",
     "test:builder-founder-priority": "node scripts/test-builder-founder-priority.js",
     "test:builder-segmentation": "node scripts/test-builder-segmentation.js",

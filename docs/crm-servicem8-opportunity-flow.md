@@ -1,5 +1,7 @@
 # CRM 与 ServiceM8 职责边界与 Opportunity 流程
 
+> **2026-07-20 scope clarification:** 本文中的 ServiceM8 Quote 流程继续适用于普通电工与服务类 Opportunity。Better Home 产品销售使用 Product OS Proposal，接受后再进入 ServiceM8 Work Order；详见 `docs/adr/ADR-012-better-home-commercial-system-boundaries.md`。同一个 Opportunity 不得同时使用两套报价主系统。
+
 本文档定义 CRM 与 ServiceM8 的职责边界、真实业务流程下的 Opportunity stage，以及最小可用的同步方案。**不替代 ServiceM8**，CRM 专注机会追踪和客户关系管理。
 
 ---
