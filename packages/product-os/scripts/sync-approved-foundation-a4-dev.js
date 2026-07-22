@@ -70,7 +70,7 @@ async function sync(tx) {
       const counts = await sync(tx);
       if (!apply) throw new DryRunRollback(counts);
       return counts;
-    }, { maxWait: 10000, timeout: 120000 });
+    }, { maxWait: 10000, timeout: 300000 });
     console.log(JSON.stringify({ phase: "FOUNDATION_A4_SYNC", mode: "APPLY", target: "neon_dev", fingerprint: fingerprintHost(url), ...result }));
   } catch (error) {
     if (error instanceof DryRunRollback) {

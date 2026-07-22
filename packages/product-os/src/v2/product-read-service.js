@@ -18,8 +18,19 @@ function placed(rows, predicate) {
 }
 
 function contentValue(rows, kind, side) {
-  const hit = rows.find((p) => p.contentEntry.contentKind === kind && (!side || p.side === side));
+  const hit = rows.find((p) => p.contentEntry.contentKind === kind && (!side || p.side === side) && (p.contentEntry.body || p.contentEntry.title));
   return hit ? (hit.contentEntry.body || hit.contentEntry.title) : null;
+}
+
+function preferredContentPlacements(rows = []) {
+  const selected = new Map();
+  const score = (row) => (row.contentEntry.status === "FROZEN" ? 2 : 1) + ((row.contentEntry.body || row.contentEntry.title) ? 2 : 0);
+  for (const row of rows) {
+    const key = [row.side, row.surface, row.sortOrder, row.contentEntry.contentKind].join("|");
+    const current = selected.get(key);
+    if (!current || score(row) > score(current)) selected.set(key, row);
+  }
+  return [...selected.values()].sort((a, b) => String(a.side).localeCompare(String(b.side)) || a.sortOrder - b.sortOrder);
 }
 
 function frontMoments(rows) {
@@ -48,7 +59,7 @@ function addonCard(row) {
 
 function assembleProductReadModel(product, addonRows = [], selectedProductCodes = []) {
   if (!product) return null;
-  const content=product.contentPlacements || [], price=firstPrice(product.prices);
+  const content=preferredContentPlacements(product.contentPlacements || []), price=firstPrice(product.prices);
   const hero=contentValue(content,"HERO","FRONT") || contentValue(content,"HERO");
   const approvedLink=(product.imageLinks||[]).find(x=>x.asset.publishStatus==="APPROVED");
   const customerExperiences=placed(content,p=>p.side==="BACK" && /^back\.experience\./.test(p.surface)).map(x=>({title:x.title,description:x.body,sequence:x.sortOrder}));
