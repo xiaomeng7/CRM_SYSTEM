@@ -6,6 +6,7 @@
 const crypto = require("crypto");
 const {
   A4_CONTENT_SOURCE,
+  APPROVED_FOUNDATION_A4,
   APPROVED_COLLECTION_A4
 } = require("./approved-a4-content");
 const { slugPart } = require("./extended-transforms");
@@ -71,10 +72,26 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
   const verbatimChecks = [];
   const coverage = {};
 
-  for (const [productCode, block] of Object.entries(APPROVED_COLLECTION_A4)) {
+  const approvedProductA4 = { ...APPROVED_FOUNDATION_A4, ...APPROVED_COLLECTION_A4 };
+  for (const [productCode, block] of Object.entries(approvedProductA4)) {
+    const contentSource = block.source || A4_CONTENT_SOURCE;
     const planned = [];
 
+    const withSource = (e) => {
+      e.locale = contentSource.locale || e.locale;
+      e.languageLayer = contentSource.languageLayer || e.languageLayer;
+      e.contentVersion = contentSource.contentVersion || e.contentVersion;
+      e.source = {
+        system: contentSource.decision || "A4_REVIEW_SET_V1",
+        decision: contentSource.decision,
+        a4Pdf: contentSource.a4Pdf,
+        a4PdfSha256: contentSource.a4PdfSha256,
+        mappingReviewSha256: contentSource.mappingReviewSha256 || null
+      };
+      return e;
+    };
     const push = (e) => {
+      withSource(e);
       contentEntries.push(e);
       planned.push(e.contentKind);
     };
@@ -210,7 +227,7 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
         decision: "DEC-009",
         source: {
           system: "A4_REVIEW_SET_V1",
-          a4PdfSha256: A4_CONTENT_SOURCE.a4PdfSha256
+          a4PdfSha256: contentSource.a4PdfSha256
         }
       });
     }
@@ -233,6 +250,7 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
       headingEntry.doesNotOverrideBom = true;
       headingEntry.presentationRole = "STANDARD_SCOPE";
       headingEntry.note = g.note || null;
+      withSource(headingEntry);
       contentEntries.push(headingEntry);
       planned.push("SCOPE_HEADING");
 
@@ -332,6 +350,7 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
       a4ContentEntries: contentEntries.length,
       presentationMappings: presentationMappings.length,
       scopeGroups: scopePresentation.length,
+      products: Object.keys(approvedProductA4).length,
       collections: Object.keys(APPROVED_COLLECTION_A4).length
     }
   };

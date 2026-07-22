@@ -153,7 +153,7 @@ describe("Phase 4A ImportPlan from approved workbook", () => {
     assert.equal(plan.includedBenefits[0].benefitCode, "benefit.protection_bonus");
     assert.deepEqual(plan.includedBenefits[0].unlockRequiredCodes, ["C-01", "C-06", "E-05"]);
 
-    assert.equal(deltaOverlays.listApprovedDeltas().length, 6);
+    assert.equal(deltaOverlays.listApprovedDeltas().length, 8);
     assert.ok(plan.approvedDeltas.some((d) => d.ref === "DELTA-C01-DOOR"));
 
     // Sheet 12 must be non-authoritative

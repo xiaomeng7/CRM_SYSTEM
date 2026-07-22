@@ -20,6 +20,56 @@ const A4_CONTENT_SOURCE = Object.freeze({
 
 const VALUE_FOOTER = "Technology should quietly support everyday life.";
 
+const FOUNDATION_A4_SOURCE = Object.freeze({
+  a4Pdf: "Foundation_A4_V1.pdf",
+  a4PdfSha256: "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+  decision: "APPROVED_FOUNDATION_A4_V1",
+  locale: "en-AU",
+  languageLayer: "CUSTOMER",
+  contentVersion: "foundation-a4-v1"
+});
+
+const APPROVED_FOUNDATION_A4 = Object.freeze({
+  "F-01": Object.freeze({
+    source: FOUNDATION_A4_SOURCE,
+    productName: "Foundation",
+    frontPage: 1,
+    backPage: 2,
+    hero: "The quiet beginning of every Better Home.",
+    subtitle: "One dependable base. Everything works together.",
+    storyTitle: "Foundation is designed around life.",
+    storyBody:
+      "Foundation is the part you rarely notice. It gives every chosen room, experience and future addition one dependable home.",
+    moments: Object.freeze([
+      { sequence: 1, title: "ONE HOME", caption: "A Shared System" },
+      { sequence: 2, title: "READY", caption: "Room to Grow" },
+      { sequence: 3, title: "CONNECTED", caption: "Quietly Together" },
+      { sequence: 4, title: "SUPPORTED", caption: "Professionally Set Up" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem:
+      "Separate devices create separate controls, inconsistent behaviour and no shared logic.",
+    betterHomeResponse:
+      "Foundation gives every Better Home product one operating layer, professionally commissioned for the home.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "ONE CLEAR HOME", body: "Collections and Experiences work from the same foundation.", libraryMatchHint: null },
+      { sequence: 2, title: "CONSISTENT CONTROL", body: "Scenes, schedules and room responses behave as one system.", libraryMatchHint: null },
+      { sequence: 3, title: "READY TO GROW", body: "New Better Home products can be added without starting again.", libraryMatchHint: null },
+      { sequence: 4, title: "VISIBLE WHEN NEEDED", body: "A central screen keeps important control close.", libraryMatchHint: null },
+      { sequence: 5, title: "PROFESSIONAL HANDOVER", body: "The system is programmed, tested and explained.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "CORE", lines: Object.freeze(["One Better Home project", "System infrastructure"]) },
+      { heading: "CONTROL", lines: Object.freeze(["One 10-inch screen", "Central home access"]) },
+      { heading: "CONNECTION", lines: Object.freeze(["Network and system interfaces"]) },
+      { heading: "COMMISSIONING", lines: Object.freeze(["Programming, testing and customer handover"]) },
+      { heading: "FUTURE", lines: Object.freeze(["Ready for Collections and Experiences"]) }
+    ]),
+    installationAssumptions:
+      "Suitable cabinet position, network, power and cable pathways are required. Complex second cabinets or separate buildings are quoted."
+  })
+});
+
 /** @type {Readonly<Record<string, object>>} */
 const APPROVED_COLLECTION_A4 = Object.freeze({
   "C-01": Object.freeze({
@@ -507,6 +557,8 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
 
 module.exports = {
   A4_CONTENT_SOURCE,
+  FOUNDATION_A4_SOURCE,
+  APPROVED_FOUNDATION_A4,
   APPROVED_COLLECTION_A4,
   VALUE_FOOTER
 };

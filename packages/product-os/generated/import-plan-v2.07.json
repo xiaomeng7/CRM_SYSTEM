@@ -6,6 +6,106 @@
       "channel": "A4",
       "createsExperienceFact": false,
       "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.f_01.1",
+      "plannedFactRef": null,
+      "presentationBody": "Collections and Experiences work from the same foundation.",
+      "presentationTitle": "ONE CLEAR HOME",
+      "productCode": "F-01",
+      "sequence": 1,
+      "source": {
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.f_01.2",
+      "plannedFactRef": null,
+      "presentationBody": "Scenes, schedules and room responses behave as one system.",
+      "presentationTitle": "CONSISTENT CONTROL",
+      "productCode": "F-01",
+      "sequence": 2,
+      "source": {
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.f_01.3",
+      "plannedFactRef": null,
+      "presentationBody": "New Better Home products can be added without starting again.",
+      "presentationTitle": "READY TO GROW",
+      "productCode": "F-01",
+      "sequence": 3,
+      "source": {
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.f_01.4",
+      "plannedFactRef": null,
+      "presentationBody": "A central screen keeps important control close.",
+      "presentationTitle": "VISIBLE WHEN NEEDED",
+      "productCode": "F-01",
+      "sequence": 4,
+      "source": {
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.f_01.5",
+      "plannedFactRef": null,
+      "presentationBody": "The system is programmed, tested and explained.",
+      "presentationTitle": "PROFESSIONAL HANDOVER",
+      "productCode": "F-01",
+      "sequence": 5,
+      "source": {
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
       "experienceCode": "exp.c_01.outdoor_welcome",
       "libraryMatchHint": "Outdoor Welcome",
       "mappingCode": "map.a4.exp.c_01.1",
@@ -602,6 +702,63 @@
     }
   ],
   "a4ScopePresentation": [
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
+      "heading": "CORE",
+      "lines": [
+        "One Better Home project",
+        "System infrastructure"
+      ],
+      "note": null,
+      "productCode": "F-01",
+      "sequence": 1
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
+      "heading": "CONTROL",
+      "lines": [
+        "One 10-inch screen",
+        "Central home access"
+      ],
+      "note": null,
+      "productCode": "F-01",
+      "sequence": 2
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
+      "heading": "CONNECTION",
+      "lines": [
+        "Network and system interfaces"
+      ],
+      "note": null,
+      "productCode": "F-01",
+      "sequence": 3
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
+      "heading": "COMMISSIONING",
+      "lines": [
+        "Programming, testing and customer handover"
+      ],
+      "note": null,
+      "productCode": "F-01",
+      "sequence": 4
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
+      "heading": "FUTURE",
+      "lines": [
+        "Ready for Collections and Experiences"
+      ],
+      "note": null,
+      "productCode": "F-01",
+      "sequence": 5
+    },
     {
       "decision": "DEC-012",
       "factAuthority": "capabilities_and_bom",
@@ -2287,6 +2444,22 @@
       "ref": "DELTA-RENUMBER-E",
       "status": "PLANNED",
       "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+    },
+    {
+      "authority": "PO-2026-07-21",
+      "kind": "PRODUCT_CLASSIFICATION",
+      "productCode": "E-04",
+      "ref": "DELTA-E04-INDEPENDENT",
+      "status": "APPROVED",
+      "summary": "Garden Care is independently purchasable and does not require a Collection; classify as STANDALONE."
+    },
+    {
+      "authority": "PO-2026-07-21",
+      "kind": "SELECTION_SCOPE",
+      "productCode": "E-02",
+      "ref": "DELTA-E02-WHOLE-HOME",
+      "status": "APPROVED",
+      "summary": "Climate controls the central air-conditioning system as a whole-home Experience; room selection is optional sensor context, not a purchase dependency."
     }
   ],
   "assets": [
@@ -5082,10 +5255,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "7b01afc3d189ab0bcf8e102356898ce42d0e29d07eccd9af5dcb3a7e37951e41",
       "surface": "BACK",
@@ -5106,10 +5280,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b7343035aacb96c46ab80100b3181957a9686659b0aaffae83d3ee487b248d20",
       "surface": "BACK",
@@ -5130,10 +5305,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "3e10be320961d06ef867b7eaf625de7b87c2de8ada7dd08847937fb9e7d20ec1",
       "surface": "BACK",
@@ -5154,10 +5330,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f79e41358cbea6ac11e0100c04fa3c65991869976987897baec6c8032295d1fa",
       "surface": "BACK",
@@ -5178,10 +5355,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "469f11d0fb8ae1c9deb981511656e1574433d1e2f70c61dcbae880ab46241d5e",
       "surface": "BACK",
@@ -5202,10 +5380,11 @@
       "publishEligible": true,
       "sequence": 5,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "11ce9da4691206070327fbaed127e13992c073cbb3e82f3eb5592214790ac166",
       "surface": "BACK",
@@ -5230,10 +5409,11 @@
       "publishEligible": true,
       "sequence": 50,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b9731066b16d77e096627b79c29a484e008eb8632823426b707958290b2799b0",
       "surface": "BACK",
@@ -5258,10 +5438,11 @@
       "publishEligible": true,
       "sequence": 51,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "005a5e509fb0a7477b367a1ffcc8a2e3c9400c77af1553e2f1079c37c4e8c779",
       "surface": "BACK",
@@ -5286,10 +5467,11 @@
       "publishEligible": true,
       "sequence": 52,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "0ab93c7b27d39c5b08ca3ac17445ffb89175904de138a36aacf664cc47806537",
       "surface": "BACK",
@@ -5314,10 +5496,11 @@
       "publishEligible": true,
       "sequence": 53,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b82fe5d7071efbe5729a64195941deacf69103cc62c62df2288eb85e46856326",
       "surface": "BACK",
@@ -5342,10 +5525,11 @@
       "publishEligible": true,
       "sequence": 54,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5c539d9d2a61752014954af32fabab90e192da34966e25e383ce7b61a1f30a25",
       "surface": "BACK",
@@ -5366,10 +5550,11 @@
       "publishEligible": true,
       "sequence": 85,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "210a73c7127758998a26aad0301ed22d524a24887ca90a0a666e71fad07f6682",
       "surface": "BACK",
@@ -5390,10 +5575,11 @@
       "publishEligible": true,
       "sequence": 90,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
       "surface": "FRONT",
@@ -5414,10 +5600,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f2f20977516d30c4e2ed948c20be65a81193727000d5db6154a6221d147ad1d9",
       "surface": "FRONT",
@@ -5438,10 +5625,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a14263d946bfda43201593f35c445e97d8652ede87256e809466a93ed08012e2",
       "surface": "FRONT",
@@ -5462,10 +5650,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "ccbb0da02dcde83392c42942e6e90b3feef5ee10fdd7acbb44a06dc8e32b434e",
       "surface": "FRONT",
@@ -5486,10 +5675,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "101a4a682cd339cdf5a929f8734d24e8ea7b9ef5388cc4344ea4592907517bfa",
       "surface": "FRONT",
@@ -5510,10 +5700,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "26ded0381cd50f5eb2dbd2954958d050b79bc9a6afd3f5fc356580f9510f4483",
       "surface": "FRONT",
@@ -5534,10 +5725,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "1455d6aab67f8fd217b9952d6900019bb80b2c66b5082d83c4dfc418648aff91",
       "surface": "FRONT",
@@ -5558,10 +5750,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5bb4dc6f47d4c0409844a72464984b14b70721b7946a7f95968aeace310848b3",
       "surface": "FRONT",
@@ -5582,10 +5775,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c3172d0be78cf7a468dab757679cd7754364b8701cc444ab1d3dfbc704d7b4ed",
       "surface": "FRONT",
@@ -5606,10 +5800,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "db4de2c5272f1a89d823d07c809d1425839a721aca9c9e03dea161eddc61052a",
       "surface": "FRONT",
@@ -5630,10 +5825,11 @@
       "publishEligible": true,
       "sequence": 80,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a9b40cb456d2908f4c939471a33389f90b4ae42a364b328f8df3931ec73a937c",
       "surface": "BACK",
@@ -5654,10 +5850,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5fcb740c529b5b02422553ad84d22d3d62b23f1474680fcd7e5222361ad4d5c9",
       "surface": "BACK",
@@ -5678,10 +5875,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "3a96cb98104ebb81bf54a54fcd2798446fa4a9abe8470c340b684d5bdefcccd5",
       "surface": "FRONT",
@@ -5702,10 +5900,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c138acd88ed6d4690c798ee73094dea0a41cd39c2bd59bf83d9cdc0dbded736f",
       "surface": "FRONT",
@@ -5726,10 +5925,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "112596cba8302c30504450018d2cdee4a352510956ead49da9c8893a2a032f5a",
       "surface": "FRONT",
@@ -5750,10 +5950,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "11ed6fe2b6ac37e74dd6708570d201bebd50553d8598ebd97dcfacb92254ab43",
       "surface": "BACK",
@@ -5774,10 +5975,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "6e8e23d4979b8e4949ac715083f1ef862b3fac94e5d397bdff2f5f71b47155fb",
       "surface": "BACK",
@@ -5798,10 +6000,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "2b31e482a4891e6f3a284ba7963ef60b90422146ce7ed0ad5399c41424b9bbe0",
       "surface": "BACK",
@@ -5822,10 +6025,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f63787846eb14bd52c9f82f6e42401d739f77789d2c3bbe192e7200128cb2d44",
       "surface": "BACK",
@@ -5846,10 +6050,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "6bb2bf14f4938d194b7f96f6c6c34889b6dab1889c847efaaebaa39f912fcd5f",
       "surface": "BACK",
@@ -5870,10 +6075,11 @@
       "publishEligible": true,
       "sequence": 5,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d2d645e4712db055842778afac08147e6dff2ea01a2b05127ff857b24ac67f3d",
       "surface": "BACK",
@@ -5898,10 +6104,11 @@
       "publishEligible": true,
       "sequence": 50,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "166c944f778581345bff67572b4fc761555317874e538c214887542d6335f522",
       "surface": "BACK",
@@ -5926,10 +6133,11 @@
       "publishEligible": true,
       "sequence": 51,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "998f39d821366b5a48e8a7e707a3eee7de8344cb3a1034b01b868a503ce729de",
       "surface": "BACK",
@@ -5954,10 +6162,11 @@
       "publishEligible": true,
       "sequence": 52,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d2e13f4ade2e5e52ea3686bf0369b8c4c67b3eee4618d5c25367385984e6a1fb",
       "surface": "BACK",
@@ -5982,10 +6191,11 @@
       "publishEligible": true,
       "sequence": 53,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "10a011b98f512e1066588c885d07fea35037fdba25dfb78c01db4e9e3356f382",
       "surface": "BACK",
@@ -6010,10 +6220,11 @@
       "publishEligible": true,
       "sequence": 54,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d7bd6cf48fe14367b401e5f155465c6060a7bb37a7db9e5d29132b2d62584deb",
       "surface": "BACK",
@@ -6034,10 +6245,11 @@
       "publishEligible": true,
       "sequence": 85,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "210a73c7127758998a26aad0301ed22d524a24887ca90a0a666e71fad07f6682",
       "surface": "BACK",
@@ -6058,10 +6270,11 @@
       "publishEligible": true,
       "sequence": 90,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
       "surface": "FRONT",
@@ -6082,10 +6295,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "06d9adb5607e978c07bd8b8ee234729cf5aad6856893a423fac104880a060d96",
       "surface": "FRONT",
@@ -6106,10 +6320,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b0ce1ce87a75d04b4c00a8ed7eaea675bcb304179223702d30f9babc69e45bf9",
       "surface": "FRONT",
@@ -6130,10 +6345,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f36117d35264c914f9c1f73a6af7fddf38505295fadf3ef5a4ddc2f02647380a",
       "surface": "FRONT",
@@ -6154,10 +6370,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "0198c7a8b2b95bbe866261bb982d8e84fcf658dbd63b2824cf1a779a95bde011",
       "surface": "FRONT",
@@ -6178,10 +6395,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "af4d04c0625a32748483f3a7c70e485f336c68a675acc5875f37bfb8d94ede45",
       "surface": "FRONT",
@@ -6202,10 +6420,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "4a4e7e85938ba445a64cb6eb503af9a92f14cb5f16b18580f50463de700efbdf",
       "surface": "FRONT",
@@ -6226,10 +6445,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "8129b9d407716f44eaecb351228a80621a9c89fba068ba669c4c4eb73a255619",
       "surface": "FRONT",
@@ -6250,10 +6470,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "ee4d9393b20ca612f40239f49d8205f5a47915637f75fe4296c538d8ae5ca230",
       "surface": "FRONT",
@@ -6274,10 +6495,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "7bf22d7e32a7b54eb2812bbd6b169ecb3cd41dc51ca3e6b9c4783c8054b74eb5",
       "surface": "FRONT",
@@ -6298,10 +6520,11 @@
       "publishEligible": true,
       "sequence": 80,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "17107fe640cc3c79614c646fce58b4e926caf82675fd78a177ea698dfcbd4372",
       "surface": "BACK",
@@ -6322,10 +6545,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a49d2c2499ed621df99c0f761da05d165270ce8dc1b37afa488d936f589a5035",
       "surface": "BACK",
@@ -6346,10 +6570,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "0bfece4695c952b351601b63541153b121340d1ff4eeb94e38b9c104ca2afb48",
       "surface": "FRONT",
@@ -6370,10 +6595,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b5818533446fe7d8cdb67a502f1e6ebf7435779a80d3dd544649426603cd762e",
       "surface": "FRONT",
@@ -6394,10 +6620,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c912fb2f602b511a99398cee5275d6133de3f74001c524c063f36e5eecf89efe",
       "surface": "FRONT",
@@ -6418,10 +6645,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "984e0cce0875a2e7057ae0e31f4b78858913ef38fa576f5b3399af26996f7b71",
       "surface": "BACK",
@@ -6442,10 +6670,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b623125249da78d0c8ca5be89c93d0adafbe228369fce17eab8b6a9928a6326a",
       "surface": "BACK",
@@ -6466,10 +6695,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "44eb071450eac488edbb593ceedd83b27f0ac0174c8664d4ca0839d5adc61148",
       "surface": "BACK",
@@ -6490,10 +6720,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d2b7a4cdcfba4492c1d94eb88223743bfc1a8656c52720c3c67dc5a7cfd0790e",
       "surface": "BACK",
@@ -6514,10 +6745,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d97521562e8eedf83be34b8e390d39eae05a864daa978931f40921cf8439f94b",
       "surface": "BACK",
@@ -6538,10 +6770,11 @@
       "publishEligible": true,
       "sequence": 5,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a885937df38b7a38857a78d8b0403540b2078c233a2e90ffbd8c054bbde18cc9",
       "surface": "BACK",
@@ -6566,10 +6799,11 @@
       "publishEligible": true,
       "sequence": 50,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "43e5540c4aabe808a9ccce69f6e743fced264b27667450f1c44ac9afaf9aca92",
       "surface": "BACK",
@@ -6594,10 +6828,11 @@
       "publishEligible": true,
       "sequence": 51,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f000028f208763dcf41f498610e9c0d018d0cbe3834b52a2cdafd069a978dda0",
       "surface": "BACK",
@@ -6622,10 +6857,11 @@
       "publishEligible": true,
       "sequence": 52,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "026789e01d4cf018fb47afa627ff278405d182ce98400d02d214d8f9b3253c71",
       "surface": "BACK",
@@ -6650,10 +6886,11 @@
       "publishEligible": true,
       "sequence": 53,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d989e21ac226c6f8acaa3bbfc8fb5ec339e20ed4b578921a35b1ec563373f3b8",
       "surface": "BACK",
@@ -6678,10 +6915,11 @@
       "publishEligible": true,
       "sequence": 54,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a7b887366506be869a4b06823a1955a6a610af6285d818c00b6f715beb3ac8a9",
       "surface": "BACK",
@@ -6702,10 +6940,11 @@
       "publishEligible": true,
       "sequence": 85,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "210a73c7127758998a26aad0301ed22d524a24887ca90a0a666e71fad07f6682",
       "surface": "BACK",
@@ -6726,10 +6965,11 @@
       "publishEligible": true,
       "sequence": 90,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
       "surface": "FRONT",
@@ -6750,10 +6990,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "af91b73cb2399c9bba39b25fa632310b43b158d14b2cd0bfb00a4a7bdc9b4fb5",
       "surface": "FRONT",
@@ -6774,10 +7015,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a56217a48bc176dd65fe70a777896e03e943b8e0614b951c3818b653a7fe83b0",
       "surface": "FRONT",
@@ -6798,10 +7040,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "66b26b1562fba224baa4309a069ba63b587db2899536dd04f6c794cbcf08359f",
       "surface": "FRONT",
@@ -6822,10 +7065,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c08e74a167e12d2b6bacd36be9870c7333b7a4fb221e7690128b66d5a6ee2338",
       "surface": "FRONT",
@@ -6846,10 +7090,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "e4325c561cf6750d8ed889fa1b713613a8d553a2afe2ff6b48090f1216295cd0",
       "surface": "FRONT",
@@ -6870,10 +7115,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "43f5052e2c27a5548ba0bd07f79ccc59172ee30ccb0f5151cbe99d22e5b01a7d",
       "surface": "FRONT",
@@ -6894,10 +7140,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "79162683cc418a417a1e0499837d0c8a29270d718e7d4f6706eb9a6725c3adf0",
       "surface": "FRONT",
@@ -6918,10 +7165,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "264fbe323aaf303be9a99806393f8c8e42c150a6e99a167459abfe6fb7c64534",
       "surface": "FRONT",
@@ -6942,10 +7190,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "90a63fa0dd188f970d6ae3dce49acacd4385347a31bfb0aa0548819842dd5922",
       "surface": "FRONT",
@@ -6966,10 +7215,11 @@
       "publishEligible": true,
       "sequence": 80,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d62930ba4610d982fb9611a0a4f2ff8981886529dbe807e2f8357c8c4adac518",
       "surface": "BACK",
@@ -6990,10 +7240,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "0bae4152a3b36b5b22443c858358d19fff35c0f504248c4196e4fa0d95cfbdf1",
       "surface": "BACK",
@@ -7014,10 +7265,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "da649cc77fdfe1732627a93bfdf40f3ee63097f3a1178d27cd64e3e65253e874",
       "surface": "FRONT",
@@ -7038,10 +7290,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c362dccd1861219748da7fc499720846eef2d0605d7e05633fda63296eb422f1",
       "surface": "FRONT",
@@ -7062,10 +7315,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "006b9508d2981f3425a003932e9479c527b82ec6a2a346d6ff3ef302bc2774bb",
       "surface": "FRONT",
@@ -7086,10 +7340,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c49fedb94f7994f3f5ca2d825b3ab39f57a73ce275d7574b85b7d86be737bb0f",
       "surface": "BACK",
@@ -7110,10 +7365,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "9a23effb3d267281b154f6c37fbdf128a9e254cdc26c9ad7a1937e17d79557a9",
       "surface": "BACK",
@@ -7134,10 +7390,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "eec8e539fb8981a31183998bf291292ffda2d6c2f143b629405fa9dc2b233c9f",
       "surface": "BACK",
@@ -7158,10 +7415,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "dfe55b26ec434d0c6209cf61a43e5324d6760ffe6af79ac535c7395c00dd0a30",
       "surface": "BACK",
@@ -7182,10 +7440,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "622f56756b69215776bcaa753fc5c56a4c6a1c46b6a37635519184ca8b0ea82b",
       "surface": "BACK",
@@ -7206,10 +7465,11 @@
       "publishEligible": true,
       "sequence": 5,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "aeaa75391cacd3a98c5f8a22fcba50ac4e15f8ade9091d0714736123d7da8878",
       "surface": "BACK",
@@ -7234,10 +7494,11 @@
       "publishEligible": true,
       "sequence": 50,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "43e5540c4aabe808a9ccce69f6e743fced264b27667450f1c44ac9afaf9aca92",
       "surface": "BACK",
@@ -7262,10 +7523,11 @@
       "publishEligible": true,
       "sequence": 51,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "ce4eaebb3d67e94617339d8c7f3a9e00e3efb003484b388036439f119c40cc42",
       "surface": "BACK",
@@ -7290,10 +7552,11 @@
       "publishEligible": true,
       "sequence": 52,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d2e13f4ade2e5e52ea3686bf0369b8c4c67b3eee4618d5c25367385984e6a1fb",
       "surface": "BACK",
@@ -7318,10 +7581,11 @@
       "publishEligible": true,
       "sequence": 53,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b69c6cd317652847072e12b8dc1a40c904b1f97d875e1e835541372367ac00a5",
       "surface": "BACK",
@@ -7346,10 +7610,11 @@
       "publishEligible": true,
       "sequence": 54,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "cd8c13fb4a5519ca6770ec734ff86b9f003c1961fc2a959ab049485d6fb2c395",
       "surface": "BACK",
@@ -7370,10 +7635,11 @@
       "publishEligible": true,
       "sequence": 85,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "210a73c7127758998a26aad0301ed22d524a24887ca90a0a666e71fad07f6682",
       "surface": "BACK",
@@ -7394,10 +7660,11 @@
       "publishEligible": true,
       "sequence": 90,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
       "surface": "FRONT",
@@ -7418,10 +7685,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "17c6a7e3a14fe522ba9afa23caf7c29c468852be16d82c05168d3ab8ce4c21f0",
       "surface": "FRONT",
@@ -7442,10 +7710,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "496c63ae1685fc37505760d963a8ad8b3c6ba39bde10bb41442aab3aca97f557",
       "surface": "FRONT",
@@ -7466,10 +7735,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "6eb7f6eee47e1d104b63bfcb33469164fcd4853e8f81c8b19452dca81291bb13",
       "surface": "FRONT",
@@ -7490,10 +7760,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f6e207490caae1b457470bcdd0dbdf991f6a281ab9740e339cfd24661fa7a529",
       "surface": "FRONT",
@@ -7514,10 +7785,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f1a95512fb205c966b26ad22cb1ce117c28bca6ba5929003870b168c2c9e97a",
       "surface": "FRONT",
@@ -7538,10 +7810,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d8a2ea205f0f256cba504bc23915679936cf806d9753fd7dfbab6aeee41a3b03",
       "surface": "FRONT",
@@ -7562,10 +7835,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "21323112a40602a747f729e2f72f86f608c583b2885d296848dfc7cdc5c0df83",
       "surface": "FRONT",
@@ -7586,10 +7860,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "39d98d5b9cd58b92d8900eab31a8b6e7b4baae9627b5e4e69a79e75a5ec36cac",
       "surface": "FRONT",
@@ -7610,10 +7885,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "8a55154be73eb556fedfdfe019651e3f6a0339d62c2f90a6779d1157ce6c0fae",
       "surface": "FRONT",
@@ -7634,10 +7910,11 @@
       "publishEligible": true,
       "sequence": 80,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "cd902035ced76291421bdbd54bd860103ce915d6508aab65c3f43543082f0758",
       "surface": "BACK",
@@ -7658,10 +7935,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "2731e4d67d8f69a579de285398a58a94950b7a6c0355ea46aae3427a9998035c",
       "surface": "BACK",
@@ -7682,10 +7960,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "2923b0d96e2f3ba37f9b45562d62f32a4e1dce1cd4282286c675b5eeffdf357c",
       "surface": "FRONT",
@@ -7706,10 +7985,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "47270fb5e0a42b1a5d26ba68d773656bbbc29dbcb3f5255916ac04d20a564bc7",
       "surface": "FRONT",
@@ -7730,10 +8010,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "3be876f7b0bac797f3ae5b920a06f0cf2134be620f2b0d695d35f1d945fb0d15",
       "surface": "FRONT",
@@ -7754,10 +8035,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "b96b611e207f90fbce29095c15ca6d0de923189cd20bbb86369848249425b219",
       "surface": "BACK",
@@ -7778,10 +8060,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "80d87293de44b68c133cb004377184ce089db2aa2f67f2e6014876c5579f0f2e",
       "surface": "BACK",
@@ -7802,10 +8085,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "2f1762a6de1a1d7e68115016ebe9d6a107c5c640397dfd7e91c9294096b98b3f",
       "surface": "BACK",
@@ -7826,10 +8110,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "7680d1f600e4a1f10b3d3a8adbf135b8267f38241bbfd5045dcc9e2408355303",
       "surface": "BACK",
@@ -7850,10 +8135,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f51b2f2e1c179503cbbb4009770b763a03ab8a6a303fe4ff399e0993c6682be4",
       "surface": "BACK",
@@ -7874,10 +8160,11 @@
       "publishEligible": true,
       "sequence": 5,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "66b09f3a79529c0bc7371d0dfbf26acc2a8b833412a84590b73289840241c57e",
       "surface": "BACK",
@@ -7902,10 +8189,11 @@
       "publishEligible": true,
       "sequence": 50,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "43e5540c4aabe808a9ccce69f6e743fced264b27667450f1c44ac9afaf9aca92",
       "surface": "BACK",
@@ -7930,10 +8218,11 @@
       "publishEligible": true,
       "sequence": 51,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f0060355affcbbe4574e966628fac049576ed192c629baf798172a21e70f7375",
       "surface": "BACK",
@@ -7958,10 +8247,11 @@
       "publishEligible": true,
       "sequence": 52,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "026789e01d4cf018fb47afa627ff278405d182ce98400d02d214d8f9b3253c71",
       "surface": "BACK",
@@ -7986,10 +8276,11 @@
       "publishEligible": true,
       "sequence": 53,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "986ae0603c640d44e895998db5a568019caa3e4253c6c0ff3939b7c6f191f214",
       "surface": "BACK",
@@ -8014,10 +8305,11 @@
       "publishEligible": true,
       "sequence": 54,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "be8977b39689d5fad6c6f8f54772a5138ae2adf1b80c791c9ad2d8feaf6cd70b",
       "surface": "BACK",
@@ -8038,10 +8330,11 @@
       "publishEligible": true,
       "sequence": 85,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "210a73c7127758998a26aad0301ed22d524a24887ca90a0a666e71fad07f6682",
       "surface": "BACK",
@@ -8062,10 +8355,11 @@
       "publishEligible": true,
       "sequence": 90,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
       "surface": "FRONT",
@@ -8086,10 +8380,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f765eb86d0d5e1c7c5cf9a8dc9d5a8e3a8ed73d49a1341ba45bdcd9a1f6e52d1",
       "surface": "FRONT",
@@ -8110,10 +8405,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "66b26b1562fba224baa4309a069ba63b587db2899536dd04f6c794cbcf08359f",
       "surface": "FRONT",
@@ -8134,10 +8430,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "db4081dd20a90015566c2ed7574c75def68bbb95616c429df6a0522592663c4f",
       "surface": "FRONT",
@@ -8158,10 +8455,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "67d043ae042e672e528410c0d40065c009e140c4ba49e756570e8a1438d42660",
       "surface": "FRONT",
@@ -8182,10 +8480,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "26ded0381cd50f5eb2dbd2954958d050b79bc9a6afd3f5fc356580f9510f4483",
       "surface": "FRONT",
@@ -8206,10 +8505,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "79162683cc418a417a1e0499837d0c8a29270d718e7d4f6706eb9a6725c3adf0",
       "surface": "FRONT",
@@ -8230,10 +8530,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "7e82ae9338a025d10400242bcf1c436bfc339827ff3306cafaa87fc3bbb51496",
       "surface": "FRONT",
@@ -8254,10 +8555,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "66032d235be0b6e97b668d92393dffacea18b07fd65cdd25f2d080093df5b14d",
       "surface": "FRONT",
@@ -8278,10 +8580,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "aba9c09ba5edc92e75036f9b6314db0223c9967ed70fb1b58af7d82bee09ddc3",
       "surface": "FRONT",
@@ -8302,10 +8605,11 @@
       "publishEligible": true,
       "sequence": 80,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "0fc31409f079b3fa82f6be5d293ad9019dc747071430e661d748e833b843a3b2",
       "surface": "BACK",
@@ -8326,10 +8630,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "9692b36e01723fde8a1978ee28cca41994f71c158a799a115955a44d49735706",
       "surface": "BACK",
@@ -8350,10 +8655,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "ec2f60cccf541792004360e8bc351e6ab926aebdaa3058ed47af5ef249a5be51",
       "surface": "FRONT",
@@ -8374,10 +8680,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5c51727ac15d5611c1321b7b097d7e1b41b52eafd2178fe9d2c9871c6e318ac0",
       "surface": "FRONT",
@@ -8398,10 +8705,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "fcc2caf7f015c8b51f6bbaadf7dac9ce8f8bf82b4a9a81519f6110064a81073a",
       "surface": "FRONT",
@@ -8422,10 +8730,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "e6e99bd7e80db178913cb1aa92dbfdfc2fe3315ce54f31ed3a0d2027e378b61e",
       "surface": "BACK",
@@ -8446,10 +8755,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f95e862996e25e8777eec20730de64798873ce79e80897a02b807496e112f89c",
       "surface": "BACK",
@@ -8470,10 +8780,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "35c34de179688690d4e7068ed0edf50334d58bacd383fdcd10b6c9f6083112a2",
       "surface": "BACK",
@@ -8494,10 +8805,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "58609e6335b280af3d77c4990d89d40c9962c5cbfb17b758f8e27eeb0ae79a64",
       "surface": "BACK",
@@ -8518,10 +8830,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "339ae0b9d0182dd71f99bc3a5fe43312423bdfc74d9314882894806805bfa028",
       "surface": "BACK",
@@ -8542,10 +8855,11 @@
       "publishEligible": true,
       "sequence": 5,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "fa51f6b9e6958852360d3b53d6d1a35ddba4c95bc7216ae719a03ec90593c9cc",
       "surface": "BACK",
@@ -8570,10 +8884,11 @@
       "publishEligible": true,
       "sequence": 50,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "28a3b6588f05ba27d7e8eb59dfce84c5a356b57d0c615f52267c038c0f24f766",
       "surface": "BACK",
@@ -8598,10 +8913,11 @@
       "publishEligible": true,
       "sequence": 51,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "a5e6587b150ef1b05e04a61d45bd5415369ec89896511ddafab832c8edf59c7c",
       "surface": "BACK",
@@ -8626,10 +8942,11 @@
       "publishEligible": true,
       "sequence": 52,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "7a18e5f2ca071320be48555622d6c3a97c15b878c945568d88b1127cfbcaeb5b",
       "surface": "BACK",
@@ -8654,10 +8971,11 @@
       "publishEligible": true,
       "sequence": 53,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "02cfe0d23eb48f04d1d27b3f7477a6e823f6a3c3ae93ad540547dc54b2655c9a",
       "surface": "BACK",
@@ -8682,10 +9000,11 @@
       "publishEligible": true,
       "sequence": 54,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "3ac74673e76497d236589600eabb9f09331697ab2795294473fcebb4ebba3e79",
       "surface": "BACK",
@@ -8706,10 +9025,11 @@
       "publishEligible": true,
       "sequence": 85,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "210a73c7127758998a26aad0301ed22d524a24887ca90a0a666e71fad07f6682",
       "surface": "BACK",
@@ -8730,10 +9050,11 @@
       "publishEligible": true,
       "sequence": 90,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
       "surface": "FRONT",
@@ -8754,10 +9075,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "80e303a26dd6610d4689b9a39f579d47223beb4d150a67420f80ba4dd566cc69",
       "surface": "FRONT",
@@ -8778,10 +9100,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "14a2954c00fb3ae628b4857bb2388c51d7e24a7e59773aa821b6cfd557b1f52a",
       "surface": "FRONT",
@@ -8802,10 +9125,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "444131780f8ea1d2f7656cf8ac1d6a946c7d2a33691d4b49f9052b171f8ee26a",
       "surface": "FRONT",
@@ -8826,10 +9150,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "d0210eeaf1457b6dc3ab7217d877d6d7924fa3961768cbb0064f6c48c214d149",
       "surface": "FRONT",
@@ -8850,10 +9175,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "1732ef2228a07d422cb5589b383c794764eac4863680207aa7d9bf4eac9382ee",
       "surface": "FRONT",
@@ -8874,10 +9200,11 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "1a070fdcde5b1b1075d1fd8119f2baddc493eb20e9a1827243b4a4c6eca5dab8",
       "surface": "FRONT",
@@ -8898,10 +9225,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "8b47f975ce077e0126bd07c149ccd79607b1e9c33415f388ace328d150c5f317",
       "surface": "FRONT",
@@ -8922,10 +9250,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "c3172d0be78cf7a468dab757679cd7754364b8701cc444ab1d3dfbc704d7b4ed",
       "surface": "FRONT",
@@ -8946,10 +9275,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "4286c84aaf5e75a1d7df9d90b12377ae5fa4514be8f5d54297e4594032ce675b",
       "surface": "FRONT",
@@ -8970,10 +9300,11 @@
       "publishEligible": true,
       "sequence": 80,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "bd8cdfedff2f945a9fae052518f4ee6122863d22689dcdff9c5be5de8bf91f34",
       "surface": "BACK",
@@ -8994,10 +9325,11 @@
       "publishEligible": true,
       "sequence": 1,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "e1ddcd836a99331f628c5c4d8167f471a42502a16186096717f6b6cf0f403a3b",
       "surface": "BACK",
@@ -9018,10 +9350,11 @@
       "publishEligible": true,
       "sequence": 4,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "57116d451f3ece33d4efe35d609f9be4a33bb9c43bd7eda69d203e9574b4c762",
       "surface": "FRONT",
@@ -9042,10 +9375,11 @@
       "publishEligible": true,
       "sequence": 3,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "f006d7c30967fec5c92ae3567844a98b996d6305dc0b7a2de9b4b49110e50bfe",
       "surface": "FRONT",
@@ -9066,12 +9400,683 @@
       "publishEligible": true,
       "sequence": 2,
       "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "decision": "DEC-012",
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
-        "system": "A4_REVIEW_SET_V1"
+        "system": "DEC-012"
       },
       "sourceHash": "8923f554fda7bb264303d5585c62547c29d61e1a7e7b6336eec0a0ab35cb34c3",
+      "surface": "FRONT",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "back.response",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Foundation gives every Better Home product one operating layer, professionally commissioned for the home.",
+      "contentCode": "cnt.a4.f_01.better_home_response.2.back_response",
+      "contentKind": "BETTER_HOME_RESPONSE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Foundation gives every Better Home product one operating layer, professionally commissioned for the home.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "b2f3e2191884a48777a56c9b6b92e840391a7cda7eccd237fc12b7692c1410c3",
+      "surface": "BACK",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.1",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Collections and Experiences work from the same foundation.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.1.back_experience_1",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Collections and Experiences work from the same foundation.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "ef0ba0bfb7269a6fe8664fec1d9d8fcecbc8b5345917d85099b293092e687853",
+      "surface": "BACK",
+      "title": "ONE CLEAR HOME"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.2",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Scenes, schedules and room responses behave as one system.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.2.back_experience_2",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Scenes, schedules and room responses behave as one system.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "547dfab3175c01741067f8bd847437045fe817d375b3f7cb428be8cb6f11f863",
+      "surface": "BACK",
+      "title": "CONSISTENT CONTROL"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.3",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "New Better Home products can be added without starting again.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.3.back_experience_3",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "New Better Home products can be added without starting again.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "4f4b4ce440001d15d9f9ba1bc5dfda7974798d26fdcad6bd33af74dbc003e43b",
+      "surface": "BACK",
+      "title": "READY TO GROW"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.4",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "A central screen keeps important control close.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.4.back_experience_4",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "A central screen keeps important control close.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 4,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "59e5cb1de9dfedf25d465a58b574497119f534d751ce199faead3911a3af5113",
+      "surface": "BACK",
+      "title": "VISIBLE WHEN NEEDED"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.5",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "The system is programmed, tested and explained.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.5.back_experience_5",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "The system is programmed, tested and explained.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 5,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "243fe59dabe9dd9937ba11661ec995ba0242cb3a781a87f76d1072fc359d2635",
+      "surface": "BACK",
+      "title": "PROFESSIONAL HANDOVER"
+    },
+    {
+      "a4TemplateMappingKey": "back.scope.1",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "One Better Home project\nSystem infrastructure",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.50.back_scope_1",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "One Better Home project\nSystem infrastructure",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 50,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "4f210945c2a977f993eedb606aaa739c0f1f5894df50dc679916d1050cedfd40",
+      "surface": "BACK",
+      "title": "CORE"
+    },
+    {
+      "a4TemplateMappingKey": "back.scope.2",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "One 10-inch screen\nCentral home access",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.51.back_scope_2",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "One 10-inch screen\nCentral home access",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 51,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "97ecab466a29f7f7785410f2646b34547e58700467c2c39260fbe46670cdf243",
+      "surface": "BACK",
+      "title": "CONTROL"
+    },
+    {
+      "a4TemplateMappingKey": "back.scope.3",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Network and system interfaces",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.52.back_scope_3",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "Network and system interfaces",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 52,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "0934ab14069e1e3672d3d8b6fcb6e04e8658ca33fbfd6ac2eacb13f47ef26855",
+      "surface": "BACK",
+      "title": "CONNECTION"
+    },
+    {
+      "a4TemplateMappingKey": "back.scope.4",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Programming, testing and customer handover",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.53.back_scope_4",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "Programming, testing and customer handover",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 53,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "a18d7bfe9732827a7d4a9543a2dfc9c7e86eeb2599f6c4c2a4862a2f20005812",
+      "surface": "BACK",
+      "title": "COMMISSIONING"
+    },
+    {
+      "a4TemplateMappingKey": "back.scope.5",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Ready for Collections and Experiences",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.54.back_scope_5",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "Ready for Collections and Experiences",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 54,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "df7156260b2494df54d71959396b79a39d841f48effd9cb2ea667caa84215a3b",
+      "surface": "BACK",
+      "title": "FUTURE"
+    },
+    {
+      "a4TemplateMappingKey": "front.value_footer",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Technology should quietly support everyday life.",
+      "contentCode": "cnt.a4.f_01.footer.90.front_value_footer",
+      "contentKind": "FOOTER",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Technology should quietly support everyday life.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 90,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "5f7da2f08f401c3f10e4dc00a0d0dfad5fa32ddaa899665d4a1e8e5653221744",
+      "surface": "FRONT",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.1.caption",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "A Shared System",
+      "contentCode": "cnt.a4.f_01.front_moment_caption.1.front_moment_1_caption",
+      "contentKind": "FRONT_MOMENT_CAPTION",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "A Shared System",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "c964d95f7c4d2cb8aad5a4fa6ced920f4c3504fb33eda918d47c2533647763c5",
+      "surface": "FRONT",
+      "title": "A Shared System"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.2.caption",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Room to Grow",
+      "contentCode": "cnt.a4.f_01.front_moment_caption.2.front_moment_2_caption",
+      "contentKind": "FRONT_MOMENT_CAPTION",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Room to Grow",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "4ff6248c3fff7830336df22d57ab3bb68397369a010777217cb9442cee3af535",
+      "surface": "FRONT",
+      "title": "Room to Grow"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.3.caption",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Quietly Together",
+      "contentCode": "cnt.a4.f_01.front_moment_caption.3.front_moment_3_caption",
+      "contentKind": "FRONT_MOMENT_CAPTION",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Quietly Together",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "2dcb335d1a5e1ee2ebdacdc431c8bda4113093da73a6be9f60ae8da3449f9d6e",
+      "surface": "FRONT",
+      "title": "Quietly Together"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.4.caption",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Professionally Set Up",
+      "contentCode": "cnt.a4.f_01.front_moment_caption.4.front_moment_4_caption",
+      "contentKind": "FRONT_MOMENT_CAPTION",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Professionally Set Up",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 4,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "0ac4cad07f0634e85af2ce49717de44dc6b5cea2478bd00423ce70cd15295013",
+      "surface": "FRONT",
+      "title": "Professionally Set Up"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.1.title",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "ONE HOME",
+      "contentCode": "cnt.a4.f_01.front_moment_title.1.front_moment_1_title",
+      "contentKind": "FRONT_MOMENT_TITLE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "ONE HOME",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "3dc15e8c17747eb78cf66613f51ebfbbee85403f90f8cc8571e185c43e0eb821",
+      "surface": "FRONT",
+      "title": "ONE HOME"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.2.title",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "READY",
+      "contentCode": "cnt.a4.f_01.front_moment_title.2.front_moment_2_title",
+      "contentKind": "FRONT_MOMENT_TITLE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "READY",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "c2e3ac47f4a325469c1a2d5f117e463ec943c721986d5d9f09ac4540b7d80526",
+      "surface": "FRONT",
+      "title": "READY"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.3.title",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "CONNECTED",
+      "contentCode": "cnt.a4.f_01.front_moment_title.3.front_moment_3_title",
+      "contentKind": "FRONT_MOMENT_TITLE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "CONNECTED",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "1f914c4386c0676ee418458a20c91d9db7c5cd18e88324b4908fdf27ec91dcc5",
+      "surface": "FRONT",
+      "title": "CONNECTED"
+    },
+    {
+      "a4TemplateMappingKey": "front.moment.4.title",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "SUPPORTED",
+      "contentCode": "cnt.a4.f_01.front_moment_title.4.front_moment_4_title",
+      "contentKind": "FRONT_MOMENT_TITLE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "SUPPORTED",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 4,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "7a931e4ad48d8633733d99c94deb638ccd306466545128b2c2502a34bfbb8879",
+      "surface": "FRONT",
+      "title": "SUPPORTED"
+    },
+    {
+      "a4TemplateMappingKey": "front.hero",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "The quiet beginning of every Better Home.",
+      "contentCode": "cnt.a4.f_01.hero.1.front_hero",
+      "contentKind": "HERO",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "The quiet beginning of every Better Home.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "532d42ca894ccac2134fc78b48778c399554e6360032d2d5033de5f05a6dc799",
+      "surface": "FRONT",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "back.installation_assumptions",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Suitable cabinet position, network, power and cable pathways are required. Complex second cabinets or separate buildings are quoted.",
+      "contentCode": "cnt.a4.f_01.installation_assumption_customer.80.back_installation_assumptions",
+      "contentKind": "INSTALLATION_ASSUMPTION_CUSTOMER",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Suitable cabinet position, network, power and cable pathways are required. Complex second cabinets or separate buildings are quoted.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 80,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "d75561ab5637eff728758bfa015b92657f7d9896f2d897865ec08320e500755e",
+      "surface": "BACK",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "back.problem",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Separate devices create separate controls, inconsistent behaviour and no shared logic.",
+      "contentCode": "cnt.a4.f_01.problem.1.back_problem",
+      "contentKind": "PROBLEM",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Separate devices create separate controls, inconsistent behaviour and no shared logic.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "f66d84a32d805e230275174d883ee1d3a1960ccc11aedf573e4a8512a27e4f66",
+      "surface": "BACK",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "front.story_body",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Foundation is the part you rarely notice. It gives every chosen room, experience and future addition one dependable home.",
+      "contentCode": "cnt.a4.f_01.story_body.4.front_story_body",
+      "contentKind": "STORY_BODY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Foundation is the part you rarely notice. It gives every chosen room, experience and future addition one dependable home.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 4,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "0564976c09105eb5ce0236b62b1ad112b374739094e88ea5780799a339acf192",
+      "surface": "FRONT",
+      "title": null
+    },
+    {
+      "a4TemplateMappingKey": "front.story_title",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Foundation is designed around life.",
+      "contentCode": "cnt.a4.f_01.story_title.3.front_story_title",
+      "contentKind": "STORY_TITLE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Foundation is designed around life.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "fbf62d35dce473f2b7609baa317f5554871d6e2c07a11e1d2c3a522f56adcb6e",
+      "surface": "FRONT",
+      "title": "Foundation is designed around life."
+    },
+    {
+      "a4TemplateMappingKey": "front.subtitle",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "One dependable base. Everything works together.",
+      "contentCode": "cnt.a4.f_01.subtitle.2.front_subtitle",
+      "contentKind": "SUBTITLE",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "One dependable base. Everything works together.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "d3e4fb4fc132873989c98e5e976bbb4de7502ae9436d7e877878a705638976de",
       "surface": "FRONT",
       "title": null
     },
@@ -10376,21 +11381,21 @@
       "ref": "DELTA-RENUMBER-E"
     }
   ],
-  "deterministic_hash": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+  "deterministic_hash": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
   "emptyEntityExplanations": {
     "priceDisplayModeRecords": "deferred — DEC-011 policy applied as fields on price rows; structured enum NEEDS_SOURCE",
     "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction"
   },
   "entityInventory": {
-    "a4PresentationMappings": 30,
-    "a4ScopePresentationGroups": 30,
+    "a4PresentationMappings": 35,
+    "a4ScopePresentationGroups": 35,
     "addons": 32,
     "aliases": 3,
     "assets": 13,
     "automations": 22,
     "bomItems": 67,
     "capabilities": 54,
-    "contentEntries": 214,
+    "contentEntries": 240,
     "costingSettings": 7,
     "decisionDeltaOverlays": 6,
     "equipmentSkus": 49,
@@ -11886,6 +12891,16 @@
         "authority": "DEC-013",
         "ref": "DELTA-RENUMBER-E",
         "status": "PLANNED"
+      },
+      {
+        "authority": "PO-2026-07-21",
+        "ref": "DELTA-E04-INDEPENDENT",
+        "status": "APPROVED"
+      },
+      {
+        "authority": "PO-2026-07-21",
+        "ref": "DELTA-E02-WHOLE-HOME",
+        "status": "APPROVED"
       }
     ],
     "import_plan_version": "1.2.0",
@@ -15411,6 +16426,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PO-2026-07-21",
+          "kind": "SELECTION_SCOPE",
+          "productCode": "E-02",
+          "ref": "DELTA-E02-WHOLE-HOME",
+          "status": "APPROVED",
+          "summary": "Climate controls the central air-conditioning system as a whole-home Experience; room selection is optional sensor context, not a purchase dependency."
         }
       ],
       "identityRemap": null,
@@ -15479,6 +16502,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PO-2026-07-21",
+          "kind": "PRODUCT_CLASSIFICATION",
+          "productCode": "E-04",
+          "ref": "DELTA-E04-INDEPENDENT",
+          "status": "APPROVED",
+          "summary": "Garden Care is independently purchasable and does not require a Collection; classify as STANDALONE."
         }
       ],
       "identityRemap": null,
@@ -15491,7 +16522,7 @@
       "priceAuthoritySheet": "10_Pricing_Summary",
       "primaryEmotion": "Care",
       "productCode": "E-04",
-      "productKind": "EXPERIENCE",
+      "productKind": "STANDALONE",
       "statusLabel": "Frozen",
       "themeAuthoritySheet": "17_Theme_Library",
       "versionLabel": "2.06",
@@ -18123,6 +19154,15 @@
         "scopeGroups": 5
       },
       "C-06": {
+        "backPlanned": 5,
+        "backRequired": 5,
+        "experiences": 5,
+        "frontPlanned": 7,
+        "frontRequired": 7,
+        "moments": 4,
+        "scopeGroups": 5
+      },
+      "F-01": {
         "backPlanned": 5,
         "backRequired": 5,
         "experiences": 5,

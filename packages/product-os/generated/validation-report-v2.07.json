@@ -4,11 +4,11 @@
   "databaseWrites": 0,
   "sourceFilesModified": false,
   "import_plan_version": "1.2.0",
-  "deterministic_hash": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+  "deterministic_hash": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
   "determinism": {
-    "run1": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
-    "run2": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
-    "run3": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+    "run1": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
+    "run2": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
+    "run3": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
     "identical": true,
     "generatedUuidsPresent": false
   },
@@ -53,7 +53,7 @@
     "automations": 22,
     "addons": 32,
     "prices": 13,
-    "contentEntries": 214,
+    "contentEntries": 240,
     "themes": 14,
     "assets": 13,
     "icons": 28,
@@ -61,8 +61,8 @@
     "costingSettings": 7,
     "relationshipsExpandFurther": 14,
     "featuredAddonOrders": 16,
-    "a4PresentationMappings": 30,
-    "a4ScopePresentationGroups": 30,
+    "a4PresentationMappings": 35,
+    "a4ScopePresentationGroups": 35,
     "decisionDeltaOverlays": 6
   },
   "emptyEntityExplanations": {
@@ -231,7 +231,7 @@
         "bom": 6,
         "rules": 0,
         "automations": 0,
-        "content": 4,
+        "content": 30,
         "addons": 6
       }
     },
@@ -1756,7 +1756,7 @@
       "productCode": "E-04",
       "expectedName": "Garden Care",
       "actualName": "Garden Care",
-      "productKind": "EXPERIENCE",
+      "productKind": "STANDALONE",
       "commercialRole": "STANDARD",
       "importReadiness": "IMPORTABLE_BUT_NOT_PUBLISHABLE",
       "publishReadiness": "NOT_PUBLISHABLE",
@@ -2333,7 +2333,7 @@
       "decision": "DEC-009",
       "approvedOutcome": "Experience library = facts; A4 = presentation map",
       "transformRule": "import 05; presentation map separate",
-      "objects": "experiences=45; a4PresentationMappings=30",
+      "objects": "experiences=45; a4PresentationMappings=35",
       "test": "Experience facts exist; A4 mappings do not create facts",
       "status": "APPLIED"
     },
@@ -2357,7 +2357,7 @@
       "decision": "DEC-012",
       "approvedOutcome": "Six Collection A4 copy verbatim into Content Library",
       "transformRule": "approved six-Collection A4 source → content entries",
-      "objects": "contentEntries=214",
+      "objects": "contentEntries=240",
       "test": "verbatim anchors + six-Collection front/back coverage",
       "status": "APPLIED"
     },

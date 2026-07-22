@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+const crypto = require("crypto");
+const { PrismaClient } = require("@prisma/client");
+const { buildImportPlanFromApprovedSources } = require("../src/v2/import/build-import-plan");
+const { assertProductOsDatabaseTarget, resolveDatabaseUrlForEnv, fingerprintHost } = require("../src/v2/env-guard");
+
+const argv = new Set(process.argv.slice(2));
+if (!argv.has("--env=neon_dev")) throw new Error("Only explicit --env=neon_dev is allowed");
+const apply = argv.has("--apply-approved-foundation-a4");
+assertProductOsDatabaseTarget({ envName: "neon_dev", requireUrl: true, requireFingerprint: true });
+const url = resolveDatabaseUrlForEnv("neon_dev");
+const prisma = new PrismaClient({ datasourceUrl: url });
+
+class DryRunRollback extends Error {
+  constructor(counts) { super("DRY_RUN_ROLLBACK"); this.counts = counts; }
+}
+
+async function sync(tx) {
+  const plan = buildImportPlanFromApprovedSources();
+  const rows = plan.contentEntries.filter((entry) => entry.productCode === "F-01");
+  if (!rows.length) throw new Error("Approved F-01 content is missing from ImportPlan");
+  const product = await tx.pos2Product.findUnique({ where: { productCode: "F-01" } });
+  if (!product) throw new Error("F-01 product is missing from Neon DEV");
+
+  for (const row of rows) {
+    const versionLabel = row.contentVersion || "foundation-a4-v1";
+    const content = await tx.pos2ContentEntry.upsert({
+      where: { contentKey_locale_versionLabel: { contentKey: row.contentCode, locale: row.locale || "en-AU", versionLabel } },
+      create: { contentKey: row.contentCode, contentKind: row.contentKind, locale: row.locale || "en-AU", title: row.title, body: row.body, languageLayer: row.languageLayer || "CUSTOMER", status: "FROZEN", versionLabel },
+      update: { contentKind: row.contentKind, title: row.title, body: row.body, languageLayer: row.languageLayer || "CUSTOMER", status: "FROZEN" }
+    });
+    await tx.pos2ProductContentPlacement.upsert({
+      where: { productId_contentEntryId_channel_surface_side_sortOrder: { productId: product.id, contentEntryId: content.id, channel: "A4", surface: row.a4TemplateMappingKey || row.contentCode, side: row.surface || "NA", sortOrder: row.sequence || 1 } },
+      create: { productId: product.id, contentEntryId: content.id, channel: "A4", surface: row.a4TemplateMappingKey || row.contentCode, side: row.surface || "NA", sortOrder: row.sequence || 1, status: "ACTIVE" },
+      update: { status: "ACTIVE" }
+    });
+  }
+  return { contentEntries: rows.length, placements: rows.length, digest: crypto.createHash("sha256").update(JSON.stringify(rows)).digest("hex") };
+}
+
+(async () => {
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const counts = await sync(tx);
+      if (!apply) throw new DryRunRollback(counts);
+      return counts;
+    }, { maxWait: 10000, timeout: 120000 });
+    console.log(JSON.stringify({ phase: "FOUNDATION_A4_SYNC", mode: "APPLY", target: "neon_dev", fingerprint: fingerprintHost(url), ...result }));
+  } catch (error) {
+    if (error instanceof DryRunRollback) {
+      console.log(JSON.stringify({ phase: "FOUNDATION_A4_SYNC", mode: "DRY_RUN_ROLLBACK", target: "neon_dev", fingerprint: fingerprintHost(url), ...error.counts }));
+      return;
+    }
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+})().catch((error) => {
+  console.error(`Foundation A4 DEV sync failed: ${error.code || error.message}`);
+  process.exitCode = 1;
+});

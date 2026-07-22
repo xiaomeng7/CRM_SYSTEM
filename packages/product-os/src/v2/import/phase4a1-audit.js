@@ -364,7 +364,7 @@ function decisionReconciliation(plan) {
       test: "verbatim anchors + six-Collection front/back coverage",
       status:
         plan.transformValidation.a4Verbatim.ok &&
-        Object.keys(plan.transformValidation.a4Coverage).length === 6
+        Object.keys(plan.transformValidation.a4Coverage).filter((code) => code.startsWith("C-")).length === 6
           ? "APPLIED"
           : "MISSING"
     },

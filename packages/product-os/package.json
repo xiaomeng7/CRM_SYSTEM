@@ -25,6 +25,7 @@
     "import:v2:dev": "node scripts/import-v2-plan-dev.js",
     "assets:a4:approve-dev": "node scripts/register-approved-a4-hero-assets-dev.js",
     "assets:a4:approve-remaining-dev": "node scripts/register-approved-remaining-a4-hero-assets-dev.js",
+    "content:a4:sync-foundation-dev": "node scripts/sync-approved-foundation-a4-dev.js",
     "sales-user:register-dev": "node scripts/register-sales-user-dev.js",
     "build:product-os": "node scripts/build-product-os.js",
     "build:product-os:offline": "node scripts/build-product-os.js --offline",
