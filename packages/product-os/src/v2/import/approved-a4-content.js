@@ -107,6 +107,12 @@ const APPROVED_EXPERIENCE_A4 = Object.freeze({
       { heading: "POWER", lines: Object.freeze(["Suitable 24V power", "and controllers"]) },
       { heading: "FINISH", lines: Object.freeze(["Scenes, installation", "and handover"]) }
     ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "LIVING", body: "Give shared evenings more emotional range." },
+      { sequence: 2, title: "BEDROOM", body: "Use colour gently around rest and night." },
+      { sequence: 3, title: "BATHROOM", body: "Create a more atmospheric bathing ritual." }
+    ]),
+    featuredAddonCodes: Object.freeze(["AO-004", "AO-032"]),
     installationAssumptions: "Requires a compatible Collection. Concealed cable paths, mounting surfaces and power capacity must be suitable. Flexible silicone strip is used without aluminium channel."
   }),
   "E-02": Object.freeze({
@@ -139,6 +145,12 @@ const APPROVED_EXPERIENCE_A4 = Object.freeze({
       { heading: "AWARENESS", lines: Object.freeze(["Uses compatible room", "temperature sensing"]) },
       { heading: "FINISH", lines: Object.freeze(["Installation, setup", "and commissioning"]) }
     ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "LIVING", body: "Make shared spaces comfortable before they ask." },
+      { sequence: 2, title: "BEDROOM", body: "Let comfort follow rest and waking." },
+      { sequence: 3, title: "AWAY", body: "Reduce unnecessary conditioning when the home settles." }
+    ]),
+    featuredAddonCodes: Object.freeze(["AO-019"]),
     installationAssumptions: "Existing air conditioner, zone motors, ducting and mechanical performance are excluded and must be compatible and operational. Manufacturer limitations apply."
   })
 });

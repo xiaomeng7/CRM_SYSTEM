@@ -9837,6 +9837,31 @@
       "title": null
     },
     {
+      "a4TemplateMappingKey": "back.expand.1",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Give shared evenings more emotional range.",
+      "contentCode": "cnt.a4.e_01.customer_experience_copy.1.back_expand_1",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "mood-lighting-a4-v1",
+      "exactText": "Give shared evenings more emotional range.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "E-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Mood_Lighting_A4_V1.pdf",
+        "a4PdfSha256": "231b4e1f7243aec58174deb835ebd19a4a2e789af89a6c4e6001aac049a19ec1",
+        "decision": "APPROVED_MOOD_LIGHTING_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_MOOD_LIGHTING_A4_V1"
+      },
+      "sourceHash": "cbd469f3927d1b42d0edc9982b7804f59053f8ae4e4f7c1b735389aa426e94e7",
+      "surface": "BACK",
+      "title": "LIVING"
+    },
+    {
       "a4TemplateMappingKey": "back.experience.1",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -9862,6 +9887,31 @@
       "title": "A RICHER EVENING"
     },
     {
+      "a4TemplateMappingKey": "back.expand.2",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Use colour gently around rest and night.",
+      "contentCode": "cnt.a4.e_01.customer_experience_copy.2.back_expand_2",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "mood-lighting-a4-v1",
+      "exactText": "Use colour gently around rest and night.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "E-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Mood_Lighting_A4_V1.pdf",
+        "a4PdfSha256": "231b4e1f7243aec58174deb835ebd19a4a2e789af89a6c4e6001aac049a19ec1",
+        "decision": "APPROVED_MOOD_LIGHTING_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_MOOD_LIGHTING_A4_V1"
+      },
+      "sourceHash": "17d2d844a68d2a6bd7365dbf1393d9c0e343b3e5abb38f65624d21cc05cdc191",
+      "surface": "BACK",
+      "title": "BEDROOM"
+    },
+    {
       "a4TemplateMappingKey": "back.experience.2",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -9885,6 +9935,31 @@
       "sourceHash": "108806be79bd92e24706c610f52b0a0ed8a1697a9447a025dd2324f2298c3614",
       "surface": "BACK",
       "title": "ROMANCE"
+    },
+    {
+      "a4TemplateMappingKey": "back.expand.3",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Create a more atmospheric bathing ritual.",
+      "contentCode": "cnt.a4.e_01.customer_experience_copy.3.back_expand_3",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "mood-lighting-a4-v1",
+      "exactText": "Create a more atmospheric bathing ritual.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "E-01",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Mood_Lighting_A4_V1.pdf",
+        "a4PdfSha256": "231b4e1f7243aec58174deb835ebd19a4a2e789af89a6c4e6001aac049a19ec1",
+        "decision": "APPROVED_MOOD_LIGHTING_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_MOOD_LIGHTING_A4_V1"
+      },
+      "sourceHash": "8fb092722afd9c1d483c9bfe6ff39e8db965875c2e75615a492d8ae690720ff8",
+      "surface": "BACK",
+      "title": "BATHROOM"
     },
     {
       "a4TemplateMappingKey": "back.experience.3",
@@ -10507,6 +10582,31 @@
       "title": null
     },
     {
+      "a4TemplateMappingKey": "back.expand.1",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Make shared spaces comfortable before they ask.",
+      "contentCode": "cnt.a4.e_02.customer_experience_copy.1.back_expand_1",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "climate-a4-v1",
+      "exactText": "Make shared spaces comfortable before they ask.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "E-02",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Climate_A4_V1.pdf",
+        "a4PdfSha256": "c4e972042f89a1f5789b6adecdeacb609cd07443202e77061dc1a926bc6eebba",
+        "decision": "APPROVED_CLIMATE_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_CLIMATE_A4_V1"
+      },
+      "sourceHash": "d8ce78c0f3351d0435c650665061108457936d469ce6b7e9728a037bbbd81692",
+      "surface": "BACK",
+      "title": "LIVING"
+    },
+    {
       "a4TemplateMappingKey": "back.experience.1",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -10532,6 +10632,31 @@
       "title": "ZONED COMFORT"
     },
     {
+      "a4TemplateMappingKey": "back.expand.2",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Let comfort follow rest and waking.",
+      "contentCode": "cnt.a4.e_02.customer_experience_copy.2.back_expand_2",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "climate-a4-v1",
+      "exactText": "Let comfort follow rest and waking.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "E-02",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Climate_A4_V1.pdf",
+        "a4PdfSha256": "c4e972042f89a1f5789b6adecdeacb609cd07443202e77061dc1a926bc6eebba",
+        "decision": "APPROVED_CLIMATE_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_CLIMATE_A4_V1"
+      },
+      "sourceHash": "7b0c0a52800ac90ec1de9a944b65a6111b633ea2cc26908ecc3eb8ea71d15736",
+      "surface": "BACK",
+      "title": "BEDROOM"
+    },
+    {
       "a4TemplateMappingKey": "back.experience.2",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -10555,6 +10680,31 @@
       "sourceHash": "029708c9939576a3238738e0e565063c48f75bc37d1f2cfab026b81e0dccea63",
       "surface": "BACK",
       "title": "SCENE-LINKED CLIMATE"
+    },
+    {
+      "a4TemplateMappingKey": "back.expand.3",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Reduce unnecessary conditioning when the home settles.",
+      "contentCode": "cnt.a4.e_02.customer_experience_copy.3.back_expand_3",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "climate-a4-v1",
+      "exactText": "Reduce unnecessary conditioning when the home settles.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "E-02",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Climate_A4_V1.pdf",
+        "a4PdfSha256": "c4e972042f89a1f5789b6adecdeacb609cd07443202e77061dc1a926bc6eebba",
+        "decision": "APPROVED_CLIMATE_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_CLIMATE_A4_V1"
+      },
+      "sourceHash": "2def99ddd1afd189bc15737ab758ce71340c5ce901450f6c6ff36ebecd4b48e5",
+      "surface": "BACK",
+      "title": "AWAY"
     },
     {
       "a4TemplateMappingKey": "back.experience.3",
@@ -13197,7 +13347,7 @@
       "ref": "DELTA-RENUMBER-E"
     }
   ],
-  "deterministic_hash": "d4fa3a026e732354c03444fe6e000f40c079763a104e59059facfe970699e3e2",
+  "deterministic_hash": "59ff067b993d7d6ff026fd80e0ced38db50afd79cb5e201ebafff11e7756227e",
   "emptyEntityExplanations": {
     "priceDisplayModeRecords": "deferred — DEC-011 policy applied as fields on price rows; structured enum NEEDS_SOURCE",
     "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction"
@@ -13211,7 +13361,7 @@
     "automations": 22,
     "bomItems": 67,
     "capabilities": 54,
-    "contentEntries": 298,
+    "contentEntries": 304,
     "costingSettings": 7,
     "decisionDeltaOverlays": 6,
     "equipmentSkus": 49,
