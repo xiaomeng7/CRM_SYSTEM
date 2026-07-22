@@ -28,7 +28,7 @@ const {
 
 const PACKAGE_ROOT = path.join(__dirname, "..");
 const SCHEMA_PATH = path.join(PACKAGE_ROOT, "prisma", "schema.prisma");
-const MIGRATION_NAME = "20260721120000_add_handoff_authorized_snapshot";
+const MIGRATION_NAME = "20260722160000_add_sales_user_password_credentials";
 
 const PRISMA_ALLOWLIST = Object.freeze({
   status: ["migrate", "status", "--schema", SCHEMA_PATH],
