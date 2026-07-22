@@ -76,6 +76,73 @@ const APPROVED_FOUNDATION_A4 = Object.freeze({
   })
 });
 
+const APPROVED_EXPERIENCE_A4 = Object.freeze({
+  "E-01": Object.freeze({
+    source: Object.freeze({ a4Pdf: "Mood_Lighting_A4_V1.pdf", a4PdfSha256: "231b4e1f7243aec58174deb835ebd19a4a2e789af89a6c4e6001aac049a19ec1", decision: "APPROVED_MOOD_LIGHTING_A4_V1", locale: "en-AU", languageLayer: "CUSTOMER", contentVersion: "mood-lighting-a4-v1" }),
+    productName: "Mood Lighting",
+    hero: "Let the evening find its own colour.",
+    subtitle: "Atmosphere for the moments that deserve more.",
+    storyTitle: "Mood Lighting is designed around life.",
+    storyBody: "Colour should not fill the room with noise. Used carefully, it gives an ordinary evening more depth, warmth and feeling.",
+    moments: Object.freeze([
+      { sequence: 1, title: "ROMANCE", caption: "A Softer Evening" },
+      { sequence: 2, title: "CALM", caption: "Colour With Restraint" },
+      { sequence: 3, title: "CELEBRATE", caption: "A Different Energy" },
+      { sequence: 4, title: "NIGHT", caption: "A Sense of the Hour" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem: "White light supports everyday tasks, but cannot always create the atmosphere or gentle cues a moment needs.",
+    betterHomeResponse: "Two restrained colour zones join the scenes already used in a compatible room. Colour remains deliberate, never decorative noise.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "A RICHER EVENING", body: "Colour adds depth without taking over the room.", libraryMatchHint: null },
+      { sequence: 2, title: "ROMANCE", body: "A warmer, quieter scene changes the mood naturally.", libraryMatchHint: null },
+      { sequence: 3, title: "CELEBRATION", body: "The same room can hold a more expressive moment.", libraryMatchHint: null },
+      { sequence: 4, title: "HOUR-BY-COLOUR", body: "At night, colour can offer a gentle sense of the hour.", libraryMatchHint: null },
+      { sequence: 5, title: "SCENE-LINKED COLOUR", body: "The room changes as one composed experience.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "COLOUR", lines: Object.freeze(["2 independent RGBW zones", "Up to 5m each"]) },
+      { heading: "TOTAL", lines: Object.freeze(["Maximum 10m", "of silicone light"]) },
+      { heading: "LAMPS", lines: Object.freeze(["2 compatible", "colour bulbs"]) },
+      { heading: "POWER", lines: Object.freeze(["Suitable 24V power", "and controllers"]) },
+      { heading: "FINISH", lines: Object.freeze(["Scenes, installation", "and handover"]) }
+    ]),
+    installationAssumptions: "Requires a compatible Collection. Concealed cable paths, mounting surfaces and power capacity must be suitable. Flexible silicone strip is used without aluminium channel."
+  }),
+  "E-02": Object.freeze({
+    source: Object.freeze({ a4Pdf: "Climate_A4_V1.pdf", a4PdfSha256: "c4e972042f89a1f5789b6adecdeacb609cd07443202e77061dc1a926bc6eebba", decision: "APPROVED_CLIMATE_A4_V1", locale: "en-AU", languageLayer: "CUSTOMER", contentVersion: "climate-a4-v1" }),
+    productName: "Climate",
+    hero: "Comfort should never ask for attention.",
+    subtitle: "The whole home settles into the right rhythm.",
+    storyTitle: "Climate is designed around life.",
+    storyBody: "Comfort is most successful when no one has to think about it. Climate lets existing zones respond to rooms, routines and time.",
+    moments: Object.freeze([
+      { sequence: 1, title: "MORNING", caption: "Comfort Before Rush" },
+      { sequence: 2, title: "DAY", caption: "Only Where Needed" },
+      { sequence: 3, title: "EVENING", caption: "Rooms Settle Together" },
+      { sequence: 4, title: "AWAY", caption: "A Quieter Setback" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem: "Ducted systems often condition unused zones and operate separately from the way rooms are actually lived in.",
+    betterHomeResponse: "One compatible ducted system and up to six existing zones join Better Home scenes, schedules and room-temperature awareness.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "ZONED COMFORT", body: "Comfort follows the parts of the home being used.", libraryMatchHint: null },
+      { sequence: 2, title: "SCENE-LINKED CLIMATE", body: "Daily routines can request the right setting.", libraryMatchHint: null },
+      { sequence: 3, title: "ROOM AWARENESS", body: "Existing room sensing contributes temperature context.", libraryMatchHint: null },
+      { sequence: 4, title: "AWAY SETBACK", body: "The home can reduce unnecessary conditioning when empty.", libraryMatchHint: null },
+      { sequence: 5, title: "SCHEDULED COMFORT", body: "Comfort can be ready before it is requested.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "SYSTEM", lines: Object.freeze(["1 compatible existing", "ducted HVAC system"]) },
+      { heading: "ZONES", lines: Object.freeze(["Up to 6 existing", "operational zones"]) },
+      { heading: "CONTROL", lines: Object.freeze(["TIS AC and zone", "control equipment"]) },
+      { heading: "AWARENESS", lines: Object.freeze(["Uses compatible room", "temperature sensing"]) },
+      { heading: "FINISH", lines: Object.freeze(["Installation, setup", "and commissioning"]) }
+    ]),
+    installationAssumptions: "Existing air conditioner, zone motors, ducting and mechanical performance are excluded and must be compatible and operational. Manufacturer limitations apply."
+  })
+});
+
 /** @type {Readonly<Record<string, object>>} */
 const APPROVED_COLLECTION_A4 = Object.freeze({
   "C-01": Object.freeze({
@@ -566,6 +633,7 @@ module.exports = {
   A4_CONTENT_SOURCE,
   FOUNDATION_A4_SOURCE,
   APPROVED_FOUNDATION_A4,
+  APPROVED_EXPERIENCE_A4,
   APPROVED_COLLECTION_A4,
   VALUE_FOOTER
 };

@@ -4,11 +4,11 @@
   "databaseWrites": 0,
   "sourceFilesModified": false,
   "import_plan_version": "1.2.0",
-  "deterministic_hash": "0b278657d0de405f2bd836c7af1f030be33ded28810eef4a8af1661ca3c57569",
+  "deterministic_hash": "d4fa3a026e732354c03444fe6e000f40c079763a104e59059facfe970699e3e2",
   "determinism": {
-    "run1": "0b278657d0de405f2bd836c7af1f030be33ded28810eef4a8af1661ca3c57569",
-    "run2": "0b278657d0de405f2bd836c7af1f030be33ded28810eef4a8af1661ca3c57569",
-    "run3": "0b278657d0de405f2bd836c7af1f030be33ded28810eef4a8af1661ca3c57569",
+    "run1": "d4fa3a026e732354c03444fe6e000f40c079763a104e59059facfe970699e3e2",
+    "run2": "d4fa3a026e732354c03444fe6e000f40c079763a104e59059facfe970699e3e2",
+    "run3": "d4fa3a026e732354c03444fe6e000f40c079763a104e59059facfe970699e3e2",
     "identical": true,
     "generatedUuidsPresent": false
   },
@@ -53,7 +53,7 @@
     "automations": 22,
     "addons": 32,
     "prices": 13,
-    "contentEntries": 246,
+    "contentEntries": 298,
     "themes": 14,
     "assets": 13,
     "icons": 28,
@@ -61,8 +61,8 @@
     "costingSettings": 7,
     "relationshipsExpandFurther": 14,
     "featuredAddonOrders": 16,
-    "a4PresentationMappings": 35,
-    "a4ScopePresentationGroups": 35,
+    "a4PresentationMappings": 45,
+    "a4ScopePresentationGroups": 45,
     "decisionDeltaOverlays": 6
   },
   "emptyEntityExplanations": {
@@ -1418,7 +1418,7 @@
         "bom": 4,
         "rules": 3,
         "automations": 1,
-        "content": 4,
+        "content": 30,
         "addons": 2
       }
     },
@@ -1583,7 +1583,7 @@
         "bom": 3,
         "rules": 3,
         "automations": 1,
-        "content": 4,
+        "content": 30,
         "addons": 1
       }
     },
@@ -2333,7 +2333,7 @@
       "decision": "DEC-009",
       "approvedOutcome": "Experience library = facts; A4 = presentation map",
       "transformRule": "import 05; presentation map separate",
-      "objects": "experiences=45; a4PresentationMappings=35",
+      "objects": "experiences=45; a4PresentationMappings=45",
       "test": "Experience facts exist; A4 mappings do not create facts",
       "status": "APPLIED"
     },
@@ -2357,7 +2357,7 @@
       "decision": "DEC-012",
       "approvedOutcome": "Six Collection A4 copy verbatim into Content Library",
       "transformRule": "approved six-Collection A4 source → content entries",
-      "objects": "contentEntries=246",
+      "objects": "contentEntries=298",
       "test": "verbatim anchors + six-Collection front/back coverage",
       "status": "APPLIED"
     },

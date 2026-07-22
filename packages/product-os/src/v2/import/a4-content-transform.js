@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const {
   A4_CONTENT_SOURCE,
   APPROVED_FOUNDATION_A4,
+  APPROVED_EXPERIENCE_A4,
   APPROVED_COLLECTION_A4
 } = require("./approved-a4-content");
 const { slugPart } = require("./extended-transforms");
@@ -72,7 +73,7 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
   const verbatimChecks = [];
   const coverage = {};
 
-  const approvedProductA4 = { ...APPROVED_FOUNDATION_A4, ...APPROVED_COLLECTION_A4 };
+  const approvedProductA4 = { ...APPROVED_FOUNDATION_A4, ...APPROVED_COLLECTION_A4, ...APPROVED_EXPERIENCE_A4 };
   for (const [productCode, block] of Object.entries(approvedProductA4)) {
     const contentSource = block.source || A4_CONTENT_SOURCE;
     const planned = [];
