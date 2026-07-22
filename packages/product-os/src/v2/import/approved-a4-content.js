@@ -152,6 +152,156 @@ const APPROVED_EXPERIENCE_A4 = Object.freeze({
     ]),
     featuredAddonCodes: Object.freeze(["AO-019"]),
     installationAssumptions: "Existing air conditioner, zone motors, ducting and mechanical performance are excluded and must be compatible and operational. Manufacturer limitations apply."
+  }),
+  "E-03": Object.freeze({
+    source: Object.freeze({ a4Pdf: "Better_Home_A4_Product_Sheets_Print_V2.pdf", decision: "APPROVED_PRINT_V2", locale: "en-AU", languageLayer: "CUSTOMER", contentVersion: "healthy-air-a4-v2" }),
+    productName: "Healthy Air",
+    hero: "A healthy home restores itself.",
+    subtitle: "Freshness returns quietly, while life carries on.",
+    storyTitle: "Healthy Air is designed around life.",
+    storyBody: "When outside air can help, the room should know. Healthy Air measures the space and exchanges air deliberately, without relying on an open window alone.",
+    moments: Object.freeze([
+      { sequence: 1, title: "FRESHEN", caption: "Air Begins to Recover" },
+      { sequence: 2, title: "NIGHT", caption: "Use Cooler Outside Air" },
+      { sequence: 3, title: "EXTRACT", caption: "When Supply Is Unsuitable" },
+      { sequence: 4, title: "AWARE", caption: "Know the Room Better" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem: "Stale air, retained heat, odours and humidity can remain even when outside conditions could help.",
+    betterHomeResponse: "A health sensor and paired supply-and-extract fans create a measured room-level air-exchange experience.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "AIR AWARENESS", body: "CO, CO2, VOC, temperature and humidity inform the room.", libraryMatchHint: null },
+      { sequence: 2, title: "FRESH-AIR EXCHANGE", body: "Supply and extract can work together.", libraryMatchHint: null },
+      { sequence: 3, title: "NIGHT COOLING", body: "Cooler outside air may reduce the need for mechanical cooling.", libraryMatchHint: null },
+      { sequence: 4, title: "EXTRACT-ONLY RESPONSE", body: "When outside air is unsuitable, the room may only exhaust.", libraryMatchHint: null },
+      { sequence: 5, title: "QUIET ALERTS", body: "Unhealthy conditions can be brought to attention.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "SENSE", lines: Object.freeze(["1 room health sensor", "Air and comfort readings"]) },
+      { heading: "EXCHANGE", lines: Object.freeze(["Paired supply and", "extract fans"]) },
+      { heading: "DUCT", lines: Object.freeze(["2 flexible ducts", "Up to 6m each"]) },
+      { heading: "TERMINATION", lines: Object.freeze(["4 grilles", "No filter included"]) },
+      { heading: "FINISH", lines: Object.freeze(["Controls, installation", "and commissioning"]) }
+    ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "BEDROOM", body: "Help the room recover freshness through the night." },
+      { sequence: 2, title: "LIVING", body: "Use outdoor conditions when shared spaces hold heat." },
+      { sequence: 3, title: "KITCHEN + BATH", body: "Support recovery after odour or humidity." }
+    ]),
+    installationAssumptions: "From-zero installation with suitable wall or roof routes. No filters and no PM2.5 claim. Supply and extract terminations require at least 3m separation. Complex penetrations are quoted."
+  }),
+  "E-04": Object.freeze({
+    source: Object.freeze({ a4Pdf: "Better_Home_A4_Product_Sheets_Print_V2.pdf", decision: "APPROVED_PRINT_V2", locale: "en-AU", languageLayer: "CUSTOMER", contentVersion: "garden-care-a4-v2" }),
+    productName: "Garden Care",
+    hero: "A beautiful garden quietly looks after itself.",
+    subtitle: "Ready for the irrigation your landscaper creates.",
+    storyTitle: "Garden Care is designed around life.",
+    storyBody: "Garden Care prepares the control layer for front and rear irrigation, while the landscaper remains responsible for everything that carries water.",
+    moments: Object.freeze([
+      { sequence: 1, title: "MORNING", caption: "Water at the Right Time" },
+      { sequence: 2, title: "FRONT", caption: "One Garden Rhythm" },
+      { sequence: 3, title: "REAR", caption: "Ready to Grow" },
+      { sequence: 4, title: "PAUSE", caption: "Weather Has a Say" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem: "Manual watering is easily forgotten, while the boundary between electrical control and landscape plumbing is often unclear.",
+    betterHomeResponse: "Two Better Home control boxes prepare front and rear garden zones for the irrigation system installed by the landscaper.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "SCHEDULED WATERING", body: "Four zones follow a deliberate garden routine.", libraryMatchHint: null },
+      { sequence: 2, title: "FRONT + REAR", body: "Control is prepared at both sides of the home.", libraryMatchHint: null },
+      { sequence: 3, title: "WEATHER-AWARE PAUSE", body: "Watering can pause when conditions make it unnecessary.", libraryMatchHint: null },
+      { sequence: 4, title: "MANUAL START", body: "A chosen zone can still be started deliberately.", libraryMatchHint: null },
+      { sequence: 5, title: "READY TO EXPAND", body: "The installed control hardware can support up to eight zones.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "FRONT", lines: Object.freeze(["1 outdoor control box", "4 relay outputs"]) },
+      { heading: "REAR", lines: Object.freeze(["1 outdoor control box", "4 relay outputs"]) },
+      { heading: "STANDARD", lines: Object.freeze(["4 irrigation zones", "programmed"]) },
+      { heading: "CAPACITY", lines: Object.freeze(["Hardware ready for", "up to 8 zones"]) },
+      { heading: "FINISH", lines: Object.freeze(["BUS connection, setup", "and commissioning"]) }
+    ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "LANDSCAPING", body: "Your landscaper creates the water-side system." },
+      { sequence: 2, title: "WEATHER", body: "Schedules respond more intelligently to conditions." },
+      { sequence: 3, title: "MORE ZONES", body: "Use existing spare capacity as the garden grows." }
+    ]),
+    featuredAddonCodes: Object.freeze(["AO-021"]),
+    installationAssumptions: "Landscaper supplies valves, compatible coils, valve wiring, pipes, sprinklers, trenching and water connection. Better Home provides a 24V DC control interface."
+  }),
+  "E-05": Object.freeze({
+    source: Object.freeze({ a4Pdf: "Better_Home_A4_Product_Sheets_Print_V2.pdf", decision: "APPROVED_PRINT_V2", locale: "en-AU", languageLayer: "CUSTOMER", contentVersion: "cctv-a4-v2" }),
+    productName: "CCTV",
+    hero: "See what happened. Know what matters.",
+    subtitle: "Professional local recording, with room to grow.",
+    storyTitle: "CCTV is designed around life.",
+    storyBody: "CCTV should feel dependable, not dramatic. It keeps a clear local record and, when the full Better Home system is present, helps the front of the home make its presence known.",
+    moments: Object.freeze([
+      { sequence: 1, title: "SEE", caption: "Four Clear Views" },
+      { sequence: 2, title: "RECORD", caption: "Kept at Home" },
+      { sequence: 3, title: "NIGHT", caption: "Colour When Needed" },
+      { sequence: 4, title: "RESPOND", caption: "The Front Becomes Visible" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem: "Consumer cameras often depend on subscriptions, while conventional CCTV remains separate from the home.",
+    betterHomeResponse: "Four professional PoE cameras record locally. A compatible event can connect camera white light with selected front-visible Better Home lights.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "LOCAL RECORDING", body: "Footage remains on the property’s NVR.", libraryMatchHint: null },
+      { sequence: 2, title: "FOUR CLEAR VIEWS", body: "Standard coverage begins with four 8MP cameras.", libraryMatchHint: null },
+      { sequence: 3, title: "NIGHT VISIBILITY", body: "Smart Hybrid Light supports useful colour detail.", libraryMatchHint: null },
+      { sequence: 4, title: "REMOTE VIEWING", body: "Review the system through the configured app.", libraryMatchHint: null },
+      { sequence: 5, title: "VISIBLE RESPONSE", body: "Eligible homes can make the front visibly react without a siren.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "CAMERAS", lines: Object.freeze(["4 HiLook 8MP", "PoE cameras"]) },
+      { heading: "RECORD", lines: Object.freeze(["8-channel PoE NVR", "4TB local storage"]) },
+      { heading: "EVENT", lines: Object.freeze(["Better Home digital", "input connection"]) },
+      { heading: "INSTALL", lines: Object.freeze(["Standard cable routes", "and camera positions"]) },
+      { heading: "HANDOVER", lines: Object.freeze(["Configuration, testing", "and customer training"]) }
+    ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "ENTRY", body: "Connect visibility with the home’s main arrival point." },
+      { sequence: 2, title: "AWAY", body: "Let the home understand a deliberate departure." },
+      { sequence: 3, title: "PROTECTION BONUS", body: "Entry + Away + CCTV unlock visible response." }
+    ]),
+    featuredAddonCodes: Object.freeze(["AO-022", "AO-023", "AO-024"]),
+    installationAssumptions: "Standard accessible positions and cable routes. Audio is disabled. Internet service and customer display devices are excluded. Difficult access, trenching and detached buildings are quoted."
+  }),
+  "E-06": Object.freeze({
+    source: Object.freeze({ a4Pdf: "Better_Home_A4_Product_Sheets_Print_V2.pdf", decision: "APPROVED_PRINT_V2", locale: "en-AU", languageLayer: "CUSTOMER", contentVersion: "smart-toilet-a4-v2" }),
+    productName: "Smart Toilet",
+    hero: "Comfort, cleanliness and quiet convenience.",
+    subtitle: "A complete personal-comfort product, supplied on its own.",
+    storyTitle: "Smart Toilet is designed around life.",
+    storyBody: "The TIS FS80 brings washing, drying and heated comfort into one purpose-designed product. It can be purchased without the Better Home Foundation.",
+    moments: Object.freeze([
+      { sequence: 1, title: "WASH", caption: "Personal Cleanliness" },
+      { sequence: 2, title: "DRY", caption: "Everyday Ease" },
+      { sequence: 3, title: "WARM", caption: "Quiet Comfort" },
+      { sequence: 4, title: "CARE", caption: "One Complete Product" }
+    ]),
+    valueFooter: VALUE_FOOTER,
+    problem: "A conventional toilet cannot provide integrated washing, drying and heated personal comfort.",
+    betterHomeResponse: "The TIS FS80 combines these functions in one standalone product, ready for installation by the customer’s licensed plumber.",
+    experiences: Object.freeze([
+      { sequence: 1, title: "INTEGRATED WASHING", body: "Personal washing functions are built into the product.", libraryMatchHint: null },
+      { sequence: 2, title: "DRYING COMFORT", body: "The routine continues without separate products.", libraryMatchHint: null },
+      { sequence: 3, title: "HEATED COMFORT", body: "Warmth supports everyday ease.", libraryMatchHint: null },
+      { sequence: 4, title: "PURPOSE-DESIGNED", body: "Functions are integrated into one complete toilet.", libraryMatchHint: null },
+      { sequence: 5, title: "STANDALONE PURCHASE", body: "Foundation is not required.", libraryMatchHint: null }
+    ]),
+    scopeGroups: Object.freeze([
+      { heading: "PRODUCT", lines: Object.freeze(["1 TIS-WC-FS80", "Smart Toilet"]) },
+      { heading: "SUPPLY", lines: Object.freeze(["Product supply only", "No installation"]) },
+      { heading: "PLUMBING", lines: Object.freeze(["Customer-appointed", "licensed plumber"]) },
+      { heading: "ELECTRICAL", lines: Object.freeze(["Suitable power may be", "quoted separately"]) },
+      { heading: "SUPPORT", lines: Object.freeze(["Better Home coordinates", "product warranty contact"]) }
+    ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "POWER", body: "Better Home can quote a suitable electrical point." },
+      { sequence: 2, title: "BATHROOM", body: "Consider the wider Bathroom Collection separately." },
+      { sequence: 3, title: "DELIVERY", body: "Confirmed with Better Home before ordering." }
+    ]),
+    installationAssumptions: "Delivery, plumbing and electrical work are excluded. Compatibility, isolation, drainage and power must be confirmed. Removal or reinstallation for warranty access is a customer plumbing cost, subject to consumer law."
   })
 });
 

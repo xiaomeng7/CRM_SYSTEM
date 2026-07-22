@@ -16,11 +16,14 @@ describe("Phase 4A.2 completion gate", () => {
     assert.equal(plan.presentationCtas.length, 2);
     assert.equal(plan.expandFurtherBonusNotes.length, 2);
     assert.equal(plan.featuredAddons.length, 16);
-    assert.equal(plan.a4PresentationMappings.length, 45);
-    assert.equal(plan.a4ScopePresentation.length, 45);
+    assert.equal(plan.a4PresentationMappings.length, 65);
+    assert.equal(plan.a4ScopePresentation.length, 65);
     assert.ok(plan.contentEntries.some((entry) => entry.productCode === "F-01" && entry.contentKind === "HERO"));
     assert.ok(plan.contentEntries.some((entry) => entry.productCode === "E-01" && entry.contentKind === "HERO"));
     assert.ok(plan.contentEntries.some((entry) => entry.productCode === "E-02" && entry.contentKind === "HERO"));
+    for (const code of ["E-03", "E-04", "E-05", "E-06"]) {
+      assert.ok(plan.contentEntries.some((entry) => entry.productCode === code && entry.contentKind === "HERO"));
+    }
     assert.equal(plan.transformValidation.a4Verbatim.ok, true);
     assert.deepEqual(plan.transformValidation.expandFurtherUnresolved, []);
     assert.deepEqual(plan.transformValidation.expandFurtherDuplicates, []);

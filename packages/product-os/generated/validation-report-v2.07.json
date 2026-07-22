@@ -4,11 +4,11 @@
   "databaseWrites": 0,
   "sourceFilesModified": false,
   "import_plan_version": "1.2.0",
-  "deterministic_hash": "59ff067b993d7d6ff026fd80e0ced38db50afd79cb5e201ebafff11e7756227e",
+  "deterministic_hash": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
   "determinism": {
-    "run1": "59ff067b993d7d6ff026fd80e0ced38db50afd79cb5e201ebafff11e7756227e",
-    "run2": "59ff067b993d7d6ff026fd80e0ced38db50afd79cb5e201ebafff11e7756227e",
-    "run3": "59ff067b993d7d6ff026fd80e0ced38db50afd79cb5e201ebafff11e7756227e",
+    "run1": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
+    "run2": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
+    "run3": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
     "identical": true,
     "generatedUuidsPresent": false
   },
@@ -53,7 +53,7 @@
     "automations": 22,
     "addons": 32,
     "prices": 13,
-    "contentEntries": 304,
+    "contentEntries": 420,
     "themes": 14,
     "assets": 13,
     "icons": 28,
@@ -61,8 +61,8 @@
     "costingSettings": 7,
     "relationshipsExpandFurther": 14,
     "featuredAddonOrders": 16,
-    "a4PresentationMappings": 45,
-    "a4ScopePresentationGroups": 45,
+    "a4PresentationMappings": 65,
+    "a4ScopePresentationGroups": 65,
     "decisionDeltaOverlays": 6
   },
   "emptyEntityExplanations": {
@@ -1748,7 +1748,7 @@
         "bom": 5,
         "rules": 8,
         "automations": 3,
-        "content": 4,
+        "content": 33,
         "addons": 0
       }
     },
@@ -1913,7 +1913,7 @@
         "bom": 4,
         "rules": 4,
         "automations": 1,
-        "content": 4,
+        "content": 33,
         "addons": 1
       }
     },
@@ -2086,7 +2086,7 @@
         "bom": 4,
         "rules": 5,
         "automations": 2,
-        "content": 4,
+        "content": 33,
         "addons": 5
       }
     },
@@ -2259,7 +2259,7 @@
         "bom": 1,
         "rules": 3,
         "automations": 0,
-        "content": 4,
+        "content": 33,
         "addons": 0
       }
     }
@@ -2333,7 +2333,7 @@
       "decision": "DEC-009",
       "approvedOutcome": "Experience library = facts; A4 = presentation map",
       "transformRule": "import 05; presentation map separate",
-      "objects": "experiences=45; a4PresentationMappings=45",
+      "objects": "experiences=45; a4PresentationMappings=65",
       "test": "Experience facts exist; A4 mappings do not create facts",
       "status": "APPLIED"
     },
@@ -2357,7 +2357,7 @@
       "decision": "DEC-012",
       "approvedOutcome": "Six Collection A4 copy verbatim into Content Library",
       "transformRule": "approved six-Collection A4 source → content entries",
-      "objects": "contentEntries=304",
+      "objects": "contentEntries=420",
       "test": "verbatim anchors + six-Collection front/back coverage",
       "status": "APPLIED"
     },

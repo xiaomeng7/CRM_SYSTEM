@@ -18,7 +18,7 @@ class DryRunRollback extends Error {
 
 async function sync(tx) {
   const plan = buildImportPlanFromApprovedSources();
-  const targetCodes = ["F-01", "C-01", "C-02", "C-06", "E-01", "E-02"];
+  const targetCodes = ["F-01", "C-01", "C-02", "C-06", "E-01", "E-02", "E-03", "E-04", "E-05", "E-06"];
   const rows = plan.contentEntries.filter((entry) => targetCodes.includes(entry.productCode));
   if (!rows.length) throw new Error("Approved A4 content is missing from ImportPlan");
   const products = await tx.pos2Product.findMany({ where: { productCode: { in: targetCodes } } });
@@ -42,7 +42,9 @@ async function sync(tx) {
   const featuredByParent = new Map([
     ["F-01", ["AO-026", "AO-027", "AO-030"]],
     ["E-01", ["AO-004", "AO-032"]],
-    ["E-02", ["AO-019"]]
+    ["E-02", ["AO-019"]],
+    ["E-04", ["AO-021"]],
+    ["E-05", ["AO-022", "AO-023", "AO-024"]]
   ]);
   const allFeaturedCodes = [...new Set([...featuredByParent.values()].flat())];
   const featuredProducts = await tx.pos2Product.findMany({ where: { productCode: { in: allFeaturedCodes } } });
