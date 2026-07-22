@@ -64,10 +64,12 @@ export default function SalesHome({ locked, dashboard }: Props) {
             <Link href="/configure" prefetch>New selection</Link>
             <Link href="/sales/customers">Customers</Link>
             <a href="/sales/proposals">Proposals</a>
+            {d.actor.role === "ADMIN" ? <Link href="/admin/users">User management</Link> : null}
           </nav>
           <footer>
             <b>{d.actor.email}</b>
             <span>{d.actor.role}</span>
+            <a href="/account/password">Change password</a>
             <a href="/logout">Sign out</a>
           </footer>
         </aside>

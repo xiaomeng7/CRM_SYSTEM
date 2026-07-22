@@ -4,6 +4,7 @@ import "@/styles/print.css";
 import "@/styles/product-os-sheet.css";
 import "@/styles/configurator.css";
 import "@/styles/sales-studio.css";
+import "@/styles/admin-users.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
