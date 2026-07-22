@@ -22,7 +22,8 @@ For the preview environment, configure:
 - `PRODUCT_OS_DATABASE_ENV=neon_dev`
 - `PRODUCT_OS_DEV_DATABASE_URL`
 - `PRODUCT_OS_DEV_HOST_FINGERPRINT`
-- `SALES_STUDIO_AUTH_MODE=single_admin_password`
+- `SALES_STUDIO_AUTH_MODE=database_users` (recommended) or
+  `single_admin_password` (legacy single-user mode)
 - `SALES_STUDIO_ADMIN_EMAIL`
 - `SALES_STUDIO_ADMIN_PASSWORD`
 - `SALES_STUDIO_SESSION_SECRET` (at least 32 random characters)

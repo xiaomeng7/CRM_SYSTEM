@@ -6,7 +6,7 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
   const authMode = String(process.env.SALES_STUDIO_AUTH_MODE || "").trim();
   const authenticationConfigured = authMode === "single_admin_dev"
     ? process.env.NODE_ENV !== "production"
-    : authMode === "single_admin_password" && isProductionAuthenticationConfigured();
+    : isProductionAuthenticationConfigured();
   let databaseConfigured = false;
   try {
     const {envGuard}=require("@bht/product-os/v2");
