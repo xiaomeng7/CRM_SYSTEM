@@ -14,11 +14,12 @@ export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
   const approvedHeroLines:Record<string,string[]>={
     "C-03":["The day","begins quietly."],
     "C-04":["The world can wait","until morning."],
-    "C-05":["Every day begins","and ends in comfort."]
+    "C-05":["Every day begins","and ends in comfort."],
+    "C-06":["Leave knowing","home has settled."]
   };
   const heroLines=approvedHeroLines[product.productCode]||(product.hero||"").split(/(?<=\.)\s+/).filter(Boolean);
   const productClass=`os-product-${product.productCode.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;
-  const linearMoments=["F-01","C-01","C-03","C-04","C-05"].includes(product.productCode);
+  const linearMoments=["F-01","C-01","C-03","C-04","C-05","C-06"].includes(product.productCode);
   const hierarchy=["FOUNDATION","COLLECTION","EXPERIENCE","ADD-ON"];
   const activeHierarchy=product.productKind==="ADDON"?"ADD-ON":product.productKind;
   return <main className={`os-sheet-wrap ${productClass} os-kind-${product.productKind.toLowerCase()} ${linearMoments?"os-layout-linear-moments":""}`} style={{"--accent":accent} as React.CSSProperties}>
