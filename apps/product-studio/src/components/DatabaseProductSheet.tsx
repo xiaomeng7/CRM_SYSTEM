@@ -10,9 +10,13 @@ export type ProductSheetModel = {
 const money=(n:number)=>new Intl.NumberFormat("en-AU",{style:"currency",currency:"AUD",maximumFractionDigits:0}).format(n);
 
 export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
-  const accent=product.themeLayout?.themes?.[0]?.tokens?.accent || "#68785f";
+  const accent="#697d61";
   const heroLines=(product.hero||"").split(/(?<=\.)\s+/).filter(Boolean);
-  return <main className="os-sheet-wrap" style={{"--accent":accent} as React.CSSProperties}>
+  const productClass=`os-product-${product.productCode.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;
+  const linearMoments=["F-01","C-01"].includes(product.productCode);
+  const hierarchy=["FOUNDATION","COLLECTION","EXPERIENCE","ADD-ON"];
+  const activeHierarchy=product.productKind==="ADDON"?"ADD-ON":product.productKind;
+  return <main className={`os-sheet-wrap ${productClass} os-kind-${product.productKind.toLowerCase()} ${linearMoments?"os-layout-linear-moments":""}`} style={{"--accent":accent} as React.CSSProperties}>
     <div className="os-toolbar"><div><a href="/sales">BETTER HOME</a><span> · {product.productCode}</span></div><div className="os-toolbar-actions"><a href="/sales">Sales Studio</a><a href="/configure">Build a selection</a><button onClick={()=>window.print()} disabled={!product.printEligible}>{product.printEligible?"Print A4":"Image approval required"}</button></div></div>
     <section className="os-page os-front">
       <header className="os-kicker"><div><strong>BETTER HOME</strong><span>{product.canonicalName}</span></div><b>{product.productCode}</b></header>
@@ -30,7 +34,7 @@ export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
       <section><h2>Included in this product</h2><div className="os-scope">{product.standardScope.map(x=><article key={x.sequence}><h3>{x.heading}</h3>{x.lines.map(y=><p key={y}>{y}</p>)}</article>)}</div></section>
       <div className="os-lower"><section><h2>Expand further</h2>{product.compatibleExperiences.map(x=><article key={x.productCode}><h3>{x.canonicalName}</h3><p>{x.customerCopy}</p></article>)}{product.includedBenefits.map(x=><article key={x.benefitCode} className="os-benefit"><h3>{x.displayName}</h3><p>{x.unlocked?"Included with this selection.":`Unlocks with ${x.missingProductCodes.join(" + ")}.`}</p></article>)}</section><section><h2>Available Add-ons</h2>{(product.featuredAddons||[]).map(x=><article key={x.productCode}><h3>{x.canonicalName}</h3><p>{x.experiencePromise||x.standardScopeUnit}</p><small>{x.price?money(x.price.amount):"Contact us"}</small></article>)}</section></div>
       <section className="os-assumptions"><h2>Installation assumptions</h2><p>{product.installationAssumptions.join(" ")}</p></section>
-      <footer><span>FOUNDATION → COLLECTION → EXPERIENCE → ADD-ON</span><span>{product.productCode} | {product.releaseVersion} | 2/2</span></footer>
+      <footer><nav aria-label="Product hierarchy">{hierarchy.map((level,index)=><span key={level} className={activeHierarchy===level?"is-active":""}>{level}{index<hierarchy.length-1?<i>→</i>:null}</span>)}</nav><span>{product.productCode} | {product.releaseVersion} | 2/2</span></footer>
     </section>
   </main>
 }

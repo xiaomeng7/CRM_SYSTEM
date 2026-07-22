@@ -9,7 +9,7 @@ body {
   margin: 0;
   background: #dedbd4;
   color: var(--ink);
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .os-sheet-wrap {
   --accent: #68785f;
@@ -74,16 +74,17 @@ body {
   margin: 14mm 0 10mm;
 }
 .os-front-title h1 {
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: Baskerville, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   font-weight: 400;
-  font-size: 41pt;
-  line-height: 1;
+  font-size: 43pt;
+  line-height: .98;
+  letter-spacing: -.018em;
   margin: 0 0 4mm;
 }
 .os-front-title h1 span { display:block; }
 .os-front-title h2 {
   color: var(--accent);
-  font-size: 15pt;
+  font-size: 16pt;
   font-weight: 400;
   margin:0;
 }
@@ -112,16 +113,16 @@ body {
   padding: 6mm 3.5mm 4mm;
 }
 .os-story h3 {
-  font-size: 14pt;
+  font-size: 14.5pt;
   margin: 0 0 2mm;
 }
 .os-story p {
-  font-size: 10pt;
-  line-height: 1.52;
+  font-size: 10.8pt;
+  line-height: 1.48;
   margin: 0;
 }
 .os-moments-section { padding:5mm 3.5mm 0; }
-.os-moments-section>h3 { color:var(--accent); font-size:9.5pt; text-transform:uppercase; margin:0 0 7mm; }
+.os-moments-section>h3 { color:var(--accent); font-size:11pt; margin:0 0 6mm; }
 .os-moments {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -150,7 +151,7 @@ body {
 }
 .os-front-quote {
   margin:7mm 3.5mm 0;
-  font-family:"Cormorant Garamond",Georgia,serif;
+  font-family:Baskerville,"Iowan Old Style",Georgia,serif;
   font-style: italic;
   color: var(--accent);
   font-size: 17pt;
@@ -167,7 +168,7 @@ body {
   letter-spacing:.04em;
 }
 .os-back {
-  font-size: 9.5pt;
+  font-size: 10pt;
 }
 .os-back-head {
   align-items: end;
@@ -180,8 +181,8 @@ body {
   letter-spacing: 0.08em;
 }
 .os-back-head h1 {
-  font-family: Georgia, serif;
-  font-size: 25pt;
+  font-family: Baskerville, "Iowan Old Style", Georgia, serif;
+  font-size: 27pt;
   margin: 2mm 0 0;
 }
 .os-price {
@@ -192,7 +193,7 @@ body {
   display: block;
 }
 .os-price strong {
-  font-family: Georgia, serif;
+  font-family: Baskerville, "Iowan Old Style", Georgia, serif;
   color: var(--accent);
   font-size: 27pt;
   font-weight: 400;
@@ -204,13 +205,13 @@ body {
 .os-back h2 {
   text-transform: uppercase;
   color: var(--accent);
-  font:500 14pt "Cormorant Garamond",Georgia,serif;
+  font:500 14.5pt Baskerville,"Iowan Old Style",Georgia,serif;
   letter-spacing: 0.03em;
   margin: 5mm 0 2.5mm;
 }
 .os-back h3 {
-  font-family: Georgia, serif;
-  font-size: 11.5pt;
+  font-family: Baskerville, "Iowan Old Style", Georgia, serif;
+  font-size: 12pt;
   margin: 0 0 1mm;
 }
 .os-back p {
@@ -244,7 +245,7 @@ body {
 }
 .os-experiences article>div { display:contents; }
 .os-experiences h3 { margin:0; font-family:Inter,Avenir,sans-serif; font-size:9pt; }
-.os-experiences p { font-size:8.8pt; }
+.os-experiences p { font-size:9.4pt; }
 .os-scope {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -259,7 +260,7 @@ body {
   border: 0;
 }
 .os-scope p {
-  font-size: 9pt;
+  font-size: 9.5pt;
   margin: 1mm 0;
 }
 .os-lower {
@@ -271,7 +272,7 @@ body {
   margin:0;
 }
 .os-lower p {
-  font-size: 9.3pt;
+  font-size: 9.6pt;
 }
 .os-lower small {
   color: var(--accent);
@@ -286,8 +287,18 @@ body {
   margin-top: 2mm;
 }
 .os-assumptions p {
-  font-size: 9.2pt;
+  font-size: 9.6pt;
 }
+.os-layout-linear-moments .os-moments { gap:0; border-bottom:1px solid #c9c2b6; }
+.os-layout-linear-moments .os-moments div { min-height:24mm; border-radius:0; background:transparent; padding:2mm 4mm 5mm; text-align:center; border-right:1px solid #d7d0c5; }
+.os-layout-linear-moments .os-moments div:last-child { border-right:0; }
+.os-layout-linear-moments .os-moments small { display:none; }
+.os-layout-linear-moments .os-moments b { font-size:10.5pt; letter-spacing:.02em; }
+.os-layout-linear-moments .os-moments span { font-size:9.5pt; margin-top:2mm; }
+.os-back footer nav { display:flex; align-items:center; gap:1.4mm; }
+.os-back footer nav span { display:flex; align-items:center; gap:1.4mm; }
+.os-back footer nav span.is-active { border:1px solid var(--accent); border-radius:99px; padding:.8mm 2.2mm; color:var(--accent); font-weight:700; }
+.os-back footer nav i { font-style:normal; color:#8b8b82; }
 .os-back footer {
   position: absolute;
   bottom: 3.5mm;
