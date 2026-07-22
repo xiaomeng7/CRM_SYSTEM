@@ -17,11 +17,15 @@ export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
     "C-05":["Every day begins","and ends in comfort."],
     "C-06":["Leave knowing","home has settled."],
     "E-01":["Let the evening","find its own colour."],
-    "E-02":["Comfort should never","ask for attention."]
+    "E-02":["Comfort should never","ask for attention."],
+    "E-03":["A healthy home","restores itself."],
+    "E-04":["A beautiful garden","quietly looks after itself."],
+    "E-05":["See what happened.","Know what matters."],
+    "E-06":["Comfort, cleanliness","and quiet convenience."]
   };
   const heroLines=approvedHeroLines[product.productCode]||(product.hero||"").split(/(?<=\.)\s+/).filter(Boolean);
   const productClass=`os-product-${product.productCode.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;
-  const linearMoments=["F-01","C-01","C-03","C-04","C-05","C-06","E-01","E-02"].includes(product.productCode);
+  const linearMoments=["F-01","C-01","C-03","C-04","C-05","C-06","E-01","E-02","E-03","E-04","E-05","E-06"].includes(product.productCode);
   const hierarchy=["FOUNDATION","COLLECTION","EXPERIENCE","ADD-ON"];
   const activeHierarchy=product.productKind==="ADDON"?"ADD-ON":product.productKind;
   return <main className={`os-sheet-wrap ${productClass} os-kind-${product.productKind.toLowerCase()} ${linearMoments?"os-layout-linear-moments":""}`} style={{"--accent":accent} as React.CSSProperties}>
