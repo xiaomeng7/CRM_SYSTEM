@@ -30,7 +30,9 @@ For the preview environment, configure:
 
 ## Release gate
 
-The deployment is ready only when `/api/health` returns HTTP 200. Missing
+Railway uses `/api/live` as its process liveness check so temporary database or
+catalog delays do not reject an otherwise healthy deployment. The application
+is ready for sales use only when `/api/health` returns HTTP 200. Missing
 database identity or authentication configuration returns HTTP 503 and Railway
 must keep the previous healthy deployment.
 
