@@ -4,11 +4,11 @@
   "databaseWrites": 0,
   "sourceFilesModified": false,
   "import_plan_version": "1.2.0",
-  "deterministic_hash": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
+  "deterministic_hash": "99f14fb1aadf1e7cf0dff9396d992229606d6528a2747fbf8c1915cb13578abc",
   "determinism": {
-    "run1": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
-    "run2": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
-    "run3": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
+    "run1": "99f14fb1aadf1e7cf0dff9396d992229606d6528a2747fbf8c1915cb13578abc",
+    "run2": "99f14fb1aadf1e7cf0dff9396d992229606d6528a2747fbf8c1915cb13578abc",
+    "run3": "99f14fb1aadf1e7cf0dff9396d992229606d6528a2747fbf8c1915cb13578abc",
     "identical": true,
     "generatedUuidsPresent": false
   },
@@ -53,7 +53,7 @@
     "automations": 22,
     "addons": 32,
     "prices": 13,
-    "contentEntries": 240,
+    "contentEntries": 243,
     "themes": 14,
     "assets": 13,
     "icons": 28,
@@ -231,7 +231,7 @@
         "bom": 6,
         "rules": 0,
         "automations": 0,
-        "content": 30,
+        "content": 33,
         "addons": 6
       }
     },
@@ -2357,7 +2357,7 @@
       "decision": "DEC-012",
       "approvedOutcome": "Six Collection A4 copy verbatim into Content Library",
       "transformRule": "approved six-Collection A4 source → content entries",
-      "objects": "contentEntries=240",
+      "objects": "contentEntries=243",
       "test": "verbatim anchors + six-Collection front/back coverage",
       "status": "APPLIED"
     },

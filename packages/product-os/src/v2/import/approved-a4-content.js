@@ -65,6 +65,12 @@ const APPROVED_FOUNDATION_A4 = Object.freeze({
       { heading: "COMMISSIONING", lines: Object.freeze(["Programming, testing and customer handover"]) },
       { heading: "FUTURE", lines: Object.freeze(["Ready for Collections and Experiences"]) }
     ]),
+    expandFurther: Object.freeze([
+      { sequence: 1, title: "COLLECTIONS", body: "Begin with the rooms that matter most." },
+      { sequence: 2, title: "EXPERIENCES", body: "Add atmosphere, comfort, health or care." },
+      { sequence: 3, title: "ADD-ONS", body: "Extend products already in the home." }
+    ]),
+    featuredAddonCodes: Object.freeze(["AO-026", "AO-027", "AO-030"]),
     installationAssumptions:
       "Suitable cabinet position, network, power and cable pathways are required. Complex second cabinets or separate buildings are quoted."
   })

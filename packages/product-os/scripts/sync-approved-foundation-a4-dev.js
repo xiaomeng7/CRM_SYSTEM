@@ -36,7 +36,19 @@ async function sync(tx) {
       update: { status: "ACTIVE" }
     });
   }
-  return { contentEntries: rows.length, placements: rows.length, digest: crypto.createHash("sha256").update(JSON.stringify(rows)).digest("hex") };
+  const featuredCodes = ["AO-026", "AO-027", "AO-030"];
+  const featuredProducts = await tx.pos2Product.findMany({ where: { productCode: { in: featuredCodes } } });
+  const featuredByCode = new Map(featuredProducts.map((item) => [item.productCode, item]));
+  for (let index = 0; index < featuredCodes.length; index += 1) {
+    const addon = featuredByCode.get(featuredCodes[index]);
+    if (!addon) throw new Error(`Approved Foundation Add-on ${featuredCodes[index]} is missing from Neon DEV`);
+    await tx.pos2ProductFeaturedAddon.upsert({
+      where: { parentProductId_addonProductId_channel_surface: { parentProductId: product.id, addonProductId: addon.id, channel: "A4", surface: "BACK" } },
+      create: { parentProductId: product.id, addonProductId: addon.id, channel: "A4", surface: "BACK", sortOrder: index + 1, status: "ACTIVE" },
+      update: { sortOrder: index + 1, status: "ACTIVE" }
+    });
+  }
+  return { contentEntries: rows.length, placements: rows.length, featuredAddons: featuredCodes.length, digest: crypto.createHash("sha256").update(JSON.stringify(rows)).digest("hex") };
 }
 
 (async () => {

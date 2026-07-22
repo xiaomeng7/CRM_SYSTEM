@@ -265,6 +265,20 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
       });
     }
 
+    for (const item of block.expandFurther || []) {
+      push(
+        entry({
+          productCode,
+          contentKind: "CUSTOMER_EXPERIENCE_COPY",
+          surface: "BACK",
+          sequence: item.sequence,
+          title: item.title,
+          body: item.body,
+          templateKey: `back.expand.${item.sequence}`
+        })
+      );
+    }
+
     const assumptionText =
       productCode === "C-06" && block.installationAssumptionsCustomer
         ? block.installationAssumptionsCustomer

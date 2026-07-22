@@ -9436,6 +9436,31 @@
       "title": null
     },
     {
+      "a4TemplateMappingKey": "back.expand.1",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Begin with the rooms that matter most.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.1.back_expand_1",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Begin with the rooms that matter most.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 1,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "b52a3b6d632b40b72623bb8ef4abd54bea35aecfda9265e9f58e82bfddd0ee43",
+      "surface": "BACK",
+      "title": "COLLECTIONS"
+    },
+    {
       "a4TemplateMappingKey": "back.experience.1",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -9461,6 +9486,31 @@
       "title": "ONE CLEAR HOME"
     },
     {
+      "a4TemplateMappingKey": "back.expand.2",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Add atmosphere, comfort, health or care.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.2.back_expand_2",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Add atmosphere, comfort, health or care.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 2,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "54f53689eb96c281842934af7d6dd299294535b1a3b57ed58801d2c0c4157390",
+      "surface": "BACK",
+      "title": "EXPERIENCES"
+    },
+    {
       "a4TemplateMappingKey": "back.experience.2",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -9484,6 +9534,31 @@
       "sourceHash": "547dfab3175c01741067f8bd847437045fe817d375b3f7cb428be8cb6f11f863",
       "surface": "BACK",
       "title": "CONSISTENT CONTROL"
+    },
+    {
+      "a4TemplateMappingKey": "back.expand.3",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Extend products already in the home.",
+      "contentCode": "cnt.a4.f_01.customer_experience_copy.3.back_expand_3",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "foundation-a4-v1",
+      "exactText": "Extend products already in the home.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "F-01",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "Foundation_A4_V1.pdf",
+        "a4PdfSha256": "d129ed38167e3e10cb0eb9f212dddef087d7511acf51c6d6bdcc707399ca3d3c",
+        "decision": "APPROVED_FOUNDATION_A4_V1",
+        "mappingReviewSha256": null,
+        "system": "APPROVED_FOUNDATION_A4_V1"
+      },
+      "sourceHash": "b22924d7a3663ea39b9e0aa009ba961134ddaa7d39c1afb4465bbcf6f552f6cf",
+      "surface": "BACK",
+      "title": "ADD-ONS"
     },
     {
       "a4TemplateMappingKey": "back.experience.3",
@@ -11381,7 +11456,7 @@
       "ref": "DELTA-RENUMBER-E"
     }
   ],
-  "deterministic_hash": "3f62e3b483dd9a01836dfceb90be3e17ec4a04471c7e94206e00c3c9c20e0c2b",
+  "deterministic_hash": "99f14fb1aadf1e7cf0dff9396d992229606d6528a2747fbf8c1915cb13578abc",
   "emptyEntityExplanations": {
     "priceDisplayModeRecords": "deferred — DEC-011 policy applied as fields on price rows; structured enum NEEDS_SOURCE",
     "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction"
@@ -11395,7 +11470,7 @@
     "automations": 22,
     "bomItems": 67,
     "capabilities": 54,
-    "contentEntries": 240,
+    "contentEntries": 243,
     "costingSettings": 7,
     "decisionDeltaOverlays": 6,
     "equipmentSkus": 49,

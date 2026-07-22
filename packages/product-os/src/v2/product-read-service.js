@@ -53,6 +53,7 @@ function assembleProductReadModel(product, addonRows = [], selectedProductCodes 
   const approvedLink=(product.imageLinks||[]).find(x=>x.asset.publishStatus==="APPROVED");
   const customerExperiences=placed(content,p=>p.side==="BACK" && /^back\.experience\./.test(p.surface)).map(x=>({title:x.title,description:x.body,sequence:x.sortOrder}));
   const standardScope=placed(content,p=>p.side==="BACK" && /^back\.scope\./.test(p.surface)).map(x=>({heading:x.title,lines:String(x.body||"").split("\n").filter(Boolean),sequence:x.sortOrder}));
+  const expandFurtherPresentation=placed(content,p=>p.side==="BACK" && /^back\.expand\./.test(p.surface)).map(x=>({relationshipCode:x.contentKey,relationshipType:"PRESENTATION_CTA",productCode:x.contentKey,canonicalName:x.title,customerCopy:x.body,sortOrder:x.sortOrder}));
   const assumptions=placed(content,p=>p.contentEntry.contentKind==="INSTALLATION_ASSUMPTION_CUSTOMER").map(x=>x.body).filter(Boolean);
   const permittedAddonCards=addonRows.map(addonCard);
   const permittedByCode=new Map(permittedAddonCards.map(x=>[x.productCode,x]));
@@ -63,7 +64,7 @@ function assembleProductReadModel(product, addonRows = [], selectedProductCodes 
     customerContent:{subtitle:contentValue(content,"SUBTITLE","FRONT"),storyTitle:contentValue(content,"STORY_TITLE","FRONT"),storyBody:contentValue(content,"STORY_BODY","FRONT"),problem:contentValue(content,"PROBLEM","BACK"),response:contentValue(content,"BETTER_HOME_RESPONSE","BACK"),frontMoments:frontMoments(content)},
     customerExperiences, standardScope,
     includedCapabilities:(product.capabilityInclusions||[]).map(x=>({capabilityCode:x.capability.capabilityCode,name:x.capability.name,includedQty:x.includedQty==null?null:Number(x.includedQty),unitCode:x.unitCode,customerLayer:x.customerLayer})),
-    compatibleExperiences:(product.relationshipsFrom||[]).filter(x=>["COMPATIBLE_EXPERIENCE","RECOMMENDED_NEXT_PRODUCT"].includes(x.relationshipType)).map(x=>({relationshipCode:x.relationshipCode,relationshipType:x.relationshipType,productCode:x.toProduct?.productCode,canonicalName:x.toProduct?.canonicalName,customerCopy:x.notes,sortOrder:x.priority})),
+    compatibleExperiences:[...(product.relationshipsFrom||[]).filter(x=>["COMPATIBLE_EXPERIENCE","RECOMMENDED_NEXT_PRODUCT"].includes(x.relationshipType)).map(x=>({relationshipCode:x.relationshipCode,relationshipType:x.relationshipType,productCode:x.toProduct?.productCode,canonicalName:x.toProduct?.canonicalName,customerCopy:x.notes,sortOrder:x.priority})),...expandFurtherPresentation],
     permittedAddons:permittedAddonCards, featuredAddons:featuredAddonCards, dependencyState:{satisfied:true,missing:[]}, installationAssumptions:[...(product.installationAssumptions||[]).map(x=>x.assumptionText),...assumptions],
     activePrice:price, taxBasis:price?.taxBasis||null, fulfilmentMode:price?.fulfilmentMode||null,
     approvedImage:approvedLink?{assetCode:approvedLink.asset.assetCode,storageUri:approvedLink.asset.storageUri,altText:approvedLink.asset.altTextDefault}:null,
