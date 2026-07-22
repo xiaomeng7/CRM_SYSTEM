@@ -6631,6 +6631,31 @@
       "title": null
     },
     {
+      "a4TemplateMappingKey": "back.decision_subtitle",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "One living room. One clear installed scope.",
+      "contentCode": "cnt.a4.c_02.subtitle.3.back_decision_subtitle",
+      "contentKind": "SUBTITLE",
+      "contentVersion": "a4-review-set-v1",
+      "exactText": "One living room. One clear installed scope.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-02",
+      "publishEligible": true,
+      "sequence": 3,
+      "source": {
+        "a4Pdf": "docs/product-os/source/Better_Home_Collections_A4_Review_Set_V1.pdf",
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "DEC-012"
+      },
+      "sourceHash": "3fcafb036af9b92c5a30e5beddf0211e91bac58ce8113c5fbf5f808bf4176762",
+      "surface": "BACK",
+      "title": null
+    },
+    {
       "a4TemplateMappingKey": "back.response",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -11456,7 +11481,7 @@
       "ref": "DELTA-RENUMBER-E"
     }
   ],
-  "deterministic_hash": "99f14fb1aadf1e7cf0dff9396d992229606d6528a2747fbf8c1915cb13578abc",
+  "deterministic_hash": "c2a88230845f8b9d00d4116bee7325467ee44d3e3efdf3a630eb1ac02916dc4e",
   "emptyEntityExplanations": {
     "priceDisplayModeRecords": "deferred — DEC-011 policy applied as fields on price rows; structured enum NEEDS_SOURCE",
     "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction"
@@ -11470,7 +11495,7 @@
     "automations": 22,
     "bomItems": 67,
     "capabilities": 54,
-    "contentEntries": 243,
+    "contentEntries": 244,
     "costingSettings": 7,
     "decisionDeltaOverlays": 6,
     "equipmentSkus": 49,

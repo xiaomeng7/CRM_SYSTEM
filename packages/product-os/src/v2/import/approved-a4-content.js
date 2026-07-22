@@ -165,6 +165,7 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
     backPage: 4,
     hero: "One space. Many ways to live.",
     subtitle: "The atmosphere follows your life.",
+    backSubtitle: "One living room. One clear installed scope.",
     storyTitle: "Living isn't just another room.",
     storyBody:
       "It is where families reconnect, conversations become memories, and ordinary evenings matter most.",

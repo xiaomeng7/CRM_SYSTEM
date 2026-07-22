@@ -7,7 +7,7 @@ const { assertProductOsDatabaseTarget, resolveDatabaseUrlForEnv, fingerprintHost
 
 const argv = new Set(process.argv.slice(2));
 if (!argv.has("--env=neon_dev")) throw new Error("Only explicit --env=neon_dev is allowed");
-const apply = argv.has("--apply-approved-foundation-a4");
+const apply = argv.has("--apply-approved-a4-copy");
 assertProductOsDatabaseTarget({ envName: "neon_dev", requireUrl: true, requireFingerprint: true });
 const url = resolveDatabaseUrlForEnv("neon_dev");
 const prisma = new PrismaClient({ datasourceUrl: url });
@@ -18,12 +18,15 @@ class DryRunRollback extends Error {
 
 async function sync(tx) {
   const plan = buildImportPlanFromApprovedSources();
-  const rows = plan.contentEntries.filter((entry) => entry.productCode === "F-01");
-  if (!rows.length) throw new Error("Approved F-01 content is missing from ImportPlan");
-  const product = await tx.pos2Product.findUnique({ where: { productCode: "F-01" } });
-  if (!product) throw new Error("F-01 product is missing from Neon DEV");
+  const targetCodes = ["F-01", "C-02"];
+  const rows = plan.contentEntries.filter((entry) => targetCodes.includes(entry.productCode));
+  if (!rows.length) throw new Error("Approved A4 content is missing from ImportPlan");
+  const products = await tx.pos2Product.findMany({ where: { productCode: { in: targetCodes } } });
+  const productsByCode = new Map(products.map((product) => [product.productCode, product]));
+  for (const code of targetCodes) if (!productsByCode.has(code)) throw new Error(`${code} is missing from Neon DEV`);
 
   for (const row of rows) {
+    const product = productsByCode.get(row.productCode);
     const versionLabel = row.contentVersion || "foundation-a4-v1";
     const content = await tx.pos2ContentEntry.upsert({
       where: { contentKey_locale_versionLabel: { contentKey: row.contentCode, locale: row.locale || "en-AU", versionLabel } },
@@ -36,6 +39,7 @@ async function sync(tx) {
       update: { status: "ACTIVE" }
     });
   }
+  const product = productsByCode.get("F-01");
   const featuredCodes = ["AO-026", "AO-027", "AO-030"];
   const featuredProducts = await tx.pos2Product.findMany({ where: { productCode: { in: featuredCodes } } });
   const featuredByCode = new Map(featuredProducts.map((item) => [item.productCode, item]));
@@ -48,7 +52,7 @@ async function sync(tx) {
       update: { sortOrder: index + 1, status: "ACTIVE" }
     });
   }
-  return { contentEntries: rows.length, placements: rows.length, featuredAddons: featuredCodes.length, digest: crypto.createHash("sha256").update(JSON.stringify(rows)).digest("hex") };
+  return { products: targetCodes, contentEntries: rows.length, placements: rows.length, featuredAddons: featuredCodes.length, digest: crypto.createHash("sha256").update(JSON.stringify(rows)).digest("hex") };
 }
 
 (async () => {
@@ -69,6 +73,6 @@ async function sync(tx) {
     await prisma.$disconnect();
   }
 })().catch((error) => {
-  console.error(`Foundation A4 DEV sync failed: ${error.code || error.message}`);
+  console.error(`Approved A4 DEV sync failed: ${error.code || error.message}`);
   process.exitCode = 1;
 });

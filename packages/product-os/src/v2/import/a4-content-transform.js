@@ -106,6 +106,18 @@ function buildApprovedA4ContentPlan(libraryExperiences = []) {
         templateKey: "front.hero"
       })
     );
+    if (block.backSubtitle) {
+      push(
+        entry({
+          productCode,
+          contentKind: "SUBTITLE",
+          surface: "BACK",
+          sequence: 3,
+          body: block.backSubtitle,
+          templateKey: "back.decision_subtitle"
+        })
+      );
+    }
     push(
       entry({
         productCode,
