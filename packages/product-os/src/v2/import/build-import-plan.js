@@ -4,6 +4,7 @@
  */
 
 const path = require("path");
+const crypto = require("crypto");
 const {
   verifyApprovedSources,
   SOURCE_DIR,
@@ -443,6 +444,30 @@ function buildImportPlanFromWorkbook(workbook, options = {}) {
     if (plannedBySheet[row.sheet] != null) row.rowsPlanned = plannedBySheet[row.sheet];
   }
 
+  const bonusNoteContentEntries = expandPlan.bonusNotes.map((note) => {
+    const title = "PROTECTION BONUS";
+    const body = note.customerCopy;
+    return {
+      action: "UPSERT_CONTENT_ENTRY",
+      contentCode: `cnt.a4.${String(note.sourceProductCode).toLowerCase().replace(/[^a-z0-9]+/g, "_")}.expand_bonus.${note.sortOrder}`,
+      productCode: note.sourceProductCode,
+      locale: "en-AU",
+      languageLayer: "CUSTOMER",
+      surface: "BACK",
+      contentKind: "CUSTOMER_EXPERIENCE_COPY",
+      sequence: note.sortOrder,
+      title,
+      body,
+      exactText: body,
+      approvalStatus: "APPROVED_A4_VERBATIM",
+      publishEligible: true,
+      sourceHash: crypto.createHash("sha256").update(body, "utf8").digest("hex"),
+      contentVersion: "a4-review-set-v1",
+      a4TemplateMappingKey: `back.expand.${note.sortOrder}`,
+      source: note.source
+    };
+  });
+
   const entityInventory = {
     products: products.length,
     productVersions: products.length, // one version label each from master
@@ -458,7 +483,7 @@ function buildImportPlanFromWorkbook(workbook, options = {}) {
     automations: autoBundle.automations.length + 1, // + Return Routine delta
     addons: addonPlans.length,
     prices: prices.length,
-    contentEntries: contentBundle.contentEntries.length + a4Plan.contentEntries.length,
+    contentEntries: contentBundle.contentEntries.length + a4Plan.contentEntries.length + bonusNoteContentEntries.length,
     themes: themeBundle.themes.length,
     assets: imageBundle.assets.length,
     icons: iconBundle.icons.length,
@@ -506,7 +531,7 @@ function buildImportPlanFromWorkbook(workbook, options = {}) {
     labourApplications: labBundle.labourApplications,
     rules: ruleBundle.rules,
     automations: autoBundle.automations,
-    contentEntries: [...contentBundle.contentEntries, ...a4Plan.contentEntries],
+    contentEntries: [...contentBundle.contentEntries, ...a4Plan.contentEntries, ...bonusNoteContentEntries],
     a4PresentationMappings: a4Plan.presentationMappings,
     a4ScopePresentation: a4Plan.scopePresentation,
     expandFurtherRelationships: expandPlan.relationships,
