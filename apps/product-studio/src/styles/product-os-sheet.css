@@ -185,6 +185,7 @@ body {
   font-size: 27pt;
   margin: 2mm 0 0;
 }
+.os-back-head>div>p { color:var(--accent); font-size:10.5pt; margin:1.5mm 0 0; }
 .os-price {
   text-align: right;
 }
@@ -332,4 +333,5 @@ body {
   .os-page:last-child {
     page-break-after: auto;
   }
+  .os-lower small { display:none; }
 }

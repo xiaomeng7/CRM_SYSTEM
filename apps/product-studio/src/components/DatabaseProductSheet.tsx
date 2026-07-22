@@ -1,6 +1,6 @@
 export type ProductSheetModel = {
   productCode:string; canonicalName:string; productKind:string; hero:string|null; approvedImage:{storageUri:string;altText:string|null}|null; printEligible:boolean;
-  customerContent:{subtitle:string|null;storyTitle:string|null;storyBody:string|null;problem:string|null;response:string|null;frontMoments:{sequence:number;title:string|null;caption:string|null}[]};
+  customerContent:{subtitle:string|null;decisionSubtitle?:string|null;storyTitle:string|null;storyBody:string|null;problem:string|null;response:string|null;frontMoments:{sequence:number;title:string|null;caption:string|null}[]};
   customerExperiences:{title:string|null;description:string|null;sequence:number}[]; standardScope:{heading:string|null;lines:string[];sequence:number}[];
   compatibleExperiences:{productCode:string;canonicalName:string;customerCopy:string}[]; permittedAddons:{productCode:string;canonicalName:string;experiencePromise:string|null;standardScopeUnit:string|null;price:{amount:number}|null}[]; featuredAddons:{productCode:string;canonicalName:string;experiencePromise:string|null;standardScopeUnit:string|null;price:{amount:number}|null}[];
   installationAssumptions:string[]; activePrice:{amount:number;currencyCode:string;displayMode:string;taxBasis:string;fulfilmentMode:string}|null; includedBenefits:{benefitCode:string;displayName:string;unlocked:boolean;missingProductCodes:string[]}[];
@@ -11,9 +11,10 @@ const money=(n:number)=>new Intl.NumberFormat("en-AU",{style:"currency",currency
 
 export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
   const accent="#697d61";
-  const heroLines=(product.hero||"").split(/(?<=\.)\s+/).filter(Boolean);
+  const approvedHeroLines:Record<string,string[]>={"C-03":["The day","begins quietly."]};
+  const heroLines=approvedHeroLines[product.productCode]||(product.hero||"").split(/(?<=\.)\s+/).filter(Boolean);
   const productClass=`os-product-${product.productCode.toLowerCase().replace(/[^a-z0-9]+/g,"-")}`;
-  const linearMoments=["F-01","C-01"].includes(product.productCode);
+  const linearMoments=["F-01","C-01","C-03"].includes(product.productCode);
   const hierarchy=["FOUNDATION","COLLECTION","EXPERIENCE","ADD-ON"];
   const activeHierarchy=product.productKind==="ADDON"?"ADD-ON":product.productKind;
   return <main className={`os-sheet-wrap ${productClass} os-kind-${product.productKind.toLowerCase()} ${linearMoments?"os-layout-linear-moments":""}`} style={{"--accent":accent} as React.CSSProperties}>
@@ -28,7 +29,7 @@ export function DatabaseProductSheet({product}:{product:ProductSheetModel}){
       <footer><strong>BETTER HOME TECHNOLOGY PTY LTD</strong><span>{product.productCode} | {product.releaseVersion} | 1/2</span></footer>
     </section>
     <section className="os-page os-back">
-      <header className="os-back-head"><div><span>{product.productCode} / DECISION GUIDE</span><h1>{product.canonicalName}</h1></div><div className="os-price">{product.activePrice?<><strong>{product.activePrice.displayMode==="FROM"?"From ":""}{money(product.activePrice.amount)}</strong><span>{product.activePrice.fulfilmentMode==="INSTALLED"?"INSTALLED":"SUPPLY ONLY"} · {product.activePrice.taxBasis==="GST_INCLUSIVE"?"INCL GST":"EX GST"}</span></>:<strong>Contact us</strong>}</div></header>
+      <header className="os-back-head"><div><span>{product.productCode} / DECISION GUIDE</span><h1>{product.canonicalName}</h1>{product.customerContent.decisionSubtitle?<p>{product.customerContent.decisionSubtitle}</p>:null}</div><div className="os-price">{product.activePrice?<><strong>{product.activePrice.displayMode==="FROM"?"From ":""}{money(product.activePrice.amount)}</strong><span>{product.activePrice.fulfilmentMode==="INSTALLED"?"INSTALLED":"SUPPLY ONLY"} · {product.activePrice.taxBasis==="GST_INCLUSIVE"?"INCL GST":"EX GST"}</span></>:<strong>Contact us</strong>}</div></header>
       <div className="os-decision"><article><h2>The problem</h2><p>{product.customerContent.problem}</p></article><article><h2>How Better Home responds</h2><p>{product.customerContent.response}</p></article></div>
       <section><h2>What you experience</h2><div className="os-experiences">{product.customerExperiences.map((x,i)=><article key={i}><span>{String(i+1).padStart(2,"0")}</span><div><h3>{x.title}</h3><p>{x.description}</p></div></article>)}</div></section>
       <section><h2>Included in this product</h2><div className="os-scope">{product.standardScope.map(x=><article key={x.sequence}><h3>{x.heading}</h3>{x.lines.map(y=><p key={y}>{y}</p>)}</article>)}</div></section>
