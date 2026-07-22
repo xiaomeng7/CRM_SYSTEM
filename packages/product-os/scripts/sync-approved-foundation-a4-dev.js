@@ -43,7 +43,7 @@ async function sync(tx) {
     ["F-01", ["AO-026", "AO-027", "AO-030"]],
     ["E-01", ["AO-004", "AO-032"]],
     ["E-02", ["AO-019"]],
-    ["E-04", ["AO-021"]],
+    ["E-04", ["AO-020"]],
     ["E-05", ["AO-022", "AO-023", "AO-024"]]
   ]);
   const allFeaturedCodes = [...new Set([...featuredByParent.values()].flat())];
@@ -51,6 +51,11 @@ async function sync(tx) {
   const featuredByCode = new Map(featuredProducts.map((item) => [item.productCode, item]));
   for (const [parentCode, featuredCodes] of featuredByParent) {
     const product = productsByCode.get(parentCode);
+    const approvedAddonIds = featuredCodes.map((code) => featuredByCode.get(code)?.id).filter(Boolean);
+    await tx.pos2ProductFeaturedAddon.updateMany({
+      where: { parentProductId: product.id, channel: "A4", surface: "BACK", addonProductId: { notIn: approvedAddonIds }, status: { in: ["ACTIVE", "FROZEN"] } },
+      data: { status: "ARCHIVED" }
+    });
     for (let index = 0; index < featuredCodes.length; index += 1) {
       const addon = featuredByCode.get(featuredCodes[index]);
       if (!addon) throw new Error(`Approved Add-on ${featuredCodes[index]} is missing from Neon DEV`);

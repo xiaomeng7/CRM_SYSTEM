@@ -225,7 +225,7 @@ const APPROVED_EXPERIENCE_A4 = Object.freeze({
       { sequence: 2, title: "WEATHER", body: "Schedules respond more intelligently to conditions." },
       { sequence: 3, title: "MORE ZONES", body: "Use existing spare capacity as the garden grows." }
     ]),
-    featuredAddonCodes: Object.freeze(["AO-021"]),
+    featuredAddonCodes: Object.freeze(["AO-020"]),
     installationAssumptions: "Landscaper supplies valves, compatible coils, valve wiring, pipes, sprinklers, trenching and water connection. Better Home provides a 24V DC control interface."
   }),
   "E-05": Object.freeze({
