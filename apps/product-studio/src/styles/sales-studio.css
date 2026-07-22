@@ -157,6 +157,39 @@
   border-radius: 18px;
   padding: 28px;
 }
+.sales-customer-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 38px 0 14px;
+}
+.sales-customer-tabs a {
+  color: #626860;
+  border: 1px solid #d3cec5;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12px;
+  text-decoration: none;
+}
+.sales-customer-tabs a.active {
+  color: white;
+  border-color: #65755d;
+  background: #65755d;
+}
+.sales-directory-note {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+  margin-bottom: 14px;
+  padding: 18px 22px;
+  border: 1px solid #dfd3c3;
+  border-radius: 14px;
+  background: #f7f1e8;
+  color: #746d64;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.sales-directory-note strong { color: #6d5943; }
+.sales-customers .sales-table article { grid-template-columns: 1.8fr 1fr 1fr .65fr auto auto; }
 .sales-list-head {
   display: flex;
   justify-content: space-between;
@@ -246,6 +279,8 @@
   .sales-table article {
     grid-template-columns: 1fr 1fr;
   }
+  .sales-customers .sales-table article { grid-template-columns: 1fr 1fr; }
+  .sales-directory-note { grid-template-columns: 1fr; gap: 6px; }
   .sales-main h1 {
     font-size: 45px;
   }
