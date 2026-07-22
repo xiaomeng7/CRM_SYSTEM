@@ -37,7 +37,7 @@ export async function authenticateSalesStudioUser(email:string,password:string){
   const normalizedEmail=email.trim().toLowerCase();
   if(!normalizedEmail||!password||!sessionSecret())throw Object.assign(new Error("Sales Studio authentication is not configured"),{statusCode:503});
   const expectedEmail=configuredEmail(),expectedPassword=String(process.env.SALES_STUDIO_ADMIN_PASSWORD||"");
-  if(expectedEmail&&expectedPassword&&normalizedEmail===expectedEmail&&equalSecret(password,expectedPassword)){
+  if(process.env.SALES_STUDIO_AUTH_MODE!=="database_users"&&expectedEmail&&expectedPassword&&normalizedEmail===expectedEmail&&equalSecret(password,expectedPassword)){
     return {token:tokenFor({sub:`admin:${expectedEmail}`,email:expectedEmail,role:"ADMIN",mustChangePassword:false}),mustChangePassword:false};
   }
   const {readContext}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();
