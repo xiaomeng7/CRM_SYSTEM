@@ -49,6 +49,23 @@ async function sync(tx) {
   const allFeaturedCodes = [...new Set([...featuredByParent.values()].flat())];
   const featuredProducts = await tx.pos2Product.findMany({ where: { productCode: { in: allFeaturedCodes } } });
   const featuredByCode = new Map(featuredProducts.map((item) => [item.productCode, item]));
+  const plannedAddonsByCode = new Map(plan.addons.map((item) => [item.productCode, item]));
+  for (const addonCode of allFeaturedCodes) {
+    const addon = featuredByCode.get(addonCode);
+    const plannedAddon = plannedAddonsByCode.get(addonCode);
+    if (!addon || !plannedAddon?.experiencePromise) continue;
+    const contentKey = `a4.addon.${addonCode.toLowerCase()}.experience_promise`;
+    const content = await tx.pos2ContentEntry.upsert({
+      where: { contentKey_locale_versionLabel: { contentKey, locale: "en-AU", versionLabel: "V2.07" } },
+      create: { contentKey, contentKind: "ADDON_EXPERIENCE_PROMISE", locale: "en-AU", body: plannedAddon.experiencePromise, languageLayer: "CUSTOMER", status: "FROZEN", versionLabel: "V2.07" },
+      update: { body: plannedAddon.experiencePromise, languageLayer: "CUSTOMER", status: "FROZEN" }
+    });
+    await tx.pos2ProductContentPlacement.upsert({
+      where: { productId_contentEntryId_channel_surface_side_sortOrder: { productId: addon.id, contentEntryId: content.id, channel: "A4", surface: "back.addon.experience_promise", side: "BACK", sortOrder: 1 } },
+      create: { productId: addon.id, contentEntryId: content.id, channel: "A4", surface: "back.addon.experience_promise", side: "BACK", sortOrder: 1, status: "ACTIVE" },
+      update: { status: "ACTIVE" }
+    });
+  }
   for (const [parentCode, featuredCodes] of featuredByParent) {
     const product = productsByCode.get(parentCode);
     const approvedAddonIds = featuredCodes.map((code) => featuredByCode.get(code)?.id).filter(Boolean);
