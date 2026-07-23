@@ -26,6 +26,39 @@ function createOperationalHandoffService(prisma){
     return {dryRun:true,writesPerformed:false,handoffId:handoff.id,handoffStatus:handoff.status,authorizedAt:handoff.authorizedAt||null,alreadyCreated,payload,payloadHash:stableHash(payload),blockers,actions};
   }
   async function authorize(actor,proposalCodeValue,input={}){const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),expectedHash=clean(input.payloadHash);if(!expectedHash)throw new Error("Dry-run payload hash required");const current=await preview(a,proposalCodeValue);if(current.blockers.length)throw new Error(`Handoff has blockers: ${current.blockers.join(", ")}`);if(current.payloadHash!==expectedHash)throw new Error("Handoff preview changed; review it again");return prisma.$transaction(async tx=>{const user=await tx.pos2SalesUser.findFirst({where:{OR:[{externalSubject:a.userId},...(/^[0-9a-f-]{36}$/i.test(a.userId)?[{id:a.userId}]:[])]}});if(!user||user.status!=="ACTIVE")throw new Error("Active Sales Studio user required");const handoff=await tx.pos2OperationalHandoff.findUnique({where:{id:current.handoffId}});if(!handoff||!["PENDING","FAILED"].includes(handoff.status))throw new Error("Handoff is not available for authorization");if(handoff.authorizedAt&&handoff.authorizedPayloadHash===expectedHash)return {handoffId:handoff.id,status:handoff.status,authorizedAt:handoff.authorizedAt,unchanged:true};const now=new Date(),updated=await tx.pos2OperationalHandoff.update({where:{id:handoff.id},data:{authorizedByUserId:user.id,authorizedPayloadHash:expectedHash,authorizedPayloadSnapshot:current.payload,authorizedAt:now}});await tx.pos2AuditLog.create({data:{actor:a.userId,action:"SERVICEM8_WORK_ORDER_HANDOFF_AUTHORIZED",entityType:"Pos2OperationalHandoff",entityId:handoff.id,afterJson:{proposalCode:current.payload.proposal.code,payloadHash:expectedHash,authorizedByUserId:user.id,authorizedAt:now.toISOString(),status:updated.status}}});return {handoffId:updated.id,status:updated.status,authorizedAt:updated.authorizedAt,unchanged:false};});}
-  return {preview,authorize};
+  async function beginExecution(actor,proposalCodeValue,input={}){
+    const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),code=normalizeProposalCode(proposalCodeValue),handoffId=clean(input.handoffId);
+    if(!/^[0-9a-f-]{36}$/i.test(handoffId))throw new Error("Valid handoff ID required");
+    return prisma.$transaction(async tx=>{
+      const proposal=await tx.pos2Proposal.findUnique({where:{proposalCode:code},include:{acceptance:true,operationalHandoff:true}});
+      if(!proposal||proposal.status!=="ACCEPTED"||!proposal.acceptance)throw new Error("Accepted Proposal required");
+      const handoff=proposal.operationalHandoff;
+      if(!handoff||handoff.id!==handoffId)throw new Error("Operational handoff does not match Proposal");
+      if(handoff.status==="COMPLETED")return {alreadyCompleted:true,handoffId:handoff.id,jobUuid:handoff.serviceM8JobUuid};
+      if(handoff.status==="PROCESSING")throw new Error("Operational handoff is already processing");
+      if(!handoff.authorizedAt||!handoff.authorizedByUserId||!handoff.authorizedPayloadHash||!handoff.authorizedPayloadSnapshot)throw new Error("Administrator authorization required");
+      if(stableHash(handoff.authorizedPayloadSnapshot)!==handoff.authorizedPayloadHash)throw new Error("Authorized handoff snapshot failed integrity check");
+      const now=new Date();
+      await tx.pos2OperationalHandoff.update({where:{id:handoff.id},data:{status:"PROCESSING",processingAt:now,attemptCount:{increment:1},lastError:null}});
+      await tx.pos2AuditLog.create({data:{actor:a.userId,action:"SERVICEM8_WORK_ORDER_HANDOFF_PROCESSING",entityType:"Pos2OperationalHandoff",entityId:handoff.id,afterJson:{proposalCode:code,payloadHash:handoff.authorizedPayloadHash,processingAt:now.toISOString()}}});
+      return {alreadyCompleted:false,envelope:{schemaVersion:"1.0.0",handoffId:handoff.id,idempotencyKey:handoff.idempotencyKey,payloadHash:handoff.authorizedPayloadHash,payload:handoff.authorizedPayloadSnapshot}};
+    });
+  }
+  async function finishExecution(actor,handoffIdValue,result={}){
+    const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),handoffId=clean(handoffIdValue),ok=result.ok===true,jobUuid=clean(result.job_uuid),error=clean(result.error).slice(0,1000);
+    if(!/^[0-9a-f-]{36}$/i.test(handoffId))throw new Error("Valid handoff ID required");
+    if(ok&&!jobUuid)throw new Error("Completed handoff requires ServiceM8 Job UUID");
+    return prisma.$transaction(async tx=>{
+      const handoff=await tx.pos2OperationalHandoff.findUnique({where:{id:handoffId}});
+      if(!handoff)throw new Error("Operational handoff not found");
+      if(handoff.status==="COMPLETED")return {status:"COMPLETED",jobUuid:handoff.serviceM8JobUuid,unchanged:true};
+      if(handoff.status!=="PROCESSING")throw new Error("Operational handoff is not processing");
+      const now=new Date(),status=ok?"COMPLETED":"FAILED";
+      const updated=await tx.pos2OperationalHandoff.update({where:{id:handoff.id},data:{status,serviceM8JobUuid:jobUuid||null,lastError:ok?null:(error||"CRM handoff failed"),completedAt:ok?now:null}});
+      await tx.pos2AuditLog.create({data:{actor:a.userId,action:ok?"SERVICEM8_WORK_ORDER_HANDOFF_COMPLETED":"SERVICEM8_WORK_ORDER_HANDOFF_FAILED",entityType:"Pos2OperationalHandoff",entityId:handoff.id,afterJson:{status,serviceM8JobUuid:jobUuid||null,error:ok?null:(error||"CRM handoff failed"),finishedAt:now.toISOString()}}});
+      return {status:updated.status,jobUuid:updated.serviceM8JobUuid,unchanged:false};
+    });
+  }
+  return {preview,authorize,beginExecution,finishExecution};
 }
 module.exports={buildDescription,stableHash,createOperationalHandoffService};

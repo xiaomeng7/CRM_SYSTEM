@@ -1,4 +1,4 @@
-const {pool}=require('../lib/db');const {createServiceM8JobFromCRM}=require('./servicem8-create-job');
+const crypto=require('node:crypto');const {pool}=require('../lib/db');const {createServiceM8JobFromCRM}=require('./servicem8-create-job');
 const ENABLE_VALUE='ENABLE_DEV_BETTER_HOME_HANDOFF';
 function safeError(error){return String(error?.message||error||'Unknown handoff error').slice(0,1000);}
 async function loadHandoff(db,handoffId){const r=await db.query(`SELECT h.id,h.status,h.idempotency_key,h.crm_opportunity_id,h.crm_account_id,h.crm_contact_id,h.crm_asset_id,h.servicem8_job_uuid,h.attempt_count,h.authorized_by_user_id,h.authorized_payload_hash,h.authorized_payload_snapshot,h.authorized_at,p.proposal_code,p.status AS proposal_status,p.selection_fingerprint,a.evidence_reference FROM pos2_operational_handoffs h JOIN pos2_proposals p ON p.id=h.proposal_id JOIN pos2_proposal_acceptances a ON a.proposal_id=p.id WHERE h.id=$1`,[handoffId]);return r.rows[0]||null;}
@@ -11,4 +11,24 @@ async function processBetterHomeHandoff(handoffId,options={}){const db=options.d
   const claim=await db.query(`UPDATE pos2_operational_handoffs SET status='PROCESSING',processing_at=NOW(),attempt_count=attempt_count+1,last_error=NULL,updated_at=NOW() WHERE id=$1 AND status IN ('PENDING','FAILED') RETURNING id`,[handoffId]);if(!claim.rows[0])return {ok:false,error:'Handoff could not be claimed',error_code:'handoff_claim_failed'};
   try{const result=await jobCreator({opportunity_id:row.crm_opportunity_id,job_status:'Work Order',address_override:context.current.asset_address,description:context.snapshot.workOrder.description,create_reason:`Accepted Better Home Proposal ${row.proposal_code}`},{db,dryRun:false,log:options.log||(()=>{})});if(!result.ok){await db.query(`UPDATE pos2_operational_handoffs SET status='FAILED',servicem8_job_uuid=COALESCE($2,servicem8_job_uuid),last_error=$3,updated_at=NOW() WHERE id=$1`,[handoffId,result.job_uuid||null,safeError(result.error)]);return result;}await db.query(`UPDATE pos2_operational_handoffs SET status='COMPLETED',servicem8_job_uuid=$2,completed_at=NOW(),last_error=NULL,updated_at=NOW() WHERE id=$1`,[handoffId,result.job_uuid]);return {...result,handoff_status:'COMPLETED'};}catch(error){await db.query(`UPDATE pos2_operational_handoffs SET status='FAILED',last_error=$2,updated_at=NOW() WHERE id=$1`,[handoffId,safeError(error)]);return {ok:false,error:safeError(error),error_code:'handoff_worker_error'};}
 }
-module.exports={ENABLE_VALUE,loadHandoff,validateCurrentContext,processBetterHomeHandoff};
+function stableHash(value){return crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');}
+function validateEnvelope(input){
+  const envelope=input&&typeof input==='object'?input:{},payload=envelope.payload&&typeof envelope.payload==='object'?envelope.payload:null;
+  if(envelope.schemaVersion!=='1.0.0'||!/^[0-9a-f-]{36}$/i.test(String(envelope.handoffId||''))||!String(envelope.idempotencyKey||'')||!payload)return {ok:false,error:'Invalid Product OS handoff envelope',error_code:'invalid_handoff_envelope'};
+  if(stableHash(payload)!==String(envelope.payloadHash||''))return {ok:false,error:'Handoff payload integrity check failed',error_code:'handoff_integrity_failed'};
+  if(payload.operation!=='CREATE_SERVICEM8_WORK_ORDER'||payload.workOrder?.serviceM8Status!=='Work Order'||!payload.crm?.opportunityId||!payload.crm?.accountId||!payload.crm?.contactId||!payload.crm?.assetId||!payload.workOrder?.address)return {ok:false,error:'Incomplete Work Order handoff payload',error_code:'incomplete_handoff_payload'};
+  return {ok:true,envelope,payload};
+}
+async function validateLiveCrmContext(db,payload){
+  const r=await db.query(`SELECT o.id::text AS opportunity_id,o.service_m8_job_id,a.id::text AS account_id,c.id::text AS contact_id,s.id::text AS asset_id,s.address AS asset_address FROM opportunities o JOIN accounts a ON a.id=o.account_id JOIN contacts c ON c.id=o.contact_id AND c.account_id=a.id JOIN assets s ON s.id=o.asset_id AND s.account_id=a.id WHERE o.id::text=$1 AND a.id::text=$2 AND c.id::text=$3 AND s.id::text=$4 AND o.commercial_channel='BETTER_HOME_PROPOSAL'`,[payload.crm.opportunityId,payload.crm.accountId,payload.crm.contactId,payload.crm.assetId]);
+  const current=r.rows[0];if(!current)return {ok:false,error:'Live CRM context does not match the authorized Proposal',error_code:'crm_context_changed'};
+  if((current.asset_address||null)!==payload.workOrder.address)return {ok:false,error:'Property address changed after authorization',error_code:'authorized_preview_stale'};
+  return {ok:true,current};
+}
+async function processBetterHomeEnvelope(input,options={}){
+  const checked=validateEnvelope(input);if(!checked.ok)return checked;const db=options.db||pool,jobCreator=options.jobCreator||createServiceM8JobFromCRM,context=await validateLiveCrmContext(db,checked.payload);if(!context.ok)return context;
+  if(options.execute!==true)return {ok:true,dry_run:true,writes_performed:false,would_create:{opportunity_id:checked.payload.crm.opportunityId,job_status:'Work Order',address:checked.payload.workOrder.address,idempotency_key:checked.envelope.idempotencyKey},existing_job_uuid:context.current.service_m8_job_id||null};
+  if(process.env.BETTER_HOME_SERVICEM8_HANDOFF_ENABLED!==ENABLE_VALUE)return {ok:false,error:'Live Better Home handoff is disabled',error_code:'handoff_disabled'};
+  return jobCreator({opportunity_id:checked.payload.crm.opportunityId,job_status:'Work Order',address_override:checked.payload.workOrder.address,description:checked.payload.workOrder.description,create_reason:`Accepted Better Home Proposal ${checked.payload.proposal?.code||''}`},{db,dryRun:false,log:options.log||(()=>{})});
+}
+module.exports={ENABLE_VALUE,loadHandoff,validateCurrentContext,processBetterHomeHandoff,stableHash,validateEnvelope,validateLiveCrmContext,processBetterHomeEnvelope};
