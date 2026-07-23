@@ -186,6 +186,19 @@
   border-bottom: 1px solid #9ca695;
   padding-bottom: 2px;
 }
+.sales-table article > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sales-delete {
+  border: 0;
+  background: transparent;
+  color: #8b665f;
+  font: 500 11px Inter, sans-serif;
+  padding: 0;
+  cursor: pointer;
+}
 .sales-table b,
 .sales-table span,
 .sales-table small {

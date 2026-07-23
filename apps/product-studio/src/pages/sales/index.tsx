@@ -1,5 +1,6 @@
 import Head from "next/head";
 import type { GetServerSideProps } from "next";
+import {useState} from "react";
 
 type Draft = {
   draftCode: string;
@@ -32,6 +33,8 @@ const money = (n: number) =>
   }).format(n);
 
 export default function SalesHome({ locked, dashboard }: Props) {
+  const [drafts,setDrafts]=useState(dashboard?.drafts||[]);
+  const [message,setMessage]=useState("");
   if (locked)
     return (
       <main className="sales-locked">
@@ -44,6 +47,17 @@ export default function SalesHome({ locked, dashboard }: Props) {
       </main>
     );
   const d = dashboard!;
+  const deleteDraft=async(draft:Draft)=>{
+    if(!window.confirm(`Delete ${draft.customerName||"this customer"}'s Draft?`))return;
+    setMessage(`Deleting ${draft.draftCode}…`);
+    try{
+      const response=await fetch(`/api/drafts/${encodeURIComponent(draft.draftCode)}/archive`,{method:"DELETE"});
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error);
+      setDrafts(current=>current.filter(x=>x.draftCode!==draft.draftCode));
+      setMessage("Draft deleted.");
+    }catch(error){setMessage(error instanceof Error?error.message:"Draft could not be deleted");}
+  };
   return (
     <>
       <Head>
@@ -104,9 +118,10 @@ export default function SalesHome({ locked, dashboard }: Props) {
               </div>
               <a href="/configure">Create new</a>
             </div>
-            {d.drafts.length ? (
+            {message&&<p className="sales-decision-message">{message}</p>}
+            {drafts.length ? (
               <div className="sales-table">
-                {d.drafts.map((x) => (
+                {drafts.map((x) => (
                   <article key={x.draftCode}>
                     <div>
                       <b>{x.customerName || "Unnamed customer"}</b>
@@ -129,7 +144,7 @@ export default function SalesHome({ locked, dashboard }: Props) {
                       <span>{x.status.replaceAll("_", " ")}</span>
                     </div>
                     <strong>{x.latest ? money(x.latest.total) : "—"}</strong>
-                    <a className="sales-open" href={`/sales/drafts/${x.draftCode}`}>Open</a>
+                    <div><a className="sales-open" href={`/sales/drafts/${x.draftCode}`}>Continue</a><button className="sales-delete" onClick={()=>deleteDraft(x)}>Delete</button></div>
                   </article>
                 ))}
               </div>
