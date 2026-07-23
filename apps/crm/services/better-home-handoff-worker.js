@@ -21,7 +21,7 @@ function validateEnvelope(input){
   return {ok:true,envelope,payload};
 }
 async function validateLiveCrmContext(db,payload){
-  const r=await db.query(`SELECT o.id::text AS opportunity_id,o.service_m8_job_id,a.id::text AS account_id,c.id::text AS contact_id,s.id::text AS asset_id,s.address AS asset_address FROM opportunities o JOIN accounts a ON a.id=o.account_id JOIN contacts c ON c.id=o.contact_id AND c.account_id=a.id JOIN assets s ON s.id=o.asset_id AND s.account_id=a.id WHERE o.id::text=$1 AND a.id::text=$2 AND c.id::text=$3 AND s.id::text=$4 AND o.commercial_channel='BETTER_HOME_PROPOSAL'`,[payload.crm.opportunityId,payload.crm.accountId,payload.crm.contactId,payload.crm.assetId]);
+  const r=await db.query(`SELECT o.id::text AS opportunity_id,o.service_m8_job_id,a.id::text AS account_id,c.id::text AS contact_id,s.id::text AS asset_id,s.address AS asset_address FROM opportunities o JOIN accounts a ON a.id=o.account_id JOIN contacts c ON c.id=o.contact_id AND c.account_id=a.id JOIN assets s ON s.id::text=$4 AND s.account_id=a.id WHERE o.id::text=$1 AND a.id::text=$2 AND c.id::text=$3`,[payload.crm.opportunityId,payload.crm.accountId,payload.crm.contactId,payload.crm.assetId]);
   const current=r.rows[0];if(!current)return {ok:false,error:'Live CRM context does not match the authorized Proposal',error_code:'crm_context_changed'};
   if((current.asset_address||null)!==payload.workOrder.address)return {ok:false,error:'Property address changed after authorization',error_code:'authorized_preview_stale'};
   return {ok:true,current};
