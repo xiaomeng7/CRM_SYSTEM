@@ -16,16 +16,25 @@ function createSalesDraftService(prisma) {
       const existing=await tx.pos2SelectionDraft.findUnique({where:{draftCode:code},include:{versions:{orderBy:{versionNumber:"desc"},take:1}}});
       if(!actor)throw new Error("Authenticated actor required");
       if(existing&&actorRole==="SALES"&&existing.ownerUserId!==salesUser.id)throw new Error("Draft ownership required");
+      const convertedProposal=existing?.status==="CONVERTED"?await tx.pos2Proposal.findFirst({where:{draftVersion:{draftId:existing.id}},orderBy:{createdAt:"desc"}}):null;
+      if(existing?.status==="CONVERTED"&&!convertedProposal)throw new Error("Converted selection has no Proposal");
+      if(convertedProposal?.status==="ACCEPTED")throw new Error("Accepted Proposal is locked and cannot be changed");
       const latest=existing?.versions?.[0];
-      if(latest?.selectionFingerprint===projection.selectionFingerprint)return {draftCode:code,versionNumber:latest.versionNumber,unchanged:true};
+      const sameCustomer=latest&&JSON.stringify(latest.customerSnapshot||{})===JSON.stringify(projection.customer||{});
+      if(latest?.selectionFingerprint===projection.selectionFingerprint&&sameCustomer)return {draftCode:code,versionNumber:latest.versionNumber,proposalCode:convertedProposal?.proposalCode||null,unchanged:true};
       const products=await tx.pos2Product.findMany({where:{productCode:{in:projection.lines.map(x=>x.productCode)}}});
       const byCode=new Map(products.map(x=>[x.productCode,x]));
       if(products.length!==projection.lines.length)throw new Error("Projection contains unknown product");
       const versionNumber=(existing?.currentVersion||0)+1;
       const draft=existing?await tx.pos2SelectionDraft.update({where:{id:existing.id},data:{customerName:projection.customer.name||null,customerEmail:projection.customer.email||null,customerPhone:projection.customer.phone||null,siteAddress:projection.customer.siteAddress||null,currentVersion:versionNumber}}):await tx.pos2SelectionDraft.create({data:{draftCode:code,customerName:projection.customer.name||null,customerEmail:projection.customer.email||null,customerPhone:projection.customer.phone||null,siteAddress:projection.customer.siteAddress||null,currentVersion:versionNumber,createdBy:actor,ownerUserId:salesUser.id}});
       const version=await tx.pos2SelectionDraftVersion.create({data:{draftId:draft.id,versionNumber,selectionFingerprint:projection.selectionFingerprint,customerSnapshot:projection.customer,currencyCode:projection.currencyCode,taxBasis:projection.taxBasis,total:projection.total,createdBy:actor,actorUserId:salesUser.id,lines:{create:projection.lines.map(line=>({productId:byCode.get(line.productCode).id,productCodeSnapshot:line.productCode,productNameSnapshot:byCode.get(line.productCode).canonicalName,quantity:line.quantity,unitPrice:line.unitPrice,lineTotal:line.lineTotal}))}}});
+      if(convertedProposal){
+        const snapshot={schemaVersion:"1.0.0",draftCode:code,draftVersion:versionNumber,customer:projection.customer,currencyCode:projection.currencyCode,taxBasis:projection.taxBasis,total:projection.total,lines:projection.lines};
+        await tx.pos2Proposal.update({where:{id:convertedProposal.id},data:{draftVersionId:version.id,selectionFingerprint:projection.selectionFingerprint,projectionSnapshot:snapshot,total:projection.total,currencyCode:projection.currencyCode,taxBasis:projection.taxBasis}});
+        await tx.pos2AuditLog.create({data:{actor,action:"PROPOSAL_UPDATED_BEFORE_ACCEPTANCE",entityType:"Pos2Proposal",entityId:convertedProposal.id,beforeJson:{draftVersionId:convertedProposal.draftVersionId,selectionFingerprint:convertedProposal.selectionFingerprint,total:String(convertedProposal.total)},afterJson:{draftVersionId:version.id,selectionFingerprint:projection.selectionFingerprint,total:String(projection.total),draftVersion:versionNumber}}});
+      }
       await tx.pos2AuditLog.create({data:{actor,action:"SELECTION_DRAFT_VERSION_CREATED",entityType:"Pos2SelectionDraft",entityId:draft.id,afterJson:{draftCode:code,versionNumber,selectionFingerprint:projection.selectionFingerprint}}});
-      return {draftCode:code,draftId:draft.id,versionId:version.id,versionNumber,unchanged:false};
+      return {draftCode:code,draftId:draft.id,versionId:version.id,versionNumber,proposalCode:convertedProposal?.proposalCode||null,unchanged:false};
     });
   }
   return {saveProjection};
