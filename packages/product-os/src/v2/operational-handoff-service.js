@@ -27,6 +27,24 @@ function createOperationalHandoffService(prisma){
     const payloadHash=stableHash(payload);return {dryRun:true,writesPerformed:false,handoffId:handoff.id,handoffStatus:handoff.status,authorizedAt:handoff.authorizedAt||null,authorizationCurrent:Boolean(handoff.authorizedAt&&handoff.authorizedPayloadHash===payloadHash),alreadyCreated,payload,payloadHash,blockers,actions};
   }
   async function authorize(actor,proposalCodeValue,input={}){const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),expectedHash=clean(input.payloadHash);if(!expectedHash)throw new Error("Dry-run payload hash required");const current=await preview(a,proposalCodeValue);if(current.blockers.length)throw new Error(`Handoff has blockers: ${current.blockers.join(", ")}`);if(current.payloadHash!==expectedHash)throw new Error("Handoff preview changed; review it again");return prisma.$transaction(async tx=>{const user=await tx.pos2SalesUser.findFirst({where:{OR:[{externalSubject:a.userId},...(/^[0-9a-f-]{36}$/i.test(a.userId)?[{id:a.userId}]:[])]}});if(!user||user.status!=="ACTIVE")throw new Error("Active Sales Studio user required");const handoff=await tx.pos2OperationalHandoff.findUnique({where:{id:current.handoffId}});if(!handoff||!["PENDING","FAILED"].includes(handoff.status))throw new Error("Handoff is not available for authorization");if(handoff.authorizedAt&&handoff.authorizedPayloadHash===expectedHash)return {handoffId:handoff.id,status:handoff.status,authorizedAt:handoff.authorizedAt,unchanged:true};const now=new Date(),updated=await tx.pos2OperationalHandoff.update({where:{id:handoff.id},data:{authorizedByUserId:user.id,authorizedPayloadHash:expectedHash,authorizedPayloadSnapshot:current.payload,authorizedAt:now}});await tx.pos2AuditLog.create({data:{actor:a.userId,action:"SERVICEM8_WORK_ORDER_HANDOFF_AUTHORIZED",entityType:"Pos2OperationalHandoff",entityId:handoff.id,afterJson:{proposalCode:current.payload.proposal.code,payloadHash:expectedHash,authorizedByUserId:user.id,authorizedAt:now.toISOString(),status:updated.status}}});return {handoffId:updated.id,status:updated.status,authorizedAt:updated.authorizedAt,unchanged:false};});}
+  async function repairCrmContext(actor,proposalCodeValue,input={}){
+    const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),code=normalizeProposalCode(proposalCodeValue);
+    const context={opportunityId:clean(input.opportunityId),accountId:clean(input.accountId),contactId:clean(input.contactId),assetId:clean(input.assetId),accountName:clean(input.accountName),contactName:clean(input.contactName),assetName:clean(input.assetName),assetAddress:clean(input.assetAddress),email:clean(input.email),phone:clean(input.phone)};
+    if(![context.opportunityId,context.accountId,context.contactId,context.assetId].every(x=>/^[0-9a-f-]{36}$/i.test(x)))throw new Error("Complete live CRM context required");
+    return prisma.$transaction(async tx=>{
+      const user=await tx.pos2SalesUser.findFirst({where:{OR:[{externalSubject:a.userId},...(/^[0-9a-f-]{36}$/i.test(a.userId)?[{id:a.userId}]:[])]}});
+      if(!user||user.status!=="ACTIVE")throw new Error("Active Sales Studio user required");
+      const proposal=await tx.pos2Proposal.findUnique({where:{proposalCode:code},include:{acceptance:true,operationalHandoff:true,draftVersion:{include:{draft:{include:{customerLink:true}}}}}});
+      if(!proposal||proposal.status!=="ACCEPTED"||!proposal.acceptance)throw new Error("Accepted Proposal required");
+      const handoff=proposal.operationalHandoff;if(!handoff||!["PENDING","FAILED"].includes(handoff.status))throw new Error("CRM repair is unavailable for this handoff");
+      const before={crmOpportunityId:handoff.crmOpportunityId,crmAccountId:handoff.crmAccountId,crmContactId:handoff.crmContactId,crmAssetId:handoff.crmAssetId,authorizedAt:handoff.authorizedAt};
+      const updated=await tx.pos2OperationalHandoff.update({where:{id:handoff.id},data:{crmOpportunityId:context.opportunityId,crmAccountId:context.accountId,crmContactId:context.contactId,crmAssetId:context.assetId,authorizedByUserId:null,authorizedPayloadHash:null,authorizedPayloadSnapshot:Prisma.DbNull,authorizedAt:null,lastError:null,status:"PENDING"}});
+      const draft=proposal.draftVersion.draft,now=new Date(),snapshot={opportunityId:context.opportunityId,account:{id:context.accountId,name:context.accountName},contact:{id:context.contactId,name:context.contactName,email:context.email,phone:context.phone},asset:{id:context.assetId,name:context.assetName,address:context.assetAddress},source:"LIVE_CRM_REPAIR",capturedAt:now.toISOString()};
+      await tx.pos2DraftCustomerLink.upsert({where:{draftId:draft.id},create:{draftId:draft.id,crmContactId:context.contactId,crmAccountId:context.accountId,crmAssetId:context.assetId,crmOpportunityId:context.opportunityId,status:"CONFIRMED",matchMethod:"MANUAL",candidateSnapshot:snapshot,confirmedByUserId:user.id,confirmedAt:now},update:{crmContactId:context.contactId,crmAccountId:context.accountId,crmAssetId:context.assetId,crmOpportunityId:context.opportunityId,status:"CONFIRMED",matchMethod:"MANUAL",candidateSnapshot:snapshot,confirmedByUserId:user.id,confirmedAt:now}});
+      await tx.pos2AuditLog.create({data:{actor:a.userId,action:"SERVICEM8_HANDOFF_CRM_CONTEXT_REPAIRED",entityType:"Pos2OperationalHandoff",entityId:handoff.id,beforeJson:before,afterJson:{crmOpportunityId:updated.crmOpportunityId,crmAccountId:updated.crmAccountId,crmContactId:updated.crmContactId,crmAssetId:updated.crmAssetId,authorizationCleared:true,repairedByUserId:user.id}}});
+      return {proposalCode:code,handoffId:handoff.id,status:updated.status,authorizationCleared:true,context};
+    });
+  }
   async function beginExecution(actor,proposalCodeValue,input={}){
     const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),code=normalizeProposalCode(proposalCodeValue),handoffId=clean(input.handoffId);
     if(!/^[0-9a-f-]{36}$/i.test(handoffId))throw new Error("Valid handoff ID required");
@@ -71,6 +89,6 @@ function createOperationalHandoffService(prisma){
       return {status:updated.status,jobUuid:updated.serviceM8JobUuid,unchanged:false};
     });
   }
-  return {preview,authorize,executionEnvelope,beginExecution,finishExecution};
+  return {preview,authorize,repairCrmContext,executionEnvelope,beginExecution,finishExecution};
 }
 module.exports={buildDescription,canonicalize,stableHash,createOperationalHandoffService};
