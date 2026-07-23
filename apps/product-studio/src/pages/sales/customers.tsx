@@ -3,7 +3,7 @@ import Link from "next/link";
 import type {GetServerSideProps} from "next";
 
 type Segment="better_home"|"other_crm";
-type Customer={contact_id:string;name:string|null;email:string|null;phone:string|null;account_id:string|null;account_name:string|null;updated_at:string|null;source:"SERVICEM8"|"CRM"};
+type Customer={contact_id:string;name:string|null;email:string|null;phone:string|null;account_id:string|null;account_name:string|null;updated_at:string|null;source:"SERVICEM8"|"CRM"|"PRODUCT_OS";draft_code:string|null};
 type Props={customers:Customer[];segment:Segment};
 
 export default function Customers({customers,segment}:Props){
@@ -21,7 +21,7 @@ export default function Customers({customers,segment}:Props){
         {!isBetterHome&&<aside className="sales-directory-note"><strong>Separate CRM directory</strong><span>These contacts are not Better Home customers yet. Many came from ServiceM8, including older imported records. Selecting one starts a new Better Home conversation; it does not change the original CRM record.</span></aside>}
         <section className="sales-list sales-customers">
           <div className="sales-list-head"><div><p>{isBetterHome?"BETTER HOME":"CRM DIRECTORY"}</p><h2>{isBetterHome?"Better Home customers":"Other contacts"}</h2></div></div>
-          {customers.length?<div className="sales-table">{customers.map(customer=><article key={customer.contact_id}><div><b>{customer.name||"Unnamed contact"}</b><span>{customer.account_name||"No account"}</span></div><div><small>EMAIL</small><span>{customer.email||"—"}</span></div><div><small>PHONE</small><span>{customer.phone||"—"}</span></div><div><small>SOURCE</small><span>{customer.source==="SERVICEM8"?"ServiceM8":"CRM"}</span></div><strong>{customer.updated_at?new Date(customer.updated_at).toLocaleDateString("en-AU"):"—"}</strong><Link className="sales-open" href={`/configure?customer=${encodeURIComponent(customer.contact_id)}`}>Select</Link></article>)}</div>:<div className="sales-empty"><h3>{isBetterHome?"No Better Home customers yet.":"No other CRM contacts found."}</h3><p>{isBetterHome?"A customer will appear here once they are connected to a Better Home selection or proposal.":"New customers can still begin from a fresh selection."}</p>{isBetterHome&&<Link href="/configure">Start a new selection</Link>}</div>}
+          {customers.length?<div className="sales-table">{customers.map(customer=><article key={customer.contact_id}><div><b>{customer.name||"Unnamed contact"}</b><span>{customer.account_name||"No account"}</span></div><div><small>EMAIL</small><span>{customer.email||"—"}</span></div><div><small>PHONE</small><span>{customer.phone||"—"}</span></div><div><small>SOURCE</small><span>{customer.source==="SERVICEM8"?"ServiceM8":customer.source==="PRODUCT_OS"?"Better Home":"CRM"}</span></div><strong>{customer.updated_at?new Date(customer.updated_at).toLocaleDateString("en-AU"):"—"}</strong><Link className="sales-open" href={customer.draft_code?`/configure?draft=${encodeURIComponent(customer.draft_code)}`:`/configure?customer=${encodeURIComponent(customer.contact_id)}`}>{customer.draft_code?"Open":"Select"}</Link></article>)}</div>:<div className="sales-empty"><h3>{isBetterHome?"No Better Home customers yet.":"No other CRM contacts found."}</h3><p>{isBetterHome?"Save a named Draft and the customer will appear here.":"New customers can still begin from a fresh selection."}</p>{isBetterHome&&<Link href="/configure">Start a new selection</Link>}</div>}
         </section>
       </section>
     </main>

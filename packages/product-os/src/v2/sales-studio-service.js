@@ -51,7 +51,7 @@ function createSalesStudioService(prisma){
     return rows.map(x=>({proposalCode:x.proposalCode,status:x.status,total:Number(x.total),currencyCode:x.currencyCode,updatedAt:x.updatedAt,draftCode:x.draftVersion.draft.draftCode,draftVersion:x.draftVersion.versionNumber,customerName:x.draftVersion.draft.customerName,siteAddress:x.draftVersion.draft.siteAddress}));
   }
   async function customers(actor,options={}){
-    assertCan(actor,"CATALOG_READ");
+    const a=assertCan(actor,"CATALOG_READ");
     const segment=options.segment==="other_crm"?"other_crm":"better_home";
     const selectRows=segment==="better_home"
       ? prisma.$queryRaw`
@@ -95,7 +95,36 @@ function createSalesStudioService(prisma){
           ORDER BY c.updated_at DESC NULLS LAST
           LIMIT 100`;
     const rows=await selectRows;
-    return rows.map(row=>({...row,updated_at:row.updated_at?new Date(row.updated_at).toISOString():null}));
+    const normalized=rows.map(row=>({...row,draft_code:null,updated_at:row.updated_at?new Date(row.updated_at).toISOString():null}));
+    if(segment!=="better_home")return normalized;
+    const drafts=await prisma.pos2SelectionDraft.findMany({
+      where:{
+        customerLink:null,
+        OR:[{customerName:{not:null}},{customerEmail:{not:null}},{customerPhone:{not:null}}],
+        ...(a.role==="SALES"?{ownerUser:{externalSubject:a.userId}}:{})
+      },
+      select:{id:true,draftCode:true,customerName:true,customerEmail:true,customerPhone:true,siteAddress:true,updatedAt:true},
+      orderBy:{updatedAt:"desc"},
+      take:100
+    });
+    const known=new Set(normalized.flatMap(row=>[
+      row.email&&`email:${String(row.email).toLowerCase()}`,
+      row.phone&&`phone:${String(row.phone).replace(/\D/g,"")}`
+    ].filter(Boolean)));
+    const draftCustomers=drafts.filter(draft=>{
+      const keys=[
+        draft.customerEmail&&`email:${draft.customerEmail.toLowerCase()}`,
+        draft.customerPhone&&`phone:${draft.customerPhone.replace(/\D/g,"")}`
+      ].filter(Boolean);
+      if(keys.some(key=>known.has(key)))return false;
+      keys.forEach(key=>known.add(key));
+      return true;
+    }).map(draft=>({
+      contact_id:`draft:${draft.id}`,name:draft.customerName,email:draft.customerEmail,phone:draft.customerPhone,
+      account_id:null,account_name:draft.siteAddress||"Better Home selection",updated_at:draft.updatedAt.toISOString(),
+      source:"PRODUCT_OS",draft_code:draft.draftCode
+    }));
+    return [...draftCustomers,...normalized].sort((left,right)=>String(right.updated_at||"").localeCompare(String(left.updated_at||""))).slice(0,100);
   }
   return {dashboard,draftDetail,proposalDetail,proposals,customers};
 }

@@ -28,10 +28,10 @@ function createSalesLifecycleService(prisma){
     });
   }
   async function createProposal(actor,draftCode){
-    const a=assertCan(actor,"PROPOSAL_REVIEW"),code=normalizeDraftCode(draftCode);
+    const a=assertCan(actor,"PROPOSAL_CREATE_OWN"),code=normalizeDraftCode(draftCode);
     return prisma.$transaction(async tx=>{
-      await activeUser(tx,a);const draft=await tx.pos2SelectionDraft.findUnique({where:{draftCode:code}});
-      if(!draft)throw new Error("Draft not found");if(draft.status!=="READY_FOR_REVIEW")throw new Error("Draft must be ready for review");
+      await activeUser(tx,a);const draft=await tx.pos2SelectionDraft.findUnique({where:{draftCode:code},include:{ownerUser:true}});
+      if(!draft)throw new Error("Draft not found");if(!canAccessDraft(a,draft.ownerUser?.externalSubject,"WRITE"))throw new Error("Draft access denied");if(draft.status!=="READY_FOR_REVIEW")throw new Error("Draft must be ready for review");
       const version=await tx.pos2SelectionDraftVersion.findUnique({where:{draftId_versionNumber:{draftId:draft.id,versionNumber:draft.currentVersion}},include:{lines:{orderBy:{productCodeSnapshot:"asc"}}}});
       if(!version)throw new Error("Current Draft version not found");const codeOut=proposalCode(code,version.versionNumber);
       const existing=await tx.pos2Proposal.findUnique({where:{proposalCode:codeOut}});if(existing)return {proposalCode:existing.proposalCode,status:existing.status,unchanged:true};
