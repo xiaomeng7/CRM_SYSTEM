@@ -19,6 +19,7 @@ const salesAuthPolicy = require("./sales-auth-policy");
 const salesStudioService = require("./sales-studio-service");
 const salesLifecycleService = require("./sales-lifecycle-service");
 const crmContextService = require("./crm-context-service");
+const crmCustomerOnboardingService = require("./crm-customer-onboarding-service");
 const operationalHandoffService = require("./operational-handoff-service");
 const readContext = require("./read-context");
 
@@ -39,6 +40,7 @@ module.exports = {
   salesStudioService,
   salesLifecycleService,
   crmContextService,
+  crmCustomerOnboardingService,
   operationalHandoffService,
   readContext,
   PRODUCT_OS_V2_BOUNDARY: "pos2",
