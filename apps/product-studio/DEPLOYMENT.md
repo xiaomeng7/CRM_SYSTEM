@@ -24,6 +24,9 @@ For the preview environment, configure:
 - `PRODUCT_OS_DEV_HOST_FINGERPRINT`
 - `SALES_STUDIO_AUTH_MODE=database_users` (recommended) or
   `single_admin_password` (legacy single-user mode)
+- `RESEND_API_KEY` for controlled Proposal email delivery
+- `SALES_STUDIO_EMAIL_FROM=Better Home <sales@bhtechnology.com.au>` using a
+  sender domain verified in Resend
 - `SALES_STUDIO_ADMIN_EMAIL`
 - `SALES_STUDIO_ADMIN_PASSWORD`
 - `SALES_STUDIO_SESSION_SECRET` (at least 32 random characters)
