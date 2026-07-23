@@ -361,6 +361,12 @@
 .sales-handoff-preview dd { margin:5px 0 0; font-size:12px; }
 .sales-handoff-preview small { display:block; margin-top:16px; color:#8a6848; }
 .sales-handoff-preview>button { margin-top:16px; border:0; border-radius:999px; background:#65755d; color:white; padding:11px 16px; }
+.sales-handoff-execute { margin-top:18px; padding:16px; border:1px solid #d3dbcf; border-radius:14px; background:#f8faf6; }
+.sales-handoff-execute label { display:flex; align-items:flex-start; gap:10px; color:#34412f; font-size:12px; line-height:1.5; }
+.sales-handoff-execute input { margin-top:2px; accent-color:#65755d; }
+.sales-handoff-execute button { display:block; margin-top:14px; border:0; border-radius:999px; background:#34412f; color:white; padding:11px 16px; }
+.sales-handoff-execute button:disabled { opacity:.42; cursor:not-allowed; }
+.sales-handoff-execute small { color:#7b6048; }
 .sales-detail-lines h2 { font:400 36px/1 "Cormorant Garamond",Georgia,serif; margin:7px 0 24px; }
 .sales-detail-lines>article { display:grid; grid-template-columns:1fr auto 110px; gap:24px; align-items:center; border-top:1px solid #e3ded5; padding:16px 0; }
 .sales-detail-lines small,.sales-detail-lines b { display:block; }
