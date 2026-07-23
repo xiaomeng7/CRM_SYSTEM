@@ -1,6 +1,7 @@
 import type {NextApiRequest,NextApiResponse} from "next";
 import {requireSalesStudioActor} from "@/server/sales-auth";
 import {buildProposalEmail} from "@/server/proposal-email";
+import {createProposalConfirmationToken,proposalConfirmationSecret} from "@/server/proposal-confirmation";
 
 export default async function handler(req:NextApiRequest,res:NextApiResponse){
   if(req.method!=="POST")return res.status(405).json({error:"METHOD_NOT_ALLOWED"});
@@ -16,7 +17,9 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse){
     if(!recipient||recipient!==String(proposal.draft.customerEmail||"").trim().toLowerCase())return res.status(400).json({error:"CONFIRMED_CUSTOMER_EMAIL_REQUIRED"});
     const apiKey=String(process.env.RESEND_API_KEY||"").trim(),from=String(process.env.SALES_STUDIO_EMAIL_FROM||"Better Home <sales@bhtechnology.com.au>").trim();
     if(!apiKey)return res.status(503).json({error:"EMAIL_DELIVERY_NOT_CONFIGURED"});
-    const email=buildProposalEmail(proposal);
+    const token=createProposalConfirmationToken({proposalCode:proposal.proposalCode,fingerprint:proposal.selectionFingerprint,customerEmail:recipient},proposalConfirmationSecret());
+    const origin=String(process.env.SALES_STUDIO_PUBLIC_URL||`https://${req.headers.host||"sales-preview.bhtechnology.com.au"}`).replace(/\/$/,"");
+    const email=buildProposalEmail(proposal,`${origin}/proposal/confirm?token=${encodeURIComponent(token)}`);
     const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${apiKey}`,"Content-Type":"application/json"},body:JSON.stringify({from,to:[recipient],reply_to:actor.email||undefined,subject:email.subject,html:email.html})});
     const result=await response.json() as {id?:string;message?:string};
     if(!response.ok||!result.id)return res.status(502).json({error:"EMAIL_DELIVERY_FAILED"});
