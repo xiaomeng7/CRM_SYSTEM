@@ -44,6 +44,17 @@ function createOperationalHandoffService(prisma){
       return {alreadyCompleted:false,envelope:{schemaVersion:"1.0.0",handoffId:handoff.id,idempotencyKey:handoff.idempotencyKey,payloadHash:handoff.authorizedPayloadHash,payload:handoff.authorizedPayloadSnapshot}};
     });
   }
+  async function executionEnvelope(actor,proposalCodeValue,input={}){
+    assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE");const code=normalizeProposalCode(proposalCodeValue),handoffId=clean(input.handoffId);
+    if(!/^[0-9a-f-]{36}$/i.test(handoffId))throw new Error("Valid handoff ID required");
+    const proposal=await prisma.pos2Proposal.findUnique({where:{proposalCode:code},include:{acceptance:true,operationalHandoff:true}});
+    if(!proposal||proposal.status!=="ACCEPTED"||!proposal.acceptance)throw new Error("Accepted Proposal required");
+    const handoff=proposal.operationalHandoff;
+    if(!handoff||handoff.id!==handoffId)throw new Error("Operational handoff does not match Proposal");
+    if(!handoff.authorizedAt||!handoff.authorizedByUserId||!handoff.authorizedPayloadHash||!handoff.authorizedPayloadSnapshot)throw new Error("Administrator authorization required");
+    if(stableHash(handoff.authorizedPayloadSnapshot)!==handoff.authorizedPayloadHash)throw new Error("Authorized handoff snapshot failed integrity check");
+    return {schemaVersion:"1.0.0",handoffId:handoff.id,idempotencyKey:handoff.idempotencyKey,payloadHash:handoff.authorizedPayloadHash,payload:handoff.authorizedPayloadSnapshot};
+  }
   async function finishExecution(actor,handoffIdValue,result={}){
     const a=assertCan(actor,"OPERATIONAL_HANDOFF_AUTHORIZE"),handoffId=clean(handoffIdValue),ok=result.ok===true,jobUuid=clean(result.job_uuid),error=clean(result.error).slice(0,1000);
     if(!/^[0-9a-f-]{36}$/i.test(handoffId))throw new Error("Valid handoff ID required");
@@ -59,6 +70,6 @@ function createOperationalHandoffService(prisma){
       return {status:updated.status,jobUuid:updated.serviceM8JobUuid,unchanged:false};
     });
   }
-  return {preview,authorize,beginExecution,finishExecution};
+  return {preview,authorize,executionEnvelope,beginExecution,finishExecution};
 }
 module.exports={buildDescription,stableHash,createOperationalHandoffService};
