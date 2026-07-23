@@ -37,7 +37,21 @@ function createSalesDraftService(prisma) {
       return {draftCode:code,draftId:draft.id,versionId:version.id,versionNumber,proposalCode:convertedProposal?.proposalCode||null,unchanged:false};
     });
   }
-  return {saveProjection};
+  async function archiveDraft({draftCode,actor}) {
+    const {assertCan,canAccessDraft}=require("./sales-auth-policy");
+    const a=assertCan(actor,"DRAFT_WRITE_OWN"),code=normalizeDraftCode(draftCode);
+    return prisma.$transaction(async tx=>{
+      const draft=await tx.pos2SelectionDraft.findUnique({where:{draftCode:code},include:{ownerUser:{select:{externalSubject:true}}}});
+      if(!draft)throw new Error("Draft not found");
+      if(!canAccessDraft(a,draft.ownerUser?.externalSubject,"WRITE"))throw new Error("Draft access denied");
+      if(draft.status==="ARCHIVED")return {draftCode:code,status:"ARCHIVED",unchanged:true};
+      if(!["DRAFT","READY_FOR_REVIEW"].includes(draft.status))throw new Error("Only an active Draft can be deleted");
+      const updated=await tx.pos2SelectionDraft.update({where:{id:draft.id},data:{status:"ARCHIVED"}});
+      await tx.pos2AuditLog.create({data:{actor:a.userId,action:"SELECTION_DRAFT_ARCHIVED",entityType:"Pos2SelectionDraft",entityId:draft.id,beforeJson:{status:draft.status},afterJson:{status:updated.status}}});
+      return {draftCode:code,status:updated.status,unchanged:false};
+    });
+  }
+  return {saveProjection,archiveDraft};
 }
 
 module.exports={normalizeDraftCode,createSalesDraftService};
