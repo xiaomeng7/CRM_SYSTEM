@@ -13,18 +13,19 @@ const collections = [
 ];
 
 const productSystem = [
-  { step: '01', name: 'Foundation', text: 'The shared base that allows Better Home products to work as one considered system.' },
-  { step: '02', name: 'Collections', text: 'Start with the rooms and parts of everyday life that matter to you.' },
-  { step: '03', name: 'Experiences', text: 'Extend comfort, atmosphere and care around the way you live.' },
-  { step: '04', name: 'Add-ons', text: 'Extend an existing capability where you need more coverage.' },
+  { step: '01', name: 'Foundation', question: 'What brings the home together?', href: '#foundation', text: 'One shared base for every Better Home product.' },
+  { step: '02', name: 'Collections', question: 'Which spaces matter to you?', href: '#collections', text: 'Choose the rooms and daily routines you want to improve.' },
+  { step: '03', name: 'Experiences', question: 'What more should the home do?', href: '#experiences', text: 'Add comfort, atmosphere or care where it belongs.' },
+  { step: '04', name: 'Add-ons', question: 'Where do you need more coverage?', href: '#add-ons', text: 'Extend only a capability you have already chosen.' },
 ];
 
-const journey = [
-  ['01', 'Explore your home'],
-  ['02', 'Choose your spaces'],
-  ['03', 'Review your proposal'],
-  ['04', 'Confirm'],
-  ['05', 'We arrange installation'],
+const experiences = [
+  { name: 'Mood Lighting', type: 'For selected rooms', text: 'Give familiar evenings more colour, depth and atmosphere.' },
+  { name: 'Healthy Air', type: 'For selected rooms', text: 'Refresh the air quietly around the way each room is used.' },
+  { name: 'Climate', type: 'Whole-home comfort', text: 'Coordinate central climate without requiring a Collection first.' },
+  { name: 'Garden Care', type: 'Independent', text: 'Give irrigation a simple, considered rhythm of its own.' },
+  { name: 'CCTV & Monitoring', type: 'Independent', text: 'Professional local monitoring with a clearer view of home.' },
+  { name: 'Smart Toilet', type: 'Independent', text: 'Personal comfort that can begin as a product of its own.' },
 ];
 ---
 
@@ -40,7 +41,7 @@ const journey = [
         <h1 class="font-['Cormorant_Garamond',Georgia,serif] text-[clamp(3.5rem,7vw,6.8rem)] font-normal leading-[0.92] tracking-[-0.045em]">A home that quietly follows your life.</h1>
         <p class="mt-8 max-w-[30rem] text-lg leading-relaxed text-[#656a63]">Begin with the rooms that matter. Add the experiences you value. Extend only what already belongs in your home.</p>
         <div class="mt-10 flex flex-wrap gap-4">
-          <a href="#collections" class="inline-flex min-h-12 items-center rounded-full bg-[#65755d] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#53614d]">Explore Collections</a>
+          <a href="#foundation" class="inline-flex min-h-12 items-center rounded-full bg-[#65755d] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#53614d]">Begin with Foundation</a>
           <a href="#how-it-works" class="inline-flex min-h-12 items-center rounded-full border border-[#bbb6ac] px-7 text-sm font-medium transition-colors hover:bg-white/50">See how it works</a>
         </div>
       </div>
@@ -52,24 +53,44 @@ const journey = [
     <section id="how-it-works" class="border-y border-[#d9d3c9] bg-[#faf8f4] py-20 md:py-28">
       <div class="mx-auto max-w-[1160px] px-6 md:px-10">
         <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">The Better Home Product System</p>
-        <h2 class="mt-5 max-w-3xl font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight md:text-6xl">One clear language, from first idea to final installation.</h2>
+        <h2 class="mt-5 max-w-3xl font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight md:text-6xl">Build Better Home, one clear decision at a time.</h2>
         <div class="mt-14 grid gap-8 md:grid-cols-4">
           {productSystem.map((item) => (
-            <article class="border-t border-[#cfc9bf] pt-6">
+            <a href={item.href} class="group border-t border-[#cfc9bf] pt-6">
               <span class="text-xs text-[#65755d]">{item.step}</span>
               <h3 class="mt-5 font-['Cormorant_Garamond',Georgia,serif] text-3xl font-normal">{item.name}</h3>
+              <p class="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#65755d]">{item.question}</p>
               <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">{item.text}</p>
-            </article>
+              <span class="mt-5 block text-sm text-[#65755d] transition-transform duration-300 group-hover:translate-x-1">Continue →</span>
+            </a>
           ))}
         </div>
         <p class="mt-10 max-w-3xl border-l-2 border-[#8a987f] pl-5 text-sm leading-relaxed text-[#686d65]">An Add-on only extends a capability already included in its Collection or Experience. It does not create a new room or a new experience.</p>
       </div>
     </section>
 
+    <section id="foundation" class="scroll-mt-20 bg-[#d8ded2] py-20 md:py-28">
+      <div class="mx-auto grid max-w-[1160px] gap-12 px-6 md:grid-cols-[0.75fr_1.25fr] md:items-end md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#52604c]">Step 01 · Foundation</p>
+          <h2 class="mt-5 font-['Cormorant_Garamond',Georgia,serif] text-5xl font-normal leading-[0.98] md:text-7xl">One quiet foundation for the whole home.</h2>
+        </div>
+        <div class="max-w-2xl md:pb-2">
+          <p class="text-lg leading-relaxed text-[#566052]">Foundation connects the home as one considered system. It is selected once, then stays quietly in the background as rooms and experiences are added.</p>
+          <div class="mt-8 grid gap-5 border-t border-[#aab3a5] pt-6 text-sm text-[#465143] sm:grid-cols-3">
+            <p>One shared base</p>
+            <p>Ready for future growth</p>
+            <p>Professionally installed</p>
+          </div>
+          <a href="/contact" class="mt-8 inline-block text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Discuss your Foundation</a>
+        </div>
+      </div>
+    </section>
+
     <section id="collections" class="py-20 md:py-28">
       <div class="mx-auto max-w-[1160px] px-6 md:px-10">
         <div class="max-w-3xl">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Collections</p>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Step 02 · Collections</p>
           <h2 class="mt-5 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight md:text-6xl">Start with the spaces that shape your day.</h2>
           <p class="mt-5 max-w-2xl text-lg leading-relaxed text-[#686d65]">Each Collection is a clear starting point. Your proposal brings the selected rooms, experiences and permitted Add-ons together.</p>
         </div>
@@ -104,16 +125,42 @@ const journey = [
       </div>
     </section>
 
-    <section class="border-y border-[#d9d3c9] bg-[#e9e4da] py-20 md:py-24">
+    <section id="experiences" class="scroll-mt-20 border-y border-[#d9d3c9] bg-[#e9e4da] py-20 md:py-28">
       <div class="mx-auto max-w-[1160px] px-6 md:px-10">
-        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">From interest to installation</p>
-        <div class="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-5">
-          {journey.map(([step, title]) => (
-            <div class="border-t border-[#bdb7ab] pt-5">
-              <span class="text-xs text-[#65755d]">{step}</span>
-              <p class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-2xl leading-tight">{title}</p>
-            </div>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Step 03 · Experiences</p>
+        <div class="mt-5 grid gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-end">
+          <h2 class="font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight md:text-6xl">Let the home do more, only where it matters.</h2>
+          <p class="max-w-xl text-lg leading-relaxed text-[#686d65]">Some Experiences belong to a room. Others can support the whole home or begin independently. Better Home keeps those differences clear.</p>
+        </div>
+        <div class="mt-14 grid gap-px overflow-hidden rounded-3xl border border-[#cbc4b8] bg-[#cbc4b8] sm:grid-cols-2 lg:grid-cols-3">
+          {experiences.map((experience) => (
+            <article class="bg-[#f5f1ea] p-7 md:p-8">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#7a8474]">{experience.type}</p>
+              <h3 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-3xl font-normal">{experience.name}</h3>
+              <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">{experience.text}</p>
+            </article>
           ))}
+        </div>
+        <p class="mt-8 max-w-3xl text-sm leading-relaxed text-[#686d65]">Protection is not a separate purchase. It is a Better Home bonus that becomes available when the required Entry, Away and CCTV products are present.</p>
+      </div>
+    </section>
+
+    <section id="add-ons" class="scroll-mt-20 bg-[#f7f4ee] py-20 md:py-28">
+      <div class="mx-auto grid max-w-[1160px] gap-12 px-6 md:grid-cols-[0.8fr_1.2fr] md:items-start md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Step 04 · Add-ons</p>
+          <h2 class="mt-5 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight md:text-6xl">More of what already belongs.</h2>
+        </div>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <article class="border-t border-[#cfc9bf] pt-6">
+            <h3 class="font-['Cormorant_Garamond',Georgia,serif] text-3xl">Additional Curtain</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">Extend the same privacy and light control to another compatible window.</p>
+          </article>
+          <article class="border-t border-[#cfc9bf] pt-6">
+            <h3 class="font-['Cormorant_Garamond',Georgia,serif] text-3xl">Additional Lighting Zone</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">Bring an existing lighting experience into another compatible area.</p>
+          </article>
+          <p class="sm:col-span-2 border-l-2 border-[#8a987f] pl-5 text-sm leading-relaxed text-[#686d65]">Add-ons never create a new room or a new Experience. Each product page shows only the Add-ons permitted by what you have already selected.</p>
         </div>
       </div>
     </section>
