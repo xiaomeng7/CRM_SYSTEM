@@ -9,6 +9,7 @@ const { pool } = require('../lib/db');
 const { ensureServiceM8LinkForAccount } = require('./servicem8-sync');
 const { advanceOpportunityStage } = require('./opportunityStageAutomation');
 const { buildDefaultJobDescription } = require('../lib/servicem8/job-description-builder');
+const { syncBetterHomeJobMaterials } = require('./better-home-servicem8-products');
 
 const AUDIT_SOURCE = 'crm-create-servicem8-job';
 const CREATED_VIA = 'crm';
@@ -194,7 +195,15 @@ async function createServiceM8JobFromCRM(params, options = {}) {
     log('already_created', { opportunity_id: opportunityId, job_uuid: opportunity.service_m8_job_id });
     let warnings = [];
     try {
-      warnings = await enrichBetterHomeJob(new ServiceM8Client(), opportunity.service_m8_job_id, contact, log);
+      const client = new ServiceM8Client();
+      warnings = await enrichBetterHomeJob(client, opportunity.service_m8_job_id, contact, log);
+      if (Array.isArray(params.line_items) && params.line_items.length) {
+        try {
+          await syncBetterHomeJobMaterials(client, opportunity.service_m8_job_id, params.line_items);
+        } catch (error) {
+          warnings.push(`Billing: ${error.message}`);
+        }
+      }
     } catch (error) {
       warnings = [`Enrichment unavailable: ${error.message}`];
     }
@@ -266,6 +275,13 @@ async function createServiceM8JobFromCRM(params, options = {}) {
     jobUuid = created.uuid;
     jobNumber = created.job_number;
     enrichmentWarnings = await enrichBetterHomeJob(client, jobUuid, contact, log);
+    if (Array.isArray(params.line_items) && params.line_items.length) {
+      try {
+        await syncBetterHomeJobMaterials(client, jobUuid, params.line_items);
+      } catch (error) {
+        enrichmentWarnings.push(`Billing: ${error.message}`);
+      }
+    }
   } catch (e) {
     const msg = e && e.message ? e.message : String(e);
     const isNetwork = /timeout|ECONNRESET|ETIMEDOUT|network/i.test(msg);
