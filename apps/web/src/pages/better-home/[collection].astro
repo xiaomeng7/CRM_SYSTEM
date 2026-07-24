@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { getCustomerPrice } from '../../lib/product-pricing';
 import { createRequire } from 'node:module';
 
 export function getStaticPaths() {
@@ -23,6 +24,7 @@ export function getStaticPaths() {
 
 const { id, slug, content } = Astro.props;
 const shortName = content.productName.replace(' Collection', '');
+const price = getCustomerPrice(id);
 ---
 
 <Layout
@@ -30,7 +32,7 @@ const shortName = content.productName.replace(' Collection', '');
   description={`${content.hero} ${content.subtitle}`}
 >
   <Header />
-  <main class="bg-[#f5f1ea] text-[#252823]">
+  <main class="better-home-collection-page bg-[#f5f1ea] text-[#252823]">
     <section class="border-b border-[#d9d3c9]">
       <div class="mx-auto max-w-[1160px] px-6 py-16 md:px-10 md:py-24">
         <a href="/better-home#collections" class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#65755d]">← All Collections</a>
@@ -129,6 +131,20 @@ const shortName = content.productName.replace(' Collection', '');
       </div>
     </section>
 
+    <section class="border-t border-[#d9d3c9] bg-[#f5f1ea] py-18 md:py-24">
+      <div class="mx-auto grid max-w-[1160px] gap-10 px-6 md:grid-cols-[0.75fr_1.25fr] md:items-end md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Investment</p>
+          <p class="editorial-price mt-5 text-5xl font-normal leading-none md:text-7xl">{price.amountLabel}</p>
+          <p class="mt-4 text-xs uppercase tracking-[0.14em] text-[#65755d]">{price.fulfilmentLabel} · {price.taxLabel}</p>
+        </div>
+        <div class="max-w-2xl border-t border-[#cfc9bf] pt-6">
+          <p class="text-lg leading-relaxed text-[#4f574d]">A clear starting point for the standard Collection scope shown above.</p>
+          <p class="mt-4 text-sm leading-relaxed text-[#686d65]">Site conditions, non-standard construction and additional work may affect the final proposal.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="bg-[#30372f] py-20 text-white md:py-24">
       <div class="mx-auto grid max-w-[1160px] items-center gap-10 px-6 md:grid-cols-[1fr_auto] md:px-10">
         <div>
@@ -144,3 +160,12 @@ const shortName = content.productName.replace(' Collection', '');
   </main>
   <Footer />
 </Layout>
+
+<style is:global>
+  .better-home-collection-page h1,
+  .better-home-collection-page h2,
+  .better-home-collection-page .editorial-price {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-weight: 400;
+  }
+</style>
