@@ -162,6 +162,26 @@ class ServiceM8Client {
     return res.json();
   }
 
+  async getMaterials(filter = '') {
+    return this._getCollection('material', filter);
+  }
+
+  async createMaterial(body) {
+    return this._createRecord('material', body);
+  }
+
+  async updateMaterial(uuid, body) {
+    return this._createRecord(`material/${uuid}`, body);
+  }
+
+  async createJobMaterial(jobUuid, body) {
+    return this._createRecord('jobmaterial', { job_uuid: jobUuid, ...body });
+  }
+
+  async getTaxRates() {
+    return this._getCollection('taxrate');
+  }
+
   /**
    * Fetch job quotes. ServiceM8 may expose jobquote.json or quote.json.
    * Returns [] if endpoint is not available (404/400/401 - e.g. not authorised).
