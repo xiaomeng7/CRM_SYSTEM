@@ -34,12 +34,12 @@ const experiences = [
   description="Explore Better Home Collections and build a calm, considered residential living system around the rooms and experiences that matter to you."
 >
   <Header />
-  <main class="bg-[#f5f1ea] text-[#252823]">
+  <main class="better-home-product-page bg-[#f5f1ea] text-[#252823]">
     <section class="mx-auto grid min-h-[76vh] max-w-[1320px] items-center gap-12 px-6 py-16 md:grid-cols-[0.9fr_1.1fr] md:px-10 md:py-20 lg:px-16">
       <div class="max-w-[35rem]">
         <p class="mb-7 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Better Home</p>
-        <h1 class="font-['Cormorant_Garamond',Georgia,serif] text-[clamp(3.5rem,7vw,6.8rem)] font-normal leading-[0.92] tracking-[-0.045em]">A home that quietly follows your life.</h1>
-        <p class="mt-8 max-w-[30rem] text-lg leading-relaxed text-[#656a63]">Begin with the rooms that matter. Add the experiences you value. Extend only what already belongs in your home.</p>
+        <h1 class="font-['Cormorant_Garamond',Georgia,serif] text-[clamp(3.5rem,7vw,6.8rem)] font-normal leading-[0.92] tracking-[-0.045em]">Shape Better Home around the way you live.</h1>
+        <p class="mt-8 max-w-[30rem] text-lg leading-relaxed text-[#656a63]">Begin with one Foundation. Choose the spaces that matter. Add only the experiences you value.</p>
         <div class="mt-10 flex flex-wrap gap-4">
           <a href="#foundation" class="inline-flex min-h-12 items-center rounded-full bg-[#65755d] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#53614d]">Begin with Foundation</a>
           <a href="#how-it-works" class="inline-flex min-h-12 items-center rounded-full border border-[#bbb6ac] px-7 text-sm font-medium transition-colors hover:bg-white/50">See how it works</a>
@@ -82,7 +82,7 @@ const experiences = [
             <p>Ready for future growth</p>
             <p>Professionally installed</p>
           </div>
-          <a href="/contact" class="mt-8 inline-block text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Discuss your Foundation</a>
+          <a href="#collections" class="mt-8 inline-block text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Continue to Collections →</a>
         </div>
       </div>
     </section>
@@ -180,3 +180,12 @@ const experiences = [
   </main>
   <Footer />
 </Layout>
+
+<style is:global>
+  .better-home-product-page h1,
+  .better-home-product-page h2,
+  .better-home-product-page h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-weight: 400;
+  }
+</style>
