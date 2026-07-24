@@ -133,7 +133,7 @@ class ServiceM8Client {
       job_uuid: jobUuid,
       name: String(opts.name || '').trim(),
       section_name: String(opts.section_name || 'Better Home Installation').trim(),
-      item_type: Number.isInteger(opts.item_type) ? opts.item_type : 0,
+      item_type: String(opts.item_type || 'Todo').trim(),
       sort_order: Number.isInteger(opts.sort_order) ? opts.sort_order : 0,
     });
   }

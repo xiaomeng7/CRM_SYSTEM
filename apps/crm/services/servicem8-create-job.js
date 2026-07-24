@@ -132,7 +132,7 @@ async function enrichBetterHomeJob(client, jobUuid, contact, log = () => {}) {
         await client.createJobChecklist(jobUuid, {
           name,
           section_name: 'Better Home Installation',
-          item_type: 0,
+          item_type: 'Todo',
           sort_order: (index + 1) * 10,
         });
       }
