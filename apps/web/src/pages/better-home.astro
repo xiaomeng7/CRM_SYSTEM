@@ -75,12 +75,25 @@ const journey = [
         </div>
         <div class="mt-14 grid gap-px overflow-hidden rounded-3xl border border-[#d8d1c5] bg-[#d8d1c5] sm:grid-cols-2 lg:grid-cols-3">
           {collections.map((collection) => (
-            <a href={`/better-home/${collection.slug}`} class="group block min-h-[14rem] bg-[#faf8f4] p-8 transition-colors hover:bg-white md:p-10">
-              <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#899183]">{collection.id} · Collection</p>
-              <h3 class="mt-7 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal text-[#30352f]">{collection.name}</h3>
-              <div class="mt-10 flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#65755d]">
-                <span class="h-px w-10 bg-[#8a987f] transition-all duration-500 group-hover:w-16"></span>
-                Explore
+            <a href={`/better-home/${collection.slug}`} class="group block overflow-hidden bg-[#faf8f4] transition-colors hover:bg-white">
+              <div class="aspect-[4/3] overflow-hidden bg-[#ddd5c8]">
+                <img
+                  src={`/images/better-home/collections/${collection.slug}.webp`}
+                  alt={`${collection.name} Collection residential atmosphere`}
+                  width="804"
+                  height="821"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.025]"
+                />
+              </div>
+              <div class="p-7 md:p-8">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#899183]">{collection.id} · Collection</p>
+                <h3 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal text-[#30352f]">{collection.name}</h3>
+                <div class="mt-7 flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#65755d]">
+                  <span class="h-px w-10 bg-[#8a987f] transition-all duration-500 group-hover:w-16"></span>
+                  Explore
+                </div>
               </div>
             </a>
           ))}

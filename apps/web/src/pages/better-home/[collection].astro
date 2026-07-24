@@ -17,11 +17,11 @@ export function getStaticPaths() {
   ];
   return collectionRoutes.map(({ id, slug }) => ({
     params: { collection: slug },
-    props: { id, content: APPROVED_COLLECTION_A4[id] },
+    props: { id, slug, content: APPROVED_COLLECTION_A4[id] },
   }));
 }
 
-const { id, content } = Astro.props;
+const { id, slug, content } = Astro.props;
 const shortName = content.productName.replace(' Collection', '');
 ---
 
@@ -44,6 +44,18 @@ const shortName = content.productName.replace(' Collection', '');
             <p class="mt-6 text-lg leading-relaxed text-[#686d65]">{content.subtitle}</p>
           </div>
         </div>
+        <figure class="mt-14 overflow-hidden rounded-[2rem] bg-[#ddd5c8] shadow-[0_2rem_6rem_rgba(57,55,49,0.1)]">
+          <img
+            src={`/images/better-home/collections/${slug}.webp`}
+            alt={`${content.productName} residential atmosphere`}
+            width="804"
+            height="821"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="aspect-[16/7] h-full w-full object-cover"
+          />
+        </figure>
       </div>
     </section>
 
