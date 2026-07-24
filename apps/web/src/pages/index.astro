@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const moments = [
-  { slug: 'bedroom', time: 'Morning', title: 'Wake gently.', text: 'The room begins with softer light, allowing the day to arrive without urgency.' },
+  { slug: 'bedroom', time: 'Before the day begins', title: 'Wake gently.', text: 'The room begins with softer light, allowing the day to arrive without urgency.' },
   { slug: 'kitchen', time: 'Through the day', title: 'Let the light follow life.', text: 'Breakfast, cooking and a quiet glass of water each ask something different of the same room.' },
   { slug: 'entry', time: 'Coming home', title: 'Feel welcomed, without asking.', text: 'The threshold responds naturally, making arrival feel familiar before a word is spoken.' },
   { slug: 'living', time: 'Evening', title: 'Let the home settle with you.', text: 'Family time, reading and film each find their own atmosphere as the day slows down.' },
@@ -55,9 +55,9 @@ const moments = [
     <section id="philosophy" class="relative scroll-mt-20 overflow-hidden border-b border-white/10 bg-[#293129] py-24 text-[#f3eee5] md:py-36">
       <picture class="pointer-events-none absolute inset-0 block" aria-hidden="true">
         <source srcset="/images/better-home/collections/away.webp" type="image/webp" />
-        <img src="/images/better-home/collections/away.jpg" alt="" width="804" height="821" loading="lazy" class="h-full w-full object-cover object-center opacity-[0.13]" />
+        <img src="/images/better-home/collections/away.jpg" alt="" width="804" height="821" loading="lazy" class="h-full w-full object-cover object-[62%_50%] opacity-[0.16]" />
       </picture>
-      <div class="pointer-events-none absolute inset-0 bg-[#293129]/78"></div>
+      <div class="pointer-events-none absolute inset-0 bg-[#293129]/72"></div>
       <div class="relative mx-auto max-w-[1120px] px-6 md:px-10">
         <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d0bd7b]">We begin with home</p>
         <h2 class="mt-7 max-w-[55rem] text-4xl font-normal leading-[1.03] tracking-[-0.025em] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
@@ -73,8 +73,8 @@ const moments = [
             <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Morning, gathering, rest and return each ask something different of the same home.</p>
           </div>
           <div>
-            <p class="text-sm font-semibold text-[#d8dfd3]">Clarity builds trust.</p>
-            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Every product has a defined experience, scope and path to professional installation.</p>
+            <p class="text-sm font-semibold text-[#d8dfd3]">Home should still feel like home.</p>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Every response should feel natural, familiar and quietly personal.</p>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ const moments = [
           The small moments are the ones that make a home.
         </h2>
 
-        <div class="mt-16 space-y-16 md:space-y-24">
+        <div class="mt-16 space-y-14 md:space-y-20">
           {moments.map((moment, index) => (
             <article class="grid gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-center md:gap-14">
               <picture class={`block overflow-hidden rounded-[1.75rem] bg-[#30372f] ${index % 2 === 1 ? 'md:order-2' : ''}`}>
@@ -122,12 +122,12 @@ const moments = [
       </picture>
       <div class="pointer-events-none absolute inset-0 bg-[#d5dbcf]/72"></div>
       <div class="relative mx-auto max-w-[1040px] px-6 text-center md:px-10">
-        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#52604c]">Technology in the background</p>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#52604c]">A quieter kind of home</p>
         <h2 class="mx-auto mt-7 max-w-4xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
-          When the home responds naturally, technology no longer needs your attention.
+          Nothing asks for attention. Everything feels considered.
         </h2>
         <p class="mx-auto mt-8 max-w-2xl text-lg leading-[1.75] text-[#566052]">
-          Light, comfort and atmosphere work quietly around everyday life, allowing the people and the room to remain at the centre.
+          The home simply feels more comfortable, more intuitive and more like your own.
         </p>
       </div>
     </section>
@@ -137,8 +137,7 @@ const moments = [
       <div class="mx-auto grid max-w-[1160px] gap-12 px-6 md:grid-cols-[1.08fr_0.92fr] md:items-center md:px-10">
           <figure class="overflow-hidden rounded-[2rem] bg-[#d7d2c8]">
             <picture>
-              <source srcset="/images/better-home/collections/away.webp" type="image/webp" />
-              <img src="/images/better-home/collections/away.jpg" alt="A calm home at the end of the day" width="804" height="821" loading="lazy" class="aspect-[4/5] h-full w-full object-cover" />
+              <img src="/images/better-home/living-collection.png" alt="A calm, naturally lit residential living space" width="994" height="522" loading="lazy" class="aspect-[4/3] h-full w-full object-cover" />
             </picture>
           </figure>
           <div>
