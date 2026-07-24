@@ -12,6 +12,17 @@ const { buildDefaultJobDescription } = require('../lib/servicem8/job-description
 
 const AUDIT_SOURCE = 'crm-create-servicem8-job';
 const CREATED_VIA = 'crm';
+const BETTER_HOME_CHECKLIST = Object.freeze([
+  'Review accepted Proposal scope before site visit',
+  'Confirm customer access and installation requirements',
+  'Complete site assessment and measurements',
+  'Confirm electrical, data and cabling requirements',
+  'Photograph installation areas before work',
+  'Record variations and obtain customer approval',
+  'Test installed experiences and automations',
+  'Complete customer handover and training',
+  'Upload completion photos and job notes',
+]);
 
 const ERROR_CODES = {
   OPPORTUNITY_NOT_FOUND: 'opportunity_not_found',
@@ -85,6 +96,55 @@ async function writeAudit(db, payload) {
   );
 }
 
+function splitContactName(value) {
+  const parts = String(value || '').trim().split(/\s+/).filter(Boolean);
+  return { first: parts.shift() || '', last: parts.join(' ') };
+}
+
+async function enrichBetterHomeJob(client, jobUuid, contact, log = () => {}) {
+  const warnings = [];
+  try {
+    if (contact && (contact.name || contact.email || contact.phone)) {
+      const existing = await client.getJobContacts(jobUuid);
+      const email = String(contact.email || '').trim().toLowerCase();
+      const contactName = String(contact.name || '').trim().toLowerCase();
+      const alreadyPresent = existing.some((item) => email
+        ? String(item.email || '').trim().toLowerCase() === email
+        : `${item.first || ''} ${item.last || ''}`.trim().toLowerCase() === contactName);
+      if (!alreadyPresent) {
+        await client.createJobContact(jobUuid, {
+          ...splitContactName(contact.name),
+          email: contact.email,
+          mobile: contact.phone,
+          type: 'Job Contact',
+        });
+      }
+    }
+  } catch (error) {
+    warnings.push(`Job contact: ${error.message}`);
+  }
+
+  try {
+    const existing = await client.getJobChecklists(jobUuid);
+    const names = new Set(existing.map((item) => String(item.name || '').trim().toLowerCase()));
+    for (const [index, name] of BETTER_HOME_CHECKLIST.entries()) {
+      if (!names.has(name.toLowerCase())) {
+        await client.createJobChecklist(jobUuid, {
+          name,
+          section_name: 'Better Home Installation',
+          item_type: 0,
+          sort_order: (index + 1) * 10,
+        });
+      }
+    }
+  } catch (error) {
+    warnings.push(`Checklist: ${error.message}`);
+  }
+
+  if (warnings.length) log('servicem8 enrichment warning', { job_uuid: jobUuid, warnings });
+  return warnings;
+}
+
 /**
  * Create ServiceM8 job from CRM opportunity. Idempotent: if opportunity already has service_m8_job_id, returns existing.
  *
@@ -121,12 +181,19 @@ async function createServiceM8JobFromCRM(params, options = {}) {
     );
     const row = existing.rows[0];
     log('already_created', { opportunity_id: opportunityId, job_uuid: opportunity.service_m8_job_id });
+    let warnings = [];
+    try {
+      warnings = await enrichBetterHomeJob(new ServiceM8Client(), opportunity.service_m8_job_id, contact, log);
+    } catch (error) {
+      warnings = [`Enrichment unavailable: ${error.message}`];
+    }
     return {
       ok: true,
       already_created: true,
       job_id: row?.id,
       job_uuid: opportunity.service_m8_job_id,
       job_number: row?.job_number,
+      warnings,
     };
   }
 
@@ -177,6 +244,7 @@ async function createServiceM8JobFromCRM(params, options = {}) {
 
   let jobUuid;
   let jobNumber;
+  let enrichmentWarnings = [];
   try {
     const client = new ServiceM8Client();
     const created = await client.createJob(companyUuid, {
@@ -186,6 +254,7 @@ async function createServiceM8JobFromCRM(params, options = {}) {
     });
     jobUuid = created.uuid;
     jobNumber = created.job_number;
+    enrichmentWarnings = await enrichBetterHomeJob(client, jobUuid, contact, log);
   } catch (e) {
     const msg = e && e.message ? e.message : String(e);
     const isNetwork = /timeout|ECONNRESET|ETIMEDOUT|network/i.test(msg);
@@ -248,6 +317,7 @@ async function createServiceM8JobFromCRM(params, options = {}) {
       job_id: jobId,
       job_uuid: jobUuid,
       job_number: jobNumber,
+      warnings: enrichmentWarnings,
     };
   } catch (e) {
     log('persist_or_audit error', { error: e.message });
@@ -262,6 +332,9 @@ async function createServiceM8JobFromCRM(params, options = {}) {
 
 module.exports = {
   createServiceM8JobFromCRM,
+  enrichBetterHomeJob,
+  splitContactName,
+  BETTER_HOME_CHECKLIST,
   loadOpportunityContext,
   ERROR_CODES,
   AUDIT_SOURCE,

@@ -22,6 +22,30 @@ class ServiceM8Client {
     };
   }
 
+  async _getCollection(endpoint, filter = '') {
+    let url = `${BASE_URL}/${endpoint}.json`;
+    if (filter) url += `?$filter=${encodeURIComponent(filter)}`;
+    const res = await fetch(url, { headers: this._headers() });
+    if (!res.ok) throw new Error(`ServiceM8 API error: ${res.status} ${await res.text()}`);
+    return res.json();
+  }
+
+  async _createRecord(endpoint, body) {
+    const res = await fetch(`${BASE_URL}/${endpoint}.json`, {
+      method: 'POST',
+      headers: this._headers(),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`ServiceM8 API error: ${res.status} ${await res.text()}`);
+    const headerUuid = res.headers.get('x-record-uuid') || res.headers.get('X-Record-UUID');
+    let data = {};
+    const text = await res.text();
+    if (text) {
+      try { data = JSON.parse(text); } catch (_) {}
+    }
+    return { uuid: data.uuid || data.UUID || headerUuid, body: data };
+  }
+
   async getCompanies(filter = '') {
     let url = `${BASE_URL}/company.json`;
     if (filter) url += `?$filter=${encodeURIComponent(filter)}`;
@@ -82,6 +106,36 @@ class ServiceM8Client {
     const res = await fetch(url, { headers: this._headers() });
     if (!res.ok) throw new Error(`ServiceM8 API error: ${res.status} ${await res.text()}`);
     return res.json();
+  }
+
+  async getJobContacts(jobUuid) {
+    return this._getCollection('jobcontact', `job_uuid eq '${jobUuid}'`);
+  }
+
+  async createJobContact(jobUuid, opts = {}) {
+    return this._createRecord('jobcontact', {
+      job_uuid: jobUuid,
+      first: String(opts.first || '').trim(),
+      last: String(opts.last || '').trim(),
+      phone: String(opts.phone || '').trim(),
+      mobile: String(opts.mobile || '').trim(),
+      email: String(opts.email || '').trim(),
+      type: String(opts.type || 'Job Contact').trim(),
+    });
+  }
+
+  async getJobChecklists(jobUuid) {
+    return this._getCollection('jobchecklist', `job_uuid eq '${jobUuid}'`);
+  }
+
+  async createJobChecklist(jobUuid, opts = {}) {
+    return this._createRecord('jobchecklist', {
+      job_uuid: jobUuid,
+      name: String(opts.name || '').trim(),
+      section_name: String(opts.section_name || 'Better Home Installation').trim(),
+      item_type: Number.isInteger(opts.item_type) ? opts.item_type : 0,
+      sort_order: Number.isInteger(opts.sort_order) ? opts.sort_order : 0,
+    });
   }
 
   async getInvoices(filter = '') {
