@@ -2,7 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import PhoneCTA from '../components/PhoneCTA.astro';
+
+const moments = [
+  { slug: 'bedroom', time: 'Morning', title: 'Wake gently.', text: 'The room begins with softer light, allowing the day to arrive without urgency.' },
+  { slug: 'kitchen', time: 'Through the day', title: 'Let the light follow life.', text: 'Breakfast, cooking and a quiet glass of water each ask something different of the same room.' },
+  { slug: 'entry', time: 'Coming home', title: 'Feel welcomed, without asking.', text: 'The threshold responds naturally, making arrival feel familiar before a word is spoken.' },
+  { slug: 'living', time: 'Evening', title: 'Let the home settle with you.', text: 'Family time, reading and film each find their own atmosphere as the day slows down.' },
+];
 ---
 
 <Layout
@@ -58,8 +64,8 @@ import PhoneCTA from '../components/PhoneCTA.astro';
             <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">We begin with the way people arrive, gather, rest and leave — not with a list of devices.</p>
           </div>
           <div>
-            <p class="text-sm font-semibold text-[#d8dfd3]">Technology becomes quiet.</p>
-            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">The best technology is felt in the comfort of the room, not noticed on the wall.</p>
+            <p class="text-sm font-semibold text-[#d8dfd3]">Every room has a rhythm.</p>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Morning, gathering, rest and return each ask something different of the same home.</p>
           </div>
           <div>
             <p class="text-sm font-semibold text-[#d8dfd3]">Clarity builds trust.</p>
@@ -77,28 +83,22 @@ import PhoneCTA from '../components/PhoneCTA.astro';
           The small moments are the ones that make a home.
         </h2>
 
-        <div class="mt-16 grid gap-5 md:grid-cols-2">
-          {[
-            { slug: 'bedroom', time: 'Morning', title: 'Wake gently.', text: 'The room begins with softer light, allowing the day to arrive without urgency.' },
-            { slug: 'kitchen', time: 'Through the day', title: 'Let the light follow life.', text: 'Breakfast, cooking and a quiet glass of water each ask something different of the same room.' },
-            { slug: 'entry', time: 'Coming home', title: 'Feel welcomed, without asking.', text: 'The threshold responds naturally, making arrival feel familiar before a word is spoken.' },
-            { slug: 'living', time: 'Evening', title: 'Let the home settle with you.', text: 'Family time, reading and film each find their own atmosphere as the day slows down.' },
-          ].map((moment) => (
-            <article class="relative min-h-[32rem] overflow-hidden rounded-[1.75rem] bg-[#30372f]">
-              <picture class="absolute inset-0 block">
+        <div class="mt-16 space-y-16 md:space-y-24">
+          {moments.map((moment, index) => (
+            <article class="grid gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-center md:gap-14">
+              <picture class={`block overflow-hidden rounded-[1.75rem] bg-[#30372f] ${index % 2 === 1 ? 'md:order-2' : ''}`}>
                 <source srcset={`/images/better-home/collections/${moment.slug}.webp`} type="image/webp" />
                 <img
                   src={`/images/better-home/collections/${moment.slug}.jpg`}
-                  alt=""
+                  alt={`${moment.time} at home`}
                   width="804"
                   height="821"
                   loading="lazy"
                   decoding="async"
-                  class="h-full w-full object-cover"
+                  class="aspect-[4/3] h-full w-full object-cover"
                 />
               </picture>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#20251f]/90 via-[#20251f]/20 to-transparent"></div>
-              <div class="absolute inset-x-0 bottom-0 p-8 md:p-10">
+              <div class={index % 2 === 1 ? 'md:order-1' : ''}>
                 <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c57e]">{moment.time}</p>
                 <h3 class="mt-3 text-4xl font-normal md:text-5xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{moment.title}</h3>
                 <p class="mt-4 max-w-md text-[15px] leading-relaxed text-white/70">{moment.text}</p>
@@ -145,6 +145,5 @@ import PhoneCTA from '../components/PhoneCTA.astro';
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>

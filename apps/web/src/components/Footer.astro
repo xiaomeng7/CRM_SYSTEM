@@ -1,4 +1,10 @@
 ---
+interface Props {
+  minimal?: boolean;
+}
+
+const { minimal = false } = Astro.props;
+
 const services = [
   { href: '/services/smart-home', label: 'Smart Home' },
   { href: '/services/switchboard', label: 'Switchboard & Capacity' },
@@ -27,6 +33,20 @@ const year = new Date().getFullYear();
 ---
 <footer class="bg-brand-navy text-slate-300">
   <div class="mx-auto max-w-6xl px-6 py-16">
+    {minimal ? (
+      <div class="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
+        <div class="max-w-xl">
+          <p class="text-white font-bold text-lg">Better Home Technology</p>
+          <p class="mt-4 text-sm leading-relaxed text-slate-400">
+            Residential experiences designed around everyday life, supported by licensed electrical expertise.
+          </p>
+        </div>
+        <div class="flex flex-col gap-2 text-sm md:items-end">
+          <a href="tel:0410323034" class="text-brand-amber font-semibold hover:text-brand-amber-soft">0410 323 034</a>
+          <a href="mailto:Info@bhtechnology.com.au" class="hover:text-white">Info@bhtechnology.com.au</a>
+        </div>
+      </div>
+    ) : (
     <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
       <div class="col-span-2 md:col-span-1">
         <p class="text-white font-bold text-lg mb-3">Better Home Technology</p>
@@ -78,6 +98,7 @@ const year = new Date().getFullYear();
         </ul>
       </div>
     </div>
+    )}
 
     <div class="mt-12 flex flex-col gap-5 border-t border-white/10 pt-8 text-xs text-slate-500 md:flex-row md:items-end md:justify-between">
       <p>
