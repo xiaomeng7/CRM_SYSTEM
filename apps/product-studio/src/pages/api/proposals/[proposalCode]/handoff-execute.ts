@@ -10,8 +10,8 @@ export default async function handler(req:NextApiRequest,res:NextApiResponse){
   try{
     const begun=await service.beginExecution(actor,proposalCode,{handoffId});
     if(begun.alreadyCompleted)return res.status(200).json({ok:true,already_completed:true,handoff_status:"COMPLETED",job_uuid:begun.jobUuid});
-    let response,result;
-    try{response=await fetch(`${base}/api/internal/better-home-handoffs/${encodeURIComponent(handoffId)}/execute`,{method:"POST",headers:{"x-bh-handoff-secret":secret,"Content-Type":"application/json"},body:JSON.stringify(begun.envelope),signal:AbortSignal.timeout(30000)});result=await response.json();}catch(error){result={ok:false,error:error instanceof Error?error.message:"CRM_HANDOFF_UNAVAILABLE",error_code:"crm_handoff_unavailable"};}
+    let response,result;const recovery=Boolean(begun.recoveryJobUuid),target=recovery?"reconcile":"execute",body=recovery?{...begun.envelope,existingJobUuid:begun.recoveryJobUuid}:begun.envelope;
+    try{response=await fetch(`${base}/api/internal/better-home-handoffs/${encodeURIComponent(handoffId)}/${target}`,{method:"POST",headers:{"x-bh-handoff-secret":secret,"Content-Type":"application/json"},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});result=await response.json();}catch(error){result={ok:false,error:error instanceof Error?error.message:"CRM_HANDOFF_UNAVAILABLE",error_code:"crm_handoff_unavailable"};}
     const finished=await service.finishExecution(actor,handoffId,result);
     return res.status(result.ok?200:(response?.status||502)).json({...result,handoff_status:finished.status});
   }catch(error){return res.status(400).json({error:error instanceof Error?error.message:"HANDOFF_EXECUTION_FAILED"});}finally{await os.disconnect();}

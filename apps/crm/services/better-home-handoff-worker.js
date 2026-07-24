@@ -48,4 +48,11 @@ async function processBetterHomeEnvelope(input,options={}){
   if(process.env.BETTER_HOME_SERVICEM8_HANDOFF_ENABLED!==ENABLE_VALUE)return {ok:false,error:'Live Better Home handoff is disabled',error_code:'handoff_disabled'};
   return jobCreator({opportunity_id:checked.payload.crm.opportunityId,job_status:'Work Order',address_override:checked.payload.workOrder.address,description:checked.payload.workOrder.description,create_reason:`Accepted Better Home Proposal ${checked.payload.proposal?.code||''}`},{db,dryRun:false,log:options.log||(()=>{})});
 }
-module.exports={ENABLE_VALUE,loadHandoff,validateCurrentContext,processBetterHomeHandoff,canonicalize,stableHash,validateEnvelope,validateLiveCrmContext,ensureLiveCrmContext,processBetterHomeEnvelope};
+async function reconcileExistingServiceM8Job(input,jobUuid,options={}){
+  const checked=validateEnvelope(input);if(!checked.ok)return checked;if(!/^[0-9a-f-]{36}$/i.test(String(jobUuid||'')))return {ok:false,error:'Valid ServiceM8 Job UUID required',error_code:'invalid_job_uuid'};
+  const db=options.db||pool,context=await validateLiveCrmContext(db,checked.payload);if(!context.ok)return context;const p=checked.payload;
+  const inserted=await db.query(`INSERT INTO jobs (account_id,contact_id,servicem8_job_uuid,description,address_line,status,created_by) VALUES ($1,$2,$3,$4,$5,'Work Order','better_home_recovery') ON CONFLICT (servicem8_job_uuid) DO UPDATE SET account_id=EXCLUDED.account_id,contact_id=EXCLUDED.contact_id RETURNING id`,[p.crm.accountId,p.crm.contactId,jobUuid,String(p.workOrder.description||'').slice(0,2000),String(p.workOrder.address||'').slice(0,500)]);
+  await db.query(`UPDATE opportunities SET service_m8_job_id=$1,updated_at=NOW() WHERE id=$2`,[jobUuid,p.crm.opportunityId]);
+  return {ok:true,reconciled:true,job_uuid:jobUuid,job_id:inserted.rows[0]?.id||null};
+}
+module.exports={ENABLE_VALUE,loadHandoff,validateCurrentContext,processBetterHomeHandoff,canonicalize,stableHash,validateEnvelope,validateLiveCrmContext,ensureLiveCrmContext,processBetterHomeEnvelope,reconcileExistingServiceM8Job};

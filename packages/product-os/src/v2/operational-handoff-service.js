@@ -62,7 +62,7 @@ function createOperationalHandoffService(prisma){
       const now=new Date();
       await tx.pos2OperationalHandoff.update({where:{id:handoff.id},data:{status:"PROCESSING",processingAt:now,attemptCount:{increment:1},lastError:null}});
       await tx.pos2AuditLog.create({data:{actor:a.userId,action:"SERVICEM8_WORK_ORDER_HANDOFF_PROCESSING",entityType:"Pos2OperationalHandoff",entityId:handoff.id,afterJson:{proposalCode:code,payloadHash:handoff.authorizedPayloadHash,processingAt:now.toISOString()}}});
-      return {alreadyCompleted:false,envelope:{schemaVersion:"1.0.0",handoffId:handoff.id,idempotencyKey:handoff.idempotencyKey,payloadHash:handoff.authorizedPayloadHash,payload:handoff.authorizedPayloadSnapshot}};
+      return {alreadyCompleted:false,recoveryJobUuid:handoff.status==="FAILED"&&handoff.serviceM8JobUuid?handoff.serviceM8JobUuid:null,envelope:{schemaVersion:"1.0.0",handoffId:handoff.id,idempotencyKey:handoff.idempotencyKey,payloadHash:handoff.authorizedPayloadHash,payload:handoff.authorizedPayloadSnapshot}};
     });
   }
   async function executionEnvelope(actor,proposalCodeValue,input={}){
