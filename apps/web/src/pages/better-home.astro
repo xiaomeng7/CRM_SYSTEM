@@ -77,15 +77,18 @@ const journey = [
           {collections.map((collection) => (
             <a href={`/better-home/${collection.slug}`} class="group block overflow-hidden bg-[#faf8f4] transition-colors hover:bg-white">
               <div class="aspect-[4/3] overflow-hidden bg-[#ddd5c8]">
-                <img
-                  src={`/images/better-home/collections/${collection.slug}.webp`}
-                  alt={`${collection.name} Collection residential atmosphere`}
-                  width="804"
-                  height="821"
-                  loading="lazy"
-                  decoding="async"
-                  class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.025]"
-                />
+                <picture class="block h-full w-full">
+                  <source srcset={`/images/better-home/collections/${collection.slug}.webp`} type="image/webp" />
+                  <img
+                    src={`/images/better-home/collections/${collection.slug}.jpg`}
+                    alt={`${collection.name} Collection residential atmosphere`}
+                    width="804"
+                    height="821"
+                    loading="eager"
+                    decoding="async"
+                    class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.025]"
+                  />
+                </picture>
               </div>
               <div class="p-7 md:p-8">
                 <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#899183]">{collection.id} · Collection</p>
