@@ -4,12 +4,12 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const collections = [
-  { id: 'C-01', name: 'Entry' },
-  { id: 'C-02', name: 'Living' },
-  { id: 'C-03', name: 'Kitchen' },
-  { id: 'C-04', name: 'Bedroom' },
-  { id: 'C-05', name: 'Bathroom' },
-  { id: 'C-06', name: 'Away' },
+  { id: 'C-01', name: 'Entry', slug: 'entry' },
+  { id: 'C-02', name: 'Living', slug: 'living' },
+  { id: 'C-03', name: 'Kitchen', slug: 'kitchen' },
+  { id: 'C-04', name: 'Bedroom', slug: 'bedroom' },
+  { id: 'C-05', name: 'Bathroom', slug: 'bathroom' },
+  { id: 'C-06', name: 'Away', slug: 'away' },
 ];
 
 const productSystem = [
@@ -75,11 +75,14 @@ const journey = [
         </div>
         <div class="mt-14 grid gap-px overflow-hidden rounded-3xl border border-[#d8d1c5] bg-[#d8d1c5] sm:grid-cols-2 lg:grid-cols-3">
           {collections.map((collection) => (
-            <article class="group min-h-[14rem] bg-[#faf8f4] p-8 transition-colors hover:bg-white md:p-10">
+            <a href={`/better-home/${collection.slug}`} class="group block min-h-[14rem] bg-[#faf8f4] p-8 transition-colors hover:bg-white md:p-10">
               <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#899183]">{collection.id} · Collection</p>
               <h3 class="mt-7 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal text-[#30352f]">{collection.name}</h3>
-              <div class="mt-10 h-px w-10 bg-[#8a987f] transition-all duration-500 group-hover:w-20"></div>
-            </article>
+              <div class="mt-10 flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#65755d]">
+                <span class="h-px w-10 bg-[#8a987f] transition-all duration-500 group-hover:w-16"></span>
+                Explore
+              </div>
+            </a>
           ))}
         </div>
       </div>
@@ -107,7 +110,7 @@ const journey = [
         </div>
         <div class="flex flex-col gap-3 sm:flex-row md:flex-col">
           <a href="/contact" class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#f5f1ea] px-8 text-sm font-semibold text-[#30372f]">Talk to Better Home</a>
-          <a href="/for-builders/" class="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/25 px-8 text-sm font-medium text-white">For Builders &amp; Designers</a>
+          <a href="#collections" class="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/25 px-8 text-sm font-medium text-white">Review Collections</a>
         </div>
       </div>
     </section>
