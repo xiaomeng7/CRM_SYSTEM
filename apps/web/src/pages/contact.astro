@@ -2,146 +2,117 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import PhoneCTA from '../components/PhoneCTA.astro';
 
 const channels = [
   {
-    eyebrow: 'Phone',
+    eyebrow: 'Call',
     title: '0410 323 034',
-    body: 'Fastest. Mon-Fri 8am-5pm. After-hours for urgent electrical only.',
+    body: 'The most direct way to begin. Monday to Friday, 8am–5pm.',
     href: 'tel:0410323034',
-    cta: 'Call now',
-    highlight: true,
+    cta: 'Call Meng',
   },
   {
-    eyebrow: 'Email',
+    eyebrow: 'Write',
     title: 'Info@bhtechnology.com.au',
-    body: "For quotes, project briefs, and partnership enquiries. We reply within one business day.",
-    href: 'mailto:Info@bhtechnology.com.au',
-    cta: 'Send an email',
-    highlight: false,
+    body: 'Share a few thoughts, a floor plan or simply the room you would like to begin with.',
+    href: 'mailto:Info@bhtechnology.com.au?subject=Better%20Home%20conversation',
+    cta: 'Start an email',
   },
-  {
-    eyebrow: 'In person',
-    title: 'Level 3, 1-3 Metro Parade, Mawson Lakes',
-    body: "Drop in by appointment, or we'll come to you for site visits and design consults across Adelaide.",
-    href: 'https://www.google.com/maps/search/?api=1&query=Level+3,+1-3+Metro+Parade,+Mawson+Lakes+SA+5095',
-    cta: 'Get directions',
-    highlight: false,
-  },
-];
-
-const fastTracks = [
-  { eyebrow: 'Buying a property?', title: 'Pre-Purchase Inspection', body: 'Booked in 3 days. Written report in 48 hours.', href: '/pre-purchase-inspection' },
-  { eyebrow: 'Builder or designer?', title: 'For Builders & Designers', body: 'Send us your plans for a fit assessment.', href: '/for-builders' },
 ];
 ---
 
 <Layout
-  title="Contact — Better Home Technology | Adelaide Electricians"
-  description="Phone, email, office address. Adelaide-wide. Mawson Lakes-based. We reply within one business day."
+  title="Start a Conversation | Better Home Technology"
+  description="Tell us about your home, the rooms you use and the everyday moments you would like to make more natural."
 >
   <Header />
 
-  <main>
-    <!-- Hero -->
-    <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
-      <div class="relative mx-auto max-w-4xl px-6 py-20 md:py-28">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          Contact
-        </p>
-        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight">
-          Three ways to reach us.<br class="hidden md:inline" />
-          <span class="text-brand-amber">Pick the lowest friction.</span>
-        </h1>
-        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-2xl leading-relaxed">
-          We reply within one business day. For urgent electrical issues, the phone is fastest.
-        </p>
+  <main class="bg-[#f5f1ea] text-[#252823]">
+    <section class="relative min-h-[42rem] overflow-hidden bg-[#283028] text-[#f5f1e9]">
+      <img
+        src="/images/better-home/adelaide-residence-dining.jpg"
+        alt=""
+        width="1350"
+        height="1800"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover object-[50%_45%] opacity-[0.28]"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-[#252d25] via-[#252d25]/90 to-[#252d25]/45"></div>
+
+      <div class="relative mx-auto flex min-h-[42rem] max-w-[1160px] items-center px-6 py-24 md:px-10 md:py-32">
+        <div class="max-w-[47rem]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d4c27e]">Start a conversation</p>
+          <h1 class="mt-7 text-[clamp(3.5rem,7.4vw,7rem)] font-normal leading-[0.9] tracking-[-0.035em]" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Tell us how you would like your home to feel.
+          </h1>
+          <p class="mt-8 max-w-[35rem] text-base leading-[1.8] text-white/70 md:text-lg">
+            You do not need a technical brief. Begin with a room, a routine or a moment at home that could feel more natural.
+          </p>
+        </div>
       </div>
     </section>
 
-    <!-- Channels -->
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {channels.map((c) => (
+    <section class="bg-[#e8e5de] py-24 md:py-32">
+      <div class="mx-auto grid max-w-[1160px] gap-14 px-6 md:grid-cols-[0.8fr_1.2fr] md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">A relaxed first step</p>
+          <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-6xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            A conversation before a solution.
+          </h2>
+          <p class="mt-7 max-w-md text-base leading-[1.8] text-[#686d65]">
+            We will listen first, then help you find a clear place to begin — whether that is one room, a complete home or a future project.
+          </p>
+
+          <dl class="mt-10 space-y-5 border-t border-[#c8c1b5] pt-7 text-sm">
+            <div class="flex gap-5">
+              <dt class="w-24 shrink-0 font-semibold text-[#465241]">Based in</dt>
+              <dd class="leading-relaxed text-[#6c7169]">Mawson Lakes, serving metropolitan Adelaide</dd>
+            </div>
+            <div class="flex gap-5">
+              <dt class="w-24 shrink-0 font-semibold text-[#465241]">Response</dt>
+              <dd class="leading-relaxed text-[#6c7169]">Usually within one business day</dd>
+            </div>
+            <div class="flex gap-5">
+              <dt class="w-24 shrink-0 font-semibold text-[#465241]">Bring</dt>
+              <dd class="leading-relaxed text-[#6c7169]">Nothing more than an idea of what matters to you</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="grid gap-5">
+          {channels.map((channel, index) => (
             <a
-              href={c.href}
+              href={channel.href}
               class:list={[
-                'block rounded-xl p-8 transition group',
-                c.highlight
-                  ? 'bg-brand-navy text-white hover:shadow-xl'
-                  : 'bg-white border border-brand-border hover:border-brand-amber hover:shadow-lg'
+                'group flex min-h-[15rem] flex-col justify-between rounded-[1.75rem] border p-8 transition-all duration-500 md:p-10',
+                index === 0
+                  ? 'border-[#52604c] bg-[#52604c] text-white hover:bg-[#465440]'
+                  : 'border-[#c8c1b5] bg-[#f5f1ea] text-[#2c302b] hover:border-[#8f9988]'
               ]}
-              {...(c.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
             >
-              <p class:list={[
-                'text-sm font-semibold uppercase tracking-wider mb-3',
-                c.highlight ? 'text-brand-amber' : 'text-brand-amber'
-              ]}>{c.eyebrow}</p>
-              <h3 class:list={[
-                'text-xl md:text-2xl font-bold mb-3 leading-tight',
-                c.highlight ? 'text-white' : 'text-brand-ink'
-              ]}>{c.title}</h3>
-              <p class:list={[
-                'text-base leading-relaxed mb-6',
-                c.highlight ? 'text-slate-300' : 'text-brand-muted'
-              ]}>{c.body}</p>
-              <p class:list={[
-                'text-base font-semibold',
-                c.highlight ? 'text-brand-amber' : 'text-brand-navy group-hover:text-brand-amber'
-              ]}>{c.cta} →</p>
+              <div>
+                <p class:list={['text-[10px] font-semibold uppercase tracking-[0.2em]', index === 0 ? 'text-[#d8c57e]' : 'text-[#65755d]']}>{channel.eyebrow}</p>
+                <h3 class="mt-5 break-words text-3xl font-normal leading-tight md:text-4xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{channel.title}</h3>
+                <p class:list={['mt-4 max-w-lg text-[15px] leading-[1.75]', index === 0 ? 'text-white/65' : 'text-[#70756d]']}>{channel.body}</p>
+              </div>
+              <p class:list={['mt-8 text-sm font-semibold', index === 0 ? 'text-[#e1ce8a]' : 'text-[#52604c]']}>{channel.cta} <span aria-hidden="true">→</span></p>
             </a>
           ))}
         </div>
       </div>
     </section>
 
-    <!-- Fast tracks -->
-    <section class="bg-white py-20 md:py-28">
-      <div class="mx-auto max-w-4xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Or skip the conversation
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-3">
-          Already know what you need?
-        </h2>
-        <p class="text-lg text-brand-muted leading-relaxed mb-10">
-          The two pages below take you straight to a structured intake — faster than email if you've got a clear ask.
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {fastTracks.map((t) => (
-            <a href={t.href} class="block bg-brand-surface-alt rounded-xl p-8 border border-brand-border hover:border-brand-amber hover:shadow-lg transition group">
-              <p class="text-brand-amber text-sm font-semibold uppercase tracking-wider mb-3">{t.eyebrow}</p>
-              <h3 class="text-xl md:text-2xl font-bold text-brand-ink mb-3 group-hover:text-brand-navy">{t.title}</h3>
-              <p class="text-base text-brand-muted leading-relaxed mb-6">{t.body}</p>
-              <p class="text-base text-brand-navy font-semibold group-hover:text-brand-amber">Go →</p>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- Service area -->
-    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots-soft"></div>
-      <div class="relative mx-auto max-w-4xl px-6 text-center">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Service area
-        </p>
-        <p class="text-3xl md:text-5xl font-bold leading-tight">
-          Adelaide-wide.<br class="hidden md:inline" />
-          <span class="text-brand-amber">Mawson Lakes-based.</span>
-        </p>
-        <p class="mt-8 text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
-          We service all Adelaide metro suburbs. For properties further afield — call us, we'll quote travel and book accordingly.
+    <section class="bg-[#bcc4b6] py-20 text-[#2d352b] md:py-24">
+      <div class="mx-auto max-w-[900px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#566350]">Wherever you begin</p>
+        <p class="mx-auto mt-6 max-w-3xl text-4xl font-normal leading-[1.08] md:text-6xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          The first decision does not need to be a large one. It only needs to make home feel better.
         </p>
       </div>
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>
