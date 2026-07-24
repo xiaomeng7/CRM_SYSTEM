@@ -98,8 +98,8 @@ const featuredProjects = [
 ---
 
 <Layout
-  title="Smart Home & Premium Electrical for Better Homes | Better Home Technology"
-  description="Premium residential electrical and smart infrastructure for luxury homes, builders, and modern projects. Independent pre-purchase inspections. Licensed electrical contractor — premium residential focus."
+  title="Better Home Technology | Residential Experiences, Electrical & Lighting"
+  description="Considered electrical, lighting and residential experiences — designed, installed and supported by one Adelaide team."
 >
   <Header />
 
@@ -136,29 +136,29 @@ const featuredProjects = [
       <div class="relative z-10 mx-auto w-full max-w-[1200px] px-6 lg:px-12">
         <div class="w-full max-w-[32rem] md:max-w-[34rem] lg:max-w-[36rem] -translate-y-4 md:-translate-y-[4.5vh] lg:-translate-y-[5.5vh]">
           <p class="text-brand-amber/80 text-[10px] md:text-[11px] font-semibold tracking-[0.18em] uppercase mb-6 md:mb-7">
-            Premium Residential Systems
+            Better Home Technology
           </p>
           <h1
             class="font-bold tracking-[-0.036em] leading-[1.02] text-[clamp(1.95rem,3.9vw+0.4rem,3.35rem)] drop-shadow-[0_2px_28px_rgba(0,0,0,0.48)]"
           >
-            <span class="block text-white">Smart Home &amp; Premium Electrical</span>
-            <span class="block text-brand-amber mt-2 md:mt-2.5">for Better Homes.</span>
+            <span class="block text-white">A better way to live</span>
+            <span class="block text-brand-amber mt-2 md:mt-2.5">at home.</span>
           </h1>
           <p class="mt-8 md:mt-9 text-[15px] md:text-[16px] text-[#E8EAED]/86 max-w-[28rem] leading-[1.58] drop-shadow-[0_1px_14px_rgba(0,0,0,0.42)]">
-            Premium electrical, lighting and smart-home systems for modern residential projects.
+            Considered electrical, lighting and residential experiences — designed, installed and supported by one team.
           </p>
           <div class="mt-10 md:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5 sm:items-center">
             <a
-              href="/for-builders/"
+              href="/better-home"
               class="inline-flex min-h-[52px] items-center justify-center bg-brand-amber text-brand-navy px-10 md:px-12 py-3.5 text-sm font-semibold tracking-[0.03em] rounded-[2px] hover:bg-brand-amber-soft/95 transition-colors duration-500 ease-out text-center shadow-[0_4px_28px_rgba(198,165,94,0.14)]"
             >
-              Partner with us on your next build
+              Explore Better Home
             </a>
             <a
-              href="#services"
+              href="/for-builders/"
               class="inline-flex min-h-[52px] items-center justify-center border border-white/[0.11] bg-white/[0.025] px-9 py-3.5 text-sm font-medium tracking-[0.025em] text-white/80 shadow-none backdrop-blur-[1.5px] transition-colors duration-700 ease-out hover:border-white/[0.16] hover:bg-white/[0.045] hover:text-white/92 md:px-11 rounded-[2px] text-center"
             >
-              View residential services
+              For Builders &amp; Designers
             </a>
           </div>
           <div class="mt-10 md:mt-12 flex flex-wrap items-center gap-x-7 gap-y-2.5 text-[10px] md:text-[11px] text-slate-500/95 tracking-[0.07em] uppercase">
@@ -172,6 +172,25 @@ const featuredProjects = [
               <span class="text-brand-amber/55" aria-hidden="true">◆</span> 3-Year Workmanship Warranty
             </span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-[#d8d1c5] bg-[#f5f1ea] py-16 text-[#252823] md:py-24">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-[1.05fr_0.95fr] lg:px-10">
+        <div class="max-w-2xl">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Better Home Collections</p>
+          <h2 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-[1.02] tracking-[-0.035em] md:text-6xl">Start with the way you want to live.</h2>
+          <p class="mt-6 max-w-xl text-base leading-relaxed text-[#686d65] md:text-lg">Choose the spaces that matter. Add the experiences you value. See what is included before we prepare your proposal.</p>
+          <a href="/better-home" class="mt-8 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#65755d] px-8 text-sm font-semibold text-white transition-colors hover:bg-[#53614d]">Explore Better Home</a>
+        </div>
+        <div class="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#d8d1c5] bg-[#d8d1c5] text-sm">
+          {['Entry', 'Living', 'Kitchen', 'Bedroom', 'Bathroom', 'Away'].map((name, index) => (
+            <div class="bg-[#faf8f4] px-5 py-6 md:px-6 md:py-7">
+              <span class="text-[10px] uppercase tracking-[0.18em] text-[#899183]">C-{String(index + 1).padStart(2, '0')}</span>
+              <p class="mt-2 font-['Cormorant_Garamond',Georgia,serif] text-2xl text-[#30352f]">{name}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
