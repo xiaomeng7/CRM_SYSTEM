@@ -12,7 +12,7 @@ import PhoneCTA from '../components/PhoneCTA.astro';
   <Header />
 
   <main class="bg-[#f5f1ea] text-[#252823]">
-    <!-- One promise, one primary path. Professional delivery remains present but quiet. -->
+    <!-- One promise. The homepage begins with belief, not products or services. -->
     <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#111318] text-white">
       <img
         src="/front_page_background.jpg"
@@ -69,98 +69,78 @@ import PhoneCTA from '../components/PhoneCTA.astro';
       </div>
     </section>
 
-    <!-- Editorial gateway only. The Better Home page owns the product system and Collection catalogue. -->
-    <section class="bg-[#5d665b] py-24 md:py-32">
+    <!-- A day at home: moments first, products later. -->
+    <section class="bg-[#5d665b] py-24 text-white md:py-32">
       <div class="mx-auto max-w-[1160px] px-6 md:px-10">
-        <a href="/better-home" class="group relative block min-h-[38rem] overflow-hidden rounded-[2rem] bg-[#252a24] text-white md:min-h-[44rem]">
-          <picture class="absolute inset-0 block">
-            <source srcset="/images/better-home/collections/living.webp" type="image/webp" />
-            <img
-              src="/images/better-home/collections/living.jpg"
-              alt="A calm Australian living space shaped by natural light"
-              width="804"
-              height="821"
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover object-center transition duration-1000 ease-out group-hover:scale-[1.015]"
-            />
-          </picture>
-          <div class="absolute inset-0 bg-gradient-to-r from-[#30372f]/82 via-[#30372f]/42 to-transparent"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-[#30372f]/58 via-transparent to-transparent"></div>
-          <div class="relative flex min-h-[38rem] max-w-[42rem] flex-col justify-end p-8 md:min-h-[44rem] md:justify-center md:p-16">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">The Better Home system</p>
-            <h2 class="mt-6 text-5xl font-normal leading-[0.94] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
-              Begin with life, not technology.
-            </h2>
-            <p class="mt-7 max-w-lg text-base leading-[1.75] text-white/75 md:text-lg">
-              A clear way to shape the rooms, comfort and everyday moments that matter to you.
-            </p>
-            <span class="mt-9 inline-flex w-fit items-center gap-3 border-b border-white/35 pb-2 text-sm font-medium text-white">
-              Discover how Better Home works
-              <span aria-hidden="true" class="transition-transform duration-500 group-hover:translate-x-1">→</span>
-            </span>
-          </div>
-        </a>
-      </div>
-    </section>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">A day, quietly supported</p>
+        <h2 class="mt-6 max-w-3xl text-5xl font-normal leading-[0.96] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          The small moments are the ones that make a home.
+        </h2>
 
-    <!-- Technical capability is evidence of delivery, not the brand protagonist. -->
-    <section class="bg-[#bcc4b6] py-24 text-[#283026] md:py-32">
-      <div class="mx-auto grid max-w-[1160px] gap-14 px-6 md:grid-cols-[1.05fr_0.95fr] md:items-center md:px-10">
-        <figure class="overflow-hidden rounded-[2rem] bg-[#1d231e]">
-          <picture>
-            <source srcset="/images/work-builder-wiring.webp" type="image/webp" />
-            <img src="/images/work-builder-wiring.jpg" alt="Carefully coordinated residential electrical infrastructure" width="800" height="600" loading="lazy" class="aspect-[4/3] h-full w-full object-cover" />
-          </picture>
-        </figure>
-        <div>
-          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#52604c]">Designed clearly. Delivered properly.</p>
-          <h2 class="mt-6 text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">One team, from idea to handover.</h2>
-          <p class="mt-7 max-w-lg text-base leading-[1.75] text-[#4f594c]">
-            Better Home is supported by licensed electrical installation, considered programming, testing and a clear customer handover.
-          </p>
-          <ul class="mt-9 grid gap-4 border-t border-[#879182] pt-7 text-sm text-[#3f493c] sm:grid-cols-2">
-            <li>Residential experience design</li>
-            <li>Licensed electrical installation</li>
-            <li>Programming and commissioning</li>
-            <li>Customer handover and support</li>
-          </ul>
-          <a href="/for-builders/" class="mt-9 inline-block text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Professional delivery for project teams</a>
+        <div class="mt-16 grid gap-5 md:grid-cols-2">
+          {[
+            { slug: 'bedroom', time: 'Morning', title: 'Wake gently.', text: 'The room begins with softer light, allowing the day to arrive without urgency.' },
+            { slug: 'kitchen', time: 'Through the day', title: 'Let the light follow life.', text: 'Breakfast, cooking and a quiet glass of water each ask something different of the same room.' },
+            { slug: 'entry', time: 'Coming home', title: 'Feel welcomed, without asking.', text: 'The threshold responds naturally, making arrival feel familiar before a word is spoken.' },
+            { slug: 'living', time: 'Evening', title: 'Let the home settle with you.', text: 'Family time, reading and film each find their own atmosphere as the day slows down.' },
+          ].map((moment) => (
+            <article class="relative min-h-[32rem] overflow-hidden rounded-[1.75rem] bg-[#30372f]">
+              <picture class="absolute inset-0 block">
+                <source srcset={`/images/better-home/collections/${moment.slug}.webp`} type="image/webp" />
+                <img
+                  src={`/images/better-home/collections/${moment.slug}.jpg`}
+                  alt=""
+                  width="804"
+                  height="821"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover"
+                />
+              </picture>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#20251f]/90 via-[#20251f]/20 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-8 md:p-10">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c57e]">{moment.time}</p>
+                <h3 class="mt-3 text-4xl font-normal md:text-5xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{moment.title}</h3>
+                <p class="mt-4 max-w-md text-[15px] leading-relaxed text-white/70">{moment.text}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
 
-    <!-- A single proof section instead of competing project grids. -->
+    <!-- Meaning before mechanism. -->
+    <section class="bg-[#bcc4b6] py-24 text-[#283026] md:py-36">
+      <div class="mx-auto max-w-[1040px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#52604c]">Technology in the background</p>
+        <h2 class="mx-auto mt-7 max-w-4xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          When the home responds naturally, technology no longer needs your attention.
+        </h2>
+        <p class="mx-auto mt-8 max-w-2xl text-lg leading-[1.75] text-[#566052]">
+          Light, comfort and atmosphere work quietly around everyday life, allowing the people and the room to remain at the centre.
+        </p>
+      </div>
+    </section>
+
+    <!-- One graceful transition from philosophy into the Product System. -->
     <section class="bg-[#e8e5de] py-24 md:py-32">
-      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
-        <div class="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-end">
-          <figure class="overflow-hidden rounded-[2rem] bg-[#ded7cb]">
+      <div class="mx-auto grid max-w-[1160px] gap-12 px-6 md:grid-cols-[1.08fr_0.92fr] md:items-center md:px-10">
+          <figure class="overflow-hidden rounded-[2rem] bg-[#d7d2c8]">
             <picture>
-              <source srcset="/images/work-living-room-led.webp" type="image/webp" />
-              <img src="/images/work-living-room-led.jpg" alt="Residential living room with considered layered lighting" width="800" height="600" loading="lazy" class="aspect-[4/3] h-full w-full object-cover" />
+              <source srcset="/images/better-home/collections/away.webp" type="image/webp" />
+              <img src="/images/better-home/collections/away.jpg" alt="A calm home at the end of the day" width="804" height="821" loading="lazy" class="aspect-[4/5] h-full w-full object-cover" />
             </picture>
           </figure>
-          <div class="pb-2">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Selected residential work</p>
-            <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-6xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">Thoughtful light. Quiet control. A home that remains a home.</h2>
-            <p class="mt-6 text-base leading-[1.75] text-[#686d65]">Our work brings electrical infrastructure, lighting and residential systems together without competing with the architecture.</p>
-            <a href="/projects" class="mt-8 inline-block text-sm font-medium text-[#52604c] underline decoration-[#8f9989] underline-offset-8">View selected work</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Trust and action, once. -->
-    <section class="border-t border-[#ded9cf] bg-[#faf8f4] py-20 md:py-24">
-      <div class="mx-auto max-w-[1120px] px-6 md:px-10">
-        <div class="grid gap-10 md:grid-cols-[1fr_auto] md:items-center">
           <div>
-            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Begin with a conversation</p>
-            <h2 class="mt-5 max-w-3xl text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">Tell us how you want your home to feel.</h2>
-            <p class="mt-6 text-sm leading-relaxed text-[#686d65]">Licensed PGE275430 · 5.0 Google Rating · 3-Year Workmanship Warranty</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">From a feeling to a clear system</p>
+            <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">Now shape Better Home around the way you live.</h2>
+            <p class="mt-7 max-w-lg text-base leading-[1.75] text-[#686d65]">
+              Begin with one Foundation. Choose the spaces that matter. Add only the experiences you value.
+            </p>
+            <a href="/better-home" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#52604c] px-9 text-sm font-semibold text-white transition-colors hover:bg-[#414d3c]">
+              Discover Better Home
+            </a>
           </div>
-          <a href="/contact" class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#52604c] px-9 text-sm font-semibold text-white transition-colors hover:bg-[#414d3c]">Start a conversation</a>
-        </div>
       </div>
     </section>
   </main>
