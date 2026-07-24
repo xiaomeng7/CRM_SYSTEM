@@ -36,7 +36,7 @@ async function ensureLiveCrmContext(db,payload){
   try{
     await client.query(`INSERT INTO accounts (id,name,address_line,status,created_by) VALUES ($1,$2,$3,'active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.accountId,name,address]);
     await client.query(`INSERT INTO contacts (id,account_id,name,email,phone,role,status,created_by) VALUES ($1,$2,$3,$4,$5,'Customer','active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.contactId,crm.accountId,name,email||null,phone||null]);
-    await client.query(`INSERT INTO assets (id,account_id,name,asset_type,address,status,created_by) VALUES ($1,$2,$3,'residential_property',$3,'active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.assetId,crm.accountId,address]);
+    await client.query(`INSERT INTO assets (id,account_id,name,asset_type,address,status,created_by) VALUES ($1,$2,$3::text,'residential_property',$3::text,'active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.assetId,crm.accountId,address]);
     await client.query(`INSERT INTO opportunities (id,account_id,contact_id,stage,status,value_estimate,created_by) VALUES ($1,$2,$3,'proposal','open',$4,'better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.opportunityId,crm.accountId,crm.contactId,Number(payload.proposal?.total)||null]);
     const verified=await validateLiveCrmContext(client,payload);if(!verified.ok){await client.query('ROLLBACK');return verified;}
     await client.query('COMMIT');return {ok:true,current:verified.current,created:true};
