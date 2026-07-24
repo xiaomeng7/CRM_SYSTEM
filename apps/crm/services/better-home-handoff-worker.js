@@ -26,10 +26,26 @@ async function validateLiveCrmContext(db,payload){
   if((current.asset_address||null)!==payload.workOrder.address)return {ok:false,error:'Property address changed after authorization',error_code:'authorized_preview_stale'};
   return {ok:true,current};
 }
+async function ensureLiveCrmContext(db,payload){
+  const crm=payload.crm||{},work=payload.workOrder||{},email=String(work.customerEmail||'').trim().toLowerCase(),phone=String(work.customerPhone||'').trim(),address=String(work.address||'').trim(),name=String(work.customerName||'').trim()||'Better Home Customer';
+  const ids=[crm.opportunityId,crm.accountId,crm.contactId,crm.assetId];if(!ids.every(x=>/^[0-9a-f-]{36}$/i.test(String(x||'')))||!address)return {ok:false,error:'Complete customer and property details required',error_code:'incomplete_crm_context'};
+  const existing=await db.query(`SELECT c.id::text AS contact_id,c.account_id::text AS account_id,s.id::text AS asset_id FROM contacts c LEFT JOIN assets s ON s.account_id=c.account_id AND lower(trim(coalesce(s.address,'')))=lower(trim($3)) WHERE ($1<>'' AND lower(trim(coalesce(c.email,'')))=$1) OR ($2<>'' AND regexp_replace(coalesce(c.phone,''),'[^0-9]','','g')=regexp_replace($2,'[^0-9]','','g') LIMIT 2`,[email,phone,address]);
+  if(existing.rows.some(x=>x.contact_id!==crm.contactId||x.account_id!==crm.accountId||(x.asset_id&&x.asset_id!==crm.assetId)))return {ok:false,error:'A matching CRM customer or property already exists under a different record',error_code:'crm_context_conflict'};
+  const client=typeof db.connect==='function'?await db.connect():db;
+  await client.query('BEGIN');
+  try{
+    await client.query(`INSERT INTO accounts (id,name,address_line,status,created_by) VALUES ($1,$2,$3,'active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.accountId,name,address]);
+    await client.query(`INSERT INTO contacts (id,account_id,name,email,phone,role,status,created_by) VALUES ($1,$2,$3,$4,$5,'Customer','active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.contactId,crm.accountId,name,email||null,phone||null]);
+    await client.query(`INSERT INTO assets (id,account_id,name,asset_type,address,status,created_by) VALUES ($1,$2,$3,'residential_property',$3,'active','better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.assetId,crm.accountId,address]);
+    await client.query(`INSERT INTO opportunities (id,account_id,contact_id,stage,status,value_estimate,created_by) VALUES ($1,$2,$3,'proposal','open',$4,'better_home_sales') ON CONFLICT (id) DO NOTHING`,[crm.opportunityId,crm.accountId,crm.contactId,Number(payload.proposal?.total)||null]);
+    const verified=await validateLiveCrmContext(client,payload);if(!verified.ok){await client.query('ROLLBACK');return verified;}
+    await client.query('COMMIT');return {ok:true,current:verified.current,created:true};
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{if(client!==db&&typeof client.release==='function')client.release();}
+}
 async function processBetterHomeEnvelope(input,options={}){
-  const checked=validateEnvelope(input);if(!checked.ok)return checked;const db=options.db||pool,jobCreator=options.jobCreator||createServiceM8JobFromCRM,context=await validateLiveCrmContext(db,checked.payload);if(!context.ok)return context;
+  const checked=validateEnvelope(input);if(!checked.ok)return checked;const db=options.db||pool,jobCreator=options.jobCreator||createServiceM8JobFromCRM;let context=await validateLiveCrmContext(db,checked.payload);if(!context.ok&&context.error_code==='crm_context_changed')context=await ensureLiveCrmContext(db,checked.payload);if(!context.ok)return context;
   if(options.execute!==true)return {ok:true,dry_run:true,writes_performed:false,would_create:{opportunity_id:checked.payload.crm.opportunityId,job_status:'Work Order',address:checked.payload.workOrder.address,idempotency_key:checked.envelope.idempotencyKey},existing_job_uuid:context.current.service_m8_job_id||null};
   if(process.env.BETTER_HOME_SERVICEM8_HANDOFF_ENABLED!==ENABLE_VALUE)return {ok:false,error:'Live Better Home handoff is disabled',error_code:'handoff_disabled'};
   return jobCreator({opportunity_id:checked.payload.crm.opportunityId,job_status:'Work Order',address_override:checked.payload.workOrder.address,description:checked.payload.workOrder.description,create_reason:`Accepted Better Home Proposal ${checked.payload.proposal?.code||''}`},{db,dryRun:false,log:options.log||(()=>{})});
 }
-module.exports={ENABLE_VALUE,loadHandoff,validateCurrentContext,processBetterHomeHandoff,canonicalize,stableHash,validateEnvelope,validateLiveCrmContext,processBetterHomeEnvelope};
+module.exports={ENABLE_VALUE,loadHandoff,validateCurrentContext,processBetterHomeHandoff,canonicalize,stableHash,validateEnvelope,validateLiveCrmContext,ensureLiveCrmContext,processBetterHomeEnvelope};
