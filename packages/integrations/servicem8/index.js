@@ -108,6 +108,14 @@ class ServiceM8Client {
     return res.json();
   }
 
+  async getCategories() {
+    return this._getCollection('category');
+  }
+
+  async updateJob(jobUuid, body) {
+    return this._createRecord(`job/${jobUuid}`, body);
+  }
+
   async getJobContacts(jobUuid) {
     return this._getCollection('jobcontact', `job_uuid eq '${jobUuid}'`);
   }

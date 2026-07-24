@@ -12,6 +12,8 @@ const {
   const createdContacts = [];
   const createdChecklist = [];
   const client = {
+    getCategories: async () => [{ uuid: 'standard-1', name: 'Standard', active: 1 }],
+    updateJob: async (_jobUuid, value) => assert.equal(value.category_uuid, 'standard-1'),
     getJobContacts: async () => [],
     createJobContact: async (_jobUuid, value) => createdContacts.push(value),
     getJobChecklists: async () => [{ name: BETTER_HOME_CHECKLIST[0] }],
@@ -36,6 +38,8 @@ const {
   assert.ok(createdChecklist.every((item) => item.section_name === 'Better Home Installation'));
 
   const duplicateClient = {
+    getCategories: async () => [{ uuid: 'standard-1', name: 'Standard', active: 1 }],
+    updateJob: async (_jobUuid, value) => assert.equal(value.category_uuid, 'standard-1'),
     getJobContacts: async () => [{ email: 'MENG@EXAMPLE.COM' }],
     createJobContact: async () => assert.fail('duplicate contact created'),
     getJobChecklists: async () => BETTER_HOME_CHECKLIST.map((name) => ({ name })),

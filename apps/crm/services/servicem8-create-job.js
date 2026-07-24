@@ -104,6 +104,17 @@ function splitContactName(value) {
 async function enrichBetterHomeJob(client, jobUuid, contact, log = () => {}) {
   const warnings = [];
   try {
+    const categories = await client.getCategories();
+    const standard = categories.find((item) =>
+      String(item.name || item.category_name || '').trim().toLowerCase() === 'standard'
+      && Number(item.active ?? 1) === 1);
+    if (!standard?.uuid) throw new Error('Active Standard category not found');
+    await client.updateJob(jobUuid, { category_uuid: standard.uuid });
+  } catch (error) {
+    warnings.push(`Category: ${error.message}`);
+  }
+
+  try {
     if (contact && (contact.name || contact.email || contact.phone)) {
       const existing = await client.getJobContacts(jobUuid);
       const email = String(contact.email || '').trim().toLowerCase();
