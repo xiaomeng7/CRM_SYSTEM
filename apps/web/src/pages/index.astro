@@ -3,15 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import PhoneCTA from '../components/PhoneCTA.astro';
-
-const collections = [
-  { id: 'C-01', name: 'Entry', slug: 'entry', line: 'Some welcomes don’t need words.' },
-  { id: 'C-02', name: 'Living', slug: 'living', line: 'One space. Many ways to live.' },
-  { id: 'C-03', name: 'Kitchen', slug: 'kitchen', line: 'The day begins quietly.' },
-  { id: 'C-04', name: 'Bedroom', slug: 'bedroom', line: 'The world can wait until morning.' },
-  { id: 'C-05', name: 'Bathroom', slug: 'bathroom', line: 'Every day begins and ends in comfort.' },
-  { id: 'C-06', name: 'Away', slug: 'away', line: 'Leave knowing home has settled.' },
-];
 ---
 
 <Layout
@@ -81,46 +72,38 @@ const collections = [
       </div>
     </section>
 
-    <!-- The product, expressed through rooms rather than technology categories. -->
+    <!-- Editorial gateway only. The Better Home page owns the product system and Collection catalogue. -->
     <section class="py-24 md:py-32">
       <div class="mx-auto max-w-[1160px] px-6 md:px-10">
-        <div class="grid gap-12 md:grid-cols-[0.8fr_1.2fr] md:items-end">
-          <div>
-            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Better Home Collections</p>
-            <h2 class="mt-6 text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">The rooms that shape your day.</h2>
+        <a href="/better-home" class="group relative block min-h-[38rem] overflow-hidden rounded-[2rem] bg-[#252a24] text-white md:min-h-[44rem]">
+          <picture class="absolute inset-0 block">
+            <source srcset="/images/better-home/collections/living.webp" type="image/webp" />
+            <img
+              src="/images/better-home/collections/living.jpg"
+              alt="A calm Australian living space shaped by natural light"
+              width="804"
+              height="821"
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-cover object-center transition duration-1000 ease-out group-hover:scale-[1.015]"
+            />
+          </picture>
+          <div class="absolute inset-0 bg-gradient-to-r from-[#171a16]/90 via-[#171a16]/50 to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-[#171a16]/65 via-transparent to-transparent"></div>
+          <div class="relative flex min-h-[38rem] max-w-[42rem] flex-col justify-end p-8 md:min-h-[44rem] md:justify-center md:p-16">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">The Better Home system</p>
+            <h2 class="mt-6 text-5xl font-normal leading-[0.94] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+              Begin with life, not technology.
+            </h2>
+            <p class="mt-7 max-w-lg text-base leading-[1.75] text-white/75 md:text-lg">
+              A clear way to shape the rooms, comfort and everyday moments that matter to you.
+            </p>
+            <span class="mt-9 inline-flex w-fit items-center gap-3 border-b border-white/35 pb-2 text-sm font-medium text-white">
+              Discover how Better Home works
+              <span aria-hidden="true" class="transition-transform duration-500 group-hover:translate-x-1">→</span>
+            </span>
           </div>
-          <p class="max-w-xl text-lg leading-relaxed text-[#686d65]">
-            Start with the spaces that matter. Add comfort, atmosphere and care only where they belong.
-          </p>
-        </div>
-
-        <div class="mt-14 grid overflow-hidden rounded-[2rem] border border-[#d4cec3] sm:grid-cols-2 lg:grid-cols-3">
-          {collections.map((collection) => (
-            <a href={`/better-home/${collection.slug}`} class="group relative min-h-[25rem] overflow-hidden border-[#d4cec3] sm:border-b lg:border-r">
-              <picture class="absolute inset-0 block">
-                <source srcset={`/images/better-home/collections/${collection.slug}.webp`} type="image/webp" />
-                <img
-                  src={`/images/better-home/collections/${collection.slug}.jpg`}
-                  alt={`${collection.name} Collection residential atmosphere`}
-                  width="804"
-                  height="821"
-                  loading="eager"
-                  decoding="async"
-                  class="h-full w-full object-cover transition duration-1000 ease-out group-hover:scale-[1.025]"
-                />
-              </picture>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/5"></div>
-              <div class="absolute inset-x-0 bottom-0 p-7 text-white md:p-8">
-                <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60">{collection.id} · Collection</p>
-                <h3 class="mt-3 text-4xl font-normal" style="font-family: 'Cormorant Garamond', Georgia, serif;">{collection.name}</h3>
-                <p class="mt-2 text-sm leading-relaxed text-white/75">{collection.line}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-        <div class="mt-10 text-center">
-          <a href="/better-home" class="text-xs font-semibold uppercase tracking-[0.18em] text-[#65755d] underline decoration-[#a9b0a4] underline-offset-8">Understand the Better Home system</a>
-        </div>
+        </a>
       </div>
     </section>
 
