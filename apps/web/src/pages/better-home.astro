@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { getCustomerPrice } from '../lib/product-pricing';
 
 const collections = [
   { id: 'C-01', name: 'Entry', slug: 'entry' },
@@ -10,7 +11,9 @@ const collections = [
   { id: 'C-04', name: 'Bedroom', slug: 'bedroom' },
   { id: 'C-05', name: 'Bathroom', slug: 'bathroom' },
   { id: 'C-06', name: 'Away', slug: 'away' },
-];
+].map((collection) => ({ ...collection, price: getCustomerPrice(collection.id) }));
+
+const foundationPrice = getCustomerPrice('F-01');
 
 const productSystem = [
   { step: '01', name: 'Foundation', question: 'What brings the home together?', href: '#foundation', text: 'One shared base for every Better Home product.' },
@@ -20,13 +23,13 @@ const productSystem = [
 ];
 
 const experiences = [
-  { name: 'Mood Lighting', type: 'For selected rooms', text: 'Give familiar evenings more colour, depth and atmosphere.' },
-  { name: 'Healthy Air', type: 'For selected rooms', text: 'Refresh the air quietly around the way each room is used.' },
-  { name: 'Climate', type: 'Whole-home comfort', text: 'Coordinate central climate without requiring a Collection first.' },
-  { name: 'Garden Care', type: 'Independent', text: 'Give irrigation a simple, considered rhythm of its own.' },
-  { name: 'CCTV & Monitoring', type: 'Independent', text: 'Professional local monitoring with a clearer view of home.' },
-  { name: 'Smart Toilet', type: 'Independent', text: 'Personal comfort that can begin as a product of its own.' },
-];
+  { id: 'E-01', name: 'Mood Lighting', type: 'For selected rooms', text: 'Give familiar evenings more colour, depth and atmosphere.' },
+  { id: 'E-03', name: 'Healthy Air', type: 'For selected rooms', text: 'Refresh the air quietly around the way each room is used.' },
+  { id: 'E-02', name: 'Climate', type: 'Whole-home comfort', text: 'Coordinate central climate without requiring a Collection first.' },
+  { id: 'E-04', name: 'Garden Care', type: 'Independent', text: 'Give irrigation a simple, considered rhythm of its own.' },
+  { id: 'E-05', name: 'CCTV & Monitoring', type: 'Independent', text: 'Professional local monitoring with a clearer view of home.' },
+  { id: 'E-06', name: 'Smart Toilet', type: 'Independent', text: 'Personal comfort that can begin as a product of its own.' },
+].map((experience) => ({ ...experience, price: getCustomerPrice(experience.id) }));
 ---
 
 <Layout
@@ -76,6 +79,13 @@ const experiences = [
           <h2 class="mt-5 font-['Cormorant_Garamond',Georgia,serif] text-5xl font-normal leading-[0.98] md:text-7xl">One quiet foundation for the whole home.</h2>
         </div>
         <div class="max-w-2xl md:pb-2">
+          <div class="mb-7 flex items-end gap-4 border-b border-[#aab3a5] pb-6">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#687362]">Standard investment</p>
+              <p class="mt-2 font-['Cormorant_Garamond',Georgia,serif] text-4xl">{foundationPrice.amountLabel}</p>
+            </div>
+            <p class="pb-1 text-xs text-[#687362]">{foundationPrice.fulfilmentLabel} · {foundationPrice.taxLabel}</p>
+          </div>
           <p class="text-lg leading-relaxed text-[#566052]">Foundation connects the home as one considered system. It is selected once, then stays quietly in the background as rooms and experiences are added.</p>
           <div class="mt-8 grid gap-5 border-t border-[#aab3a5] pt-6 text-sm text-[#465143] sm:grid-cols-3">
             <p>One shared base</p>
@@ -114,6 +124,10 @@ const experiences = [
               <div class="p-7 md:p-8">
                 <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#899183]">{collection.id} · Collection</p>
                 <h3 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal text-[#30352f]">{collection.name}</h3>
+                <div class="mt-5 flex items-baseline justify-between gap-4 border-t border-[#ded8ce] pt-4">
+                  <p class="font-['Cormorant_Garamond',Georgia,serif] text-2xl">{collection.price.amountLabel}</p>
+                  <p class="text-[10px] uppercase tracking-[0.12em] text-[#899183]">{collection.price.fulfilmentLabel} · GST included</p>
+                </div>
                 <div class="mt-7 flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#65755d]">
                   <span class="h-px w-10 bg-[#8a987f] transition-all duration-500 group-hover:w-16"></span>
                   Explore
@@ -138,6 +152,10 @@ const experiences = [
               <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#7a8474]">{experience.type}</p>
               <h3 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-3xl font-normal">{experience.name}</h3>
               <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">{experience.text}</p>
+              <div class="mt-6 border-t border-[#ddd6cb] pt-4">
+                <p class="font-['Cormorant_Garamond',Georgia,serif] text-2xl">{experience.price.amountLabel}</p>
+                <p class="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#899183]">{experience.price.fulfilmentLabel} · {experience.price.taxLabel}</p>
+              </div>
             </article>
           ))}
         </div>
