@@ -302,6 +302,7 @@ const shopAddons = importPlan.addons
     const status = document.getElementById('shop-status');
     if (![...selection.values()].some((qty) => qty > 0)) { status.textContent = 'Choose at least one product first.'; return; }
     const form = new FormData(event.currentTarget);
+    const campaign = new URLSearchParams(location.search);
     status.textContent = 'Sending your selection…';
     const payload = {
       name: form.get('name'), phone: form.get('phone'), email: form.get('email'), suburb: form.get('suburb'), notes: form.get('notes'),
@@ -310,6 +311,13 @@ const shopAddons = importPlan.addons
       addons: [...addonSelection].map(([code, quantity]) => { const addon=shopAddons.find((item)=>item.code===code); return { code, quantity, name:addon.name, unitPrice:addon.price }; }),
       estimatedTotal: [...selection].reduce((sum,[code,qty])=>sum+productByCode[code].price*qty,0)+[...addonSelection].reduce((sum,[code,qty])=>sum+shopAddons.find((a)=>a.code===code).price*qty,0),
       page_url: location.href,
+      attribution: {
+        utm_source: campaign.get('utm_source'),
+        utm_medium: campaign.get('utm_medium'),
+        utm_campaign: campaign.get('utm_campaign'),
+        utm_content: campaign.get('utm_content'),
+        gclid: campaign.get('gclid'),
+      },
     };
     try {
       const response = await fetch('/api/submit-better-home-selection', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });

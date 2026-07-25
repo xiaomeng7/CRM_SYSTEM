@@ -103,6 +103,16 @@ export const handler: Handler = async (event: HandlerEvent) => {
     `Indicative total: $${estimatedTotal.toLocaleString('en-AU')}`,
     notes ? `Customer notes: ${notes}` : null,
   ].filter(Boolean);
+  const attribution = body.attribution && typeof body.attribution === 'object'
+    ? {
+        utm_source: cleanText(body.attribution.utm_source, 100) || null,
+        utm_medium: cleanText(body.attribution.utm_medium, 100) || null,
+        utm_campaign: cleanText(body.attribution.utm_campaign, 200) || null,
+        utm_content: cleanText(body.attribution.utm_content, 200) || null,
+        gclid: cleanText(body.attribution.gclid, 250) || null,
+      }
+    : {};
+  const source = attribution.utm_source || 'direct';
 
   try {
     const response = await fetch(`${crmBase.replace(/\/$/, '')}/api/public/leads`, {
@@ -110,7 +120,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name, phone, email, suburb,
-        source: 'direct',
+        source,
         product_interest: 'Better Home',
         product_type: 'better_home',
         service_type: 'better_home_selection',
@@ -124,6 +134,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
           experience_targets: experienceTargets,
           estimated_total_incl_gst: estimatedTotal,
           customer_notes: notes || null,
+          attribution,
         },
       }),
     });
