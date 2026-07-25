@@ -4,12 +4,16 @@
  * Routes unchanged; mobile uses same `navLinks`.
  */
 const navLinks = [
-  { href: '/better-home', label: 'Products' },
-  { href: '/shop', label: 'Shop' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/for-builders', label: 'Professionals' },
-  { href: '/about', label: 'About' },
+  { href: '/better-home', label: 'Products', matches: ['/better-home', '/products'] },
+  { href: '/shop', label: 'Shop', matches: ['/shop'] },
+  { href: '/projects', label: 'Projects', matches: ['/projects'] },
+  { href: '/for-builders', label: 'Professionals', matches: ['/for-builders'] },
+  { href: '/about', label: 'About', matches: ['/about'] },
 ];
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (matches: string[]) =>
+  matches.some((path) => currentPath === path || currentPath.startsWith(`${path}/`));
 ---
 <header class="sticky top-0 z-40 border-b border-white/[0.06] bg-[#1f261f] text-white">
   <div
@@ -37,14 +41,22 @@ const navLinks = [
       class="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-4 md:flex lg:gap-5 xl:gap-6"
       aria-label="Primary"
     >
-      {navLinks.map((link) => (
+      {navLinks.map((link) => {
+        const active = isActive(link.matches);
+        return (
         <a
           href={link.href}
-          class="whitespace-nowrap text-[13px] font-medium leading-none tracking-[0.025em] text-slate-400/95 transition-colors duration-500 ease-out hover:text-slate-100/95 lg:text-[14.5px]"
+          aria-current={active ? 'page' : undefined}
+          class:list={[
+            'relative whitespace-nowrap py-3 text-[13px] font-medium leading-none tracking-[0.025em] transition-colors duration-500 ease-out lg:text-[14.5px]',
+            active ? 'text-[#f1e7c5]' : 'text-slate-400/95 hover:text-slate-100/95',
+          ]}
         >
           {link.label}
+          {active && <span class="absolute inset-x-0 -bottom-[1.28rem] h-px bg-[#d2b86f]" aria-hidden="true"></span>}
         </a>
-      ))}
+        );
+      })}
     </nav>
 
     <div class="hidden shrink-0 items-center md:flex">
@@ -74,7 +86,15 @@ const navLinks = [
     <div class="mx-auto max-w-[90rem] px-6 py-3 flex flex-col text-[15px] tracking-[0.04em]">
       <a href="/" data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">Home</a>
       {navLinks.map((link) => (
-        <a href={link.href} data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">
+        <a
+          href={link.href}
+          data-mobile-nav-link
+          aria-current={isActive(link.matches) ? 'page' : undefined}
+          class:list={[
+            'border-b border-white/5 py-3 hover:text-white',
+            isActive(link.matches) ? 'text-[#ead79a]' : 'text-slate-200',
+          ]}
+        >
           {link.label}
         </a>
       ))}
