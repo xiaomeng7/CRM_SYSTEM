@@ -20,6 +20,15 @@ const includedLabel = product.productKind === 'FOUNDATION'
   : product.productKind === 'STANDALONE'
     ? 'Standard supply'
     : 'Standard scope';
+const isFoundation = product.productCode === 'F-01';
+const displayCapabilities = isFoundation
+  ? [
+      { customerLayer: 'Included', capabilityName: 'Central Home Screen', includedQty: 1, notes: 'A clear shared point for the home' },
+      { customerLayer: 'Included', capabilityName: 'Home Network + Device Gateways', includedQty: 1, notes: 'The connected core behind Collections and Experiences' },
+      { customerLayer: 'Included', capabilityName: 'Shared System Programming', includedQty: 1, notes: 'Scenes and products work as one home' },
+      { customerLayer: 'Included', capabilityName: 'Testing + Customer Handover', includedQty: 1, notes: 'Professionally commissioned and explained' },
+    ]
+  : product.capabilities;
 ---
 
 <Layout title={`${product.canonicalName} | Better Home`} description={`${product.hero} ${product.subtitle}`}>
@@ -68,6 +77,25 @@ const includedLabel = product.productKind === 'FOUNDATION'
 
     <section class="border-y border-[#d9d3c9] bg-[#e9e4da] py-20 md:py-24">
       <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        {isFoundation && (
+          <div class="mb-14 grid gap-px overflow-hidden rounded-2xl border border-[#c9c2b6] bg-[#c9c2b6] md:grid-cols-3">
+            <article class="bg-[#f5f1ea] p-7">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#65755d]">Selected once</p>
+              <h3 class="mt-4 text-3xl">One foundation, not one per room.</h3>
+              <p class="mt-3 text-sm leading-relaxed text-[#686d65]">Foundation belongs to the home as a whole and is selected only once.</p>
+            </article>
+            <article class="bg-[#f5f1ea] p-7">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#65755d]">Shared by every room</p>
+              <h3 class="mt-4 text-3xl">Collections work as one home.</h3>
+              <p class="mt-3 text-sm leading-relaxed text-[#686d65]">Rooms, scenes and compatible Experiences use the same quiet core.</p>
+            </article>
+            <article class="bg-[#f5f1ea] p-7">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#65755d]">Ready to grow</p>
+              <h3 class="mt-4 text-3xl">Add later without starting again.</h3>
+              <p class="mt-3 text-sm leading-relaxed text-[#686d65]">New rooms and Experiences can join the established system over time.</p>
+            </article>
+          </div>
+        )}
         <div class="flex flex-wrap items-end justify-between gap-8">
           <div>
             <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">{includedLabel}</p>
@@ -76,7 +104,7 @@ const includedLabel = product.productKind === 'FOUNDATION'
           <p class="max-w-md text-sm leading-relaxed text-[#686d65]">{product.coverage}</p>
         </div>
         <div class="mt-10 grid gap-px overflow-hidden rounded-2xl border border-[#cec7bb] bg-[#cec7bb] sm:grid-cols-2 lg:grid-cols-3">
-          {product.capabilities.map((capability) => (
+          {displayCapabilities.map((capability) => (
             <article class="bg-[#f5f1ea] p-7">
               <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#65755d]">{capability.customerLayer}</p>
               <h3 class="mt-3 text-2xl">{capability.capabilityName}</h3>
