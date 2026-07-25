@@ -296,6 +296,7 @@ const shopAddons = importPlan.addons
   if (productByCode[requested]) selection.set(requested, 1);
   updateFoundation();
   render();
+  if (typeof window.bhtTrack === 'function') window.bhtTrack('view_shop', { product_os_release: 'V2.07' });
 
   document.getElementById('better-home-builder').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -323,6 +324,13 @@ const shopAddons = importPlan.addons
       const response = await fetch('/.netlify/functions/submit-better-home-selection', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Please try again.');
+      if (typeof window.bhtTrack === 'function') window.bhtTrack('generate_lead', {
+        currency: 'AUD',
+        value: payload.estimatedTotal,
+        product_os_release: 'V2.07',
+        selected_product_count: payload.selections.length,
+        selected_addon_count: payload.addons.length,
+      });
       sessionStorage.setItem('betterHomeSubmission', JSON.stringify({ name: payload.name, estimatedTotal: payload.estimatedTotal }));
       location.href = `/shop/thank-you${result.reference ? `?ref=${encodeURIComponent(result.reference)}` : ''}`;
     } catch (error) { status.textContent = error.message || 'We could not send this selection. Please call 0410 323 034.'; }
