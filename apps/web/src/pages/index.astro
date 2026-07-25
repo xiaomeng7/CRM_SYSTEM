@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 
 const moments = [
   { slug: 'bedroom', time: 'Before the day begins', title: 'Wake gently.', text: 'The room begins with softer light, allowing the day to arrive without urgency.' },
-  { slug: 'kitchen', time: 'Through the day', title: 'Let the light follow life.', text: 'Breakfast, cooking and a quiet glass of water each ask something different of the same room.' },
+  { slug: 'kitchen', time: 'Through the day', title: 'Let the room recover its freshness.', text: 'After cooking, the home can quietly restore comfort and freshness without another task to remember.' },
   { slug: 'entry', time: 'Coming home', title: 'Feel welcomed, without asking.', text: 'The threshold responds naturally, making arrival feel familiar before a word is spoken.' },
   { slug: 'living', time: 'Evening', title: 'Let the home settle with you.', text: 'Family time, reading and film each find their own atmosphere as the day slows down.' },
 ];
@@ -42,6 +42,9 @@ const moments = [
           <p class="mt-8 max-w-[34rem] text-base leading-[1.75] text-white/75 md:text-lg">
             We design around the way a home feels — the light, comfort and small routines that shape an ordinary day.
           </p>
+          <p class="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55">
+            Residential experiences · Designed and professionally installed in Adelaide
+          </p>
           <div class="mt-10">
             <a href="#philosophy" class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#d2b86f] px-8 text-sm font-semibold text-[#151813] transition-colors hover:bg-[#dfc985]">
               Our approach
@@ -52,7 +55,7 @@ const moments = [
     </section>
 
     <!-- Brand philosophy: fewer statements, more room. -->
-    <section id="philosophy" class="relative scroll-mt-20 overflow-hidden border-b border-white/10 bg-[#293129] py-24 text-[#f3eee5] md:py-36">
+    <section id="philosophy" class="relative scroll-mt-20 overflow-hidden border-b border-white/10 bg-[#293129] py-20 text-[#f3eee5] md:py-28">
       <picture class="pointer-events-none absolute inset-0 block" aria-hidden="true">
         <source srcset="/images/better-home/collections/away.webp" type="image/webp" />
         <img src="/images/better-home/collections/away.jpg" alt="" width="804" height="821" loading="lazy" class="home-philosophy-image h-full w-full object-cover object-[62%_50%] opacity-[0.16]" />
@@ -63,18 +66,18 @@ const moments = [
         <h2 class="mt-7 max-w-[55rem] text-4xl font-normal leading-[1.03] tracking-[-0.025em] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
           Home is not a collection of devices. It is the way life unfolds between them.
         </h2>
-        <div class="mt-16 grid gap-10 border-t border-white/15 pt-8 md:grid-cols-3 md:gap-14">
+        <div class="mt-12 grid gap-8 border-t border-white/15 pt-7 md:grid-cols-3 md:gap-12">
           <div>
             <p class="text-sm font-semibold text-[#d8dfd3]">Life comes first.</p>
-            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">We begin with the way people arrive, gather, rest and leave — not with a list of devices.</p>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">We begin with how people arrive, gather, rest and leave.</p>
           </div>
           <div>
             <p class="text-sm font-semibold text-[#d8dfd3]">Every room has a rhythm.</p>
-            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Morning, gathering, rest and return each ask something different of the same home.</p>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Morning, gathering, rest and return each ask something different.</p>
           </div>
           <div>
             <p class="text-sm font-semibold text-[#d8dfd3]">Home should still feel like home.</p>
-            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Every response should feel natural, familiar and quietly personal.</p>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/[0.62]">Every response should feel natural, familiar and personal.</p>
           </div>
         </div>
       </div>
@@ -183,16 +186,16 @@ const moments = [
               Tell us about the rooms you use, the moments that matter and what you would like your home to do more naturally.
             </p>
 
-            <div class="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-y border-[#bbb4a7] py-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#566150]">
-              <span>Adelaide</span>
-              <span>Design</span>
-              <span>Installation</span>
-              <span>Ongoing support</span>
+            <div class="mt-9 grid gap-5 border-y border-[#bbb4a7] py-6 text-[#566150] sm:grid-cols-3">
+              <div><strong class="block text-[11px] uppercase tracking-[0.16em]">Designed locally</strong><span class="mt-1 block text-xs leading-relaxed text-[#71776e]">Around Adelaide homes and the people who live in them.</span></div>
+              <div><strong class="block text-[11px] uppercase tracking-[0.16em]">Licensed delivery</strong><span class="mt-1 block text-xs leading-relaxed text-[#71776e]">Professionally installed, tested and handed over.</span></div>
+              <div><strong class="block text-[11px] uppercase tracking-[0.16em]">Ongoing support</strong><span class="mt-1 block text-xs leading-relaxed text-[#71776e]">A local team remains available after completion.</span></div>
             </div>
 
-            <a href="/contact" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#52604c] px-9 text-sm font-semibold text-white transition-colors hover:bg-[#414d3c]">
-              Start a conversation
-            </a>
+            <div class="mt-9 flex flex-wrap gap-4">
+              <a href="/contact" class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#52604c] px-9 text-sm font-semibold text-white transition-colors hover:bg-[#414d3c]">Start a conversation</a>
+              <a href="/projects" class="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#aaa396] px-8 text-sm font-medium text-[#4d5749] transition-colors hover:bg-[#eee9e0]">View our work</a>
+            </div>
             <p class="mt-4 text-sm leading-relaxed text-[#777b73]">A relaxed first conversation. No technical preparation needed.</p>
           </div>
         </div>
