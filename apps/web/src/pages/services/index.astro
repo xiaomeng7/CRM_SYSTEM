@@ -2,174 +2,200 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import PhoneCTA from '../../components/PhoneCTA.astro';
 
-/** Capability overview — deeper than homepage cards; CCTV framed as part of integrated systems. */
 const capabilities = [
   {
-    title: 'Residential electrical infrastructure',
-    body:
-      'Distribution, earthing, circuit design and containment for new builds and major renovations — coordinated with programme, slab and ceiling zones, and the trades that follow.',
+    label: 'Residential experience',
+    title: 'Better Home',
+    body: 'A room-by-room system for light, comfort, arrival, rest and the everyday moments that make a home.',
+    href: '/better-home',
+    cta: 'Explore the Better Home system',
+    image: '/images/better-home/living-collection.png',
+    alt: 'A calm, naturally lit residential living room',
+  },
+  {
+    label: 'Design and integration',
+    title: 'Lighting and residential technology',
+    body: 'Architectural lighting, scenes, comfort, access and control considered together — then commissioned around daily use.',
+    href: '/services/smart-home',
+    cta: 'Lighting and integration',
+    image: '/images/work-kitchen-led',
+    alt: 'Warm concealed architectural lighting',
+  },
+  {
+    label: 'Electrical foundation',
+    title: 'New builds and major renovations',
+    body: 'Circuits, distribution, containment and electrical infrastructure coordinated with the drawings, programme and adjacent trades.',
     href: '/for-builders',
-    cta: 'New build & programme coordination →',
+    cta: 'Residential project delivery',
+    image: '/images/work-builder-wiring',
+    alt: 'Coordinated electrical infrastructure during first fix',
   },
   {
-    title: 'Smart home & integration',
-    body:
-      'Lighting, comfort, access and automation specified as one stack — scenes, commissioning, and handover documentation suited to premium residential.',
-    href: '/services/smart-home',
-    cta: 'Smart home & integration →',
-  },
-  {
-    title: 'Architectural lighting',
-    body:
-      'Interior and exterior layers, focal lighting and control philosophy aligned with interiors — not a late bolt-on after paint and joinery are finished.',
-    href: '/services/smart-home',
-    cta: 'Lighting & control →',
-  },
-  {
-    title: 'Switchboard, capacity & future readiness',
-    body:
-      'Protection upgrades, load planning and headroom for climate, EV and later phases — assessed before hardware and cable routes are locked in.',
+    label: 'Capacity and protection',
+    title: 'Switchboards and future readiness',
+    body: 'Protection upgrades and load planning with headroom for climate, EV charging, solar, batteries and later stages of the home.',
     href: '/services/switchboard',
-    cta: 'Switchboard & capacity →',
+    cta: 'Switchboard and capacity',
+    image: '/images/work-switchboard-panel',
+    alt: 'Organised residential switchboard and protection equipment',
   },
   {
-    title: 'Security & CCTV (within the integrated system)',
-    body:
-      'Cameras, access and notification paths designed to sit alongside lighting and automation — stable recording and practical daily use, not a standalone “alarm install” identity.',
-    href: '/services/cctv-security',
-    cta: 'Integrated security →',
-    tone: 'muted' as const,
-  },
-  {
+    label: 'Energy',
     title: 'EV charging',
-    body:
-      'Charger selection and cable routes driven by switchboard capacity, tariff behaviour and future solar or battery — assessment before hardware is ordered.',
+    body: 'Charger, cable route and capacity assessed as part of the home — with future tariff, solar and battery use in mind.',
     href: '/services/ev-chargers',
-    cta: 'EV charging →',
+    cta: 'EV charging',
+    image: '/images/work-cable-management',
+    alt: 'Carefully organised electrical cabling',
+  },
+  {
+    label: 'Protection',
+    title: 'CCTV and home monitoring',
+    body: 'Professional recording and monitoring designed to sit alongside entry, exterior lighting and the way the household actually uses the home.',
+    href: '/services/cctv-security',
+    cta: 'CCTV and monitoring',
+    image: '/images/work-exterior-night',
+    alt: 'Residential entrance illuminated at night',
   },
 ];
 ---
 
 <Layout
-  title="Services — Better Home Technology | Premium Residential Capabilities"
-  description="Capability overview: residential electrical infrastructure, smart home and lighting integration, switchboard and future-ready capacity, integrated security, EV charging, and independent pre-purchase inspection."
+  title="Residential Services | Better Home Technology Adelaide"
+  description="Residential electrical, architectural lighting, Better Home integration, switchboard capacity, EV charging, CCTV and pre-purchase electrical inspections in Adelaide."
 >
   <Header />
 
-  <main>
-    <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
-      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          Capabilities
-        </p>
-        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
-          Electrical and smart infrastructure
-          <span class="text-brand-amber"> for premium residential work.</span>
-        </h1>
-        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
-          This page is the catalogue view: how we think about scope, coordination and handover — before you choose a
-          single product line or trade day on site.
-        </p>
+  <main class="bg-[#f5f1ea] text-[#252823]">
+    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#202620] text-[#f5f1e9]">
+      <picture class="absolute inset-0 block">
+        <source srcset="/images/hero-luxury-stairway.webp" type="image/webp" />
+        <img
+          src="/images/hero-luxury-stairway.jpg"
+          alt=""
+          width="1536"
+          height="1024"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="h-full w-full object-cover object-center opacity-[0.52]"
+        />
+      </picture>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1e251e]/96 via-[#1e251e]/72 to-[#1e251e]/22"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1e251e]/58 via-transparent to-[#1e251e]/15"></div>
+
+      <div class="relative mx-auto flex min-h-[calc(100svh-5.5rem)] max-w-[1160px] items-center px-6 py-24 md:px-10">
+        <div class="max-w-[51rem]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d5c17b]">Residential capabilities</p>
+          <h1 class="mt-7 text-[clamp(3.5rem,7.2vw,7rem)] font-normal leading-[0.9] tracking-[-0.04em]" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            One home. Considered as a whole.
+          </h1>
+          <p class="mt-8 max-w-[39rem] text-base leading-[1.8] text-white/72 md:text-lg">
+            From the electrical foundation to the way a room feels at night, each layer should support the same home — not compete for attention.
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="max-w-2xl mb-12">
-          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-            By discipline
-          </p>
-          <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight">
-            Where we add the most leverage
+    <section class="bg-[#e8e5de] py-24 md:py-36">
+      <div class="mx-auto grid max-w-[1080px] gap-12 px-6 md:grid-cols-[0.7fr_1.3fr] md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Where we begin</p>
+        <div>
+          <h2 class="text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Begin with the responsibility, not the equipment.
           </h2>
-          <p class="mt-4 text-lg text-brand-muted leading-relaxed">
-            Each area links to a focused service page or programme entry point. Same delivery standard across scopes.
+          <p class="mt-8 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            Some homes begin with one room. Others begin with a switchboard, a renovation, an EV charger or a set of plans. We first understand what the home needs to do, then define the right scope and sequence.
+          </p>
+          <p class="mt-6 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            That approach keeps individual services useful today while protecting the home’s ability to grow later.
           </p>
         </div>
+      </div>
+    </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <section class="bg-[#596458] py-24 text-white md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">Ways we can help</p>
+        <h2 class="mt-6 max-w-[49rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Different starting points. One standard of care.
+        </h2>
+
+        <div class="mt-16 grid gap-x-7 gap-y-14 md:grid-cols-2">
           {capabilities.map((item) => (
-            <a
-              href={item.href}
-              class:list={[
-                'block rounded-xl p-8 border transition group',
-                item.tone === 'muted'
-                  ? 'bg-white/80 border-brand-border/80 hover:border-brand-navy/25 hover:shadow-md'
-                  : 'bg-white border-brand-border hover:border-brand-amber hover:shadow-lg',
-              ]}
-            >
-              {item.tone === 'muted' && (
-                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-muted mb-2">
-                  Integrated systems
-                </p>
-              )}
-              <h3 class="text-2xl font-bold text-brand-ink mb-3 group-hover:text-brand-navy">
-                {item.title}
-              </h3>
-              <p class="text-brand-muted leading-relaxed mb-6">
-                {item.body}
-              </p>
-              <p class="text-brand-navy font-semibold group-hover:text-brand-amber transition">
-                {item.cta}
-              </p>
-            </a>
+            <article class="group">
+              <a href={item.href} class="block">
+                <figure class="overflow-hidden rounded-[1.75rem] bg-[#3c453b]">
+                  <picture>
+                    {item.image.startsWith('/images/work-') && (
+                      <source srcset={`${item.image}.webp`} type="image/webp" />
+                    )}
+                    <img
+                      src={item.image.startsWith('/images/work-') ? `${item.image}.jpg` : item.image}
+                      alt={item.alt}
+                      width="800"
+                      height="600"
+                      loading="lazy"
+                      decoding="async"
+                      class="aspect-[16/10] h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
+                    />
+                  </picture>
+                </figure>
+                <p class="mt-7 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c57e]">{item.label}</p>
+                <h3 class="mt-4 text-3xl font-normal leading-[1.08] md:text-4xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{item.title}</h3>
+                <p class="mt-4 max-w-lg text-[15px] leading-[1.75] text-white/62">{item.body}</p>
+                <p class="mt-6 text-sm font-semibold text-[#e0ce8a]">{item.cta} <span aria-hidden="true">→</span></p>
+              </a>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-white py-16 md:py-20 border-y border-brand-border">
-      <div class="mx-auto max-w-4xl px-6 md:flex md:items-center md:justify-between md:gap-12">
+    <section class="bg-[#f5f1ea] py-24 md:py-32">
+      <div class="mx-auto grid max-w-[1160px] gap-14 px-6 md:grid-cols-[1fr_1fr] md:items-center md:px-10">
+        <figure class="overflow-hidden rounded-[2rem] bg-[#d4cec2]">
+          <img
+            src="/images/insights/adelaide-switchboard-board-internal-before-rectification.png"
+            alt="Electrical switchboard inspected before rectification"
+            width="1200"
+            height="900"
+            loading="lazy"
+            decoding="async"
+            class="aspect-[4/3] h-full w-full object-cover"
+          />
+        </figure>
         <div>
-          <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-            Independent product
-          </p>
-          <h2 class="text-3xl md:text-4xl font-bold text-brand-ink tracking-tight">
-            Pre-purchase electrical inspection
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Before buying a home</p>
+          <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Understand the electrical condition before commitment.
           </h2>
-          <p class="mt-4 text-lg text-brand-muted leading-relaxed max-w-xl">
-            For buyers who need a written electrical verdict before commitment — separate from builder programmes,
-            with clear scope and no commission on the outcome.
+          <p class="mt-7 max-w-lg text-base leading-[1.8] text-[#686d65]">
+            Our pre-purchase electrical inspection is an independent product for buyers who need a clear written view of safety, condition and likely priorities.
           </p>
-        </div>
-        <div class="mt-8 md:mt-0 shrink-0">
-          <a
-            href="/pre-purchase-inspection/"
-            class="inline-flex items-center justify-center bg-brand-navy text-white font-semibold px-8 py-4 rounded-md hover:bg-brand-charcoal-soft transition"
-          >
-            Pre-purchase inspection →
+          <a href="/pre-purchase-inspection" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#687663] px-8 text-sm font-semibold text-[#4d5a48] transition-colors hover:bg-[#52604c] hover:text-white">
+            Pre-purchase inspection
           </a>
         </div>
       </div>
     </section>
 
-    <section class="bg-brand-surface-alt py-20 md:py-24">
-      <div class="mx-auto max-w-4xl px-6 text-center">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Not sure where to start?
+    <section class="bg-[#d7ddd1] py-24 md:py-32">
+      <div class="mx-auto max-w-[900px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#596754]">Not sure where to begin?</p>
+        <h2 class="mx-auto mt-7 max-w-3xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Start with the home as it is today.
+        </h2>
+        <p class="mx-auto mt-7 max-w-xl text-base leading-[1.8] text-[#626b5e]">
+          A few photos, a floor plan or a simple description is enough for a useful first conversation.
         </p>
-        <p class="text-3xl md:text-5xl font-bold text-brand-ink leading-tight">
-          Send drawings, photos, or a short brief.
-        </p>
-        <p class="mt-8 text-lg text-brand-muted leading-relaxed max-w-2xl mx-auto">
-          We will tell you which capability area fits first — and whether the job is ready now or better staged.
-        </p>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
-            Contact BHT
-          </a>
-          <a href="/for-builders" class="border-2 border-brand-navy text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-navy hover:text-white transition">
-            For builders &amp; designers
-          </a>
-        </div>
+        <a href="/contact" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#52604c] px-9 text-sm font-semibold text-white transition-colors hover:bg-[#414d3c]">
+          Start a conversation
+        </a>
       </div>
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>

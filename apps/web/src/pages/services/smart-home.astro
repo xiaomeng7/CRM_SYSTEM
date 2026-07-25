@@ -2,152 +2,196 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import PhoneCTA from '../../components/PhoneCTA.astro';
 
-const deliverables = [
-  'New build smart home specification from pre-wire stage through handover.',
-  'Retrofit planning for occupied homes with staged wiring and minimal rework.',
-  'Builder-ready packages covering scenes, keypad logic, and commissioning windows.',
-  'Unified control through app, voice, and wall scenes for lighting, access, and comfort.',
-  'Future-ready wiring paths for later expansion without opening finished walls.',
+const integrationLayers = [
+  ['Light', 'General, task, architectural and decorative lighting considered as scenes rather than isolated switches.'],
+  ['Comfort', 'Climate, curtains and air quality coordinated around the way rooms are occupied and used.'],
+  ['Arrival and protection', 'Entry, access, CCTV and exterior lighting designed to respond as parts of the same home.'],
+  ['Control', 'Wall controls, app access and voice used only where each makes daily life simpler.'],
 ];
 
-const suitableFor = [
-  'Luxury new builds where electrical and automation are designed together.',
-  'Homeowners upgrading lighting, access, and comfort into one control workflow.',
-  'Builders handing over homes that need predictable, documented smart control.',
+const projectTypes = [
+  {
+    title: 'A new or renovated home',
+    body: 'Plan infrastructure before walls close, with capacity and pathways for both the first stage and what may come later.',
+  },
+  {
+    title: 'An occupied home',
+    body: 'Improve selected rooms or experiences in stages, while respecting the existing electrical system and finished interior.',
+  },
+  {
+    title: 'An inherited system',
+    body: 'Understand what is already installed, recover documentation where possible and define a practical path forward.',
+  },
 ];
 
 const process = [
-  { n: '01', title: 'Define the control plan', body: 'We map spaces, lifestyle patterns, and builder milestones before a single cable is run.' },
-  { n: '02', title: 'Design and pre-wire', body: 'We lock wiring routes, panel locations, and device requirements for current and future stages.' },
-  { n: '03', title: 'Program and commission', body: 'We build scenes, app access, and voice logic, then test on site room by room.' },
-  { n: '04', title: 'Handover and support', body: 'You receive system credentials, scene map, and practical guidance for daily use and future additions.' },
+  ['01', 'Understand the home', 'Map rooms, routines, existing services and the moments the household wants to improve.'],
+  ['02', 'Define the architecture', 'Resolve wiring, capacity, interfaces, equipment locations and the boundary between standard and bespoke work.'],
+  ['03', 'Install and commission', 'Coordinate electrical delivery, program the intended responses and test the home room by room.'],
+  ['04', 'Handover clearly', 'Provide access, documentation, training and a support path for future adjustment or expansion.'],
 ];
 ---
 
 <Layout
-  title="Smart Home Systems — Better Home Technology | Adelaide"
-  description="Integrated smart home systems for Adelaide homeowners and builders: lighting, security, access, comfort, automation, and future-ready wiring."
+  title="Residential Technology Design & Integration | Adelaide"
+  description="Bespoke residential technology and smart home integration for Adelaide new builds, renovations and existing homes."
 >
   <Header />
 
-  <main>
-    <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
-      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          Smart home
-        </p>
-        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
-          Smart home is not gadgets.
-          <span class="text-brand-amber"> It is a complete electrical system.</span>
-        </h1>
-        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
-          We integrate lighting, security, access, comfort, and automation into one predictable system for
-          Adelaide homeowners and builders.
-        </p>
-      </div>
-    </section>
+  <main class="bg-[#f5f1ea] text-[#252823]">
+    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#202620] text-[#f5f1e9]">
+      <picture class="absolute inset-0 block">
+        <source srcset="/images/work-living-room-led.webp" type="image/webp" />
+        <img
+          src="/images/work-living-room-led.jpg"
+          alt=""
+          width="800"
+          height="600"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="h-full w-full object-cover object-center opacity-[0.52]"
+        />
+      </picture>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1e251e]/96 via-[#1e251e]/74 to-[#1e251e]/25"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1e251e]/60 via-transparent to-[#1e251e]/14"></div>
 
-    <section class="bg-white py-20 md:py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Why it matters
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6">
-          Fragmented installs create expensive rework.
-        </h2>
-        <p class="text-lg text-brand-muted leading-relaxed max-w-4xl">
-          Separate vendors for lighting, alarms, intercom, and app control usually leave gaps in wiring,
-          unstable automations, and poor handover. We solve this by specifying one electrical architecture at
-          design stage and commissioning it as one system at completion.
-        </p>
-      </div>
-    </section>
-
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          What we do
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
-          Smart home delivery across new build, retrofit, and builder handover.
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {deliverables.map((item) => (
-            <div class="bg-white rounded-xl p-7 border border-slate-200">
-              <p class="text-brand-ink leading-relaxed">{item}</p>
-            </div>
-          ))}
+      <div class="relative mx-auto flex min-h-[calc(100svh-5.5rem)] max-w-[1160px] items-center px-6 py-24 md:px-10">
+        <div class="max-w-[52rem]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d5c17b]">Residential technology integration</p>
+          <h1 class="mt-7 text-[clamp(3.5rem,7.2vw,7rem)] font-normal leading-[0.9] tracking-[-0.04em]" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            When the home is more complex, the experience should become simpler.
+          </h1>
+          <p class="mt-8 max-w-[39rem] text-base leading-[1.8] text-white/72 md:text-lg">
+            Bespoke design and integration for homes whose lighting, comfort, access and infrastructure need to work as one considered system.
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="bg-white py-20 md:py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Suitable for
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
-          Homeowners and builders who want one coherent system.
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {suitableFor.map((item) => (
-            <div class="border-l-4 border-brand-amber pl-5">
-              <p class="text-brand-ink leading-relaxed">{item}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Process
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-12">
-          Four stages from concept to lived-in control.
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {process.map((step) => (
-            <div class="bg-white rounded-xl p-6 border border-slate-200">
-              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{step.n}</p>
-              <h3 class="text-lg font-bold text-brand-ink mb-2">{step.title}</h3>
-              <p class="text-brand-muted text-sm leading-relaxed">{step.body}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots-soft"></div>
-      <div class="relative mx-auto max-w-4xl px-6 text-center">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Next step
-        </p>
-        <p class="text-3xl md:text-5xl font-bold leading-tight">
-          Planning a smart home project in Adelaide?
-        </p>
-        <p class="mt-8 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Send your plans or current layout. We will confirm whether the system should be done in one phase
-          or staged across build and retrofit.
-        </p>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
-            Discuss smart home scope
-          </a>
-          <a href="/for-builders" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white/10 transition">
-            Builder pathway
+    <section class="bg-[#e8e5de] py-24 md:py-36">
+      <div class="mx-auto grid max-w-[1080px] gap-12 px-6 md:grid-cols-[0.7fr_1.3fr] md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">The distinction</p>
+        <div>
+          <h2 class="text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            A product system when possible. Bespoke integration when necessary.
+          </h2>
+          <p class="mt-8 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            Most homeowners do not need to design a smart home from a blank page. Better Home offers a clear Foundation, room Collections and optional Experiences that make the first decision simpler.
+          </p>
+          <p class="mt-6 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            This integration service is for projects that sit outside those standard boundaries: complex new builds, existing third-party systems, unusual architecture, multi-stage renovation or a broader coordination requirement.
+          </p>
+          <a href="/better-home" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#687663] px-8 text-sm font-semibold text-[#4d5a48] transition-colors hover:bg-[#52604c] hover:text-white">
+            Explore the standard Better Home system
           </a>
         </div>
+      </div>
+    </section>
+
+    <section class="bg-[#596458] py-24 text-white md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">One residential architecture</p>
+        <h2 class="mt-6 max-w-[49rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Separate capabilities, composed around daily life.
+        </h2>
+
+        <div class="mt-16 grid border-t border-white/15 md:grid-cols-2">
+          {integrationLayers.map(([title, body], index) => (
+            <article class:list={[
+              'border-b border-white/15 py-9 md:min-h-[17rem] md:p-10',
+              index % 2 === 0 ? 'md:border-r' : '',
+            ]}>
+              <h3 class="text-3xl font-normal md:text-4xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{title}</h3>
+              <p class="mt-5 max-w-md text-[15px] leading-[1.8] text-white/62">{body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#f5f1ea] py-24 md:py-32">
+      <div class="mx-auto grid max-w-[1160px] gap-14 px-6 md:grid-cols-[1fr_1fr] md:items-center md:px-10">
+        <figure class="overflow-hidden rounded-[2rem] bg-[#d4cec2]">
+          <picture>
+            <source srcset="/images/work-private-cinema.webp" type="image/webp" />
+            <img
+              src="/images/work-private-cinema.jpg"
+              alt="A completed private home cinema"
+              width="800"
+              height="600"
+              loading="lazy"
+              decoding="async"
+              class="aspect-[4/3] h-full w-full object-cover"
+            />
+          </picture>
+        </figure>
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Where bespoke work adds value</p>
+          <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            The difficult part is not making something happen once.
+          </h2>
+          <p class="mt-7 max-w-lg text-base leading-[1.8] text-[#686d65]">
+            It is making lighting, climate, access, entertainment and existing services behave predictably together — then leaving the household with controls they can understand.
+          </p>
+          <p class="mt-6 max-w-lg text-base leading-[1.8] text-[#686d65]">
+            That requires electrical knowledge, system design, programming, commissioning and clear ownership of the finished result.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#d7ddd1] py-24 md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#596754]">Suitable projects</p>
+        <h2 class="mt-6 max-w-[45rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Begin from the condition of the home.
+        </h2>
+        <div class="mt-14 grid gap-6 md:grid-cols-3">
+          {projectTypes.map((type) => (
+            <article class="rounded-[1.5rem] border border-[#aeb8a7] bg-[#eef0ea]/45 p-8 md:min-h-[17rem]">
+              <h3 class="text-3xl font-normal leading-[1.08]" style="font-family: 'Cormorant Garamond', Georgia, serif;">{type.title}</h3>
+              <p class="mt-5 text-[15px] leading-[1.8] text-[#667061]">{type.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#e8e5de] py-24 md:py-32">
+      <div class="mx-auto max-w-[1080px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">From intent to handover</p>
+        <h2 class="mt-6 max-w-[47rem] text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Four stages, with one owner of the whole.
+        </h2>
+        <div class="mt-16 border-t border-[#c9c2b6]">
+          {process.map(([number, title, body]) => (
+            <article class="grid gap-5 border-b border-[#c9c2b6] py-8 md:grid-cols-[0.18fr_0.52fr_1.3fr] md:items-start md:gap-8">
+              <p class="text-[10px] font-semibold tracking-[0.2em] text-[#788471]">{number}</p>
+              <h3 class="text-2xl font-normal text-[#333932] md:text-3xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{title}</h3>
+              <p class="max-w-2xl text-[15px] leading-[1.75] text-[#6c7169]">{body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#293129] py-24 text-[#f3eee5] md:py-32">
+      <div class="mx-auto max-w-[900px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d0bd7b]">A useful first step</p>
+        <h2 class="mx-auto mt-7 max-w-3xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Show us the home, not a shopping list.
+        </h2>
+        <p class="mx-auto mt-7 max-w-xl text-base leading-[1.8] text-white/62">
+          A floor plan, a few photographs or an existing system description is enough to begin defining the right path.
+        </p>
+        <a href="/contact" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#d2b86f] px-9 text-sm font-semibold text-[#1f261f] transition-colors hover:bg-[#dfc985]">
+          Start a conversation
+        </a>
       </div>
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>

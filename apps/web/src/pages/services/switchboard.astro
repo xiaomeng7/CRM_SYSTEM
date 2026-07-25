@@ -2,152 +2,202 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import PhoneCTA from '../../components/PhoneCTA.astro';
 
-const deliverables = [
-  'Switchboard capacity review against current and planned electrical load.',
-  'RCD and RCBO protection strategy for safer circuit separation.',
-  'Upgrade planning for older boards before renovation, EV charging, or solar changes.',
-  'Risk-first assessment for aged enclosures, deteriorated internals, and wiring condition.',
-  'Forward planning for future load growth instead of repeated patch upgrades.',
+const assessmentAreas = [
+  ['Condition', 'The enclosure, accessible internals, protective devices and signs of deterioration or previous modification.'],
+  ['Protection', 'How circuits are separated and protected, including the practical role of RCD and RCBO protection.'],
+  ['Capacity', 'What the existing supply and board can support today, and where future loads may change the picture.'],
+  ['Clarity', 'Circuit identification, labelling and documentation so future electrical work begins with better information.'],
 ];
 
-const suitableFor = [
-  'Older Adelaide homes with legacy boards and unclear circuit history.',
-  'Renovation projects that need additional circuits and better load distribution.',
-  'Properties preparing for EV charger, electric hot water, or future solar and battery.',
+const changePoints = [
+  {
+    title: 'An older Adelaide home',
+    body: 'Legacy equipment and an unclear circuit history deserve assessment before another layer is added.',
+  },
+  {
+    title: 'A renovation',
+    body: 'New lighting, appliances, air conditioning and additional circuits can expose capacity and protection limits.',
+  },
+  {
+    title: 'A more electric future',
+    body: 'EV charging, induction cooking, electric hot water, solar and batteries should be considered as part of one load plan.',
+  },
 ];
 
 const process = [
-  { n: '01', title: 'On-site board assessment', body: 'We inspect existing board condition, accessible circuits, and practical upgrade constraints.' },
-  { n: '02', title: 'Load and protection plan', body: 'We define capacity, circuit grouping, and protection approach based on current and future usage.' },
-  { n: '03', title: 'Upgrade execution', body: 'Board and associated infrastructure are upgraded with clear circuit structure and labelled outcomes.' },
-  { n: '04', title: 'Handover guidance', body: 'You receive a plain-language summary of what changed and how future additions should be staged.' },
+  ['01', 'Inspect', 'Review the board, accessible installation condition, known loads and the practical constraints of the property.'],
+  ['02', 'Plan', 'Define the necessary protection, capacity and circuit structure — including what should be allowed for later.'],
+  ['03', 'Upgrade', 'Complete the agreed work with organised wiring, clear identification and the required electrical testing.'],
+  ['04', 'Explain', 'Provide a plain-language handover so the household understands what changed and how future additions should be approached.'],
 ];
 ---
 
 <Layout
-  title="Switchboard Upgrades — Better Home Technology | Adelaide"
-  description="Switchboard and capacity upgrades for Adelaide homes, renovations, and future EV or solar readiness with assessment-first planning."
+  title="Switchboard Assessment & Upgrades Adelaide | Better Home Technology"
+  description="Assessment-led switchboard upgrades, circuit protection and future electrical capacity planning for Adelaide homes."
 >
   <Header />
 
-  <main>
-    <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
-      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          Switchboard upgrades
-        </p>
-        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
-          Your switchboard defines what your home can safely support
-          <span class="text-brand-amber"> now and next.</span>
-        </h1>
-        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
-          We assess board capacity, protection layout, and upgrade path for older homes, renovations, and
-          properties planning EV, electrification, or future energy systems in Adelaide.
-        </p>
+  <main class="bg-[#f5f1ea] text-[#252823]">
+    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#202620] text-[#f5f1e9]">
+      <picture class="absolute inset-0 block">
+        <source srcset="/images/work-switchboard-panel.webp" type="image/webp" />
+        <img
+          src="/images/work-switchboard-panel.jpg"
+          alt=""
+          width="800"
+          height="600"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="h-full w-full object-cover object-center opacity-[0.48]"
+        />
+      </picture>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1e251e]/96 via-[#1e251e]/79 to-[#1e251e]/32"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1e251e]/58 via-transparent to-[#1e251e]/15"></div>
+
+      <div class="relative mx-auto flex min-h-[calc(100svh-5.5rem)] max-w-[1160px] items-center px-6 py-24 md:px-10">
+        <div class="max-w-[52rem]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d5c17b]">Switchboard and capacity</p>
+          <h1 class="mt-7 text-[clamp(3.5rem,7.2vw,7rem)] font-normal leading-[0.9] tracking-[-0.04em]" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            The electrical foundation for what home needs next.
+          </h1>
+          <p class="mt-8 max-w-[39rem] text-base leading-[1.8] text-white/72 md:text-lg">
+            Assessment-led switchboard upgrades that consider condition, protection and the changing electrical demands of the home.
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="bg-white py-20 md:py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Why it matters
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6">
-          Load demand is rising faster than legacy boards were designed for.
-        </h2>
-        <p class="text-lg text-brand-muted leading-relaxed max-w-4xl">
-          Air conditioning, induction cooking, EV charging, and electric hot water all increase peak demand.
-          Older switchboards can run out of usable capacity or protection flexibility. Some properties also
-          carry extra planning constraints around older installation materials, so assessment comes first.
-        </p>
+    <section class="bg-[#e8e5de] py-24 md:py-36">
+      <div class="mx-auto grid max-w-[1080px] gap-12 px-6 md:grid-cols-[0.7fr_1.3fr] md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Why it matters</p>
+        <div>
+          <h2 class="text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            A switchboard is not simply old or new. It has to suit the home it serves.
+          </h2>
+          <p class="mt-8 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            Air conditioning, induction cooking, electric hot water, EV charging and future energy systems can place very different demands on a home than the original installation anticipated.
+          </p>
+          <p class="mt-6 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            The useful question is not whether a larger board looks better. It is whether the existing condition, protection and capacity are appropriate for the home today — and for the changes being considered.
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          What we do
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
-          Capacity-led switchboard planning and upgrade delivery.
+    <section class="bg-[#596458] py-24 text-white md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">What we assess</p>
+        <h2 class="mt-6 max-w-[49rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          See the foundation clearly before changing it.
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {deliverables.map((item) => (
-            <div class="bg-white rounded-xl p-7 border border-slate-200">
-              <p class="text-brand-ink leading-relaxed">{item}</p>
-            </div>
+        <div class="mt-16 grid border-t border-white/15 md:grid-cols-2">
+          {assessmentAreas.map(([title, body], index) => (
+            <article class:list={[
+              'border-b border-white/15 py-9 md:min-h-[17rem] md:p-10',
+              index % 2 === 0 ? 'md:border-r' : '',
+            ]}>
+              <h3 class="text-3xl font-normal md:text-4xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{title}</h3>
+              <p class="mt-5 max-w-md text-[15px] leading-[1.8] text-white/62">{body}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-white py-20 md:py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Suitable for
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
-          Properties where electrical demand is changing.
+    <section class="bg-[#f5f1ea] py-24 md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Common decision points</p>
+        <h2 class="mt-6 max-w-[47rem] text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Upgrade when the home changes — not simply because a product exists.
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {suitableFor.map((item) => (
-            <div class="border-l-4 border-brand-amber pl-5">
-              <p class="text-brand-ink leading-relaxed">{item}</p>
-            </div>
+        <div class="mt-14 grid gap-6 md:grid-cols-3">
+          {changePoints.map((point) => (
+            <article class="rounded-[1.5rem] border border-[#cbc4b8] bg-[#eeeae3] p-8 md:min-h-[17rem]">
+              <h3 class="text-3xl font-normal leading-[1.08]" style="font-family: 'Cormorant Garamond', Georgia, serif;">{point.title}</h3>
+              <p class="mt-5 text-[15px] leading-[1.8] text-[#6c7169]">{point.body}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Process
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-12">
-          Four steps to a clearer, safer electrical backbone.
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {process.map((step) => (
-            <div class="bg-white rounded-xl p-6 border border-slate-200">
-              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{step.n}</p>
-              <h3 class="text-lg font-bold text-brand-ink mb-2">{step.title}</h3>
-              <p class="text-brand-muted text-sm leading-relaxed">{step.body}</p>
+    <section class="bg-[#d7ddd1] py-24 md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <div class="grid gap-6 md:grid-cols-2">
+          <figure>
+            <div class="overflow-hidden rounded-[1.75rem] bg-[#bbc3b5]">
+              <img
+                src="/images/insights/adelaide-switchboard-board-internal-before-rectification.png"
+                alt="Existing switchboard condition before rectification"
+                width="1200"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                class="aspect-[4/3] h-full w-full object-cover"
+              />
             </div>
+            <figcaption class="mt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#64705e]">Before assessment and rectification</figcaption>
+          </figure>
+          <figure>
+            <div class="overflow-hidden rounded-[1.75rem] bg-[#bbc3b5]">
+              <img
+                src="/images/insights/adelaide-switchboard-upgrade-after-01.png"
+                alt="Switchboard after completed upgrade and rectification"
+                width="1200"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                class="aspect-[4/3] h-full w-full object-cover"
+              />
+            </div>
+            <figcaption class="mt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#64705e]">After completed upgrade work</figcaption>
+          </figure>
+        </div>
+        <div class="mx-auto mt-14 max-w-[720px] text-center">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#596754]">Real Adelaide work</p>
+          <h2 class="mt-6 text-4xl font-normal leading-[1.05] md:text-6xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Safer and clearer should also be easier to understand later.
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#e8e5de] py-24 md:py-32">
+      <div class="mx-auto max-w-[1080px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Assessment to handover</p>
+        <h2 class="mt-6 max-w-[47rem] text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Four steps to a better electrical foundation.
+        </h2>
+        <div class="mt-16 border-t border-[#c9c2b6]">
+          {process.map(([number, title, body]) => (
+            <article class="grid gap-5 border-b border-[#c9c2b6] py-8 md:grid-cols-[0.18fr_0.52fr_1.3fr] md:items-start md:gap-8">
+              <p class="text-[10px] font-semibold tracking-[0.2em] text-[#788471]">{number}</p>
+              <h3 class="text-2xl font-normal text-[#333932] md:text-3xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{title}</h3>
+              <p class="max-w-2xl text-[15px] leading-[1.75] text-[#6c7169]">{body}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots-soft"></div>
-      <div class="relative mx-auto max-w-4xl px-6 text-center">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Next step
+    <section class="bg-[#293129] py-24 text-[#f3eee5] md:py-32">
+      <div class="mx-auto max-w-[900px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d0bd7b]">Begin with an assessment</p>
+        <h2 class="mx-auto mt-7 max-w-3xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Understand what the home can support.
+        </h2>
+        <p class="mx-auto mt-7 max-w-xl text-base leading-[1.8] text-white/62">
+          Tell us what is changing — renovation, air conditioning, EV charging or simply concern about an older board.
         </p>
-        <p class="text-3xl md:text-5xl font-bold leading-tight">
-          Need to understand your board before upgrading?
-        </p>
-        <p class="mt-8 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Contact us for a switchboard assessment. We will map practical options based on the property, load
-          profile, and upgrade timeline.
-        </p>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
-            Request switchboard assessment
-          </a>
-          <a href="tel:0410323034" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white/10 transition">
-            Call 0410 323 034
-          </a>
-        </div>
+        <a href="/contact" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#d2b86f] px-9 text-sm font-semibold text-[#1f261f] transition-colors hover:bg-[#dfc985]">
+          Request a switchboard assessment
+        </a>
       </div>
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>

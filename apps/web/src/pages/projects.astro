@@ -2,49 +2,170 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import PhoneCTA from '../components/PhoneCTA.astro';
+
+const projectNotes = [
+  {
+    image: 'work-exterior-night',
+    label: 'Arrival',
+    title: 'Light that gives the home a quiet presence.',
+    body: 'Exterior lighting is considered as part of the threshold — supporting visibility and making arrival feel settled after dark.',
+  },
+  {
+    image: 'work-kitchen-led',
+    label: 'Atmosphere',
+    title: 'Warm light held within the architecture.',
+    body: 'Concealed lighting adds depth without asking the fitting itself to become the centre of attention.',
+  },
+  {
+    image: 'work-private-cinema',
+    label: 'Evening',
+    title: 'A room prepared for a different pace.',
+    body: 'Lighting, entertainment and comfort come together so the space can shift naturally from everyday use to film.',
+  },
+];
+
+const deliveryNotes = [
+  ['Before site', 'Lighting intent, circuits, capacity and control requirements are considered while change is still easy.'],
+  ['During installation', 'Infrastructure is coordinated carefully so the finished architecture remains calm and uncluttered.'],
+  ['At handover', 'Scenes are tested, documented and explained in the language of everyday use.'],
+];
 ---
 
 <Layout
-  title="Projects — Better Home Technology | Selected Residential Work"
-  description="Selected luxury residential electrical, lighting, and smart infrastructure — case studies and project notes coming soon."
+  title="Selected Residential Work | Better Home Technology"
+  description="Real residential project observations from Better Home Technology across lighting, electrical delivery and everyday living."
 >
   <Header />
 
-  <main>
-    <section class="bg-brand-navy text-white relative overflow-hidden min-h-[50vh] flex items-center">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
-      <div class="relative mx-auto max-w-4xl px-6 py-24 md:py-32 text-center md:text-left">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          Projects
-        </p>
-        <h1 class="text-4xl md:text-6xl font-bold leading-[1.08] tracking-tight">
-          Selected residential work<br class="hidden md:inline" />
-          <span class="text-brand-amber">is on the way.</span>
-        </h1>
-        <p class="mt-8 text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed">
-          We are preparing a curated set of premium residential projects — new builds, lighting layers,
-          and smart-home infrastructure — with photography and scope notes for builders and homeowners.
-        </p>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <a
-            href="/for-builders"
-            class="inline-flex items-center justify-center bg-brand-amber text-brand-navy font-semibold px-8 py-3.5 rounded-sm hover:bg-brand-amber-soft transition text-sm"
-          >
-            Discuss a project
-          </a>
-          <a
-            href="/contact"
-            class="inline-flex items-center justify-center border border-white/25 text-white font-medium px-8 py-3.5 rounded-sm hover:border-brand-amber/60 hover:text-brand-amber transition text-sm"
-          >
-            Contact
-          </a>
+  <main class="bg-[#f5f1ea] text-[#252823]">
+    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#202620] text-[#f5f1e9]">
+      <img
+        src="/images/better-home/adelaide-residence-dining.jpg"
+        alt="Completed dining and kitchen space in an Adelaide residence"
+        width="1350"
+        height="1800"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover object-[50%_48%]"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1e251e]/95 via-[#1e251e]/63 to-[#1e251e]/12"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1e251e]/58 via-transparent to-[#1e251e]/12"></div>
+
+      <div class="relative mx-auto flex min-h-[calc(100svh-5.5rem)] max-w-[1160px] items-end px-6 py-20 md:px-10 md:py-28">
+        <div class="max-w-[49rem]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d5c17b]">Selected work</p>
+          <h1 class="mt-7 text-[clamp(3.5rem,7.4vw,7.1rem)] font-normal leading-[0.89] tracking-[-0.04em]" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Real homes. Considered in the details.
+          </h1>
+          <p class="mt-8 max-w-[36rem] text-base leading-[1.8] text-white/72 md:text-lg">
+            A growing record of residential work across Adelaide — observed through light, atmosphere and the care behind delivery.
+          </p>
         </div>
+      </div>
+    </section>
+
+    <section class="bg-[#e8e5de] py-24 md:py-36">
+      <div class="mx-auto grid max-w-[1080px] gap-12 px-6 md:grid-cols-[0.7fr_1.3fr] md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Adelaide residence</p>
+          <p class="mt-5 text-sm leading-relaxed text-[#7b8078]">Residential lighting<br />Electrical delivery<br />Integrated control</p>
+        </div>
+        <div>
+          <h2 class="text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            One home, with light carried through each space.
+          </h2>
+          <p class="mt-8 max-w-[43rem] text-base leading-[1.85] text-[#666c63]">
+            The project brings general lighting, decorative fittings and warm architectural light into one residential language. Each layer has a different role, but the home should still feel coherent as people move between arrival, gathering and evening.
+          </p>
+          <p class="mt-6 max-w-[43rem] text-base leading-[1.85] text-[#666c63]">
+            Our work sits behind that experience: coordinating the electrical requirements, installing the visible details carefully and preparing the home so different moments do not depend on a wall full of instructions.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#596458] py-24 text-white md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">Three moments from the work</p>
+        <h2 class="mt-6 max-w-[48rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          The experience changes. The home remains itself.
+        </h2>
+
+        <div class="mt-16 grid gap-12 md:grid-cols-3 md:gap-7">
+          {projectNotes.map((note) => (
+            <article>
+              <picture class="block overflow-hidden rounded-[1.5rem] bg-[#374037]">
+                <source srcset={`/images/${note.image}.webp`} type="image/webp" />
+                <img
+                  src={`/images/${note.image}.jpg`}
+                  alt={note.title}
+                  width="800"
+                  height="600"
+                  loading="lazy"
+                  decoding="async"
+                  class="aspect-[4/3] h-full w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
+                />
+              </picture>
+              <p class="mt-7 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c57e]">{note.label}</p>
+              <h3 class="mt-4 text-3xl font-normal leading-[1.08]" style="font-family: 'Cormorant Garamond', Georgia, serif;">{note.title}</h3>
+              <p class="mt-4 text-[15px] leading-[1.75] text-white/62">{note.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#f5f1ea] py-24 md:py-32">
+      <div class="mx-auto grid max-w-[1160px] gap-14 px-6 md:grid-cols-[1.05fr_0.95fr] md:items-center md:px-10">
+        <figure class="overflow-hidden rounded-[2rem] bg-[#d5cec2]">
+          <picture>
+            <source srcset="/images/work-team-brass-chandelier.webp" type="image/webp" />
+            <img
+              src="/images/work-team-brass-chandelier.jpg"
+              alt="Careful installation of a large decorative light fitting"
+              width="800"
+              height="600"
+              loading="lazy"
+              decoding="async"
+              class="aspect-[4/3] h-full w-full object-cover"
+            />
+          </picture>
+        </figure>
+
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Behind the finished room</p>
+          <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Good work is often the part you no longer notice.
+          </h2>
+          <p class="mt-7 max-w-lg text-base leading-[1.8] text-[#686d65]">
+            The visible result depends on decisions made much earlier: access, support, power, control, coordination and the sequence of installation.
+          </p>
+        </div>
+      </div>
+
+      <div class="mx-auto mt-20 max-w-[1080px] border-t border-[#cbc4b8] px-6 md:px-10">
+        {deliveryNotes.map(([stage, body]) => (
+          <div class="grid gap-3 border-b border-[#cbc4b8] py-7 md:grid-cols-[0.35fr_1.65fr] md:gap-10">
+            <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5d6a57]">{stage}</p>
+            <p class="max-w-2xl text-[15px] leading-[1.75] text-[#6c7169]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-[#d7ddd1] py-24 md:py-32">
+      <div class="mx-auto max-w-[900px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#596754]">Your home will be different</p>
+        <h2 class="mx-auto mt-7 max-w-3xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          The approach begins by understanding yours.
+        </h2>
+        <a href="/contact" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#52604c] px-9 text-sm font-semibold text-white transition-colors hover:bg-[#414d3c]">
+          Start a conversation
+        </a>
       </div>
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>

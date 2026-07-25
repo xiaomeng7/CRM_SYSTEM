@@ -4,16 +4,18 @@
  * Routes unchanged; mobile uses same `navLinks`.
  */
 const navLinks = [
-  { href: '/for-builders', label: 'Builders' },
-  { href: '/services/smart-home', label: 'Smart Systems' },
-  { href: '/services', label: 'Services' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/pre-purchase-inspection', label: 'Inspections' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/better-home', label: 'Products', matches: ['/better-home', '/products'] },
+  { href: '/shop', label: 'Shop', matches: ['/shop'] },
+  { href: '/projects', label: 'Projects', matches: ['/projects'] },
+  { href: '/for-builders', label: 'Professionals', matches: ['/for-builders'] },
+  { href: '/about', label: 'About', matches: ['/about'] },
 ];
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (matches: string[]) =>
+  matches.some((path) => currentPath === path || currentPath.startsWith(`${path}/`));
 ---
-<header class="bg-brand-navy text-white sticky top-0 z-40 border-b border-white/[0.06]">
+<header class="sticky top-0 z-40 border-b border-white/[0.06] bg-[#1f261f] text-white">
   <div
     class="bht-header-inner mx-auto flex max-w-[90rem] flex-nowrap items-center justify-between gap-7 px-6 py-3.5 min-h-[5.5rem] md:min-h-[5.875rem] md:gap-9 md:px-10 md:py-3.5 lg:gap-12 lg:px-12"
   >
@@ -31,7 +33,7 @@ const navLinks = [
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        class="h-9 w-auto max-w-[min(58vw,15.5rem)] object-contain object-left select-none opacity-[0.98] transition-opacity duration-300 group-hover:opacity-100 md:h-10 md:max-w-[17.5rem] lg:h-[2.75rem] lg:max-w-[19.5rem]"
+        class="h-auto w-[9.75rem] object-contain object-left select-none opacity-[0.98] transition-opacity duration-300 group-hover:opacity-100 sm:w-[11rem] md:w-[15.5rem] lg:w-[17.5rem]"
       />
     </a>
 
@@ -39,23 +41,26 @@ const navLinks = [
       class="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-4 md:flex lg:gap-5 xl:gap-6"
       aria-label="Primary"
     >
-      {navLinks.map((link) => (
+      {navLinks.map((link) => {
+        const active = isActive(link.matches);
+        return (
         <a
           href={link.href}
-          class="whitespace-nowrap text-[13px] font-medium leading-none tracking-[0.025em] text-slate-400/95 transition-colors duration-500 ease-out hover:text-slate-100/95 lg:text-[14.5px]"
+          aria-current={active ? 'page' : undefined}
+          class:list={[
+            'relative whitespace-nowrap py-3 text-[13px] font-medium leading-none tracking-[0.025em] transition-colors duration-500 ease-out lg:text-[14.5px]',
+            active ? 'text-[#f1e7c5]' : 'text-slate-400/95 hover:text-slate-100/95',
+          ]}
         >
           {link.label}
+          {active && <span class="absolute inset-x-0 -bottom-[1.28rem] h-px bg-[#d2b86f]" aria-hidden="true"></span>}
         </a>
-      ))}
+        );
+      })}
     </nav>
 
     <div class="hidden shrink-0 items-center md:flex">
-      <a
-        href="tel:0410323034"
-        class="bht-header-phone inline-flex items-center ml-4 border-l border-white/[0.1] pl-6 text-[12.5px] font-medium leading-none tracking-[0.012em] text-slate-400/90 transition-colors duration-500 tabular-nums hover:text-slate-200/95 lg:ml-6 lg:pl-8 lg:text-[13px]"
-      >
-        0410 323 034
-      </a>
+      <a href="/shop" class="bht-header-phone ml-4 inline-flex min-h-10 items-center rounded-full border border-white/20 px-5 text-[12.5px] font-medium tracking-[0.03em] text-slate-100 transition-colors duration-500 hover:border-white/35 hover:bg-white/[0.06] lg:ml-6">Build yours</a>
     </div>
 
     <div class="flex shrink-0 items-center gap-3 md:hidden">
@@ -77,11 +82,19 @@ const navLinks = [
     </div>
   </div>
 
-  <nav id="mobile-menu-panel" class="md:hidden hidden border-t border-white/10 bg-brand-navy/98">
+  <nav id="mobile-menu-panel" class="hidden border-t border-white/10 bg-[#1f261f] md:hidden">
     <div class="mx-auto max-w-[90rem] px-6 py-3 flex flex-col text-[15px] tracking-[0.04em]">
       <a href="/" data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">Home</a>
       {navLinks.map((link) => (
-        <a href={link.href} data-mobile-nav-link class="py-3 text-slate-200 hover:text-white border-b border-white/5">
+        <a
+          href={link.href}
+          data-mobile-nav-link
+          aria-current={isActive(link.matches) ? 'page' : undefined}
+          class:list={[
+            'border-b border-white/5 py-3 hover:text-white',
+            isActive(link.matches) ? 'text-[#ead79a]' : 'text-slate-200',
+          ]}
+        >
           {link.label}
         </a>
       ))}
@@ -96,7 +109,7 @@ const navLinks = [
   const links = document.querySelectorAll('[data-mobile-nav-link]');
 
   if (toggle && panel) {
-    const setOpen = (open) => {
+    const setOpen = (open: boolean) => {
       panel.classList.toggle('hidden', !open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     };
