@@ -39,37 +39,47 @@ const shopAddons = importPlan.addons
       </div>
     </section>
 
+    <nav class="sticky top-[5.5rem] z-30 border-b border-[#d9d3c9] bg-[#f5f1ea]/95 backdrop-blur-md" aria-label="Build steps">
+      <div class="mx-auto flex max-w-[1160px] gap-6 overflow-x-auto px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#70776d] md:px-10">
+        <a href="#foundation" class="whitespace-nowrap hover:text-[#30372f]">01 Foundation</a>
+        <a href="#collections" class="whitespace-nowrap hover:text-[#30372f]">02 Rooms</a>
+        <a href="#experiences" class="whitespace-nowrap hover:text-[#30372f]">03 Experiences</a>
+        <a href="#addons" class="whitespace-nowrap hover:text-[#30372f]">04 Add-ons</a>
+        <a href="#details" class="whitespace-nowrap hover:text-[#30372f]">05 Review</a>
+      </div>
+    </nav>
+
     <form id="better-home-builder" class="mx-auto grid max-w-[1320px] gap-10 px-6 py-14 md:px-10 lg:grid-cols-[1fr_22rem] lg:items-start">
       <div class="space-y-16">
-        <section data-step="foundation">
+        <section id="foundation" class="scroll-mt-40" data-step="foundation">
           <p class="shop-step">01 · Foundation</p>
           <h2 class="shop-title">Begin with the home.</h2>
           <p class="shop-intro">Foundation is selected once and quietly connects the Collections and connected Experiences you add.</p>
           <div class="mt-8" data-product-grid="FOUNDATION"></div>
         </section>
 
-        <section data-step="collections">
+        <section id="collections" class="scroll-mt-40" data-step="collections">
           <p class="shop-step">02 · Collections</p>
           <h2 class="shop-title">Choose your rooms.</h2>
           <p class="shop-intro">Add more than one of the same Collection when your home has several bedrooms, bathrooms or living spaces.</p>
           <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3" data-product-grid="COLLECTION"></div>
         </section>
 
-        <section data-step="experiences">
+        <section id="experiences" class="scroll-mt-40" data-step="experiences">
           <p class="shop-step">03 · Experiences</p>
           <h2 class="shop-title">Add what matters.</h2>
           <p class="shop-intro">Mood Lighting and Healthy Air belong to a selected room. Climate supports central air conditioning without choosing a room. Garden Care, CCTV and Smart Toilet may begin independently.</p>
           <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3" data-product-grid="EXPERIENCES"></div>
         </section>
 
-        <section data-step="addons">
+        <section id="addons" class="scroll-mt-40" data-step="addons">
           <p class="shop-step">04 · Add-ons</p>
           <h2 class="shop-title">Extend what already belongs.</h2>
           <p class="shop-intro">Only Add-ons permitted by your current selections will appear here. An Add-on does not create a new room or Experience.</p>
           <div id="addon-grid" class="mt-8 grid gap-4 sm:grid-cols-2"></div>
         </section>
 
-        <section data-step="details" class="border-t border-[#cfc9bf] pt-14">
+        <section id="details" class="scroll-mt-40 border-t border-[#cfc9bf] pt-14" data-step="details">
           <p class="shop-step">05 · Your details</p>
           <h2 class="shop-title">Ask us to confirm your plan.</h2>
           <p class="shop-intro">This sends your selection to Better Home for review. It is not a contract, and no payment is taken.</p>
@@ -85,7 +95,7 @@ const shopAddons = importPlan.addons
         </section>
       </div>
 
-      <aside class="top-28 rounded-3xl bg-[#30372f] p-7 text-white shadow-[0_2rem_5rem_rgba(46,50,45,0.14)] lg:sticky">
+      <aside class="order-first top-36 rounded-3xl bg-[#30372f] p-7 text-white shadow-[0_2rem_5rem_rgba(46,50,45,0.14)] lg:order-none lg:sticky">
         <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#c6d0bd]">Your Better Home</p>
         <div id="selection-summary" class="mt-6 space-y-3 text-sm text-[#e2e7de]"><p>Nothing selected yet.</p></div>
         <div class="mt-7 border-t border-white/15 pt-6">
@@ -160,6 +170,12 @@ const shopAddons = importPlan.addons
     const hasRoom = availableRooms.length > 0;
     const disabled = isRoomExperience && !hasRoom;
     const targets = experienceTargets.get(product.code) || [];
+    const targetControls = targets.map((target, index) => `<label class="mt-3 block text-xs text-[#65755d]">
+      <span class="mb-1 block uppercase tracking-[.11em]">Room ${index + 1}</span>
+      <select data-experience-target="${product.code}" data-target-index="${index}" class="w-full rounded-lg border border-[#d0cabf] bg-[#f7f4ee] px-3 py-2 text-sm text-[#30352f]">
+        ${availableRooms.map((room) => `<option value="${room.key}" ${room.key === target ? 'selected' : ''}>${room.label}</option>`).join('')}
+      </select>
+    </label>`).join('');
     return `<article class="shop-card ${qty ? 'is-selected' : ''}">
       <img src="${product.image}" alt="" loading="lazy" />
       <div class="p-5">
@@ -167,7 +183,7 @@ const shopAddons = importPlan.addons
         <h3>${product.name}</h3>
         <div class="mt-4 flex items-baseline justify-between gap-3"><span>${product.priceLabel}</span><small>${product.fulfilment}</small></div>
         ${disabled ? '<p class="mt-3 text-xs leading-relaxed text-[#8b6f57]">Choose a compatible room first.</p>' : ''}
-        ${targets.length ? `<p class="mt-3 text-xs leading-relaxed text-[#65755d]">Applied to: ${targets.map((key) => availableRooms.find((room) => room.key === key)?.label).filter(Boolean).join(', ')}</p>` : ''}
+        ${targetControls}
         <div class="mt-5 flex items-center justify-between">
           <button type="button" data-minus="${product.code}" aria-label="Remove one ${product.name}" ${qty < 1 ? 'disabled' : ''}>−</button>
           <strong>${qty}</strong>
@@ -185,6 +201,19 @@ const shopAddons = importPlan.addons
     experiences.innerHTML = shopProducts.filter((p) => p.kind === 'EXPERIENCE' || p.kind === 'STANDALONE').map(productCard).join('');
     document.querySelectorAll('[data-plus]').forEach((button) => button.addEventListener('click', () => setQuantity(button.dataset.plus, quantity(button.dataset.plus) + 1)));
     document.querySelectorAll('[data-minus]').forEach((button) => button.addEventListener('click', () => setQuantity(button.dataset.minus, Math.max(0, quantity(button.dataset.minus) - 1))));
+    document.querySelectorAll('[data-experience-target]').forEach((select) => select.addEventListener('change', () => {
+      const code = select.dataset.experienceTarget;
+      const index = Number(select.dataset.targetIndex);
+      const targets = [...(experienceTargets.get(code) || [])];
+      const duplicateIndex = targets.indexOf(select.value);
+      if (duplicateIndex >= 0 && duplicateIndex !== index) {
+        const previous = targets[index];
+        targets[duplicateIndex] = previous;
+      }
+      targets[index] = select.value;
+      experienceTargets.set(code, targets);
+      render();
+    }));
   }
   function eligibleAddons() {
     return shopAddons.filter((addon) => addon.parents.some((parent) => quantity(parent) > 0));
@@ -235,8 +264,8 @@ const shopAddons = importPlan.addons
       const response = await fetch('/api/submit-better-home-selection', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Please try again.');
-      status.textContent = 'Thank you. Your selection is with Better Home. We will review the scope and contact you shortly.';
-      event.currentTarget.querySelector('button[type="submit"]').disabled = true;
+      sessionStorage.setItem('betterHomeSubmission', JSON.stringify({ name: payload.name, estimatedTotal: payload.estimatedTotal }));
+      location.href = `/shop/thank-you${result.reference ? `?ref=${encodeURIComponent(result.reference)}` : ''}`;
     } catch (error) { status.textContent = error.message || 'We could not send this selection. Please call 0410 323 034.'; }
   });
 </script>

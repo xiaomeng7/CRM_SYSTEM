@@ -11,6 +11,15 @@ const authoritativePrices = new Map([
     .filter((addon) => addon.eligibilityStatus === 'ELIGIBLE')
     .map((addon) => [addon.productCode, { name: addon.canonicalName, price: addon.customerPriceInclGst }]),
 ]);
+const addonParents = new Map(
+  importPlan.addons
+    .filter((addon) => addon.eligibilityStatus === 'ELIGIBLE')
+    .map((addon) => [addon.productCode, addon.parentProductCodes])
+);
+const compatibleRoomCodes: Record<string, string[]> = {
+  'E-01': ['C-02', 'C-03', 'C-04', 'C-05'],
+  'E-03': ['C-02', 'C-03', 'C-04'],
+};
 
 function cleanText(value: unknown, max = 500) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -50,6 +59,29 @@ export const handler: Handler = async (event: HandlerEvent) => {
         room: cleanText((target as Record<string, unknown>)?.room, 60),
       })).filter((target) => target.experienceCode && target.room)
     : [];
+  const selectedProductCodes = new Set(selections.map((item) => item.code));
+  const invalidAddon = addons.find((addon) => !(addonParents.get(addon.code) || []).some((parent) => selectedProductCodes.has(parent)));
+  if (invalidAddon) {
+    return { statusCode: 400, body: JSON.stringify({ error: `${invalidAddon.name} requires its parent product.` }) };
+  }
+  for (const experienceCode of Object.keys(compatibleRoomCodes)) {
+    const selectedExperience = selections.find((item) => item.code === experienceCode);
+    if (!selectedExperience) continue;
+    const availableRooms = compatibleRoomCodes[experienceCode].reduce(
+      (sum, roomCode) => sum + (selections.find((item) => item.code === roomCode)?.quantity || 0),
+      0
+    );
+    const targets = experienceTargets.filter((target) => target.experienceCode === experienceCode);
+    const validTargetPrefixes = compatibleRoomCodes[experienceCode].map((code) => `${code}:`);
+    if (
+      targets.length !== selectedExperience.quantity ||
+      targets.length > availableRooms ||
+      new Set(targets.map((target) => target.room)).size !== targets.length ||
+      targets.some((target) => !validTargetPrefixes.some((prefix) => target.room.startsWith(prefix)))
+    ) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Please assign each room-based Experience to a selected compatible room.' }) };
+    }
+  }
   const estimatedTotal = [...selections, ...addons].reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
   if (!name || phone.replace(/\D/g, '').length < 8 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !suburb) {
