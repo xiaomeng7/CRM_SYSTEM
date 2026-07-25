@@ -18,7 +18,7 @@ const slugByCode: Record<string, string> = {
 };
 
 const imageByCode: Record<string, string> = {
-  'F-01': '/images/better-home/adelaide-residence-dining.jpg',
+  'F-01': '/images/better-home/foundation-hero.png',
   'C-01': '/images/better-home/collections/entry.jpg',
   'C-02': '/images/better-home/collections/living.jpg',
   'C-03': '/images/better-home/collections/kitchen.jpg',
@@ -91,4 +91,3 @@ export const betterHomeProducts = products
 export function getBetterHomeProductBySlug(slug: string) {
   return betterHomeProducts.find((product) => product.slug === slug);
 }
-
