@@ -13,6 +13,29 @@ const shopProducts = betterHomeProducts.map((product) => ({
   priceLabel: product.price.amountLabel,
   fulfilment: product.price.fulfilmentLabel,
   image: product.image,
+  hero: product.hero,
+  subtitle: product.subtitle,
+  experiencePreview: product.experiences.slice(0, 4).map((experience) => ({
+    title: experience.title,
+    description: experience.description,
+  })),
+  included: (() => {
+    if (product.productCode === 'F-01') {
+      return [
+        'One central 10-inch home screen',
+        'Home network and device gateways',
+        'Shared system programming',
+        'Setup, testing and customer handover',
+      ];
+    }
+    const approvedScope = importPlan.a4ScopePresentation
+      .filter((group) => group.productCode === product.productCode)
+      .flatMap((group) => group.lines);
+    if (approvedScope.length) return approvedScope.slice(0, 8);
+    return product.capabilities.slice(0, 6).map((capability) =>
+      `${capability.includedQty} × ${capability.capabilityName}`
+    );
+  })(),
 }));
 
 const shopAddons = importPlan.addons
@@ -48,6 +71,23 @@ const shopAddons = importPlan.addons
         <a href="#details" class="whitespace-nowrap hover:text-[#30372f]">05 Review</a>
       </div>
     </nav>
+
+    <section class="border-b border-[#d9d3c9] bg-[#faf8f4]">
+      <div class="mx-auto max-w-[1160px] px-6 py-12 md:px-10 md:py-16">
+        <div class="grid gap-8 md:grid-cols-[0.7fr_1.3fr]">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">How to choose</p>
+            <h2 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight">Build it like a home, not a list of devices.</h2>
+          </div>
+          <div class="grid gap-px overflow-hidden rounded-2xl border border-[#d8d1c5] bg-[#d8d1c5] sm:grid-cols-2">
+            <article class="bg-[#f5f1ea] p-5"><strong class="text-sm">Foundation · once</strong><p class="mt-2 text-sm leading-relaxed text-[#686d65]">The shared core for the connected home. It is automatically added when your selection needs it.</p></article>
+            <article class="bg-[#f5f1ea] p-5"><strong class="text-sm">Collections · per room</strong><p class="mt-2 text-sm leading-relaxed text-[#686d65]">Choose one for each Entry, Living, Kitchen, Bedroom, Bathroom or Away routine you want.</p></article>
+            <article class="bg-[#f5f1ea] p-5"><strong class="text-sm">Experiences · where useful</strong><p class="mt-2 text-sm leading-relaxed text-[#686d65]">Add atmosphere, air, climate, garden care or monitoring to the part of life it supports.</p></article>
+            <article class="bg-[#f5f1ea] p-5"><strong class="text-sm">Add-ons · more coverage</strong><p class="mt-2 text-sm leading-relaxed text-[#686d65]">Extend something already selected—another curtain, lighting zone, sensor or compatible device.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <form id="better-home-builder" class="mx-auto grid max-w-[1320px] gap-10 px-6 py-14 md:px-10 lg:grid-cols-[1fr_22rem] lg:items-start">
       <div class="space-y-16">
@@ -176,14 +216,25 @@ const shopAddons = importPlan.addons
         ${availableRooms.map((room) => `<option value="${room.key}" ${room.key === target ? 'selected' : ''}>${room.label}</option>`).join('')}
       </select>
     </label>`).join('');
+    const experiences = product.experiencePreview.length
+      ? `<div><p class="shop-detail-label">What it brings</p>${product.experiencePreview.map((item) => `<div class="mt-3"><strong class="block text-sm">${item.title}</strong><p class="mt-1 text-xs leading-relaxed text-[#686d65]">${item.description}</p></div>`).join('')}</div>`
+      : '';
+    const included = product.included.length
+      ? `<div class="mt-5 border-t border-[#ddd7cc] pt-4"><p class="shop-detail-label">Standard scope</p><ul class="mt-3 space-y-1.5 text-xs leading-relaxed text-[#5f665d]">${product.included.map((item) => `<li>— ${item}</li>`).join('')}</ul></div>`
+      : '';
     return `<article class="shop-card ${qty ? 'is-selected' : ''}">
       <img src="${product.image}" alt="" loading="lazy" />
       <div class="p-5">
         <p class="text-[10px] font-semibold uppercase tracking-[.15em] text-[#7a8474]">${product.code}</p>
         <h3>${product.name}</h3>
+        <p class="mt-2 min-h-[3.5rem] text-sm leading-relaxed text-[#686d65]">${product.subtitle || product.hero}</p>
         <div class="mt-4 flex items-baseline justify-between gap-3"><span>${product.priceLabel}</span><small>${product.fulfilment}</small></div>
         ${disabled ? '<p class="mt-3 text-xs leading-relaxed text-[#8b6f57]">Choose a compatible room first.</p>' : ''}
         ${targetControls}
+        <details class="shop-details mt-4 border-y border-[#e0d9cf] py-3">
+          <summary class="cursor-pointer list-none text-xs font-semibold uppercase tracking-[.12em] text-[#65755d]"><span>What is this?</span><span aria-hidden="true">＋</span></summary>
+          <div class="pt-4">${experiences}${included}</div>
+        </details>
         <div class="mt-5 flex items-center justify-between">
           <button type="button" data-minus="${product.code}" aria-label="Remove one ${product.name}" ${qty < 1 ? 'disabled' : ''}>−</button>
           <strong>${qty}</strong>
@@ -282,6 +333,9 @@ const shopAddons = importPlan.addons
   .shop-card small{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#899183}
   .shop-card button,[data-addon-plus],[data-addon-minus]{display:inline-flex;width:2rem;height:2rem;align-items:center;justify-content:center;border:1px solid #c9c3b8;border-radius:999px}
   .shop-card button:disabled,[data-addon-plus]:disabled,[data-addon-minus]:disabled{opacity:.3}
+  .shop-details summary{display:flex;align-items:center;justify-content:space-between}
+  .shop-details[open] summary span:last-child{transform:rotate(45deg)}
+  .shop-detail-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7a8474}
   .shop-field{display:flex;flex-direction:column;gap:.55rem;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#65755d}
   .shop-field input,.shop-field textarea{border:1px solid #cfc9bf;border-radius:.75rem;background:#faf8f4;padding:.9rem 1rem;font-size:1rem;font-weight:400;letter-spacing:0;text-transform:none;color:#252823;outline:none}
   .shop-field input:focus,.shop-field textarea:focus{border-color:#65755d;box-shadow:0 0 0 3px rgba(101,117,93,.12)}
