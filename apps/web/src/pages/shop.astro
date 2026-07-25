@@ -320,7 +320,7 @@ const shopAddons = importPlan.addons
       },
     };
     try {
-      const response = await fetch('/api/submit-better-home-selection', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+      const response = await fetch('/.netlify/functions/submit-better-home-selection', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Please try again.');
       sessionStorage.setItem('betterHomeSubmission', JSON.stringify({ name: payload.name, estimatedTotal: payload.estimatedTotal }));
