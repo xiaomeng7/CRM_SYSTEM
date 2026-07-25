@@ -2,152 +2,192 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import PhoneCTA from '../../components/PhoneCTA.astro';
 
-const deliverables = [
-  'Assessment-first EV charger planning before any installation booking.',
-  'Switchboard readiness check for available capacity and protection requirements.',
-  'Cable route design that suits driveway, garage, or carport layout.',
-  'Charging setup aligned with current tariffs and daily vehicle usage pattern.',
-  'Future planning for solar or battery interaction where relevant.',
+const designQuestions = [
+  ['How the car is used', 'Daily distance, time at home and the charging window matter more than choosing the largest available charger.'],
+  ['Where the car rests', 'Garage, carport and driveway layouts shape the cable route, mounting position and how natural charging feels each day.'],
+  ['What the home can support', 'Switchboard condition, available capacity and other household loads determine the appropriate electrical pathway.'],
+  ['What may change later', 'Solar, batteries, a second vehicle and broader electrification are easier to accommodate when considered early.'],
 ];
 
-const suitableFor = [
-  'Homeowners moving to EV and wanting reliable overnight charging at home.',
-  'New build projects that need EV infrastructure integrated at design stage.',
-  'Renovation scopes where charger location and board capacity must be resolved together.',
+const pathways = [
+  {
+    title: 'An existing home',
+    body: 'Assess the switchboard and practical cable route before selecting equipment or committing to an installation date.',
+  },
+  {
+    title: 'A new build or renovation',
+    body: 'Reserve capacity and install the right pathway while walls, ceilings and external works are still coordinated.',
+  },
+  {
+    title: 'A staged energy plan',
+    body: 'Prepare for later solar, batteries or a second EV without paying for every future component today.',
+  },
 ];
 
 const process = [
-  { n: '01', title: 'Property and load review', body: 'We assess switchboard condition, existing demand, and practical charger locations.' },
-  { n: '02', title: 'Charging design', body: 'We recommend charger type, route strategy, and control settings for your usage pattern.' },
-  { n: '03', title: 'Install and commission', body: 'Installation proceeds once readiness is confirmed, followed by testing and charger setup.' },
-  { n: '04', title: 'Usage handover', body: 'You receive clear guidance on charging schedule, app control, and future expansion options.' },
+  ['01', 'Understand', 'Review vehicle use, parking, the existing electrical installation and likely future energy changes.'],
+  ['02', 'Design', 'Define charger capacity, protection, cable route and any enabling switchboard work.'],
+  ['03', 'Install', 'Complete the agreed electrical work, mount the equipment and commission the charging setup.'],
+  ['04', 'Settle into use', 'Explain charging schedules, everyday operation and what to consider before future expansion.'],
 ];
 ---
 
 <Layout
-  title="EV Chargers — Better Home Technology | Adelaide"
-  description="Assessment-first EV charger solutions in Adelaide with switchboard readiness, cable route planning, and future solar-battery compatibility."
+  title="Home EV Charger Assessment & Installation Adelaide"
+  description="Home EV charging designed around switchboard capacity, parking layout, daily vehicle use and future residential energy plans."
 >
   <Header />
 
-  <main>
-    <section class="bg-brand-navy text-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-brand-hero-gradient pointer-events-none"></div>
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots"></div>
-      <div class="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.25em] uppercase mb-6">
-          EV charging
-        </p>
-        <h1 class="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight max-w-4xl">
-          EV charger installs start with
-          <span class="text-brand-amber"> electrical readiness.</span>
-        </h1>
-        <p class="mt-8 text-xl md:text-2xl text-slate-300 max-w-3xl leading-relaxed">
-          We design and install EV charging for Adelaide homeowners and builders after checking load capacity,
-          board readiness, and practical cable routing.
-        </p>
+  <main class="bg-[#f5f1ea] text-[#252823]">
+    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#202620] text-[#f5f1e9]">
+      <picture class="absolute inset-0 block">
+        <source srcset="/images/work-exterior-night.webp" type="image/webp" />
+        <img
+          src="/images/work-exterior-night.jpg"
+          alt=""
+          width="800"
+          height="600"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="h-full w-full object-cover object-center opacity-[0.53]"
+        />
+      </picture>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1e251e]/96 via-[#1e251e]/76 to-[#1e251e]/28"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1e251e]/58 via-transparent to-[#1e251e]/15"></div>
+
+      <div class="relative mx-auto flex min-h-[calc(100svh-5.5rem)] max-w-[1160px] items-center px-6 py-24 md:px-10">
+        <div class="max-w-[52rem]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d5c17b]">EV charging at home</p>
+          <h1 class="mt-7 text-[clamp(3.5rem,7.2vw,7rem)] font-normal leading-[0.9] tracking-[-0.04em]" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            Let the car charge while home is at rest.
+          </h1>
+          <p class="mt-8 max-w-[39rem] text-base leading-[1.8] text-white/72 md:text-lg">
+            Home EV charging designed around the vehicle, the parking space and the electrical capacity already supporting everyday life.
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="bg-white py-20 md:py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Why it matters
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6">
-          Not every property is ready for direct charger install.
-        </h2>
-        <p class="text-lg text-brand-muted leading-relaxed max-w-4xl">
-          Charger performance depends on switchboard capacity, route length, and total household load profile.
-          We evaluate these constraints first so your charging setup is reliable today and still workable when
-          solar, battery, or additional electrification is added later.
-        </p>
+    <section class="bg-[#e8e5de] py-24 md:py-36">
+      <div class="mx-auto grid max-w-[1080px] gap-12 px-6 md:grid-cols-[0.7fr_1.3fr] md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">A residential decision</p>
+        <div>
+          <h2 class="text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            The right charger begins with the home, not the box on the wall.
+          </h2>
+          <p class="mt-8 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            Reliable charging depends on more than hardware. The household load, switchboard, cable route, parking position and time available each night all influence what should be installed.
+          </p>
+          <p class="mt-6 max-w-[44rem] text-base leading-[1.85] text-[#666c63]">
+            By assessing these first, we can avoid unnecessary capacity, awkward installation decisions and upgrades that need to be repeated when the home’s energy use changes.
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          What we do
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
-          EV charging designed around infrastructure, not assumptions.
+    <section class="bg-[#596458] py-24 text-white md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d8c57e]">What shapes the design</p>
+        <h2 class="mt-6 max-w-[49rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Four questions before choosing equipment.
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {deliverables.map((item) => (
-            <div class="bg-white rounded-xl p-7 border border-slate-200">
-              <p class="text-brand-ink leading-relaxed">{item}</p>
-            </div>
+        <div class="mt-16 grid border-t border-white/15 md:grid-cols-2">
+          {designQuestions.map(([title, body], index) => (
+            <article class:list={[
+              'border-b border-white/15 py-9 md:min-h-[17rem] md:p-10',
+              index % 2 === 0 ? 'md:border-r' : '',
+            ]}>
+              <h3 class="text-3xl font-normal md:text-4xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{title}</h3>
+              <p class="mt-5 max-w-md text-[15px] leading-[1.8] text-white/62">{body}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-white py-20 md:py-24">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Suitable for
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-10">
-          Homes and projects planning long-term electrification.
+    <section class="bg-[#f5f1ea] py-24 md:py-32">
+      <div class="mx-auto grid max-w-[1160px] gap-14 px-6 md:grid-cols-[1.05fr_0.95fr] md:items-center md:px-10">
+        <figure class="overflow-hidden rounded-[2rem] bg-[#d4cec2]">
+          <picture>
+            <source srcset="/images/work-cable-management.webp" type="image/webp" />
+            <img
+              src="/images/work-cable-management.jpg"
+              alt="Carefully planned electrical cabling and containment"
+              width="800"
+              height="600"
+              loading="lazy"
+              decoding="async"
+              class="aspect-[4/3] h-full w-full object-cover"
+            />
+          </picture>
+        </figure>
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">Infrastructure first</p>
+          <h2 class="mt-6 text-5xl font-normal leading-[1.02] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            The quiet convenience depends on what sits behind it.
+          </h2>
+          <p class="mt-7 max-w-lg text-base leading-[1.8] text-[#686d65]">
+            The most successful installation is the one that becomes an ordinary part of arriving home: park, connect and let the charging schedule work in the background.
+          </p>
+          <p class="mt-6 max-w-lg text-base leading-[1.8] text-[#686d65]">
+            That simplicity is supported by appropriate protection, an intentional route and commissioning that reflects the household’s actual routine.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#d7ddd1] py-24 md:py-32">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#596754]">Three pathways</p>
+        <h2 class="mt-6 max-w-[47rem] text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Install now, prepare early or stage the future.
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {suitableFor.map((item) => (
-            <div class="border-l-4 border-brand-amber pl-5">
-              <p class="text-brand-ink leading-relaxed">{item}</p>
-            </div>
+        <div class="mt-14 grid gap-6 md:grid-cols-3">
+          {pathways.map((pathway) => (
+            <article class="rounded-[1.5rem] border border-[#aeb8a7] bg-[#eef0ea]/45 p-8 md:min-h-[17rem]">
+              <h3 class="text-3xl font-normal leading-[1.08]" style="font-family: 'Cormorant Garamond', Georgia, serif;">{pathway.title}</h3>
+              <p class="mt-5 text-[15px] leading-[1.8] text-[#667061]">{pathway.body}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-brand-surface-alt py-20 md:py-28">
-      <div class="mx-auto max-w-6xl px-6">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-3">
-          Process
-        </p>
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-12">
-          Four steps from assessment to first charge.
+    <section class="bg-[#e8e5de] py-24 md:py-32">
+      <div class="mx-auto max-w-[1080px] px-6 md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#65755d]">From assessment to first charge</p>
+        <h2 class="mt-6 max-w-[47rem] text-5xl font-normal leading-[1.01] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Four steps to a natural daily routine.
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {process.map((step) => (
-            <div class="bg-white rounded-xl p-6 border border-slate-200">
-              <p class="text-brand-amber font-mono text-2xl font-bold mb-3">{step.n}</p>
-              <h3 class="text-lg font-bold text-brand-ink mb-2">{step.title}</h3>
-              <p class="text-brand-muted text-sm leading-relaxed">{step.body}</p>
-            </div>
+        <div class="mt-16 border-t border-[#c9c2b6]">
+          {process.map(([number, title, body]) => (
+            <article class="grid gap-5 border-b border-[#c9c2b6] py-8 md:grid-cols-[0.18fr_0.52fr_1.3fr] md:items-start md:gap-8">
+              <p class="text-[10px] font-semibold tracking-[0.2em] text-[#788471]">{number}</p>
+              <h3 class="text-2xl font-normal text-[#333932] md:text-3xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">{title}</h3>
+              <p class="max-w-2xl text-[15px] leading-[1.75] text-[#6c7169]">{body}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="bg-brand-navy text-white py-20 md:py-24 relative overflow-hidden">
-      <div class="absolute inset-0 pointer-events-none opacity-100 bg-brand-pattern-dots-soft"></div>
-      <div class="relative mx-auto max-w-4xl px-6 text-center">
-        <p class="text-brand-amber text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Next step
+    <section class="bg-[#293129] py-24 text-[#f3eee5] md:py-32">
+      <div class="mx-auto max-w-[900px] px-6 text-center md:px-10">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d0bd7b]">Begin with readiness</p>
+        <h2 class="mx-auto mt-7 max-w-3xl text-5xl font-normal leading-[0.98] md:text-7xl" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+          Tell us about the car, the parking space and the home.
+        </h2>
+        <p class="mx-auto mt-7 max-w-xl text-base leading-[1.8] text-white/62">
+          A switchboard photograph and a few images of the proposed charging location are enough to begin.
         </p>
-        <p class="text-3xl md:text-5xl font-bold leading-tight">
-          Want to add EV charging at home or in a new build?
-        </p>
-        <p class="mt-8 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Send your property details and parking layout. We will confirm readiness and the right installation
-          pathway before booking works.
-        </p>
-        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/contact" class="bg-brand-amber text-brand-navy font-semibold px-8 py-4 rounded-md hover:bg-brand-amber-soft transition">
-            Request EV charging assessment
-          </a>
-          <a href="tel:0410323034" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-md hover:bg-white/10 transition">
-            Call 0410 323 034
-          </a>
-        </div>
+        <a href="/contact" class="mt-9 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#d2b86f] px-9 text-sm font-semibold text-[#1f261f] transition-colors hover:bg-[#dfc985]">
+          Request an EV charging assessment
+        </a>
       </div>
     </section>
   </main>
 
-  <Footer />
-  <PhoneCTA />
+  <Footer minimal />
 </Layout>
