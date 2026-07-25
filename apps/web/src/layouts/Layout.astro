@@ -119,19 +119,19 @@ window._linkedin_data_partner_ids.push(linkedInPartnerId);
   <body class="bg-brand-surface">
     <slot />
     <script is:inline>
-      {`function bhtTrack(eventName, parameters) {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(Object.assign({ event: eventName }, parameters || {}));
-}
-document.addEventListener('click', function(event) {
-  var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
-  if (!link) return;
-  var href = link.getAttribute('href') || '';
-  if (href.indexOf('tel:') === 0) bhtTrack('contact_intent', { contact_method: 'phone' });
-  else if (href === '/contact' || href.indexOf('/contact?') === 0) bhtTrack('contact_intent', { contact_method: 'form' });
-  else if (href === '/shop' || href.indexOf('/shop?') === 0) bhtTrack('begin_selection', { link_text: (link.textContent || '').trim().slice(0, 80) });
-  else if (href.indexOf('/better-home/') === 0 || href.indexOf('/products/') === 0) bhtTrack('view_product', { product_path: href.split('?')[0] });
-});`}
+      function bhtTrack(eventName, parameters) {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(Object.assign({ event: eventName }, parameters || {}));
+      }
+      document.addEventListener('click', function(event) {
+        var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+        if (!link) return;
+        var href = link.getAttribute('href') || '';
+        if (href.indexOf('tel:') === 0) bhtTrack('contact_intent', { contact_method: 'phone' });
+        else if (href === '/contact' || href.indexOf('/contact?') === 0) bhtTrack('contact_intent', { contact_method: 'form' });
+        else if (href === '/shop' || href.indexOf('/shop?') === 0) bhtTrack('begin_selection', { link_text: (link.textContent || '').trim().slice(0, 80) });
+        else if (href.indexOf('/better-home/') === 0 || href.indexOf('/products/') === 0) bhtTrack('view_product', { product_path: href.split('?')[0] });
+      });
     </script>
     {enableLinkedIn && (
       <noscript>
