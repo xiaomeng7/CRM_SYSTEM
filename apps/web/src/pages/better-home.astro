@@ -23,12 +23,12 @@ const productSystem = [
 ];
 
 const experiences = [
-  { id: 'E-01', name: 'Mood Lighting', type: 'For selected rooms', text: 'Give familiar evenings more colour, depth and atmosphere.' },
-  { id: 'E-03', name: 'Healthy Air', type: 'For selected rooms', text: 'Refresh the air quietly around the way each room is used.' },
-  { id: 'E-02', name: 'Climate', type: 'Whole-home comfort', text: 'Coordinate central climate without requiring a Collection first.' },
-  { id: 'E-04', name: 'Garden Care', type: 'Independent', text: 'Give irrigation a simple, considered rhythm of its own.' },
-  { id: 'E-05', name: 'CCTV & Monitoring', type: 'Independent', text: 'Professional local monitoring with a clearer view of home.' },
-  { id: 'E-06', name: 'Smart Toilet', type: 'Independent', text: 'Personal comfort that can begin as a product of its own.' },
+  { id: 'E-01', name: 'Mood Lighting', slug: 'mood-lighting', type: 'For selected rooms', text: 'Give familiar evenings more colour, depth and atmosphere.' },
+  { id: 'E-03', name: 'Healthy Air', slug: 'healthy-air', type: 'For selected rooms', text: 'Refresh the air quietly around the way each room is used.' },
+  { id: 'E-02', name: 'Climate', slug: 'climate', type: 'Whole-home comfort', text: 'Coordinate central climate without requiring a Collection first.' },
+  { id: 'E-04', name: 'Garden Care', slug: 'garden-care', type: 'Independent', text: 'Give irrigation a simple, considered rhythm of its own.' },
+  { id: 'E-05', name: 'CCTV & Monitoring', slug: 'cctv', type: 'Independent', text: 'Professional local monitoring with a clearer view of home.' },
+  { id: 'E-06', name: 'Smart Toilet', slug: 'smart-toilet', type: 'Independent', text: 'Personal comfort that can begin as a product of its own.' },
 ].map((experience) => ({ ...experience, price: getCustomerPrice(experience.id) }));
 ---
 
@@ -92,7 +92,10 @@ const experiences = [
             <p>Ready for future growth</p>
             <p>Professionally installed</p>
           </div>
-          <a href="#collections" class="mt-8 inline-block text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Continue to Collections →</a>
+          <div class="mt-8 flex flex-wrap gap-6">
+            <a href="/products/foundation" class="text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Explore Foundation →</a>
+            <a href="#collections" class="text-sm font-medium text-[#465441] underline decoration-[#65715f]/50 underline-offset-8">Continue to Collections →</a>
+          </div>
         </div>
       </div>
     </section>
@@ -148,7 +151,7 @@ const experiences = [
         </div>
         <div class="mt-14 grid gap-px overflow-hidden rounded-3xl border border-[#cbc4b8] bg-[#cbc4b8] sm:grid-cols-2 lg:grid-cols-3">
           {experiences.map((experience) => (
-            <article class="bg-[#f5f1ea] p-7 md:p-8">
+            <a href={`/products/${experience.slug}`} class="group block bg-[#f5f1ea] p-7 transition-colors hover:bg-white md:p-8">
               <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#7a8474]">{experience.type}</p>
               <h3 class="mt-4 font-['Cormorant_Garamond',Georgia,serif] text-3xl font-normal">{experience.name}</h3>
               <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">{experience.text}</p>
@@ -156,7 +159,8 @@ const experiences = [
                 <p class="font-['Cormorant_Garamond',Georgia,serif] text-2xl">{experience.price.amountLabel}</p>
                 <p class="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#899183]">{experience.price.fulfilmentLabel} · {experience.price.taxLabel}</p>
               </div>
-            </article>
+              <span class="mt-5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#65755d]">Explore →</span>
+            </a>
           ))}
         </div>
         <p class="mt-8 max-w-3xl text-sm leading-relaxed text-[#686d65]">Protection is not a separate purchase. It is a Better Home bonus that becomes available when the required Entry, Away and CCTV products are present.</p>
@@ -190,7 +194,7 @@ const experiences = [
           <h2 class="mt-5 max-w-3xl font-['Cormorant_Garamond',Georgia,serif] text-4xl font-normal leading-tight md:text-6xl">Tell us how you want your home to feel.</h2>
         </div>
         <div class="flex flex-col gap-3 sm:flex-row md:flex-col">
-          <a href="/contact" class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#f5f1ea] px-8 text-sm font-semibold text-[#30372f]">Talk to Better Home</a>
+          <a href="/shop" class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#f5f1ea] px-8 text-sm font-semibold text-[#30372f]">Build yours</a>
           <a href="#collections" class="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/25 px-8 text-sm font-medium text-white">Review Collections</a>
         </div>
       </div>
