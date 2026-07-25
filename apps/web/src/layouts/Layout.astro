@@ -56,7 +56,10 @@ const localBusinessSchema = {
 
 const schema = [orgSchema, localBusinessSchema, ...(Array.isArray(structuredData) ? structuredData : [structuredData])];
 const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-VWQL6TH7KQ';
+const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const linkedInPartnerId = import.meta.env.PUBLIC_LINKEDIN_PARTNER_ID;
 const enableAnalytics = import.meta.env.PROD && Boolean(gaMeasurementId);
+const enableLinkedIn = import.meta.env.PROD && Boolean(linkedInPartnerId);
 ---
 <!doctype html>
 <html lang="en">
@@ -81,6 +84,7 @@ const enableAnalytics = import.meta.env.PROD && Boolean(gaMeasurementId);
 
     <FaviconLinks />
     <title>{title}</title>
+    {googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
 
     {enableAnalytics && (
       <>
@@ -93,8 +97,52 @@ gtag('config', gaMeasurementId);`}
         </script>
       </>
     )}
+    {enableLinkedIn && (
+      <script is:inline define:vars={{ linkedInPartnerId }}>
+        {`window._linkedin_partner_id = linkedInPartnerId;
+window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+window._linkedin_data_partner_ids.push(linkedInPartnerId);
+(function(l) {
+  if (!l) {
+    window.lintrk = function(a,b){window.lintrk.q.push([a,b]);};
+    window.lintrk.q = [];
+  }
+  var s = document.getElementsByTagName("script")[0];
+  var b = document.createElement("script");
+  b.type = "text/javascript"; b.async = true;
+  b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+  s.parentNode.insertBefore(b, s);
+})(window.lintrk);`}
+      </script>
+    )}
   </head>
   <body class="bg-brand-surface">
     <slot />
+    <script is:inline>
+      {`function bhtTrack(eventName, parameters) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(Object.assign({ event: eventName }, parameters || {}));
+}
+document.addEventListener('click', function(event) {
+  var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+  if (!link) return;
+  var href = link.getAttribute('href') || '';
+  if (href.indexOf('tel:') === 0) bhtTrack('contact_intent', { contact_method: 'phone' });
+  else if (href === '/contact' || href.indexOf('/contact?') === 0) bhtTrack('contact_intent', { contact_method: 'form' });
+  else if (href === '/shop' || href.indexOf('/shop?') === 0) bhtTrack('begin_selection', { link_text: (link.textContent || '').trim().slice(0, 80) });
+  else if (href.indexOf('/better-home/') === 0 || href.indexOf('/products/') === 0) bhtTrack('view_product', { product_path: href.split('?')[0] });
+});`}
+    </script>
+    {enableLinkedIn && (
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style="display:none;"
+          alt=""
+          src={`https://px.ads.linkedin.com/collect/?pid=${linkedInPartnerId}&fmt=gif`}
+        />
+      </noscript>
+    )}
   </body>
 </html>

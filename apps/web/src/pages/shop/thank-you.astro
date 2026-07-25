@@ -41,6 +41,10 @@ import Footer from '../../components/Footer.astro';
     const submission = JSON.parse(sessionStorage.getItem('betterHomeSubmission') || '{}');
     const greeting = document.getElementById('thank-you-name');
     if (greeting && submission.name) greeting.textContent = `Thank you, ${submission.name}. Your Better Home selection is now with our team.`;
+    if (typeof window.bhtTrack === 'function') window.bhtTrack('selection_received', {
+      currency: 'AUD',
+      value: Number(submission.estimatedTotal || 0),
+    });
     sessionStorage.removeItem('betterHomeSubmission');
   } catch {}
 </script>
