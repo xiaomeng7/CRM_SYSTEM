@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { betterHomeProducts } from '../../lib/better-home-products';
+
+export function getStaticPaths() {
+  return betterHomeProducts
+    .filter((product) => product.productKind !== 'COLLECTION')
+    .map((product) => ({
+      params: { product: product.slug },
+      props: { product },
+    }));
+}
+
+const { product } = Astro.props;
+const typeLabel = product.productKind === 'STANDALONE' ? 'Standalone product' : product.productKind;
+const includedLabel = product.productKind === 'FOUNDATION'
+  ? 'What Foundation includes'
+  : product.productKind === 'STANDALONE'
+    ? 'Standard supply'
+    : 'Standard scope';
+---
+
+<Layout title={`${product.canonicalName} | Better Home`} description={`${product.hero} ${product.subtitle}`}>
+  <Header />
+  <main class="better-home-product-detail bg-[#f5f1ea] text-[#252823]">
+    <section class="border-b border-[#d9d3c9]">
+      <div class="mx-auto max-w-[1160px] px-6 py-14 md:px-10 md:py-20">
+        <a href="/better-home" class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#65755d]">← All products</a>
+        <div class="mt-12 grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-end">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">{product.productCode} · {typeLabel}</p>
+            <h1 class="mt-5 text-[clamp(3.6rem,7.5vw,7rem)] leading-[0.9] tracking-[-0.045em]">{product.canonicalName}</h1>
+          </div>
+          <div class="max-w-2xl">
+            <p class="text-4xl leading-[1.04] md:text-6xl">{product.hero}</p>
+            <p class="mt-6 text-lg leading-relaxed text-[#686d65]">{product.subtitle}</p>
+          </div>
+        </div>
+        <figure class="mt-14 overflow-hidden rounded-[2rem] bg-[#ddd5c8] shadow-[0_2rem_6rem_rgba(57,55,49,0.1)]">
+          <img src={product.image} alt={`${product.canonicalName} residential atmosphere`} width="1600" height="1000" class="aspect-[16/7] h-full w-full object-cover" loading="eager" fetchpriority="high" />
+        </figure>
+      </div>
+    </section>
+
+    <section class="bg-[#faf8f4] py-20 md:py-24">
+      <div class="mx-auto grid max-w-[1160px] gap-12 px-6 md:grid-cols-[0.75fr_1.25fr] md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Why it belongs</p>
+          <h2 class="mt-5 text-4xl leading-tight md:text-5xl">{product.storyTitle || product.canonicalName}</h2>
+          <p class="mt-5 text-lg leading-relaxed text-[#686d65]">{product.storyBody}</p>
+        </div>
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">What you experience</p>
+          <div class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-[#d8d1c5] bg-[#d8d1c5] sm:grid-cols-2">
+            {product.experiences.map((experience) => (
+              <article class="bg-[#f5f1ea] p-7">
+                <span class="text-xs text-[#899183]">{String(experience.sequence).padStart(2, '0')}</span>
+                <h3 class="mt-5 text-2xl">{experience.title}</h3>
+                <p class="mt-3 text-[15px] leading-relaxed text-[#686d65]">{experience.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-[#d9d3c9] bg-[#e9e4da] py-20 md:py-24">
+      <div class="mx-auto max-w-[1160px] px-6 md:px-10">
+        <div class="flex flex-wrap items-end justify-between gap-8">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">{includedLabel}</p>
+            <h2 class="mt-5 text-4xl md:text-5xl">A clear starting point.</h2>
+          </div>
+          <p class="max-w-md text-sm leading-relaxed text-[#686d65]">{product.coverage}</p>
+        </div>
+        <div class="mt-10 grid gap-px overflow-hidden rounded-2xl border border-[#cec7bb] bg-[#cec7bb] sm:grid-cols-2 lg:grid-cols-3">
+          {product.capabilities.map((capability) => (
+            <article class="bg-[#f5f1ea] p-7">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#65755d]">{capability.customerLayer}</p>
+              <h3 class="mt-3 text-2xl">{capability.capabilityName}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-[#686d65]">Quantity {capability.includedQty}{capability.notes ? ` · ${capability.notes}` : ''}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#f5f1ea] py-20 md:py-24">
+      <div class="mx-auto grid max-w-[1160px] gap-10 px-6 md:grid-cols-[0.75fr_1.25fr] md:items-end md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Investment</p>
+          <p class="mt-5 text-5xl leading-none md:text-7xl">{product.price.amountLabel}</p>
+          <p class="mt-4 text-xs uppercase tracking-[0.14em] text-[#65755d]">{product.price.fulfilmentLabel} · {product.price.taxLabel}</p>
+        </div>
+        <div class="max-w-2xl border-t border-[#cfc9bf] pt-6">
+          <p class="text-lg leading-relaxed text-[#4f574d]">Build this product into a home that reflects your priorities.</p>
+          <p class="mt-4 text-sm leading-relaxed text-[#686d65]">Your online estimate is a starting point. Site conditions and final scope are confirmed before a formal proposal.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#30372f] py-20 text-white md:py-24">
+      <div class="mx-auto grid max-w-[1160px] items-center gap-10 px-6 md:grid-cols-[1fr_auto] md:px-10">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#c6d0bd]">{product.productCode} · {product.canonicalName}</p>
+          <h2 class="mt-5 max-w-3xl text-4xl leading-tight md:text-6xl">Make it part of your Better Home.</h2>
+        </div>
+        <div class="flex flex-col gap-3">
+          <a href={`/shop?add=${product.productCode}`} class="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#f5f1ea] px-8 text-sm font-semibold text-[#30372f]">Build yours</a>
+          <a href="/better-home" class="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/25 px-8 text-sm font-medium text-white">Explore products</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<style is:global>
+  .better-home-product-detail h1,
+  .better-home-product-detail h2,
+  .better-home-product-detail h3,
+  .better-home-product-detail section p.text-5xl {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-weight: 400;
+  }
+</style>
