@@ -4,13 +4,11 @@
  * Routes unchanged; mobile uses same `navLinks`.
  */
 const navLinks = [
-  { href: '/better-home', label: 'Better Home' },
-  { href: '/for-builders', label: 'Builders' },
-  { href: '/services', label: 'Services' },
+  { href: '/better-home', label: 'Products' },
+  { href: '/shop', label: 'Shop' },
   { href: '/projects', label: 'Projects' },
-  { href: '/pre-purchase-inspection', label: 'Inspections' },
+  { href: '/for-builders', label: 'Professionals' },
   { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
 ];
 ---
 <header class="sticky top-0 z-40 border-b border-white/[0.06] bg-[#1f261f] text-white">
@@ -50,12 +48,7 @@ const navLinks = [
     </nav>
 
     <div class="hidden shrink-0 items-center md:flex">
-      <a
-        href="tel:0410323034"
-        class="bht-header-phone inline-flex items-center ml-4 border-l border-white/[0.1] pl-6 text-[12.5px] font-medium leading-none tracking-[0.012em] text-slate-400/90 transition-colors duration-500 tabular-nums hover:text-slate-200/95 lg:ml-6 lg:pl-8 lg:text-[13px]"
-      >
-        0410 323 034
-      </a>
+      <a href="/shop" class="bht-header-phone ml-4 inline-flex min-h-10 items-center rounded-full border border-white/20 px-5 text-[12.5px] font-medium tracking-[0.03em] text-slate-100 transition-colors duration-500 hover:border-white/35 hover:bg-white/[0.06] lg:ml-6">Build yours</a>
     </div>
 
     <div class="flex shrink-0 items-center gap-3 md:hidden">
