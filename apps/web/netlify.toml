@@ -21,6 +21,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/submit-better-home-selection"
+  to = "/.netlify/functions/submit-better-home-selection"
+  status = 200
+  force = true
+
 # Legacy public filenames (spaces) → kebab-case assets committed in git
 [[redirects]]
   from = "/better home new logo.png"
