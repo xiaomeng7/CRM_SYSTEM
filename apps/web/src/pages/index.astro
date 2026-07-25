@@ -19,7 +19,7 @@ const moments = [
 
   <main class="bg-[#f5f1ea] text-[#252823]">
     <!-- One promise. The homepage begins with belief, not products or services. -->
-    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#111318] text-white">
+    <section class="relative min-h-[calc(100svh-5.5rem)] overflow-hidden bg-[#151a15] text-white">
       <img
         src="/front_page_background.jpg"
         alt=""
@@ -28,10 +28,10 @@ const moments = [
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover object-[62%_42%] brightness-[0.66] saturate-[0.76]"
+        class="home-hero-image absolute inset-0 h-full w-full object-cover object-[62%_42%]"
       />
-      <div class="absolute inset-0 bg-gradient-to-r from-[#101318]/95 via-[#101318]/65 to-[#101318]/15"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-[#101318]/65 via-transparent to-[#101318]/20"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#151b16]/90 via-[#172018]/44 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#151b16]/38 via-transparent to-[#151b16]/10"></div>
 
       <div class="relative mx-auto flex min-h-[calc(100svh-5.5rem)] max-w-[1240px] items-center px-6 py-20 md:px-10 lg:px-14">
         <div class="max-w-[43rem]">
@@ -55,7 +55,7 @@ const moments = [
     <section id="philosophy" class="relative scroll-mt-20 overflow-hidden border-b border-white/10 bg-[#293129] py-24 text-[#f3eee5] md:py-36">
       <picture class="pointer-events-none absolute inset-0 block" aria-hidden="true">
         <source srcset="/images/better-home/collections/away.webp" type="image/webp" />
-        <img src="/images/better-home/collections/away.jpg" alt="" width="804" height="821" loading="lazy" class="h-full w-full object-cover object-[62%_50%] opacity-[0.16]" />
+        <img src="/images/better-home/collections/away.jpg" alt="" width="804" height="821" loading="lazy" class="home-philosophy-image h-full w-full object-cover object-[62%_50%] opacity-[0.16]" />
       </picture>
       <div class="pointer-events-none absolute inset-0 bg-[#293129]/72"></div>
       <div class="relative mx-auto max-w-[1120px] px-6 md:px-10">
@@ -91,7 +91,7 @@ const moments = [
         <div class="mt-16 space-y-14 md:space-y-20">
           {moments.map((moment, index) => (
             <article class="grid gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-center md:gap-14">
-              <picture class={`block overflow-hidden rounded-[1.75rem] bg-[#30372f] ${index % 2 === 1 ? 'md:order-2' : ''}`}>
+              <picture class={`relative block overflow-hidden rounded-[1.75rem] bg-[#30372f] ${index % 2 === 1 ? 'md:order-2' : ''}`}>
                 <source srcset={`/images/better-home/collections/${moment.slug}.webp`} type="image/webp" />
                 <img
                   src={`/images/better-home/collections/${moment.slug}.jpg`}
@@ -100,8 +100,9 @@ const moments = [
                   height="821"
                   loading="lazy"
                   decoding="async"
-                  class="aspect-[4/3] h-full w-full object-cover"
+                  class="home-moment-image aspect-[4/3] h-full w-full object-cover"
                 />
+                <span class="pointer-events-none absolute inset-0 bg-[#465244]/[0.12] mix-blend-color"></span>
               </picture>
               <div class={index % 2 === 1 ? 'md:order-1' : ''}>
                 <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d8c57e]">{moment.time}</p>
@@ -137,7 +138,7 @@ const moments = [
       <div class="mx-auto grid max-w-[1160px] gap-12 px-6 md:grid-cols-[1.08fr_0.92fr] md:items-center md:px-10">
           <figure class="overflow-hidden rounded-[2rem] bg-[#d7d2c8]">
             <picture>
-              <img src="/images/better-home/living-collection.png" alt="A calm, naturally lit residential living space" width="994" height="522" loading="lazy" class="aspect-[4/3] h-full w-full object-cover" />
+              <img src="/images/better-home/living-collection.png" alt="A calm, naturally lit residential living space" width="994" height="522" loading="lazy" class="home-transition-image aspect-[4/3] h-full w-full object-cover" />
             </picture>
           </figure>
           <div>
@@ -164,7 +165,7 @@ const moments = [
             height="1800"
             loading="lazy"
             decoding="async"
-            class="absolute inset-0 h-full w-full object-cover object-[50%_48%]"
+            class="home-residence-image absolute inset-0 h-full w-full object-cover object-[50%_48%]"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-[#20251f]/30 via-transparent to-transparent"></div>
           <figcaption class="absolute bottom-6 left-6 rounded-full bg-[#f6f1e8]/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#44503f] backdrop-blur-sm">
@@ -201,3 +202,25 @@ const moments = [
 
   <Footer minimal />
 </Layout>
+
+<style>
+  .home-hero-image {
+    filter: brightness(0.86) saturate(0.68) sepia(0.08) hue-rotate(-6deg);
+  }
+
+  .home-philosophy-image {
+    filter: saturate(0.58) sepia(0.08) hue-rotate(-5deg);
+  }
+
+  .home-moment-image {
+    filter: saturate(0.72) contrast(0.95) brightness(0.94) sepia(0.08);
+  }
+
+  .home-transition-image {
+    filter: saturate(0.76) contrast(0.96) sepia(0.06);
+  }
+
+  .home-residence-image {
+    filter: saturate(0.78) contrast(0.96) sepia(0.04);
+  }
+</style>
