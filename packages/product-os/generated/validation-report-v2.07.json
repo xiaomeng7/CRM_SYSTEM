@@ -4,11 +4,11 @@
   "databaseWrites": 0,
   "sourceFilesModified": false,
   "import_plan_version": "1.2.0",
-  "deterministic_hash": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
+  "deterministic_hash": "adc7b0e5848708ca3b35a26d7520b7455d3e025290bb6c67a6f66dfa0fd8ee19",
   "determinism": {
-    "run1": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
-    "run2": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
-    "run3": "5f81d017a70dd0204b69aa5c9f8d3e58571a2a314d52d6dc5f52de0279dff698",
+    "run1": "adc7b0e5848708ca3b35a26d7520b7455d3e025290bb6c67a6f66dfa0fd8ee19",
+    "run2": "adc7b0e5848708ca3b35a26d7520b7455d3e025290bb6c67a6f66dfa0fd8ee19",
+    "run3": "adc7b0e5848708ca3b35a26d7520b7455d3e025290bb6c67a6f66dfa0fd8ee19",
     "identical": true,
     "generatedUuidsPresent": false
   },
@@ -43,17 +43,17 @@
     "productVersions": 13,
     "aliases": 3,
     "includedBenefits": 1,
-    "experiences": 45,
-    "capabilities": 54,
-    "bomItems": 67,
+    "experiences": 48,
+    "capabilities": 57,
+    "bomItems": 70,
     "labourLibrary": 36,
     "labourApplications": 87,
-    "equipmentSkus": 49,
-    "rules": 47,
-    "automations": 22,
+    "equipmentSkus": 50,
+    "rules": 49,
+    "automations": 24,
     "addons": 32,
     "prices": 13,
-    "contentEntries": 420,
+    "contentEntries": 430,
     "themes": 14,
     "assets": 13,
     "icons": 28,
@@ -61,9 +61,9 @@
     "costingSettings": 7,
     "relationshipsExpandFurther": 14,
     "featuredAddonOrders": 16,
-    "a4PresentationMappings": 65,
-    "a4ScopePresentationGroups": 65,
-    "decisionDeltaOverlays": 6
+    "a4PresentationMappings": 68,
+    "a4ScopePresentationGroups": 68,
+    "decisionDeltaOverlays": 7
   },
   "emptyEntityExplanations": {
     "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction",
@@ -626,7 +626,7 @@
           "factArea": "customer_experiences",
           "source": "05_Product_Experiences",
           "plannedTarget": "experiences",
-          "count": 4,
+          "count": 5,
           "status": "OK",
           "issues": ""
         },
@@ -634,7 +634,7 @@
           "factArea": "capabilities",
           "source": "06_Product_Capabilities",
           "plannedTarget": "capabilities",
-          "count": 6,
+          "count": 7,
           "status": "OK",
           "issues": ""
         },
@@ -642,7 +642,7 @@
           "factArea": "BOM",
           "source": "07_Product_BOM",
           "plannedTarget": "bom_items",
-          "count": 8,
+          "count": 9,
           "status": "OK",
           "issues": ""
         },
@@ -737,12 +737,12 @@
       ],
       "blockingIssues": [],
       "counts": {
-        "experiences": 4,
-        "capabilities": 6,
-        "bom": 8,
+        "experiences": 5,
+        "capabilities": 7,
+        "bom": 9,
         "rules": 2,
         "automations": 0,
-        "content": 31,
+        "content": 34,
         "addons": 6
       }
     },
@@ -964,7 +964,7 @@
           "factArea": "customer_experiences",
           "source": "05_Product_Experiences",
           "plannedTarget": "experiences",
-          "count": 3,
+          "count": 4,
           "status": "OK",
           "issues": ""
         },
@@ -972,7 +972,7 @@
           "factArea": "capabilities",
           "source": "06_Product_Capabilities",
           "plannedTarget": "capabilities",
-          "count": 5,
+          "count": 6,
           "status": "OK",
           "issues": ""
         },
@@ -980,7 +980,7 @@
           "factArea": "BOM",
           "source": "07_Product_BOM",
           "plannedTarget": "bom_items",
-          "count": 6,
+          "count": 7,
           "status": "OK",
           "issues": ""
         },
@@ -1075,12 +1075,12 @@
       ],
       "blockingIssues": [],
       "counts": {
-        "experiences": 3,
-        "capabilities": 5,
-        "bom": 6,
+        "experiences": 4,
+        "capabilities": 6,
+        "bom": 7,
         "rules": 2,
         "automations": 1,
-        "content": 31,
+        "content": 34,
         "addons": 5
       }
     },
@@ -1137,7 +1137,7 @@
           "factArea": "customer_experiences",
           "source": "05_Product_Experiences",
           "plannedTarget": "experiences",
-          "count": 4,
+          "count": 5,
           "status": "OK",
           "issues": ""
         },
@@ -1145,7 +1145,7 @@
           "factArea": "capabilities",
           "source": "06_Product_Capabilities",
           "plannedTarget": "capabilities",
-          "count": 1,
+          "count": 2,
           "status": "OK",
           "issues": ""
         },
@@ -1153,7 +1153,7 @@
           "factArea": "BOM",
           "source": "07_Product_BOM",
           "plannedTarget": "bom_items",
-          "count": 1,
+          "count": 2,
           "status": "OK",
           "issues": ""
         },
@@ -1169,7 +1169,7 @@
           "factArea": "dependencies",
           "source": "09_Product_Rules",
           "plannedTarget": "rules",
-          "count": 4,
+          "count": 5,
           "status": "OK",
           "issues": ""
         },
@@ -1248,12 +1248,12 @@
       ],
       "blockingIssues": [],
       "counts": {
-        "experiences": 4,
-        "capabilities": 1,
-        "bom": 1,
-        "rules": 4,
+        "experiences": 5,
+        "capabilities": 2,
+        "bom": 2,
+        "rules": 5,
         "automations": 3,
-        "content": 32,
+        "content": 36,
         "addons": 1
       }
     },
@@ -2333,7 +2333,7 @@
       "decision": "DEC-009",
       "approvedOutcome": "Experience library = facts; A4 = presentation map",
       "transformRule": "import 05; presentation map separate",
-      "objects": "experiences=45; a4PresentationMappings=65",
+      "objects": "experiences=48; a4PresentationMappings=68",
       "test": "Experience facts exist; A4 mappings do not create facts",
       "status": "APPLIED"
     },
@@ -2357,7 +2357,7 @@
       "decision": "DEC-012",
       "approvedOutcome": "Six Collection A4 copy verbatim into Content Library",
       "transformRule": "approved six-Collection A4 source → content entries",
-      "objects": "contentEntries=420",
+      "objects": "contentEntries=430",
       "test": "verbatim anchors + six-Collection front/back coverage",
       "status": "APPLIED"
     },
@@ -3365,7 +3365,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "equipment_skus",
         "rowsRead": 49,
-        "rowsPlanned": 49,
+        "rowsPlanned": 50,
         "rowsSkipped": 0,
         "reason": "SKU identity + supplier; unit cost internal-only",
         "sheetExists": true
@@ -3387,7 +3387,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "product_experiences",
         "rowsRead": 46,
-        "rowsPlanned": 45,
+        "rowsPlanned": 48,
         "rowsSkipped": 1,
         "reason": "Canonical experience inventory (DEC-009); A4 map separate",
         "sheetExists": true
@@ -3398,7 +3398,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "capabilities + inclusions",
         "rowsRead": 54,
-        "rowsPlanned": 54,
+        "rowsPlanned": 57,
         "rowsSkipped": 0,
         "reason": "Included scope facts; DEC overlays may rename/qualify",
         "sheetExists": true
@@ -3409,7 +3409,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "bom_versions + bom_items",
         "rowsRead": 67,
-        "rowsPlanned": 67,
+        "rowsPlanned": 70,
         "rowsSkipped": 0,
         "reason": "Technical quantities; never drives customer wording",
         "sheetExists": true
@@ -3431,7 +3431,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "rule_definitions",
         "rowsRead": 47,
-        "rowsPlanned": 47,
+        "rowsPlanned": 49,
         "rowsSkipped": 0,
         "reason": "Boundary rules; free-form keys normalized to stable codes",
         "sheetExists": true
@@ -3486,7 +3486,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "content_entries",
         "rowsRead": 56,
-        "rowsPlanned": 52,
+        "rowsPlanned": 56,
         "rowsSkipped": 4,
         "reason": "Customer content authority for present rows; A4 verbatim gap = issue",
         "sheetExists": true
@@ -3541,7 +3541,7 @@
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "targetContext": "automation_definitions",
         "rowsRead": 21,
-        "rowsPlanned": 21,
+        "rowsPlanned": 23,
         "rowsSkipped": 0,
         "reason": "Technical automation; DEC-004 Return Routine overlay planned",
         "sheetExists": true

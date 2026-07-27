@@ -486,6 +486,28 @@ enum Pos2OperationalHandoffOperation {
   CREATE_SERVICEM8_WORK_ORDER
 }
 
+/// Runtime state is intentionally separate from the product catalogue.
+enum Pos2DeviceOnlineStatus {
+  UNKNOWN
+  ONLINE
+  OFFLINE
+}
+
+enum Pos2WaterLeakAlarmStatus {
+  CLEAR
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum Pos2WaterShutoffUpgradeStatus {
+  FUTURE_OPTION
+  SITE_REVIEW_REQUIRED
+  APPROVED
+  INSTALLED
+  NOT_SUITABLE
+}
+
 /// Canonical V2 product catalogue node (dual-axis kind × commercial role).
 model Pos2Product {
   id                 String             @id @default(uuid()) @db.Uuid
@@ -530,6 +552,7 @@ model Pos2Product {
   aliasesAsCanonical Pos2ProductAlias[] @relation("Pos2AliasCanonicalProduct")
   includedBenefits   Pos2IncludedBenefit[]
   selectionDraftLines Pos2SelectionDraftLine[]
+  waterLeakPoints     Pos2WaterLeakPoint[]
 
   @@unique([canonicalName, productKind])
   @@index([productKind, commercialRole, status])
@@ -1716,4 +1739,59 @@ model Pos2DraftCustomerLink {
   @@index([crmContactId, status])
   @@index([crmOpportunityId, status])
   @@map("pos2_draft_customer_links")
+}
+
+/// A deployed water-risk point. This is customer/site runtime data, not a
+/// product definition or BOM row. `siteReference` is the CRM or ServiceM8
+/// asset/site ID once the operational handoff has created it.
+model Pos2WaterLeakPoint {
+  id                       String                  @id @default(uuid()) @db.Uuid
+  siteReference            String                  @map("site_reference")
+  collectionProductId      String                  @map("collection_product_id") @db.Uuid
+  roomName                 String                  @map("room_name")
+  installationLocation     String                  @map("installation_location")
+  customerDisplayName      String                  @map("customer_display_name")
+  sensorDeviceId           String                  @unique @map("sensor_device_id")
+  gatewayReference         String?                 @map("gateway_reference")
+  onlineStatus             Pos2DeviceOnlineStatus  @default(UNKNOWN) @map("online_status")
+  batteryPercent           Int?                     @map("battery_percent")
+  lastSeenAt               DateTime?               @map("last_seen_at") @db.Timestamptz(6)
+  lastTestedAt             DateTime?               @map("last_tested_at") @db.Timestamptz(6)
+  alarmStatus              Pos2WaterLeakAlarmStatus @default(CLEAR) @map("alarm_status")
+  alarmAt                  DateTime?               @map("alarm_at") @db.Timestamptz(6)
+  isAwayExtendedProtection Boolean                 @default(false) @map("is_away_extended_protection")
+  automaticShutoffConfigured Boolean               @default(false) @map("automatic_shutoff_configured")
+  createdAt                DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  collectionProduct        Pos2Product             @relation(fields: [collectionProductId], references: [id], onDelete: Restrict)
+  shutoffUpgrade           Pos2WaterShutoffUpgrade?
+
+  @@index([siteReference, roomName])
+  @@index([gatewayReference, onlineStatus])
+  @@index([alarmStatus, alarmAt])
+  @@index([collectionProductId, isAwayExtendedProtection])
+  @@map("pos2_water_leak_points")
+}
+
+/// Optional future shutoff assessment. It never represents standard scope.
+model Pos2WaterShutoffUpgrade {
+  id                         String                       @id @default(uuid()) @db.Uuid
+  waterLeakPointId           String?                      @unique @map("water_leak_point_id") @db.Uuid
+  siteReference              String                       @map("site_reference")
+  status                     Pos2WaterShutoffUpgradeStatus @default(FUTURE_OPTION)
+  valveType                  String?                      @map("valve_type")
+  siteAssessmentNotes        String?                      @map("site_assessment_notes")
+  hasManualOperation         Boolean                      @default(false) @map("has_manual_operation")
+  hasPositionFeedback        Boolean                      @default(false) @map("has_position_feedback")
+  automaticReopenPermitted   Boolean                      @default(false) @map("automatic_reopen_permitted")
+  gasInstallation            Boolean                      @default(false) @map("gas_installation")
+  qualifiedInstallerRequired Boolean                      @default(true) @map("qualified_installer_required")
+  createdAt                  DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  waterLeakPoint             Pos2WaterLeakPoint?         @relation(fields: [waterLeakPointId], references: [id], onDelete: SetNull)
+
+  @@index([siteReference, status])
+  @@map("pos2_water_shutoff_upgrades")
 }

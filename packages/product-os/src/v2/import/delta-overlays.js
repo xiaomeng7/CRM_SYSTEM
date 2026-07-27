@@ -78,6 +78,14 @@ const APPROVED_DELTAS = Object.freeze([
     summary:
       "Climate controls the central air-conditioning system as a whole-home Experience; room selection is optional sensor context, not a purchase dependency.",
     status: "APPROVED"
+  },
+  {
+    ref: "DELTA-WATER-LEAK-2026-07-27",
+    authority: "PRODUCT_OWNER_2026-07-27",
+    productCode: null,
+    kind: "CAPABILITY_BOM_CONTENT_AUTOMATION",
+    summary: "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface.",
+    status: "PLANNED"
   }
 ]);
 
