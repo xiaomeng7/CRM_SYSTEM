@@ -33,6 +33,7 @@ const {
 const xt = require("./extended-transforms");
 const { buildApprovedA4ContentPlan, assertVerbatim } = require("./a4-content-transform");
 const { buildExpandFurtherPlan } = require("./expand-further-transform");
+const { buildWaterLeakProtectionOverlay } = require("./water-leak-protection");
 
 const PHASE = "4A.2";
 const PLAN_VERSION = "1.2.0";
@@ -243,6 +244,15 @@ function buildImportPlanFromWorkbook(workbook, options = {}) {
   const imageBundle = xt.transformImageRows(readSheetRows(workbook, "16_Image_Library").rows);
   const iconBundle = xt.transformIconRows(readSheetRows(workbook, "15_Icon_Library").rows);
   const layoutBundle = xt.transformLayoutRows(readSheetRows(workbook, "18_Layout_Config").rows);
+  const waterLeak = buildWaterLeakProtectionOverlay();
+
+  skus.push(...waterLeak.skus);
+  expBundle.experiences.push(...waterLeak.experiences);
+  capBundle.capabilities.push(...waterLeak.capabilities);
+  bomBundle.bomItems.push(...waterLeak.bomItems);
+  ruleBundle.rules.push(...waterLeak.rules);
+  autoBundle.automations.push(...waterLeak.automations);
+  contentBundle.contentEntries.push(...waterLeak.contentEntries);
 
   for (const bundle of [
     expBundle,
@@ -367,6 +377,7 @@ function buildImportPlanFromWorkbook(workbook, options = {}) {
     },
     xt.plannedReturnRoutineDelta(),
     xt.plannedProtectionBenefit(),
+    { action: "APPLY_DELTA", ref: "DELTA-WATER-LEAK-2026-07-27", decision: "PRODUCT_OWNER_2026-07-27", plannedObjects: [{ type: "CAPABILITY_BOM_CONTENT_AUTOMATION", products: ["C-03", "C-05", "C-06"] }] },
     {
       action: "APPLY_DELTA",
       ref: "DELTA-RENUMBER-E",
@@ -524,6 +535,8 @@ function buildImportPlanFromWorkbook(workbook, options = {}) {
     assets: imageBundle.assets,
     icons: iconBundle.icons,
     layouts: layoutBundle.layouts,
+    waterLeakQuoteRules: waterLeak.quoteRules,
+    waterLeakFutureUpgrade: waterLeak.futureUpgrade,
     plannedActions: [
       ...plannedActions,
       ...decisionDeltas.map((d) => ({ type: d.action, ref: d.ref || d.benefitCode }))

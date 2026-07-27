@@ -2,15 +2,17 @@ import type { Handler, HandlerEvent } from '@netlify/functions';
 import importPlan from '../../../../packages/product-os/generated/import-plan-v2.07.json';
 
 type Selection = { code: string; name: string; quantity: number; unitPrice: number };
+type PriceFact = { name: string; price: number };
 
-const authoritativePrices = new Map([
+const authoritativePriceEntries: Array<[string, PriceFact]> = [
   ...importPlan.prices
     .filter((price) => price.customerVisible)
-    .map((price) => [price.productCode, { name: importPlan.products.find((product) => product.productCode === price.productCode)?.canonicalName || price.productCode, price: price.customerPriceInclGst }]),
+    .map((price): [string, PriceFact] => [price.productCode, { name: importPlan.products.find((product) => product.productCode === price.productCode)?.canonicalName || price.productCode, price: price.customerPriceInclGst }]),
   ...importPlan.addons
     .filter((addon) => addon.eligibilityStatus === 'ELIGIBLE')
-    .map((addon) => [addon.productCode, { name: addon.canonicalName, price: addon.customerPriceInclGst }]),
-]);
+    .map((addon): [string, PriceFact] => [addon.productCode, { name: addon.canonicalName, price: addon.customerPriceInclGst }]),
+];
+const authoritativePrices = new Map<string, PriceFact>(authoritativePriceEntries);
 const addonParents = new Map(
   importPlan.addons
     .filter((addon) => addon.eligibilityStatus === 'ELIGIBLE')
@@ -51,6 +53,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
   const email = cleanText(body.email, 180);
   const suburb = cleanText(body.suburb, 160);
   const notes = cleanText(body.notes, 2000);
+  const waterRiskLocations = Array.isArray(body.waterRiskLocations)
+    ? body.waterRiskLocations.map((item) => cleanText(item, 100)).filter(Boolean).slice(0, 20)
+    : [];
   const selections = validSelections(body.selections, 'product');
   const addons = validSelections(body.addons, 'addon');
   const experienceTargets = Array.isArray(body.experienceTargets)
@@ -90,6 +95,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!selections.length) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Please choose at least one product.' }) };
   }
+  if (waterRiskLocations.length && !selectedProductCodes.has('C-06')) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Extended water leak locations require Away Collection.' }) };
+  }
+  if (waterRiskLocations.length > 1) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Away Collection includes one selected external water-risk location. We can scope further locations in your final proposal.' }) };
+  }
 
   let crmBase = cleanText(process.env.CRM_API_BASE_URL, 500);
   if (!crmBase) return { statusCode: 503, body: JSON.stringify({ error: 'Better Home is temporarily unavailable. Please call 0410 323 034.' }) };
@@ -100,6 +111,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     ...selections.map((item) => `${item.quantity} × ${item.name} (${item.code})`),
     ...addons.map((item) => `${item.quantity} × ${item.name} (${item.code})`),
     ...experienceTargets.map((target) => `${target.experienceCode} applied to ${target.room}`),
+    ...waterRiskLocations.map((location) => `Away water-risk location requested: ${location}`),
     `Indicative total: $${estimatedTotal.toLocaleString('en-AU')}`,
     notes ? `Customer notes: ${notes}` : null,
   ].filter(Boolean);
@@ -122,6 +134,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
           selections,
           addons,
           experience_targets: experienceTargets,
+          water_risk_locations: waterRiskLocations,
           estimated_total_incl_gst: estimatedTotal,
           customer_notes: notes || null,
         },

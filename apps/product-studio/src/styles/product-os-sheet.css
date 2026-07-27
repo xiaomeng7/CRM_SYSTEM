@@ -236,8 +236,15 @@ body {
   border: 0;
 }
 .os-scope p {
-  font-size: 9pt;
+  font-size: 9.5pt;
   margin: 1mm 0;
+}
+.os-scope--count-6 {
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 3mm;
+}
+.os-scope--count-6 article:nth-child(3n) {
+  border-right: 0;
 }
 .os-lower {
   display: grid;

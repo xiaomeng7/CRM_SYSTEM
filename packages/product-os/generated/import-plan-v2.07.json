@@ -308,6 +308,26 @@
       "decision": "DEC-009",
       "experienceCode": null,
       "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.c_03.6",
+      "plannedFactRef": null,
+      "presentationBody": "A common risk point is watched day and night, with the exact location shown if water is detected.",
+      "presentationTitle": "EARLY WATER LEAK DETECTION",
+      "productCode": "C-03",
+      "sequence": 6,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
       "mappingCode": "map.a4.exp.c_04.1",
       "plannedFactRef": null,
       "presentationBody": "One scene lets the room settle.",
@@ -506,6 +526,26 @@
       "channel": "A4",
       "createsExperienceFact": false,
       "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.c_05.6",
+      "plannedFactRef": null,
+      "presentationBody": "A quiet early warning helps protect the room beyond everyday routines.",
+      "presentationTitle": "EARLY WATER LEAK DETECTION",
+      "productCode": "C-05",
+      "sequence": 6,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
       "experienceCode": "exp.c_06.leave_home",
       "libraryMatchHint": "Leave Home",
       "mappingCode": "map.a4.exp.c_06.1",
@@ -594,6 +634,26 @@
       "presentationTitle": "CLEAR BOUNDARY",
       "productCode": "C-06",
       "sequence": 5,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "surface": "BACK"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE_PRESENTATION_MAPPING",
+      "capabilityHint": null,
+      "channel": "A4",
+      "createsExperienceFact": false,
+      "decision": "DEC-009",
+      "experienceCode": null,
+      "libraryMatchHint": null,
+      "mappingCode": "map.a4.exp.c_06.6",
+      "plannedFactRef": null,
+      "presentationBody": "Protect the water-risk locations that are harder to notice while you are away.",
+      "presentationTitle": "EXTENDED WATER LEAK PROTECTION",
+      "productCode": "C-06",
+      "sequence": 6,
       "source": {
         "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
         "system": "A4_REVIEW_SET_V1"
@@ -785,6 +845,18 @@
     {
       "decision": "DEC-012",
       "factAuthority": "capabilities_and_bom",
+      "heading": "EARLY WATER LEAK DETECTION",
+      "lines": [
+        "1 Zigbee water leak sensor",
+        "Kitchen sink cabinet"
+      ],
+      "note": null,
+      "productCode": "C-03",
+      "sequence": 6
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
       "heading": "ROOM LIGHT",
       "lines": [
         "Up to 6 lighting circuits",
@@ -905,6 +977,18 @@
     {
       "decision": "DEC-012",
       "factAuthority": "capabilities_and_bom",
+      "heading": "EARLY WATER LEAK DETECTION",
+      "lines": [
+        "1 Zigbee water leak sensor",
+        "Vanity cabinet or splash-safe low point"
+      ],
+      "note": null,
+      "productCode": "C-05",
+      "sequence": 6
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
       "heading": "WHOLE HOME",
       "lines": [
         "Logic across purchased",
@@ -961,6 +1045,18 @@
       "note": null,
       "productCode": "C-06",
       "sequence": 5
+    },
+    {
+      "decision": "DEC-012",
+      "factAuthority": "capabilities_and_bom",
+      "heading": "EXTENDED WATER LEAK PROTECTION",
+      "lines": [
+        "1 selected external water-risk point",
+        "24-hour detection + Away escalation"
+      ],
+      "note": null,
+      "productCode": "C-06",
+      "sequence": 6
     }
   ],
   "a4_template_version_separate": true,
@@ -2287,6 +2383,14 @@
       "ref": "DELTA-RENUMBER-E",
       "status": "PLANNED",
       "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+    },
+    {
+      "authority": "PRODUCT_OWNER_2026-07-27",
+      "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+      "productCode": null,
+      "ref": "DELTA-WATER-LEAK-2026-07-27",
+      "status": "PLANNED",
+      "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
     }
   ],
   "assets": [
@@ -2748,6 +2852,16 @@
       "trigger": "Screen/app/assigned key"
     },
     {
+      "automationCode": "auto.c06.water_leak.away_escalation",
+      "boundaryNotes": "Future water-main shutoff interface only; no automatic reopen.",
+      "description": "High-priority remote push, repeated alerts and room/location summary while Away is enabled.",
+      "name": "Away Water Leak Escalation",
+      "productCodes": [
+        "C-06"
+      ],
+      "triggerType": "WATER_DETECTED_WHILE_AWAY"
+    },
+    {
       "action": "UPSERT_AUTOMATION",
       "actionText": "Show unique hourly colour",
       "automationCode": "auto.e_01.hourly_light_clock",
@@ -2882,6 +2996,18 @@
       },
       "statusLabel": "Frozen",
       "trigger": "NVR alarm output"
+    },
+    {
+      "automationCode": "auto.water_leak.alert",
+      "boundaryNotes": "Always active; does not depend on home mode.",
+      "description": "Local buzzer, TIS screen alert, app push and exact location.",
+      "name": "Water Leak Alert",
+      "productCodes": [
+        "C-03",
+        "C-05",
+        "C-06"
+      ],
+      "triggerType": "WATER_DETECTED"
     }
   ],
   "bomItems": [
@@ -3283,6 +3409,18 @@
     },
     {
       "action": "UPSERT_BOM_ITEM",
+      "bomItemCode": "bom.c_03.tis_bee_wtr_lek_1",
+      "notes": "Kitchen sink cabinet default location; included in Kitchen Collection.",
+      "productCode": "C-03",
+      "qty": 1,
+      "skuCode": "TIS-BEE-WTR-LEK-1",
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      }
+    },
+    {
+      "action": "UPSERT_BOM_ITEM",
       "bomItemCode": "bom.c_03.ww_strip_3",
       "inclusionMode": "Included",
       "legacyProductCode": "C-03",
@@ -3571,6 +3709,18 @@
     },
     {
       "action": "UPSERT_BOM_ITEM",
+      "bomItemCode": "bom.c_05.tis_bee_wtr_lek_1",
+      "notes": "Bathroom vanity cabinet or suitable splash-safe low point; included in Bathroom Collection.",
+      "productCode": "C-05",
+      "qty": 1,
+      "skuCode": "TIS-BEE-WTR-LEK-1",
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      }
+    },
+    {
+      "action": "UPSERT_BOM_ITEM",
       "bomItemCode": "bom.c_05.ww_strip_3",
       "inclusionMode": "Included",
       "legacyProductCode": "C-05",
@@ -3604,6 +3754,18 @@
         "system": "V2_07_WORKBOOK"
       },
       "unitCostExGst": "REDACTED_INTERNAL"
+    },
+    {
+      "action": "UPSERT_BOM_ITEM",
+      "bomItemCode": "bom.c_06.tis_bee_wtr_lek_1",
+      "notes": "One selected external water-risk location; included in Away Collection.",
+      "productCode": "C-06",
+      "qty": 1,
+      "skuCode": "TIS-BEE-WTR-LEK-1",
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      }
     },
     {
       "action": "UPSERT_BOM_ITEM",
@@ -4365,6 +4527,23 @@
     },
     {
       "action": "UPSERT_CAPABILITY_INCLUSION",
+      "capabilityCode": "cap.c_03.early_water_leak_detection",
+      "capabilityName": "Early Water Leak Detection",
+      "contentQualifier": null,
+      "customerLayer": "CUSTOMER",
+      "deltaApplied": "DELTA-WATER-LEAK-2026-07-27",
+      "includedQty": 1,
+      "legacyProductCode": null,
+      "notes": "One Zigbee water leak sensor below the kitchen sink cabinet. Local sensor buzzer, TIS screen alert, mobile app push and exact location. Active 24/7; independent of Normal, Sleep and Away modes.",
+      "productCode": "C-03",
+      "source": {
+        "date": "2026-07-27",
+        "identity": "cap.c_03.early_water_leak_detection",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      }
+    },
+    {
+      "action": "UPSERT_CAPABILITY_INCLUSION",
       "capabilityCode": "cap.c_03.indoor_occupancy_sensor",
       "capabilityName": "Indoor Occupancy Sensor",
       "contentQualifier": null,
@@ -4599,6 +4778,23 @@
     },
     {
       "action": "UPSERT_CAPABILITY_INCLUSION",
+      "capabilityCode": "cap.c_05.early_water_leak_detection",
+      "capabilityName": "Early Water Leak Detection",
+      "contentQualifier": null,
+      "customerLayer": "CUSTOMER",
+      "deltaApplied": "DELTA-WATER-LEAK-2026-07-27",
+      "includedQty": 1,
+      "legacyProductCode": null,
+      "notes": "One Zigbee water leak sensor in the vanity cabinet or another low point not affected by normal shower splash. Local sensor buzzer, TIS screen alert, mobile app push and exact location. Active 24/7.",
+      "productCode": "C-05",
+      "source": {
+        "date": "2026-07-27",
+        "identity": "cap.c_05.early_water_leak_detection",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      }
+    },
+    {
+      "action": "UPSERT_CAPABILITY_INCLUSION",
       "capabilityCode": "cap.c_05.existing_exhaust_fan_control",
       "capabilityName": "Existing Exhaust Fan Control",
       "contentQualifier": null,
@@ -4649,6 +4845,23 @@
         "row": 35,
         "sheet": "06_Product_Capabilities",
         "system": "V2_07_WORKBOOK"
+      }
+    },
+    {
+      "action": "UPSERT_CAPABILITY_INCLUSION",
+      "capabilityCode": "cap.c_06.extended_water_leak_protection",
+      "capabilityName": "Extended Water Leak Protection",
+      "contentQualifier": null,
+      "customerLayer": "CUSTOMER",
+      "deltaApplied": "DELTA-WATER-LEAK-2026-07-27",
+      "includedQty": 1,
+      "legacyProductCode": null,
+      "notes": "Away includes one Zigbee water leak sensor for one selected location outside Kitchen and Bathroom: laundry, hot water unit, refrigerator water connection, purifier, dishwasher risk point, plant room or other permanent water-fed equipment. This is the Better Home whole-home water leak protection layer. Sensors remain active 24/7. Away mode adds high-priority remote notification, repeated alerts, room/location summary and a future water-main shutoff interface. Further external points require Away Collection and a separately priced Add-on.",
+      "productCode": "C-06",
+      "source": {
+        "date": "2026-07-27",
+        "identity": "cap.c_06.extended_water_leak_protection",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
       }
     },
     {
@@ -6688,6 +6901,58 @@
       "title": "APPLIANCE"
     },
     {
+      "a4TemplateMappingKey": "back.scope.6",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "1 Zigbee water leak sensor\nKitchen sink cabinet",
+      "contentCode": "cnt.a4.c_03.customer_experience_copy.55.back_scope_6",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "a4-review-set-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "1 Zigbee water leak sensor\nKitchen sink cabinet",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "C-03",
+      "publishEligible": true,
+      "sequence": 55,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "sourceHash": "56e76ef78450a108c14aa77f6428b50b0ab5ed2b044fef599f7f85f882dd6c10",
+      "surface": "BACK",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.6",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "A common risk point is watched day and night, with the exact location shown if water is detected.",
+      "contentCode": "cnt.a4.c_03.customer_experience_copy.6.back_experience_6",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "a4-review-set-v1",
+      "exactText": "A common risk point is watched day and night, with the exact location shown if water is detected.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-03",
+      "publishEligible": true,
+      "sequence": 6,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "sourceHash": "044da7f9ed9d35fb43d0673d07db711174494673a8d894d2c91dbc7d0e15361d",
+      "surface": "BACK",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
       "a4TemplateMappingKey": "back.investment_qualifiers",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -6955,11 +7220,11 @@
       "a4TemplateMappingKey": "back.installation_assumptions",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
-      "body": "Suitable cabinetry, mounting surface, compatible lighting circuit and safe plug-in appliance required. Joinery changes and appliance supply are excluded.",
+      "body": "Suitable cabinetry, mounting surface, compatible lighting circuit and safe plug-in appliance required. The water sensor is installed below the kitchen sink cabinet. Joinery changes and appliance supply are excluded.",
       "contentCode": "cnt.a4.c_03.installation_assumption_customer.80.back_installation_assumptions",
       "contentKind": "INSTALLATION_ASSUMPTION_CUSTOMER",
       "contentVersion": "a4-review-set-v1",
-      "exactText": "Suitable cabinetry, mounting surface, compatible lighting circuit and safe plug-in appliance required. Joinery changes and appliance supply are excluded.",
+      "exactText": "Suitable cabinetry, mounting surface, compatible lighting circuit and safe plug-in appliance required. The water sensor is installed below the kitchen sink cabinet. Joinery changes and appliance supply are excluded.",
       "languageLayer": "CUSTOMER",
       "locale": "en-AU",
       "productCode": "C-03",
@@ -6971,7 +7236,7 @@
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
         "system": "A4_REVIEW_SET_V1"
       },
-      "sourceHash": "d62930ba4610d982fb9611a0a4f2ff8981886529dbe807e2f8357c8c4adac518",
+      "sourceHash": "956fdb3f3417258637091a9ad27ca4eabee201f596e5282986f8cc3aeaba7e0d",
       "surface": "BACK",
       "title": null
     },
@@ -8024,6 +8289,58 @@
       "title": "COMFORT"
     },
     {
+      "a4TemplateMappingKey": "back.scope.6",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "1 Zigbee water leak sensor\nVanity cabinet or splash-safe low point",
+      "contentCode": "cnt.a4.c_05.customer_experience_copy.55.back_scope_6",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "a4-review-set-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "1 Zigbee water leak sensor\nVanity cabinet or splash-safe low point",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "C-05",
+      "publishEligible": true,
+      "sequence": 55,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "sourceHash": "1a3924150d4a17e440ab6a9fa2e4ca63f6f108cfa967d02bedff6731a61ebd62",
+      "surface": "BACK",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.6",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "A quiet early warning helps protect the room beyond everyday routines.",
+      "contentCode": "cnt.a4.c_05.customer_experience_copy.6.back_experience_6",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "a4-review-set-v1",
+      "exactText": "A quiet early warning helps protect the room beyond everyday routines.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-05",
+      "publishEligible": true,
+      "sequence": 6,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "sourceHash": "14edfd39f2c58904b1d5edeb1db44b33c0fbe9a36683059b04ecc2352849ed9d",
+      "surface": "BACK",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
       "a4TemplateMappingKey": "back.investment_qualifiers",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
@@ -8291,11 +8608,11 @@
       "a4TemplateMappingKey": "back.installation_assumptions",
       "action": "UPSERT_CONTENT_ENTRY",
       "approvalStatus": "APPROVED_A4_VERBATIM",
-      "body": "Fan, heater, heat lamp and floor heating equipment are not supplied. Existing equipment and circuits must be compatible and compliant.",
+      "body": "Fan, heater, heat lamp and floor heating equipment are not supplied. The water sensor is installed in the vanity cabinet or another splash-safe low point. Existing equipment and circuits must be compatible and compliant.",
       "contentCode": "cnt.a4.c_05.installation_assumption_customer.80.back_installation_assumptions",
       "contentKind": "INSTALLATION_ASSUMPTION_CUSTOMER",
       "contentVersion": "a4-review-set-v1",
-      "exactText": "Fan, heater, heat lamp and floor heating equipment are not supplied. Existing equipment and circuits must be compatible and compliant.",
+      "exactText": "Fan, heater, heat lamp and floor heating equipment are not supplied. The water sensor is installed in the vanity cabinet or another splash-safe low point. Existing equipment and circuits must be compatible and compliant.",
       "languageLayer": "CUSTOMER",
       "locale": "en-AU",
       "productCode": "C-05",
@@ -8307,7 +8624,7 @@
         "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
         "system": "A4_REVIEW_SET_V1"
       },
-      "sourceHash": "0fc31409f079b3fa82f6be5d293ad9019dc747071430e661d748e833b843a3b2",
+      "sourceHash": "ccc48a174fd2eb49fa02087abd56c1b6c4c53dad2d7fade4c5d6ebe45fb76564",
       "surface": "BACK",
       "title": null
     },
@@ -8690,6 +9007,58 @@
       "sourceHash": "3ac74673e76497d236589600eabb9f09331697ab2795294473fcebb4ebba3e79",
       "surface": "BACK",
       "title": "HANDOVER"
+    },
+    {
+      "a4TemplateMappingKey": "back.scope.6",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "1 selected external water-risk point\n24-hour detection + Away escalation",
+      "contentCode": "cnt.a4.c_06.customer_experience_copy.55.back_scope_6",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "a4-review-set-v1",
+      "doesNotOverrideBom": true,
+      "exactText": "1 selected external water-risk point\n24-hour detection + Away escalation",
+      "factLinked": true,
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "note": null,
+      "presentationRole": "STANDARD_SCOPE",
+      "productCode": "C-06",
+      "publishEligible": true,
+      "sequence": 55,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "sourceHash": "f18b6c00b3c209ada7ba140898122ad7a7624ecc828baf1d0707dbfdba4c924c",
+      "surface": "BACK",
+      "title": "EXTENDED WATER LEAK PROTECTION"
+    },
+    {
+      "a4TemplateMappingKey": "back.experience.6",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "APPROVED_A4_VERBATIM",
+      "body": "Protect the water-risk locations that are harder to notice while you are away.",
+      "contentCode": "cnt.a4.c_06.customer_experience_copy.6.back_experience_6",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "a4-review-set-v1",
+      "exactText": "Protect the water-risk locations that are harder to notice while you are away.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-06",
+      "publishEligible": true,
+      "sequence": 6,
+      "source": {
+        "a4PdfSha256": "f16c53443b49d71478732fb94dbb0bcc85a5968e645f286167e918f47123fff8",
+        "decision": "DEC-012",
+        "mappingReviewSha256": "a68587aadff15df830b570ee5d83a30db7c3e1b398623980455e217c663b77a8",
+        "system": "A4_REVIEW_SET_V1"
+      },
+      "sourceHash": "102044af791d1d2478cfeb9184c8c958b995120125f47de9966f15cf9f34b05d",
+      "surface": "BACK",
+      "title": "EXTENDED WATER LEAK PROTECTION"
     },
     {
       "a4TemplateMappingKey": "back.investment_qualifiers",
@@ -10218,6 +10587,90 @@
       },
       "statusLabel": "Frozen",
       "title": "The intelligent foundation that powers every Better Home experience."
+    },
+    {
+      "a4TemplateMappingKey": "water_leak.early_detection",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "PRODUCT_OWNER_APPROVED_2026_07_27",
+      "body": "One included Zigbee water leak sensor beneath the kitchen sink cabinet watches this common risk point day and night. If water is detected, it sounds locally and shows the exact location on the Better Home screen and app.",
+      "contentCode": "cnt.water_leak.c_03.early_detection",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "water-leak-2026-07-27",
+      "exactText": "One included Zigbee water leak sensor beneath the kitchen sink cabinet watches this common risk point day and night. If water is detected, it sounds locally and shows the exact location on the Better Home screen and app.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-03",
+      "publishEligible": true,
+      "sequence": 96,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "surface": "PRODUCT_OS",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
+      "a4TemplateMappingKey": "water_leak.early_detection",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "PRODUCT_OWNER_APPROVED_2026_07_27",
+      "body": "One included Zigbee water leak sensor is placed in the vanity cabinet or another splash-safe low point. If water is detected, it sounds locally and shows the exact location on the Better Home screen and app.",
+      "contentCode": "cnt.water_leak.c_05.early_detection",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "water-leak-2026-07-27",
+      "exactText": "One included Zigbee water leak sensor is placed in the vanity cabinet or another splash-safe low point. If water is detected, it sounds locally and shows the exact location on the Better Home screen and app.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-05",
+      "publishEligible": true,
+      "sequence": 96,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "surface": "PRODUCT_OS",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
+      "a4TemplateMappingKey": "water_leak.extended_protection",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "PRODUCT_OWNER_APPROVED_2026_07_27",
+      "body": "Kitchen and Bathroom Collections protect the most common water-risk locations. Away Collection includes one sensor for an external risk point such as laundry, hot water, refrigerator water connections or plant areas—places that can be difficult to notice while you are away, but can cause significant damage.",
+      "contentCode": "cnt.water_leak.c_06.extended_protection",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "water-leak-2026-07-27",
+      "exactText": "Kitchen and Bathroom Collections protect the most common water-risk locations. Away Collection includes one sensor for an external risk point such as laundry, hot water, refrigerator water connections or plant areas—places that can be difficult to notice while you are away, but can cause significant damage.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-06",
+      "publishEligible": true,
+      "sequence": 96,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "surface": "PRODUCT_OS",
+      "title": "WHOLE-HOME WATER LEAK PROTECTION"
+    },
+    {
+      "a4TemplateMappingKey": "water_leak.future_shutoff",
+      "action": "UPSERT_CONTENT_ENTRY",
+      "approvalStatus": "PRODUCT_OWNER_APPROVED_2026_07_27",
+      "body": "A future shutoff option is assessed on site. It must never reopen water automatically: manual inspection and reset are required after any shutoff.",
+      "contentCode": "cnt.water_leak.c_06.future_shutoff",
+      "contentKind": "CUSTOMER_EXPERIENCE_COPY",
+      "contentVersion": "water-leak-2026-07-27",
+      "exactText": "A future shutoff option is assessed on site. It must never reopen water automatically: manual inspection and reset are required after any shutoff.",
+      "languageLayer": "CUSTOMER",
+      "locale": "en-AU",
+      "productCode": "C-06",
+      "publishEligible": true,
+      "sequence": 97,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "surface": "PRODUCT_OS",
+      "title": "FUTURE WATER SHUTOFF"
     }
   ],
   "crosswalk": [
@@ -10374,27 +10827,42 @@
         }
       ],
       "ref": "DELTA-RENUMBER-E"
+    },
+    {
+      "action": "APPLY_DELTA",
+      "decision": "PRODUCT_OWNER_2026-07-27",
+      "plannedObjects": [
+        {
+          "products": [
+            "C-03",
+            "C-05",
+            "C-06"
+          ],
+          "type": "CAPABILITY_BOM_CONTENT_AUTOMATION"
+        }
+      ],
+      "ref": "DELTA-WATER-LEAK-2026-07-27"
     }
   ],
-  "deterministic_hash": "8af742edb2b25ebad3528a8ece5e2644eeb330244f3b1fa715cc93947a4e3f32",
+  "deterministic_hash": "75d3870142169916ee0bcb4d5a3d415d1bdba0b57db7c88d2ce29140fbc498c1",
   "emptyEntityExplanations": {
     "priceDisplayModeRecords": "deferred — DEC-011 policy applied as fields on price rows; structured enum NEEDS_SOURCE",
     "productRelationshipsOther": "deferred — beyond Expand Further until A4 extraction"
   },
   "entityInventory": {
-    "a4PresentationMappings": 30,
-    "a4ScopePresentationGroups": 30,
+    "a4PresentationMappings": 33,
+    "a4ScopePresentationGroups": 33,
     "addons": 32,
     "aliases": 3,
     "assets": 13,
-    "automations": 22,
-    "bomItems": 67,
-    "capabilities": 54,
-    "contentEntries": 214,
+    "automations": 24,
+    "bomItems": 70,
+    "capabilities": 57,
+    "contentEntries": 224,
     "costingSettings": 7,
-    "decisionDeltaOverlays": 6,
-    "equipmentSkus": 49,
-    "experiences": 45,
+    "decisionDeltaOverlays": 7,
+    "equipmentSkus": 50,
+    "experiences": 48,
     "featuredAddonOrders": 16,
     "icons": 28,
     "includedBenefits": 1,
@@ -10405,7 +10873,7 @@
     "productVersions": 13,
     "products": 13,
     "relationshipsExpandFurther": 14,
-    "rules": 47,
+    "rules": 49,
     "themes": 14
   },
   "expandFurtherBonusNotes": [
@@ -10995,6 +11463,22 @@
     },
     {
       "action": "UPSERT_EXPERIENCE",
+      "description": "A common risk point is watched day and night, with the exact location shown if water is detected.",
+      "experienceCode": "exp.c_03.early_water_leak_detection",
+      "legacyProductCode": null,
+      "linkedCapabilityCode": "cap.c_03.early_water_leak_detection",
+      "presentationOnly": false,
+      "productCode": "C-03",
+      "sequence": 6,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "statusLabel": "ACTIVE",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE",
       "description": "Occupancy supports lighting without interrupting the workflow.",
       "experienceCode": "exp.c_03.hands_free_lighting",
       "legacyProductCode": "C-03",
@@ -11114,6 +11598,22 @@
     },
     {
       "action": "UPSERT_EXPERIENCE",
+      "description": "A quiet early warning helps protect the room beyond everyday routines.",
+      "experienceCode": "exp.c_05.early_water_leak_detection",
+      "legacyProductCode": null,
+      "linkedCapabilityCode": "cap.c_05.early_water_leak_detection",
+      "presentationOnly": false,
+      "productCode": "C-05",
+      "sequence": 6,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "statusLabel": "ACTIVE",
+      "title": "EARLY WATER LEAK DETECTION"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE",
       "description": "Lighting and one existing exhaust fan respond to normal use.",
       "experienceCode": "exp.c_05.everyday_mode",
       "legacyProductCode": "C-05",
@@ -11179,6 +11679,22 @@
       },
       "statusLabel": "Frozen",
       "title": "Away Mode"
+    },
+    {
+      "action": "UPSERT_EXPERIENCE",
+      "description": "Protect the water-risk locations that are harder to notice while you are away.",
+      "experienceCode": "exp.c_06.extended_water_leak_protection",
+      "legacyProductCode": null,
+      "linkedCapabilityCode": "cap.c_06.extended_water_leak_protection",
+      "presentationOnly": false,
+      "productCode": "C-06",
+      "sequence": 6,
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "statusLabel": "ACTIVE",
+      "title": "EXTENDED WATER LEAK PROTECTION"
     },
     {
       "action": "UPSERT_EXPERIENCE",
@@ -11885,6 +12401,11 @@
       {
         "authority": "DEC-013",
         "ref": "DELTA-RENUMBER-E",
+        "status": "PLANNED"
+      },
+      {
+        "authority": "PRODUCT_OWNER_2026-07-27",
+        "ref": "DELTA-WATER-LEAK-2026-07-27",
         "status": "PLANNED"
       }
     ],
@@ -14839,6 +15360,10 @@
     {
       "ref": "DELTA-RENUMBER-E",
       "type": "APPLY_DELTA"
+    },
+    {
+      "ref": "DELTA-WATER-LEAK-2026-07-27",
+      "type": "APPLY_DELTA"
     }
   ],
   "presentationCtas": [
@@ -15148,6 +15673,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15182,6 +15715,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15224,6 +15765,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15258,6 +15807,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15300,6 +15857,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15343,6 +15908,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15377,6 +15950,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15411,6 +15992,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15445,6 +16034,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15479,6 +16076,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -15527,6 +16132,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": {
@@ -15570,6 +16183,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": {
@@ -15613,6 +16234,14 @@
           "ref": "DELTA-RENUMBER-E",
           "status": "PLANNED",
           "summary": "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit"
+        },
+        {
+          "authority": "PRODUCT_OWNER_2026-07-27",
+          "kind": "CAPABILITY_BOM_CONTENT_AUTOMATION",
+          "productCode": null,
+          "ref": "DELTA-WATER-LEAK-2026-07-27",
+          "status": "PLANNED",
+          "summary": "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface."
         }
       ],
       "identityRemap": null,
@@ -16338,6 +16967,22 @@
         "sheet": "09_Product_Rules",
         "system": "V2_07_WORKBOOK"
       }
+    },
+    {
+      "notes": "Water leak monitoring is independent of Normal, Sleep and Away.",
+      "productCode": null,
+      "ruleCode": "rule.water_leak.always_active",
+      "ruleKey": "water_leak_monitoring_mode",
+      "ruleValue": "ACTIVE_24_7",
+      "severity": "REQUIRED"
+    },
+    {
+      "notes": "After automatic shutoff, manual inspection and reset are required.",
+      "productCode": "C-06",
+      "ruleCode": "rule.water_shutoff.manual_reset",
+      "ruleKey": "automatic_reopen",
+      "ruleValue": "FORBIDDEN",
+      "severity": "SAFETY"
     }
   ],
   "settings": [
@@ -16513,7 +17158,7 @@
         "authorityRole": "EQUIPMENT_SKU",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "SKU identity + supplier; unit cost internal-only",
-        "rowsPlanned": 49,
+        "rowsPlanned": 50,
         "rowsRead": 49,
         "rowsSkipped": 0,
         "sheet": "03_SKU_Master",
@@ -16535,7 +17180,7 @@
         "authorityRole": "EXPERIENCE_FACTS",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "Canonical experience inventory (DEC-009); A4 map separate",
-        "rowsPlanned": 45,
+        "rowsPlanned": 48,
         "rowsRead": 46,
         "rowsSkipped": 1,
         "sheet": "05_Product_Experiences",
@@ -16546,7 +17191,7 @@
         "authorityRole": "CAPABILITY_SCOPE",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "Included scope facts; DEC overlays may rename/qualify",
-        "rowsPlanned": 54,
+        "rowsPlanned": 57,
         "rowsRead": 54,
         "rowsSkipped": 0,
         "sheet": "06_Product_Capabilities",
@@ -16557,7 +17202,7 @@
         "authorityRole": "BOM_TECHNICAL",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "Technical quantities; never drives customer wording",
-        "rowsPlanned": 67,
+        "rowsPlanned": 70,
         "rowsRead": 67,
         "rowsSkipped": 0,
         "sheet": "07_Product_BOM",
@@ -16579,7 +17224,7 @@
         "authorityRole": "PRODUCT_RULES",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "Boundary rules; free-form keys normalized to stable codes",
-        "rowsPlanned": 47,
+        "rowsPlanned": 49,
         "rowsRead": 47,
         "rowsSkipped": 0,
         "sheet": "09_Product_Rules",
@@ -16634,7 +17279,7 @@
         "authorityRole": "CUSTOMER_CONTENT",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "Customer content authority for present rows; A4 verbatim gap = issue",
-        "rowsPlanned": 52,
+        "rowsPlanned": 56,
         "rowsRead": 56,
         "rowsSkipped": 4,
         "sheet": "14_Content_Library",
@@ -16689,7 +17334,7 @@
         "authorityRole": "AUTOMATION",
         "importStatus": "AUTHORITATIVE_IMPORTED",
         "reason": "Technical automation; DEC-004 Return Routine overlay planned",
-        "rowsPlanned": 21,
+        "rowsPlanned": 23,
         "rowsRead": 21,
         "rowsSkipped": 0,
         "sheet": "19_Automation_Library",
@@ -17710,6 +18355,21 @@
     },
     {
       "action": "UPSERT_EQUIPMENT_SKU",
+      "canonicalName": "TIS BEE Water Leak Sensor with Built-in Buzzer",
+      "capabilityCategory": "Water leak monitoring",
+      "customerVisible": false,
+      "notes": "Battery-powered Zigbee water leak sensor with built-in local buzzer. Procurement reference: AUD 44 ex GST. No customer price is derived from this record.",
+      "skuCode": "TIS-BEE-WTR-LEK-1",
+      "source": {
+        "date": "2026-07-27",
+        "system": "PRODUCT_OWNER_WATER_LEAK_DECISION"
+      },
+      "statusLabel": "ACTIVE",
+      "supplier": "TIS",
+      "unitCostExGst": 44
+    },
+    {
+      "action": "UPSERT_EQUIPMENT_SKU",
       "canonicalName": "10x10mm Warm White Silicone Strip 3m",
       "capabilityCategory": "Warm Ambient Lighting",
       "customerVisible": false,
@@ -17763,16 +18423,16 @@
   "stats": {
     "addonRows": 32,
     "assets": 13,
-    "automations": 21,
-    "bomItems": 67,
-    "capabilities": 54,
-    "contentEntries": 52,
-    "experiences": 45,
+    "automations": 23,
+    "bomItems": 70,
+    "capabilities": 57,
+    "contentEntries": 56,
+    "experiences": 48,
     "intentionalSkips": 22,
     "masterRows": 14,
     "priceRows": 14,
     "rejected": 0,
-    "rules": 47,
+    "rules": 49,
     "skipPrices": 1,
     "skipToBenefit": 1,
     "themes": 14,
@@ -18098,11 +18758,11 @@
       "C-03": {
         "backPlanned": 5,
         "backRequired": 5,
-        "experiences": 5,
+        "experiences": 6,
         "frontPlanned": 7,
         "frontRequired": 7,
         "moments": 4,
-        "scopeGroups": 5
+        "scopeGroups": 6
       },
       "C-04": {
         "backPlanned": 5,
@@ -18116,20 +18776,20 @@
       "C-05": {
         "backPlanned": 5,
         "backRequired": 5,
-        "experiences": 5,
+        "experiences": 6,
         "frontPlanned": 7,
         "frontRequired": 7,
         "moments": 4,
-        "scopeGroups": 5
+        "scopeGroups": 6
       },
       "C-06": {
         "backPlanned": 5,
         "backRequired": 5,
-        "experiences": 5,
+        "experiences": 6,
         "frontPlanned": 7,
         "frontRequired": 7,
         "moments": 4,
-        "scopeGroups": 5
+        "scopeGroups": 6
       }
     },
     "a4Verbatim": {
@@ -18161,5 +18821,43 @@
     "Price on Protection Master row must not import as product_prices",
     "Protection Bonus pricing row must not create product_prices",
     "Sheet 12_Product_Card_Content skipped: LEGACY_NON_AUTHORITATIVE (use 14_Content_Library)"
+  ],
+  "waterLeakFutureUpgrade": {
+    "code": "future.water_main_shutoff",
+    "constraints": [
+      "External long-handle Water/Gas Valve Actuator is not standard scope.",
+      "Confirm valve type, access space, power and signal on site.",
+      "Gas valves require local regulatory compliance and qualified installation.",
+      "Prefer a pipe-mounted motorised ball valve with manual operation and position feedback when future scope is approved.",
+      "Never reopen automatically after a shutoff; manual inspection and reset are required."
+    ],
+    "name": "Future Water Main Shutoff",
+    "status": "OPTIONAL_SITE_ASSESSMENT"
+  },
+  "waterLeakQuoteRules": [
+    {
+      "note": "No separate customer line item.",
+      "priceEffect": "INCLUDED_IN_COLLECTION_PRICE",
+      "productCode": "C-03",
+      "quantity": 1,
+      "rule": "INCLUDE",
+      "skuCode": "TIS-BEE-WTR-LEK-1"
+    },
+    {
+      "note": "No separate customer line item.",
+      "priceEffect": "INCLUDED_IN_COLLECTION_PRICE",
+      "productCode": "C-05",
+      "quantity": 1,
+      "rule": "INCLUDE",
+      "skuCode": "TIS-BEE-WTR-LEK-1"
+    },
+    {
+      "note": "One selected external risk point is included in Away Collection. Further external points require Away Collection and an Additional Water Leak Sensor Add-on; customer Add-on price remains to be approved.",
+      "priceEffect": "INCLUDED_IN_COLLECTION_PRICE",
+      "productCode": "C-06",
+      "quantity": 1,
+      "rule": "INCLUDE_ONE_SELECTED_EXTERNAL_POINT",
+      "skuCode": "TIS-BEE-WTR-LEK-1"
+    }
   ]
 }

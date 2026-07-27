@@ -60,6 +60,14 @@ const APPROVED_DELTAS = Object.freeze([
     kind: "IDENTITY_CROSSWALK",
     summary: "Legacy E-06→E-05 CCTV; Legacy E-07→E-06 Toilet; Legacy E-05→included benefit",
     status: "PLANNED"
+  },
+  {
+    ref: "DELTA-WATER-LEAK-2026-07-27",
+    authority: "PRODUCT_OWNER_2026-07-27",
+    productCode: null,
+    kind: "CAPABILITY_BOM_CONTENT_AUTOMATION",
+    summary: "Kitchen and Bathroom include one Zigbee water leak sensor; Away enables site-scoped extended protection and future shutoff interface.",
+    status: "PLANNED"
   }
 ]);
 

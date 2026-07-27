@@ -231,6 +231,12 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
         title: "USEFUL INFORMATION",
         body: "Keep everyday control and information close.",
         libraryMatchHint: null
+      },
+      {
+        sequence: 6,
+        title: "EARLY WATER LEAK DETECTION",
+        body: "A common risk point is watched day and night, with the exact location shown if water is detected.",
+        libraryMatchHint: null
       }
     ]),
     scopeGroups: Object.freeze([
@@ -254,10 +260,14 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
       {
         heading: "APPLIANCE",
         lines: Object.freeze(["1 safe smart outlet", "Setup + handover"])
+      },
+      {
+        heading: "EARLY WATER LEAK DETECTION",
+        lines: Object.freeze(["1 Zigbee water leak sensor", "Kitchen sink cabinet"])
       }
     ]),
     installationAssumptions:
-      "Suitable cabinetry, mounting surface, compatible lighting circuit and safe plug-in appliance required. Joinery changes and appliance supply are excluded.",
+      "Suitable cabinetry, mounting surface, compatible lighting circuit and safe plug-in appliance required. The water sensor is installed below the kitchen sink cabinet. Joinery changes and appliance supply are excluded.",
     investmentSupportingCopy: "INSTALLED  •  INCL GST"
   }),
 
@@ -390,6 +400,12 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
         title: "WARM-UP ROUTINE",
         body: "Compatible existing heat can join the shower scene.",
         libraryMatchHint: null
+      },
+      {
+        sequence: 6,
+        title: "EARLY WATER LEAK DETECTION",
+        body: "A quiet early warning helps protect the room beyond everyday routines.",
+        libraryMatchHint: null
       }
     ]),
     scopeGroups: Object.freeze([
@@ -413,10 +429,14 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
       {
         heading: "COMFORT",
         lines: Object.freeze(["Shower Mode programming", "Setup + handover"])
+      },
+      {
+        heading: "EARLY WATER LEAK DETECTION",
+        lines: Object.freeze(["1 Zigbee water leak sensor", "Vanity cabinet or splash-safe low point"])
       }
     ]),
     installationAssumptions:
-      "Fan, heater, heat lamp and floor heating equipment are not supplied. Existing equipment and circuits must be compatible and compliant.",
+      "Fan, heater, heat lamp and floor heating equipment are not supplied. The water sensor is installed in the vanity cabinet or another splash-safe low point. Existing equipment and circuits must be compatible and compliant.",
     investmentSupportingCopy: "INSTALLED  •  INCL GST"
   }),
 
@@ -471,6 +491,12 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
         title: "CLEAR BOUNDARY",
         body: "No new room control and no monitored alarm claim.",
         libraryMatchHint: null
+      },
+      {
+        sequence: 6,
+        title: "EXTENDED WATER LEAK PROTECTION",
+        body: "Protect the water-risk locations that are harder to notice while you are away.",
+        libraryMatchHint: null
       }
     ]),
     scopeGroups: Object.freeze([
@@ -493,6 +519,10 @@ const APPROVED_COLLECTION_A4 = Object.freeze({
       {
         heading: "HANDOVER",
         lines: Object.freeze(["Setup, testing and", "customer training"])
+      },
+      {
+        heading: "EXTENDED WATER LEAK PROTECTION",
+        lines: Object.freeze(["1 selected external water-risk point", "24-hour detection + Away escalation"])
       }
     ]),
     installationAssumptions:

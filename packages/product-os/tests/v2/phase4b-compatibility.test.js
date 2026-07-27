@@ -13,7 +13,7 @@ test("Phase 4B compatibility resolves every Add-on to approved capability or SKU
 test("presentation-only A4 copy is not invented as an Experience fact", () => {
   const result = buildPhase4BCompatibility(plan);
   assert.equal(result.experienceMappings.length, 10);
-  assert.equal(result.presentationOnlyMappings.length, 20);
+  assert.equal(result.presentationOnlyMappings.length, 23);
   assert.ok(result.presentationOnlyMappings.every((x) => x.createsExperienceFact === false));
   assert.equal(result.scopeDisposition.mode, "CONTENT_PLACEMENT");
 });

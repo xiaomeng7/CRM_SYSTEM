@@ -153,8 +153,12 @@ describe("Phase 4A ImportPlan from approved workbook", () => {
     assert.equal(plan.includedBenefits[0].benefitCode, "benefit.protection_bonus");
     assert.deepEqual(plan.includedBenefits[0].unlockRequiredCodes, ["C-01", "C-06", "E-05"]);
 
-    assert.equal(deltaOverlays.listApprovedDeltas().length, 6);
+    assert.equal(deltaOverlays.listApprovedDeltas().length, 7);
     assert.ok(plan.approvedDeltas.some((d) => d.ref === "DELTA-C01-DOOR"));
+    assert.ok(plan.approvedDeltas.some((d) => d.ref === "DELTA-WATER-LEAK-2026-07-27"));
+    assert.equal(plan.capabilities.filter((item) => item.capabilityName === "Early Water Leak Detection").length, 2);
+    assert.ok(plan.capabilities.some((item) => item.productCode === "C-06" && item.capabilityName === "Extended Water Leak Protection"));
+    assert.equal(plan.bomItems.filter((item) => item.skuCode === "TIS-BEE-WTR-LEK-1").length, 3);
 
     // Sheet 12 must be non-authoritative
     assert.ok(plan.warnings.some((w) => w.includes("12_Product_Card_Content")));

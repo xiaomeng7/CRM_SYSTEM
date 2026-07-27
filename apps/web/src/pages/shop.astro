@@ -28,10 +28,21 @@ const shopProducts = betterHomeProducts.map((product) => ({
         'Setup, testing and customer handover',
       ];
     }
-    const approvedScope = importPlan.a4ScopePresentation
-      .filter((group) => group.productCode === product.productCode)
-      .flatMap((group) => group.lines);
-    if (approvedScope.length) return approvedScope.slice(0, 8);
+    const approvedScopeGroups = importPlan.a4ScopePresentation
+      .filter((group) => group.productCode === product.productCode);
+    const waterLeakGroup = approvedScopeGroups.find((group) =>
+      /water leak/i.test(group.heading || '')
+    );
+    const approvedScope = approvedScopeGroups.flatMap((group) => group.lines);
+    // Keep the card compact, but never hide the newly included water-leak
+    // protection behind the earlier standard-scope groups.
+    if (approvedScope.length) {
+      const preview = approvedScope.slice(0, 6);
+      if (waterLeakGroup) {
+        return [...preview, waterLeakGroup.heading, ...waterLeakGroup.lines];
+      }
+      return approvedScope.slice(0, 8);
+    }
     return product.capabilities.slice(0, 6).map((capability) =>
       `${capability.includedQty} × ${capability.capabilityName}`
     );
@@ -129,6 +140,18 @@ const shopAddons = importPlan.addons
             <label class="shop-field"><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
             <label class="shop-field"><span>Suburb</span><input name="suburb" autocomplete="address-level2" required /></label>
             <label class="shop-field sm:col-span-2"><span>What should we know?</span><textarea name="notes" rows="4"></textarea></label>
+            <fieldset id="water-risk-locations" class="shop-field sm:col-span-2 rounded-2xl border border-[#d8d1c5] bg-[#faf8f4] p-5" hidden>
+              <legend class="px-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#65755d]">Away · extended water leak protection</legend>
+              <p class="mt-2 text-sm leading-relaxed text-[#686d65]">Choose the one external location included with Away Collection. Further locations can be added only with Away Collection and are confirmed in the final proposal.</p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2 text-sm text-[#4f574d]">
+                <label><input type="radio" name="waterRiskLocation" value="Laundry Water Leak" /> Laundry</label>
+                <label><input type="radio" name="waterRiskLocation" value="Hot Water Unit Water Leak" /> Hot water unit</label>
+                <label><input type="radio" name="waterRiskLocation" value="Refrigerator Water Leak" /> Refrigerator water connection</label>
+                <label><input type="radio" name="waterRiskLocation" value="Water Purifier Leak" /> Water purifier</label>
+                <label><input type="radio" name="waterRiskLocation" value="Dishwasher Water Leak" /> Dishwasher risk point</label>
+                <label><input type="radio" name="waterRiskLocation" value="Plant Room Water Leak" /> Plant room / equipment area</label>
+              </div>
+            </fieldset>
           </div>
           <button type="submit" class="mt-7 inline-flex min-h-[52px] items-center rounded-full bg-[#65755d] px-8 text-sm font-semibold text-white transition hover:bg-[#53614d]">Send my selection</button>
           <p id="shop-status" class="mt-5 text-sm text-[#65755d]" role="status" aria-live="polite"></p>
@@ -290,7 +313,11 @@ const shopAddons = importPlan.addons
     document.getElementById('selection-summary').innerHTML = all.length ? all.map((item) => `<div class="flex justify-between gap-4"><span>${item.qty} × ${item.name}</span><span>${formatter.format(item.total)}</span></div>`).join('') : '<p>Nothing selected yet.</p>';
     document.getElementById('estimated-total').textContent = formatter.format(all.reduce((sum,item)=>sum+item.total,0));
   }
-  function render() { renderProducts(); renderAddons(); renderSummary(); }
+  function render() {
+    renderProducts(); renderAddons(); renderSummary();
+    const waterRisk = document.getElementById('water-risk-locations');
+    if (waterRisk) waterRisk.hidden = quantity('C-06') < 1;
+  }
 
   const requested = new URLSearchParams(location.search).get('add');
   if (productByCode[requested]) selection.set(requested, 1);
@@ -305,6 +332,7 @@ const shopAddons = importPlan.addons
     status.textContent = 'Sending your selection…';
     const payload = {
       name: form.get('name'), phone: form.get('phone'), email: form.get('email'), suburb: form.get('suburb'), notes: form.get('notes'),
+      waterRiskLocations: form.getAll('waterRiskLocation'),
       selections: [...selection].map(([code, quantity]) => ({ code, quantity, name: productByCode[code].name, unitPrice: productByCode[code].price })),
       experienceTargets: [...experienceTargets].flatMap(([code, targets]) => targets.map((target) => ({ experienceCode: code, room: target }))),
       addons: [...addonSelection].map(([code, quantity]) => { const addon=shopAddons.find((item)=>item.code===code); return { code, quantity, name:addon.name, unitPrice:addon.price }; }),

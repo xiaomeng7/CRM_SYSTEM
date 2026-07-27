@@ -46,6 +46,8 @@ const ALLOWED_TOP_LEVEL = new Set([
   "assets",
   "icons",
   "layouts",
+  "waterLeakQuoteRules",
+  "waterLeakFutureUpgrade",
   "plannedActions",
   "skippedActions",
   "entityInventory",
