@@ -16,6 +16,7 @@ function createSalesDraftService(prisma) {
       const existing=await tx.pos2SelectionDraft.findUnique({where:{draftCode:code},include:{versions:{orderBy:{versionNumber:"desc"},take:1}}});
       if(!actor)throw new Error("Authenticated actor required");
       if(existing&&actorRole==="SALES"&&existing.ownerUserId!==salesUser.id)throw new Error("Draft ownership required");
+      if(existing?.status==="ARCHIVED")throw new Error("Archived Draft cannot be changed. Start a new selection.");
       const convertedProposal=existing?.status==="CONVERTED"?await tx.pos2Proposal.findFirst({where:{draftVersion:{draftId:existing.id}},orderBy:{createdAt:"desc"}}):null;
       if(existing?.status==="CONVERTED"&&!convertedProposal)throw new Error("Converted selection has no Proposal");
       if(convertedProposal?.status==="ACCEPTED")throw new Error("Accepted Proposal is locked and cannot be changed");
