@@ -6,12 +6,12 @@ import SalesSidebar from "@/components/SalesSidebar";
 
 type Product=ProductSheetModel&{productKind:string;hierarchy:{requiresFoundation:boolean}};
 type ResumeDraft={draftCode:string;status:string;customerName:string|null;customerEmail:string|null;customerPhone:string|null;siteAddress:string|null;latest:{lines:{productCode:string;quantity:number}[]}|null};
-type Props={products:Product[];resumeDraft?:ResumeDraft|null;actor:{email:string|null;role:string}};
+type Props={products:Product[];resumeDraft?:ResumeDraft|null;freshSelection?:boolean;actor:{email:string|null;role:string}};
 type Quantities=Record<string,number>;
 
 const money=(n:number)=>new Intl.NumberFormat("en-AU",{style:"currency",currency:"AUD",maximumFractionDigits:0}).format(n);
 
-export default function Configure({products,resumeDraft,actor}:Props){
+export default function Configure({products,resumeDraft,freshSelection=false,actor}:Props){
   const foundation=products.find(p=>p.productKind==="FOUNDATION");
   const collections=products.filter(p=>p.productKind==="COLLECTION");
   const experiences=products.filter(p=>p.productKind==="EXPERIENCE"&&p.productCode!=="E-04");
@@ -27,7 +27,7 @@ export default function Configure({products,resumeDraft,actor}:Props){
   const [saving,setSaving]=useState(false);
   const [experienceTargets,setExperienceTargets]=useState<Record<string,string[]>>({});
   const editingProposal=resumeDraft?.status==="CONVERTED";
-  useEffect(()=>{try{if(resumeDraft?.latest){setSelected(resumeDraft.latest.lines.map(x=>x.productCode));setQuantities(Object.fromEntries(resumeDraft.latest.lines.map(x=>[x.productCode,x.quantity])));setCustomer({name:resumeDraft.customerName||"",email:resumeDraft.customerEmail||"",phone:resumeDraft.customerPhone||"",siteAddress:resumeDraft.siteAddress||""});setDraftCode(resumeDraft.draftCode);return;}const raw=localStorage.getItem("better-home-selection-draft-v1");if(raw){const draft=JSON.parse(raw);setSelected(Array.isArray(draft.selected)?draft.selected:[]);setQuantities(draft.quantities||{});setExperienceTargets(draft.experienceTargets||{});setCustomer(draft.customer||{name:"",email:"",phone:"",siteAddress:""});setDraftCode(draft.draftCode||`DRAFT-${crypto.randomUUID().toUpperCase()}`);}else setDraftCode(`DRAFT-${crypto.randomUUID().toUpperCase()}`);}catch{setDraftCode(`DRAFT-${crypto.randomUUID().toUpperCase()}`);}},[resumeDraft]);
+  useEffect(()=>{try{if(resumeDraft?.latest){setSelected(resumeDraft.latest.lines.map(x=>x.productCode));setQuantities(Object.fromEntries(resumeDraft.latest.lines.map(x=>[x.productCode,x.quantity])));setCustomer({name:resumeDraft.customerName||"",email:resumeDraft.customerEmail||"",phone:resumeDraft.customerPhone||"",siteAddress:resumeDraft.siteAddress||""});setDraftCode(resumeDraft.draftCode);return;}if(freshSelection){localStorage.removeItem("better-home-selection-draft-v1");setSelected([]);setQuantities({});setExperienceTargets({});setCustomer({name:"",email:"",phone:"",siteAddress:""});setDraftCode(`DRAFT-${crypto.randomUUID().toUpperCase()}`);return;}const raw=localStorage.getItem("better-home-selection-draft-v1");if(raw){const draft=JSON.parse(raw);setSelected(Array.isArray(draft.selected)?draft.selected:[]);setQuantities(draft.quantities||{});setExperienceTargets(draft.experienceTargets||{});setCustomer(draft.customer||{name:"",email:"",phone:"",siteAddress:""});setDraftCode(draft.draftCode||`DRAFT-${crypto.randomUUID().toUpperCase()}`);}else setDraftCode(`DRAFT-${crypto.randomUUID().toUpperCase()}`);}catch{setDraftCode(`DRAFT-${crypto.randomUUID().toUpperCase()}`);}},[resumeDraft,freshSelection]);
   const selectedSet=useMemo(()=>new Set(selected),[selected]);
   const selectedParents=products.filter(p=>selectedSet.has(p.productCode));
   const permittedAddons=useMemo(()=>{
@@ -85,5 +85,5 @@ export default function Configure({products,resumeDraft,actor}:Props){
 
 export const getServerSideProps:GetServerSideProps<Props>=async context=>{
   const {actorFromRequest}=await import("@/server/sales-auth");const actor=actorFromRequest(context.req);if(!actor)return {redirect:{destination:`/login?next=${encodeURIComponent(context.resolvedUrl)}`,permanent:false}};
-  const {getSalesCatalog}=await import("@/server/catalog-cache");const products:Product[]=await getSalesCatalog();let resumeDraft=null;const requested=typeof context.query.draft==="string"?context.query.draft:null;if(requested){const {readContext,salesStudioService}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();try{resumeDraft=await salesStudioService.createSalesStudioService(os.prisma).draftDetail(actor,requested);}finally{await os.disconnect();}}return {props:{products:JSON.parse(JSON.stringify(products)),resumeDraft:resumeDraft?JSON.parse(JSON.stringify(resumeDraft)):null,actor:{email:actor.email,role:actor.role}}};
+  const {getSalesCatalog}=await import("@/server/catalog-cache");const products:Product[]=await getSalesCatalog();let resumeDraft=null;const requested=typeof context.query.draft==="string"?context.query.draft:null;if(requested){const {readContext,salesStudioService}=require("@bht/product-os/v2");const os=readContext.createProductOsV2ReadContext();try{resumeDraft=await salesStudioService.createSalesStudioService(os.prisma).draftDetail(actor,requested);}finally{await os.disconnect();}}return {props:{products:JSON.parse(JSON.stringify(products)),resumeDraft:resumeDraft?JSON.parse(JSON.stringify(resumeDraft)):null,freshSelection:typeof context.query.new==="string",actor:{email:actor.email,role:actor.role}}};
 };
