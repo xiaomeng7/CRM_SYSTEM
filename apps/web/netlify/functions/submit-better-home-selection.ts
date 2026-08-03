@@ -41,6 +41,66 @@ function validSelections(value: unknown, allowedKind: 'product' | 'addon'): Sele
   });
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[character] || character));
+}
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('en-AU', {
+    style: 'currency', currency: 'AUD', maximumFractionDigits: 0,
+  }).format(value);
+}
+
+async function sendEmail(params: { to: string; subject: string; text: string; html: string }): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.BETTER_HOME_SELECTION_FROM_EMAIL
+    || process.env.BHT_ADVISORY_FROM_EMAIL
+    || 'Better Home <noreply@bhtechnology.com.au>';
+  if (!apiKey) {
+    console.warn('[better-home-selection] RESEND_API_KEY not set; email confirmation was not sent');
+    return false;
+  }
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({ from, to: [params.to], subject: params.subject, text: params.text, html: params.html }),
+    });
+    if (!response.ok) {
+      console.error('[better-home-selection] Resend rejected email', await response.text());
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('[better-home-selection] email delivery failed', error instanceof Error ? error.message : error);
+    return false;
+  }
+}
+
+function selectionRows(items: Selection[]): string {
+  return items.map((item) => `${item.quantity} × ${item.name}`).join('\n');
+}
+
+function emailShell(params: { eyebrow: string; title: string; body: string; total: string; detailHtml: string }): string {
+  return `<!doctype html><html><body style="margin:0;background:#f5f1ea;color:#252823;font-family:Arial,sans-serif">
+  <main style="max-width:640px;margin:0 auto;padding:40px 22px">
+    <p style="margin:0 0 28px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#65755d">${params.eyebrow}</p>
+    <section style="background:#fffdf9;border:1px solid #ddd7cc;border-radius:24px;padding:36px">
+      <h1 style="margin:0;font-family:Georgia,serif;font-size:37px;font-weight:400;line-height:1.05">${params.title}</h1>
+      <p style="margin:24px 0;color:#5f665d;font-size:16px;line-height:1.65">${params.body}</p>
+      <div style="margin:30px 0;padding:20px;border-radius:16px;background:#30372f;color:#fff">${params.detailHtml}
+        <p style="margin:18px 0 0;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#c6d0bd">Indicative investment</p>
+        <p style="margin:5px 0 0;font-family:Georgia,serif;font-size:32px">${params.total}</p>
+      </div>
+      <p style="margin:0;color:#6b716a;font-size:13px;line-height:1.6">This is a guide based on the standard scope selected online. A final proposal follows site review and confirmed selections.</p>
+    </section>
+    <p style="margin:26px 4px;color:#697068;font-size:13px;line-height:1.7">Better Home Technology · Adelaide<br><a href="tel:0410323034" style="color:#4f5f49">0410 323 034</a> · <a href="mailto:info@bhtechnology.com.au" style="color:#4f5f49">info@bhtechnology.com.au</a></p>
+  </main></body></html>`;
+}
+
 export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
 
@@ -142,7 +202,46 @@ export const handler: Handler = async (event: HandlerEvent) => {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(typeof result.error === 'string' ? result.error : 'CRM rejected request');
-    return { statusCode: 201, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ok: true, reference: result.lead_id || null }) };
+
+    const reference = typeof result.lead_id === 'string' ? result.lead_id : null;
+    const selectedLines = [...selections, ...addons];
+    const summaryText = selectionRows(selectedLines);
+    const summaryHtml = selectedLines.map((item) => (
+      `<p style="margin:0 0 9px;font-size:15px;line-height:1.45">${item.quantity} × ${escapeHtml(item.name)}</p>`
+    )).join('');
+    const total = formatCurrency(estimatedTotal);
+    const customerHtml = emailShell({
+      eyebrow: 'Better Home · Selection received',
+      title: 'Your home is beginning to take shape.',
+      body: `Thank you, ${escapeHtml(name)}. We have received your Better Home selection and will review it with the conditions of your home in mind.`,
+      total,
+      detailHtml: `<p style="margin:0 0 16px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#c6d0bd">Your starting point</p>${summaryHtml}`,
+    });
+    const customerText = `Thank you, ${name}. We have received your Better Home selection.\n\nYour starting point:\n${summaryText}\n\nIndicative investment: ${total}\n\nWe will review the selection, confirm site conditions and then prepare a clear formal proposal.\n\nBetter Home Technology\n0410 323 034 · info@bhtechnology.com.au`;
+    const internalHtml = emailShell({
+      eyebrow: 'New Better Home online selection',
+      title: `${escapeHtml(name)} has started a Better Home plan.`,
+      body: `${escapeHtml(suburb)} · ${escapeHtml(phone)} · ${escapeHtml(email)}${reference ? ` · CRM reference ${escapeHtml(reference)}` : ''}`,
+      total,
+      detailHtml: `<p style="margin:0 0 16px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#c6d0bd">Selected online</p>${summaryHtml}${notes ? `<p style="margin:18px 0 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);font-size:14px;line-height:1.55;color:#e1e6dc"><strong>Notes:</strong> ${escapeHtml(notes)}</p>` : ''}`,
+    });
+    const internalText = `New Better Home online selection\n\n${name}\n${phone}\n${email}\n${suburb}${reference ? `\nCRM reference: ${reference}` : ''}\n\nSelected online:\n${summaryText}\n\nIndicative investment: ${total}${notes ? `\n\nNotes: ${notes}` : ''}`;
+    const internalRecipient = cleanText(process.env.BETTER_HOME_SELECTION_TO_EMAIL, 180) || 'info@bhtechnology.com.au';
+    const [customerEmailSent, internalEmailSent] = await Promise.all([
+      sendEmail({ to: email, subject: 'We have received your Better Home selection', text: customerText, html: customerHtml }),
+      sendEmail({ to: internalRecipient, subject: `New Better Home selection · ${name} · ${total}`, text: internalText, html: internalHtml }),
+    ]);
+
+    return {
+      statusCode: 201,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ok: true,
+        reference,
+        customerEmailSent,
+        internalEmailSent,
+      }),
+    };
   } catch (error) {
     console.error('[better-home-selection] CRM submission failed', error instanceof Error ? error.message : error);
     return { statusCode: 502, body: JSON.stringify({ error: 'We could not send this selection. Please call 0410 323 034.' }) };

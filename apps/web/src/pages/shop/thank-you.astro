@@ -12,6 +12,7 @@ import Footer from '../../components/Footer.astro';
         <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#65755d]">Selection received</p>
         <h1 class="mt-6 font-['Cormorant_Garamond',Georgia,serif] text-[clamp(3.6rem,7vw,6.5rem)] font-normal leading-[0.92] tracking-[-0.04em]">Your home is beginning to take shape.</h1>
         <p id="thank-you-name" class="mt-8 max-w-2xl text-lg leading-relaxed text-[#646b61]">Thank you. Your Better Home selection is now with our team.</p>
+        <p id="thank-you-email" class="mt-4 max-w-2xl text-sm leading-relaxed text-[#65755d]">We will be in touch shortly.</p>
       </div>
       <aside class="rounded-3xl bg-[#30372f] p-8 text-white md:p-10">
         <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#c6d0bd]">What happens next</p>
@@ -40,7 +41,11 @@ import Footer from '../../components/Footer.astro';
   try {
     const submission = JSON.parse(sessionStorage.getItem('betterHomeSubmission') || '{}');
     const greeting = document.getElementById('thank-you-name');
+    const emailStatus = document.getElementById('thank-you-email');
     if (greeting && submission.name) greeting.textContent = `Thank you, ${submission.name}. Your Better Home selection is now with our team.`;
+    if (emailStatus && submission.customerEmailSent === true) {
+      emailStatus.textContent = 'A confirmation has been sent to your email address.';
+    }
     sessionStorage.removeItem('betterHomeSubmission');
   } catch {}
 </script>

@@ -343,7 +343,11 @@ const shopAddons = importPlan.addons
       const response = await fetch('/api/submit-better-home-selection', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Please try again.');
-      sessionStorage.setItem('betterHomeSubmission', JSON.stringify({ name: payload.name, estimatedTotal: payload.estimatedTotal }));
+      sessionStorage.setItem('betterHomeSubmission', JSON.stringify({
+        name: payload.name,
+        estimatedTotal: payload.estimatedTotal,
+        customerEmailSent: result.customerEmailSent === true,
+      }));
       location.href = `/shop/thank-you${result.reference ? `?ref=${encodeURIComponent(result.reference)}` : ''}`;
     } catch (error) { status.textContent = error.message || 'We could not send this selection. Please call 0410 323 034.'; }
   });
